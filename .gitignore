@@ -1,0 +1,92 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+# Monorepo specific (pnpm workspaces — keep pnpm-lock.yaml only)
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Bundle analysis artifacts
+stats.html
+bundle-analysis.html
+*.tgz
+
+# Logs — runtime output only. Source directories named logs/ stay tracked.
+/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+# Per-app env files — gitignored wholesale; only .env.example is committed.
+apps/*/.env
+apps/*/.env.*
+!apps/*/.env.example
+.infisical.json
+
+# Editor & System
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+.DS_Store
+desktop.ini
+ehthumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.gitnexus
+Thumbs.db
+*.local
+
+# Linter / TS caches
+.eslintcache
+.stylelintcache
+
+# Tools & Frameworks
+.wrangler/
+.turbo/
+.cache/
+.temp/
+.tmp/
+coverage/
+.nyc_output/
+vite.config.ts.timestamp-*
+
+# Deployment
+.vercel
+.now
+.netlify
+
+# Playwright
+/playwright-report/
+/test-results/
+/playwright/.cache/
+blob-report/
+
+# Graphify analysis output (generated)
+graphify-out/
+
+# graphify local interpreter pointer
+.graphify_python
+
+# AI Assistant output & state
+.gemini/
+.antigravity/
+.claude/
+.cursor/

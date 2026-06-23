@@ -1,0 +1,17 @@
+# Gitleaks allow-list. Fingerprints of reviewed false positives.
+# Format: <commit-sha>:<path>:<rule-id>:<line>
+#
+# Pre-publish security audit 2026-04-24 — 7 hits in src/pages/MyBookingsPage.tsx
+# flagged as `generic-api-key`. All are mock UI data: literal qrToken strings
+# like 'EVT-RSM26-WRK-A1B2C3' used in a pre-API-integration React component.
+# Not real secrets. The file itself was deleted in the monorepo restructure
+# (commit replaced it with apps/public/... paths). Kept here so any future
+# `gitleaks git` full-history scan returns clean.
+
+f1ac9ddbc3e2ebdc8b2c64085a63691ad09ea75c:src/pages/MyBookingsPage.tsx:generic-api-key:90
+f1ac9ddbc3e2ebdc8b2c64085a63691ad09ea75c:src/pages/MyBookingsPage.tsx:generic-api-key:96
+f1ac9ddbc3e2ebdc8b2c64085a63691ad09ea75c:src/pages/MyBookingsPage.tsx:generic-api-key:102
+4c415c34450ea57c2f87a51e9fbf0801c02e1ce5:src/pages/MyBookingsPage.tsx:generic-api-key:40
+4c415c34450ea57c2f87a51e9fbf0801c02e1ce5:src/pages/MyBookingsPage.tsx:generic-api-key:49
+4c415c34450ea57c2f87a51e9fbf0801c02e1ce5:src/pages/MyBookingsPage.tsx:generic-api-key:58
+4c415c34450ea57c2f87a51e9fbf0801c02e1ce5:src/pages/MyBookingsPage.tsx:generic-api-key:67

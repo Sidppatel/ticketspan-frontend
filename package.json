@@ -1,0 +1,50 @@
+{
+  "name": "svyne-event-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "gen:proto": "node -e \"require('fs').mkdirSync('src/shared/proto',{recursive:true})\" && protoc --ts_out src/shared/proto --ts_opt long_type_string,optimize_speed,eslint_disable --proto_path ../svyne-event-backend/protos common.proto auth.proto event.proto tenant.proto catalog.proto booking.proto purchase.proto admin.proto"
+  },
+  "dependencies": {
+    "@protobuf-ts/grpcweb-transport": "2.9.4",
+    "@protobuf-ts/runtime": "2.9.4",
+    "@protobuf-ts/runtime-rpc": "2.9.4",
+    "axios": "1.7.9",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "0.469.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-router-dom": "7.15.0",
+    "tailwind-merge": "2.6.0",
+    "zustand": "5.0.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@protobuf-ts/plugin": "2.9.4",
+    "@protobuf-ts/protoc": "2.9.4",
+    "@tailwindcss/vite": "4.1.13",
+    "@types/node": "25.9.1",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
+    "@vitejs/plugin-react": "6.0.2",
+    "eslint": "10.4.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.6.0",
+    "tailwindcss": "4.1.13",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.59.4",
+    "vite": "8.0.14"
+  },
+  "resolutions": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-router": "7.15.0",
+    "react-router-dom": "7.15.0"
+  }
+}
