@@ -185,6 +185,15 @@ export interface PasswordResetRequest {
     origin: string;
 }
 /**
+ * @generated from protobuf message svyne.auth.ValidateResetTokenRequest
+ */
+export interface ValidateResetTokenRequest {
+    /**
+     * @generated from protobuf field: string token = 1;
+     */
+    token: string;
+}
+/**
  * @generated from protobuf message svyne.auth.SetPasswordRequest
  */
 export interface SetPasswordRequest {
@@ -894,6 +903,53 @@ class PasswordResetRequest$Type extends MessageType<PasswordResetRequest> {
  */
 export const PasswordResetRequest = new PasswordResetRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class ValidateResetTokenRequest$Type extends MessageType<ValidateResetTokenRequest> {
+    constructor() {
+        super("svyne.auth.ValidateResetTokenRequest", [
+            { no: 1, name: "token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ValidateResetTokenRequest>): ValidateResetTokenRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.token = "";
+        if (value !== undefined)
+            reflectionMergePartial<ValidateResetTokenRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ValidateResetTokenRequest): ValidateResetTokenRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string token */ 1:
+                    message.token = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ValidateResetTokenRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string token = 1; */
+        if (message.token !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.token);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.auth.ValidateResetTokenRequest
+ */
+export const ValidateResetTokenRequest = new ValidateResetTokenRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class SetPasswordRequest$Type extends MessageType<SetPasswordRequest> {
     constructor() {
         super("svyne.auth.SetPasswordRequest", [
@@ -1181,6 +1237,7 @@ export const AuthService = new ServiceType("svyne.auth.AuthService", [
     { name: "RequestMagicLink", options: {}, I: MagicLinkRequest, O: AckResponse },
     { name: "VerifyMagicLink", options: {}, I: MagicLinkVerifyRequest, O: AuthResponse },
     { name: "RequestPasswordReset", options: {}, I: PasswordResetRequest, O: AckResponse },
+    { name: "ValidatePasswordResetToken", options: {}, I: ValidateResetTokenRequest, O: AckResponse },
     { name: "SetPassword", options: {}, I: SetPasswordRequest, O: AckResponse },
     { name: "Me", options: {}, I: Empty, O: UserProfile },
     { name: "UpdateProfile", options: {}, I: UpdateProfileRequest, O: UserProfile },

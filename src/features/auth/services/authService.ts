@@ -70,6 +70,10 @@ export async function requestPasswordReset(email: string): Promise<void> {
   );
 }
 
+export async function validateResetToken(token: string): Promise<void> {
+  await callRpc(() => authClient.validatePasswordResetToken({ token }));
+}
+
 export async function setPassword(token: string, newPassword: string): Promise<void> {
   await callRpc(() => authClient.setPassword({ token, newPassword }));
 }

@@ -10,6 +10,7 @@ import type { UpdateProfileRequest } from "./auth";
 import type { UserProfile } from "./auth";
 import type { Empty } from "./common";
 import type { SetPasswordRequest } from "./auth";
+import type { ValidateResetTokenRequest } from "./auth";
 import type { PasswordResetRequest } from "./auth";
 import type { MagicLinkVerifyRequest } from "./auth";
 import type { MagicLinkRequest } from "./auth";
@@ -59,6 +60,12 @@ export interface IAuthServiceClient {
      * @generated from protobuf rpc: RequestPasswordReset(svyne.auth.PasswordResetRequest) returns (svyne.common.AckResponse);
      */
     requestPasswordReset(input: PasswordResetRequest, options?: RpcOptions): UnaryCall<PasswordResetRequest, AckResponse>;
+    /**
+     * Validate a reset token without consuming it (called when the reset page loads).
+     *
+     * @generated from protobuf rpc: ValidatePasswordResetToken(svyne.auth.ValidateResetTokenRequest) returns (svyne.common.AckResponse);
+     */
+    validatePasswordResetToken(input: ValidateResetTokenRequest, options?: RpcOptions): UnaryCall<ValidateResetTokenRequest, AckResponse>;
     /**
      * @generated from protobuf rpc: SetPassword(svyne.auth.SetPasswordRequest) returns (svyne.common.AckResponse);
      */
@@ -142,31 +149,40 @@ export class AuthServiceClient implements IAuthServiceClient, ServiceInfo {
         return stackIntercept<PasswordResetRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
+     * Validate a reset token without consuming it (called when the reset page loads).
+     *
+     * @generated from protobuf rpc: ValidatePasswordResetToken(svyne.auth.ValidateResetTokenRequest) returns (svyne.common.AckResponse);
+     */
+    validatePasswordResetToken(input: ValidateResetTokenRequest, options?: RpcOptions): UnaryCall<ValidateResetTokenRequest, AckResponse> {
+        const method = this.methods[8], opt = this._transport.mergeOptions(options);
+        return stackIntercept<ValidateResetTokenRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: SetPassword(svyne.auth.SetPasswordRequest) returns (svyne.common.AckResponse);
      */
     setPassword(input: SetPasswordRequest, options?: RpcOptions): UnaryCall<SetPasswordRequest, AckResponse> {
-        const method = this.methods[8], opt = this._transport.mergeOptions(options);
+        const method = this.methods[9], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetPasswordRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: Me(svyne.common.Empty) returns (svyne.auth.UserProfile);
      */
     me(input: Empty, options?: RpcOptions): UnaryCall<Empty, UserProfile> {
-        const method = this.methods[9], opt = this._transport.mergeOptions(options);
+        const method = this.methods[10], opt = this._transport.mergeOptions(options);
         return stackIntercept<Empty, UserProfile>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: UpdateProfile(svyne.auth.UpdateProfileRequest) returns (svyne.auth.UserProfile);
      */
     updateProfile(input: UpdateProfileRequest, options?: RpcOptions): UnaryCall<UpdateProfileRequest, UserProfile> {
-        const method = this.methods[10], opt = this._transport.mergeOptions(options);
+        const method = this.methods[11], opt = this._transport.mergeOptions(options);
         return stackIntercept<UpdateProfileRequest, UserProfile>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SetAvatar(svyne.auth.SetAvatarRequest) returns (svyne.auth.UserProfile);
      */
     setAvatar(input: SetAvatarRequest, options?: RpcOptions): UnaryCall<SetAvatarRequest, UserProfile> {
-        const method = this.methods[11], opt = this._transport.mergeOptions(options);
+        const method = this.methods[12], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetAvatarRequest, UserProfile>("unary", this._transport, method, opt, input);
     }
 }
