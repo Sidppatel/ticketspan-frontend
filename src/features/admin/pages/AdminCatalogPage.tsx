@@ -11,6 +11,7 @@ import {
   deleteSponsor,
 } from '@/features/admin/services/catalogService';
 import { rpcErrorMessage } from '@/shared/session';
+import { TableTemplatesManager } from '@/features/admin/components/TableTemplatesManager';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
@@ -20,6 +21,7 @@ export function AdminCatalogPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-semibold">Catalog</h1>
+      <TableTemplatesManager />
       <VenuesSection />
       <NamedSection
         title="Performers"

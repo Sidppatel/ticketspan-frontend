@@ -11,8 +11,12 @@ import {
   listEventTables,
   createEventTable,
   deleteEventTable,
+  setEventFeesIncluded,
 } from '@/features/admin/services/eventAdminService';
-import { listFeeFormulas, previewFee } from '@/features/developer/services/developerFeeService';
+import { listTableTemplates } from '@/features/admin/services/tableTemplateService';
+import type { TableTemplate } from '@/shared/proto/booking';
+import { PricingManager } from '@/features/admin/components/PricingManager';
+import { FloorPlanPanel } from '@/features/admin/components/FloorPlanPanel';
 import { ImageUpload } from '@/shared/components/ImageUpload';
 import type { Event } from '@/shared/proto/event';
 import {
@@ -35,25 +39,40 @@ export function AdminEventManagePage() {
   const tablesLoader = useCallback(() => listEventTables(eventsId), [eventsId]);
   const ticketTypesLoader = useCallback(() => listTicketTypes(eventsId), [eventsId]);
   const staffLoader = useCallback(() => listStaffForEvent(eventsId), [eventsId]);
-  const formulasLoader = useCallback(() => listFeeFormulas(), []);
+  const templatesLoader = useCallback(() => listTableTemplates(), []);
 
   const event = useAsync(eventLoader);
   const stats = useAsync(statsLoader);
   const tables = useAsync(tablesLoader);
   const ticketTypes = useAsync(ticketTypesLoader);
   const staff = useAsync(staffLoader);
-  const formulas = useAsync(formulasLoader);
+  const templates = useAsync(templatesLoader);
 
-  const formulaList = formulas.data ?? [];
-  const formulaById = new Map(formulaList.map((f) => [f.feeFormulasId, f]));
+  const templateList = templates.data ?? [];
 
   const [ticketLabel, setTicketLabel] = useState('');
   const [ticketPriceCents, setTicketPriceCents] = useState(0);
-  const [ticketFormulaId, setTicketFormulaId] = useState('');
+  // Admin picks a catalog table type; values below override the template defaults.
+  const [tableTemplateId, setTableTemplateId] = useState('');
   const [tableLabel, setTableLabel] = useState('');
   const [tableCapacity, setTableCapacity] = useState(8);
   const [tablePriceCents, setTablePriceCents] = useState(0);
-  const [tableFormulaId, setTableFormulaId] = useState('');
+  const [tableIsAllInclusive, setTableIsAllInclusive] = useState(true);
+  const [tablePerAttendeeCents, setTablePerAttendeeCents] = useState(0);
+  const [tableRowSpan, setTableRowSpan] = useState(1);
+  const [tableColSpan, setTableColSpan] = useState(1);
+
+  function selectTemplate(id: string) {
+    setTableTemplateId(id);
+    const tpl: TableTemplate | undefined = templateList.find((t) => t.tableTemplatesId === id);
+    if (tpl) {
+      setTableLabel(tpl.name);
+      setTableCapacity(tpl.defaultCapacity);
+      setTablePriceCents(tpl.defaultPriceCents);
+      setTableRowSpan(tpl.defaultRowSpan || 1);
+      setTableColSpan(tpl.defaultColSpan || 1);
+    }
+  }
   const [assignUserId, setAssignUserId] = useState('');
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -94,6 +113,9 @@ export function AdminEventManagePage() {
 
       {event.data ? <EditSection event={event.data} onSaved={event.reload} /> : null}
 
+      <PricingManager eventsId={eventsId} />
+      <FloorPlanPanel eventsId={eventsId} />
+
       {stats.data ? (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Stat label="Bookings" value={stats.data.totalBookings} />
@@ -117,26 +139,7 @@ export function AdminEventManagePage() {
               <Label>Price (cents)</Label>
               <Input type="number" value={ticketPriceCents} onChange={(e) => setTicketPriceCents(Number(e.target.value))} />
             </div>
-            <div className="space-y-1">
-              <Label>Service fee</Label>
-              <select
-                className="h-9 rounded-md border border-gray-300 px-2 text-sm"
-                value={ticketFormulaId}
-                onChange={(e) => setTicketFormulaId(e.target.value)}
-              >
-                <option value="">— none —</option>
-                {formulaList.map((f) => (
-                  <option key={f.feeFormulasId} value={f.feeFormulasId}>
-                    {f.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {/* Fee is developer-controlled; tenant only sees the resolved amount. */}
-            <p className="text-sm text-gray-600">
-              Fee {centsToUSD(previewFee(ticketPriceCents, formulaById.get(ticketFormulaId)))} · Buyer pays{' '}
-              {centsToUSD(addCents(ticketPriceCents, previewFee(ticketPriceCents, formulaById.get(ticketFormulaId))))}
-            </p>
+            {/* Service fee is developer-controlled (tenant default formula); not set here. */}
             <Button
               size="sm"
               onClick={() =>
@@ -145,7 +148,7 @@ export function AdminEventManagePage() {
                     eventsId,
                     label: ticketLabel,
                     priceCents: ticketPriceCents,
-                    feeFormulasId: ticketFormulaId,
+                    feeFormulasId: '',
                     maxQuantity: 0,
                     sortOrder: 0,
                     description: '',
@@ -178,7 +181,23 @@ export function AdminEventManagePage() {
           <CardTitle>Tables</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          {/* Admin reuses a catalog table type and overrides values; cannot create new types. */}
           <div className="flex flex-wrap items-end gap-3">
+            <div className="space-y-1">
+              <Label>Table type (catalog)</Label>
+              <select
+                className="h-9 rounded-md border border-gray-300 px-2 text-sm"
+                value={tableTemplateId}
+                onChange={(e) => selectTemplate(e.target.value)}
+              >
+                <option value="">— select —</option>
+                {templateList.map((t) => (
+                  <option key={t.tableTemplatesId} value={t.tableTemplatesId}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="space-y-1">
               <Label>Label</Label>
               <Input value={tableLabel} onChange={(e) => setTableLabel(e.target.value)} />
@@ -192,26 +211,34 @@ export function AdminEventManagePage() {
               <Input type="number" value={tablePriceCents} onChange={(e) => setTablePriceCents(Number(e.target.value))} />
             </div>
             <div className="space-y-1">
-              <Label>Service fee</Label>
-              <select
-                className="h-9 rounded-md border border-gray-300 px-2 text-sm"
-                value={tableFormulaId}
-                onChange={(e) => setTableFormulaId(e.target.value)}
-              >
-                <option value="">— none —</option>
-                {formulaList.map((f) => (
-                  <option key={f.feeFormulasId} value={f.feeFormulasId}>
-                    {f.name}
-                  </option>
-                ))}
-              </select>
+              <Label>Row span</Label>
+              <Input className="w-20" type="number" min={1} value={tableRowSpan} onChange={(e) => setTableRowSpan(Number(e.target.value))} />
             </div>
-            <p className="text-sm text-gray-600">
-              Fee {centsToUSD(previewFee(tablePriceCents, formulaById.get(tableFormulaId)))} · Buyer pays{' '}
-              {centsToUSD(addCents(tablePriceCents, previewFee(tablePriceCents, formulaById.get(tableFormulaId))))}
-            </p>
+            <div className="space-y-1">
+              <Label>Col span</Label>
+              <Input className="w-20" type="number" min={1} value={tableColSpan} onChange={(e) => setTableColSpan(Number(e.target.value))} />
+            </div>
+            <label className="flex items-center gap-2 self-center text-sm">
+              <input
+                type="checkbox"
+                checked={tableIsAllInclusive}
+                onChange={(e) => setTableIsAllInclusive(e.target.checked)}
+              />
+              All-inclusive (flat table price)
+            </label>
+            {!tableIsAllInclusive && (
+              <div className="space-y-1">
+                <Label>Per attendee (cents)</Label>
+                <Input
+                  type="number"
+                  value={tablePerAttendeeCents}
+                  onChange={(e) => setTablePerAttendeeCents(Number(e.target.value))}
+                />
+              </div>
+            )}
             <Button
               size="sm"
+              disabled={!tableTemplateId}
               onClick={() =>
                 guard(
                   () =>
@@ -222,8 +249,16 @@ export function AdminEventManagePage() {
                       shape: 'Round',
                       color: '#888888',
                       priceCents: tablePriceCents,
-                      feeFormulasId: tableFormulaId,
-                    }).then(() => setTableLabel('')),
+                      feeFormulasId: '',
+                      isAllInclusive: tableIsAllInclusive,
+                      perAttendeeCents: tablePerAttendeeCents,
+                      tableTemplatesId: tableTemplateId,
+                      rowSpan: tableRowSpan,
+                      colSpan: tableColSpan,
+                    }).then(() => {
+                      setTableTemplateId('');
+                      setTableLabel('');
+                    }),
                   tables.reload,
                 )
               }
@@ -287,8 +322,19 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
   const [category, setCategory] = useState(event.category);
   const [capacity, setCapacity] = useState(event.maxCapacity);
   const [imagePath, setImagePath] = useState(event.imagePath);
+  const [feesIncluded, setFeesIncluded] = useState(event.feesIncluded);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function toggleFeesIncluded(next: boolean) {
+    setFeesIncluded(next);
+    try {
+      await setEventFeesIncluded(event.eventsId, next);
+    } catch (caught) {
+      setFeesIncluded(!next);
+      setError(rpcErrorMessage(caught));
+    }
+  }
 
   async function save() {
     setSaving(true);
@@ -342,6 +388,23 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
         <div className="space-y-1 md:col-span-2">
           <Label>Description</Label>
           <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="md:col-span-2">
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              className="mt-0.5"
+              checked={feesIncluded}
+              onChange={(e) => toggleFeesIncluded(e.target.checked)}
+            />
+            <span>
+              <span className="font-medium">Show fees included in price</span>
+              <span className="block text-gray-500">
+                On = buyers see one all-in total. Off = price + fee shown separately. The developer fee amount is
+                unchanged either way.
+              </span>
+            </span>
+          </label>
         </div>
         {error ? <p className="text-sm text-red-600 md:col-span-2">{error}</p> : null}
         <div className="md:col-span-2">

@@ -27,6 +27,8 @@ import {
 } from '@/shared/proto/admin.client';
 import { EnumServiceClient } from '@/shared/proto/enums.client';
 import { FeeServiceClient } from '@/shared/proto/fees.client';
+import { PricingServiceClient } from '@/shared/proto/pricing.client';
+import { FloorPlanServiceClient } from '@/shared/proto/floorplan.client';
 
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:60262';
 
@@ -75,3 +77,5 @@ export const feedbackClient = new FeedbackServiceClient(transport);
 export const healthClient = new HealthServiceClient(transport);
 export const enumClient = new EnumServiceClient(transport);
 export const feeClient = new FeeServiceClient(transport);
+export const pricingClient = new PricingServiceClient(transport);
+export const floorPlanClient = new FloorPlanServiceClient(transport);

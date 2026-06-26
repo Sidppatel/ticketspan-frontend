@@ -119,6 +119,14 @@ export interface TableDraft {
   color: string;
   priceCents: number;
   feeFormulasId: string;
+  // Table pricing mode. Default all-inclusive: priceCents covers the whole table.
+  // When false, priceCents is the base and perAttendeeCents is added per seat.
+  isAllInclusive?: boolean;
+  perAttendeeCents?: number;
+  tableTemplatesId?: string;
+  // Grid footprint override; 0 = inherit catalog template default.
+  rowSpan?: number;
+  colSpan?: number;
 }
 
 export async function createEventTable(draft: TableDraft): Promise<string> {
@@ -131,7 +139,11 @@ export async function createEventTable(draft: TableDraft): Promise<string> {
       color: draft.color,
       priceCents: draft.priceCents,
       feeFormulasId: draft.feeFormulasId,
-      tableTemplatesId: '',
+      tableTemplatesId: draft.tableTemplatesId ?? '',
+      isAllInclusive: draft.isAllInclusive ?? true,
+      perAttendeeCents: draft.perAttendeeCents ?? 0,
+      rowSpan: draft.rowSpan ?? 0,
+      colSpan: draft.colSpan ?? 0,
     }),
   );
   return response.value;
@@ -139,4 +151,13 @@ export async function createEventTable(draft: TableDraft): Promise<string> {
 
 export async function deleteEventTable(tablesId: string): Promise<void> {
   await callRpc(() => tableBookingClient.deleteEventTable({ value: tablesId }));
+}
+
+export async function setEventFeesIncluded(eventsId: string, feesIncluded: boolean): Promise<void> {
+  await callRpc(() => eventClient.setEventFeesIncluded({ eventsId, feesIncluded }));
+}
+
+export async function listEventTableTypes(eventsId: string) {
+  const response = await callRpc(() => tableBookingClient.listEventTableTypes({ value: eventsId }));
+  return response.tableTypes;
 }

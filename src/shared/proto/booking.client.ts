@@ -5,8 +5,14 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { TableBookingService } from "./booking";
+import type { CreateTableTemplateRequest } from "./booking";
+import type { ListTableTemplatesResponse } from "./booking";
+import type { Empty } from "./common";
+import type { ListTableTemplatePriceRulesResponse } from "./booking";
+import type { CreateTableTemplatePriceRuleRequest } from "./booking";
 import type { CreateEventTicketTypeRequest } from "./booking";
 import type { CreateEventTableRequest } from "./booking";
+import type { ListEventTableTypesResponse } from "./booking";
 import type { ListTablesResponse } from "./booking";
 import type { LockTableRequest } from "./booking";
 import type { AckResponse } from "./common";
@@ -41,6 +47,10 @@ export interface ITableBookingServiceClient {
      */
     listTablesForEvent(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListTablesResponse>;
     /**
+     * @generated from protobuf rpc: ListEventTableTypes(svyne.common.UuidValue) returns (svyne.booking.ListEventTableTypesResponse);
+     */
+    listEventTableTypes(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListEventTableTypesResponse>;
+    /**
      * @generated from protobuf rpc: CreateEventTable(svyne.booking.CreateEventTableRequest) returns (svyne.common.UuidValue);
      */
     createEventTable(input: CreateEventTableRequest, options?: RpcOptions): UnaryCall<CreateEventTableRequest, UuidValue>;
@@ -56,6 +66,36 @@ export interface ITableBookingServiceClient {
      * @generated from protobuf rpc: DeleteEventTicketType(svyne.common.UuidValue) returns (svyne.common.AckResponse);
      */
     deleteEventTicketType(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
+    /**
+     * Catalog table-type price rules: reusable presale/last-minute rules attached to
+     * a table template and snapshotted onto event prices when a table type is created
+     * from that template.
+     *
+     * @generated from protobuf rpc: CreateTableTemplatePriceRule(svyne.booking.CreateTableTemplatePriceRuleRequest) returns (svyne.common.UuidValue);
+     */
+    createTableTemplatePriceRule(input: CreateTableTemplatePriceRuleRequest, options?: RpcOptions): UnaryCall<CreateTableTemplatePriceRuleRequest, UuidValue>;
+    /**
+     * @generated from protobuf rpc: ListTableTemplatePriceRules(svyne.common.UuidValue) returns (svyne.booking.ListTableTemplatePriceRulesResponse);
+     */
+    listTableTemplatePriceRules(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListTableTemplatePriceRulesResponse>;
+    /**
+     * @generated from protobuf rpc: DeleteTableTemplatePriceRule(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    deleteTableTemplatePriceRule(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
+    /**
+     * Catalog table-type templates (tenant-scoped, reusable across events).
+     *
+     * @generated from protobuf rpc: ListTableTemplates(svyne.common.Empty) returns (svyne.booking.ListTableTemplatesResponse);
+     */
+    listTableTemplates(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListTableTemplatesResponse>;
+    /**
+     * @generated from protobuf rpc: CreateTableTemplate(svyne.booking.CreateTableTemplateRequest) returns (svyne.common.UuidValue);
+     */
+    createTableTemplate(input: CreateTableTemplateRequest, options?: RpcOptions): UnaryCall<CreateTableTemplateRequest, UuidValue>;
+    /**
+     * @generated from protobuf rpc: DeleteTableTemplate(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    deleteTableTemplate(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
 }
 /**
  * @generated from protobuf service svyne.booking.TableBookingService
@@ -102,31 +142,86 @@ export class TableBookingServiceClient implements ITableBookingServiceClient, Se
         return stackIntercept<UuidValue, ListTablesResponse>("unary", this._transport, method, opt, input);
     }
     /**
+     * @generated from protobuf rpc: ListEventTableTypes(svyne.common.UuidValue) returns (svyne.booking.ListEventTableTypesResponse);
+     */
+    listEventTableTypes(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListEventTableTypesResponse> {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, ListEventTableTypesResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: CreateEventTable(svyne.booking.CreateEventTableRequest) returns (svyne.common.UuidValue);
      */
     createEventTable(input: CreateEventTableRequest, options?: RpcOptions): UnaryCall<CreateEventTableRequest, UuidValue> {
-        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        const method = this.methods[6], opt = this._transport.mergeOptions(options);
         return stackIntercept<CreateEventTableRequest, UuidValue>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: DeleteEventTable(svyne.common.UuidValue) returns (svyne.common.AckResponse);
      */
     deleteEventTable(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
-        const method = this.methods[6], opt = this._transport.mergeOptions(options);
+        const method = this.methods[7], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: CreateEventTicketType(svyne.booking.CreateEventTicketTypeRequest) returns (svyne.common.UuidValue);
      */
     createEventTicketType(input: CreateEventTicketTypeRequest, options?: RpcOptions): UnaryCall<CreateEventTicketTypeRequest, UuidValue> {
-        const method = this.methods[7], opt = this._transport.mergeOptions(options);
+        const method = this.methods[8], opt = this._transport.mergeOptions(options);
         return stackIntercept<CreateEventTicketTypeRequest, UuidValue>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: DeleteEventTicketType(svyne.common.UuidValue) returns (svyne.common.AckResponse);
      */
     deleteEventTicketType(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
-        const method = this.methods[8], opt = this._transport.mergeOptions(options);
+        const method = this.methods[9], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * Catalog table-type price rules: reusable presale/last-minute rules attached to
+     * a table template and snapshotted onto event prices when a table type is created
+     * from that template.
+     *
+     * @generated from protobuf rpc: CreateTableTemplatePriceRule(svyne.booking.CreateTableTemplatePriceRuleRequest) returns (svyne.common.UuidValue);
+     */
+    createTableTemplatePriceRule(input: CreateTableTemplatePriceRuleRequest, options?: RpcOptions): UnaryCall<CreateTableTemplatePriceRuleRequest, UuidValue> {
+        const method = this.methods[10], opt = this._transport.mergeOptions(options);
+        return stackIntercept<CreateTableTemplatePriceRuleRequest, UuidValue>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ListTableTemplatePriceRules(svyne.common.UuidValue) returns (svyne.booking.ListTableTemplatePriceRulesResponse);
+     */
+    listTableTemplatePriceRules(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListTableTemplatePriceRulesResponse> {
+        const method = this.methods[11], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, ListTableTemplatePriceRulesResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: DeleteTableTemplatePriceRule(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    deleteTableTemplatePriceRule(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
+        const method = this.methods[12], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * Catalog table-type templates (tenant-scoped, reusable across events).
+     *
+     * @generated from protobuf rpc: ListTableTemplates(svyne.common.Empty) returns (svyne.booking.ListTableTemplatesResponse);
+     */
+    listTableTemplates(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListTableTemplatesResponse> {
+        const method = this.methods[13], opt = this._transport.mergeOptions(options);
+        return stackIntercept<Empty, ListTableTemplatesResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: CreateTableTemplate(svyne.booking.CreateTableTemplateRequest) returns (svyne.common.UuidValue);
+     */
+    createTableTemplate(input: CreateTableTemplateRequest, options?: RpcOptions): UnaryCall<CreateTableTemplateRequest, UuidValue> {
+        const method = this.methods[14], opt = this._transport.mergeOptions(options);
+        return stackIntercept<CreateTableTemplateRequest, UuidValue>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: DeleteTableTemplate(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    deleteTableTemplate(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
+        const method = this.methods[15], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

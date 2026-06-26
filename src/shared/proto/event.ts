@@ -17,6 +17,19 @@ import { MessageType } from "@protobuf-ts/runtime";
 import { PageMeta } from "./common";
 import { PageRequest } from "./common";
 /**
+ * @generated from protobuf message svyne.event.SetEventFeesIncludedRequest
+ */
+export interface SetEventFeesIncludedRequest {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: bool fees_included = 2;
+     */
+    feesIncluded: boolean;
+}
+/**
  * @generated from protobuf message svyne.event.Event
  */
 export interface Event {
@@ -84,6 +97,10 @@ export interface Event {
      * @generated from protobuf field: string sponsors_json = 16;
      */
     sponsorsJson: string;
+    /**
+     * @generated from protobuf field: bool fees_included = 17;
+     */
+    feesIncluded: boolean;
 }
 /**
  * @generated from protobuf message svyne.event.GetEventBySlugRequest
@@ -291,6 +308,61 @@ export interface EventStats {
     checkedIn: number;
 }
 // @generated message type with reflection information, may provide speed optimized methods
+class SetEventFeesIncludedRequest$Type extends MessageType<SetEventFeesIncludedRequest> {
+    constructor() {
+        super("svyne.event.SetEventFeesIncludedRequest", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "fees_included", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SetEventFeesIncludedRequest>): SetEventFeesIncludedRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.feesIncluded = false;
+        if (value !== undefined)
+            reflectionMergePartial<SetEventFeesIncludedRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SetEventFeesIncludedRequest): SetEventFeesIncludedRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* bool fees_included */ 2:
+                    message.feesIncluded = reader.bool();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SetEventFeesIncludedRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* bool fees_included = 2; */
+        if (message.feesIncluded !== false)
+            writer.tag(2, WireType.Varint).bool(message.feesIncluded);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.event.SetEventFeesIncludedRequest
+ */
+export const SetEventFeesIncludedRequest = new SetEventFeesIncludedRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class Event$Type extends MessageType<Event> {
     constructor() {
         super("svyne.event.Event", [
@@ -309,7 +381,8 @@ class Event$Type extends MessageType<Event> {
             { no: 13, name: "max_capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 14, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 15, name: "performers_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 16, name: "sponsors_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 16, name: "sponsors_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 17, name: "fees_included", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<Event>): Event {
@@ -330,6 +403,7 @@ class Event$Type extends MessageType<Event> {
         message.venuesId = "";
         message.performersJson = "";
         message.sponsorsJson = "";
+        message.feesIncluded = false;
         if (value !== undefined)
             reflectionMergePartial<Event>(this, message, value);
         return message;
@@ -386,6 +460,9 @@ class Event$Type extends MessageType<Event> {
                     break;
                 case /* string sponsors_json */ 16:
                     message.sponsorsJson = reader.string();
+                    break;
+                case /* bool fees_included */ 17:
+                    message.feesIncluded = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -447,6 +524,9 @@ class Event$Type extends MessageType<Event> {
         /* string sponsors_json = 16; */
         if (message.sponsorsJson !== "")
             writer.tag(16, WireType.LengthDelimited).string(message.sponsorsJson);
+        /* bool fees_included = 17; */
+        if (message.feesIncluded !== false)
+            writer.tag(17, WireType.Varint).bool(message.feesIncluded);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1138,5 +1218,6 @@ export const EventService = new ServiceType("svyne.event.EventService", [
     { name: "ListEvents", options: {}, I: ListEventsRequest, O: ListEventsResponse },
     { name: "SearchEvents", options: {}, I: SearchEventsRequest, O: ListEventsResponse },
     { name: "ChangeEventStatus", options: {}, I: ChangeEventStatusRequest, O: AckResponse },
-    { name: "GetEventStats", options: {}, I: UuidValue, O: EventStats }
+    { name: "GetEventStats", options: {}, I: UuidValue, O: EventStats },
+    { name: "SetEventFeesIncluded", options: {}, I: SetEventFeesIncludedRequest, O: AckResponse }
 ]);

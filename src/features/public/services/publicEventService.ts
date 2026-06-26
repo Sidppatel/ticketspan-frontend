@@ -1,8 +1,15 @@
-import { eventClient, bookingClient, tableBookingClient } from '@/shared/apiClient';
+import { eventClient, bookingClient, tableBookingClient, pricingClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
 import type { Event } from '@/shared/proto/event';
 import type { Booking } from '@/shared/proto/bookings';
 import type { EventLayout } from '@/shared/proto/booking';
+import type { PriceBreakdown } from '@/shared/proto/pricing';
+
+// Server-authoritative price for a sellable from the Pricing Module. Consumed by
+// the public floor plan — the client never computes the price itself.
+export async function calculatePrice(pricesId: string, seats: number): Promise<PriceBreakdown> {
+  return callRpc(() => pricingClient.calculatePrice({ pricesId, seats, at: '0', remaining: -1 }));
+}
 
 export async function listPublicEvents(search: string): Promise<Event[]> {
   const response = await callRpc(() =>
@@ -44,6 +51,11 @@ export async function reserveOpenCapacity(input: ReserveSeatsInput): Promise<str
 
 export async function getEventLayout(eventsId: string): Promise<EventLayout> {
   return callRpc(() => tableBookingClient.getEventLayout({ value: eventsId }));
+}
+
+export async function listEventTableTypes(eventsId: string) {
+  const res = await callRpc(() => tableBookingClient.listEventTableTypes({ value: eventsId }));
+  return res.tableTypes;
 }
 
 export interface TableBookingInput {

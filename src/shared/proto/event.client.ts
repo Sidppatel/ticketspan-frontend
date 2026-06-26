@@ -5,6 +5,7 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { EventService } from "./event";
+import type { SetEventFeesIncludedRequest } from "./event";
 import type { EventStats } from "./event";
 import type { ChangeEventStatusRequest } from "./event";
 import type { SearchEventsRequest } from "./event";
@@ -60,6 +61,10 @@ export interface IEventServiceClient {
      * @generated from protobuf rpc: GetEventStats(svyne.common.UuidValue) returns (svyne.event.EventStats);
      */
     getEventStats(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, EventStats>;
+    /**
+     * @generated from protobuf rpc: SetEventFeesIncluded(svyne.event.SetEventFeesIncludedRequest) returns (svyne.common.AckResponse);
+     */
+    setEventFeesIncluded(input: SetEventFeesIncludedRequest, options?: RpcOptions): UnaryCall<SetEventFeesIncludedRequest, AckResponse>;
 }
 /**
  * @generated from protobuf service svyne.event.EventService
@@ -132,5 +137,12 @@ export class EventServiceClient implements IEventServiceClient, ServiceInfo {
     getEventStats(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, EventStats> {
         const method = this.methods[8], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, EventStats>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: SetEventFeesIncluded(svyne.event.SetEventFeesIncludedRequest) returns (svyne.common.AckResponse);
+     */
+    setEventFeesIncluded(input: SetEventFeesIncludedRequest, options?: RpcOptions): UnaryCall<SetEventFeesIncludedRequest, AckResponse> {
+        const method = this.methods[9], opt = this._transport.mergeOptions(options);
+        return stackIntercept<SetEventFeesIncludedRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

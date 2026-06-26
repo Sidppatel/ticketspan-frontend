@@ -23,6 +23,8 @@ const protoFiles = [
   'admin.proto',
   'enums.proto',
   'fees.proto',
+  'pricing.proto',
+  'floorplan.proto',
 ];
 
 mkdirSync(outDir, { recursive: true });
