@@ -101,6 +101,10 @@ export interface Event {
      * @generated from protobuf field: bool fees_included = 17;
      */
     feesIncluded: boolean;
+    /**
+     * @generated from protobuf field: string event_type = 18;
+     */
+    eventType: string; // Open | Table | Both
 }
 /**
  * @generated from protobuf message svyne.event.GetEventBySlugRequest
@@ -175,6 +179,10 @@ export interface CreateEventRequest {
      * @generated from protobuf field: int64 scheduled_publish_at = 15;
      */
     scheduledPublishAt: string;
+    /**
+     * @generated from protobuf field: string event_type = 16;
+     */
+    eventType: string; // Open | Table | Both; default Open
 }
 /**
  * @generated from protobuf message svyne.event.CreateEventResponse
@@ -229,6 +237,10 @@ export interface UpdateEventRequest {
      * @generated from protobuf field: string venues_id = 10;
      */
     venuesId: string;
+    /**
+     * @generated from protobuf field: string event_type = 11;
+     */
+    eventType: string; // Open | Table | Both; empty = unchanged
 }
 /**
  * @generated from protobuf message svyne.event.ChangeEventStatusRequest
@@ -382,7 +394,8 @@ class Event$Type extends MessageType<Event> {
             { no: 14, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 15, name: "performers_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 16, name: "sponsors_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 17, name: "fees_included", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 17, name: "fees_included", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 18, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Event>): Event {
@@ -404,6 +417,7 @@ class Event$Type extends MessageType<Event> {
         message.performersJson = "";
         message.sponsorsJson = "";
         message.feesIncluded = false;
+        message.eventType = "";
         if (value !== undefined)
             reflectionMergePartial<Event>(this, message, value);
         return message;
@@ -463,6 +477,9 @@ class Event$Type extends MessageType<Event> {
                     break;
                 case /* bool fees_included */ 17:
                     message.feesIncluded = reader.bool();
+                    break;
+                case /* string event_type */ 18:
+                    message.eventType = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -527,6 +544,9 @@ class Event$Type extends MessageType<Event> {
         /* bool fees_included = 17; */
         if (message.feesIncluded !== false)
             writer.tag(17, WireType.Varint).bool(message.feesIncluded);
+        /* string event_type = 18; */
+        if (message.eventType !== "")
+            writer.tag(18, WireType.LengthDelimited).string(message.eventType);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -602,7 +622,8 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
             { no: 12, name: "grid_rows", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 13, name: "grid_cols", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 14, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 15, name: "scheduled_publish_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+            { no: 15, name: "scheduled_publish_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 16, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<CreateEventRequest>): CreateEventRequest {
@@ -622,6 +643,7 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         message.gridCols = 0;
         message.venuesId = "";
         message.scheduledPublishAt = "0";
+        message.eventType = "";
         if (value !== undefined)
             reflectionMergePartial<CreateEventRequest>(this, message, value);
         return message;
@@ -675,6 +697,9 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
                     break;
                 case /* int64 scheduled_publish_at */ 15:
                     message.scheduledPublishAt = reader.int64().toString();
+                    break;
+                case /* string event_type */ 16:
+                    message.eventType = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -733,6 +758,9 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         /* int64 scheduled_publish_at = 15; */
         if (message.scheduledPublishAt !== "0")
             writer.tag(15, WireType.Varint).int64(message.scheduledPublishAt);
+        /* string event_type = 16; */
+        if (message.eventType !== "")
+            writer.tag(16, WireType.LengthDelimited).string(message.eventType);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -803,7 +831,8 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
             { no: 7, name: "image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 8, name: "is_featured", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 9, name: "max_capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 10, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 10, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 11, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<UpdateEventRequest>): UpdateEventRequest {
@@ -818,6 +847,7 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         message.isFeatured = false;
         message.maxCapacity = 0;
         message.venuesId = "";
+        message.eventType = "";
         if (value !== undefined)
             reflectionMergePartial<UpdateEventRequest>(this, message, value);
         return message;
@@ -856,6 +886,9 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
                     break;
                 case /* string venues_id */ 10:
                     message.venuesId = reader.string();
+                    break;
+                case /* string event_type */ 11:
+                    message.eventType = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -899,6 +932,9 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         /* string venues_id = 10; */
         if (message.venuesId !== "")
             writer.tag(10, WireType.LengthDelimited).string(message.venuesId);
+        /* string event_type = 11; */
+        if (message.eventType !== "")
+            writer.tag(11, WireType.LengthDelimited).string(message.eventType);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

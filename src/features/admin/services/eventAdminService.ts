@@ -14,6 +14,7 @@ export interface EventDraft {
   endDate: string;
   maxCapacity: number;
   layoutMode: string;
+  eventType: string;
   venuesId: string;
   gridRows: number;
   gridCols: number;
@@ -33,6 +34,7 @@ export async function createEvent(draft: EventDraft): Promise<string> {
       imagePath: draft.imagePath,
       isFeatured: false,
       layoutMode: draft.layoutMode,
+      eventType: draft.eventType,
       maxCapacity: draft.maxCapacity,
       gridRows: draft.gridRows,
       gridCols: draft.gridCols,
@@ -56,6 +58,7 @@ export async function updateEvent(eventsId: string, draft: EventDraft): Promise<
       isFeatured: false,
       maxCapacity: draft.maxCapacity,
       venuesId: draft.venuesId,
+      eventType: draft.eventType,
     }),
   );
 }

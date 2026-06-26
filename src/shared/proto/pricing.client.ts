@@ -64,6 +64,10 @@ export interface IPricingServiceClient {
      */
     listPriceRules(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListPriceRulesResponse>;
     /**
+     * @generated from protobuf rpc: ListEventPriceRules(svyne.common.UuidValue) returns (svyne.pricing.ListPriceRulesResponse);
+     */
+    listEventPriceRules(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListPriceRulesResponse>;
+    /**
      * @generated from protobuf rpc: CalculatePrice(svyne.pricing.CalculatePriceRequest) returns (svyne.pricing.PriceBreakdown);
      */
     calculatePrice(input: CalculatePriceRequest, options?: RpcOptions): UnaryCall<CalculatePriceRequest, PriceBreakdown>;
@@ -148,17 +152,24 @@ export class PricingServiceClient implements IPricingServiceClient, ServiceInfo 
         return stackIntercept<UuidValue, ListPriceRulesResponse>("unary", this._transport, method, opt, input);
     }
     /**
+     * @generated from protobuf rpc: ListEventPriceRules(svyne.common.UuidValue) returns (svyne.pricing.ListPriceRulesResponse);
+     */
+    listEventPriceRules(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListPriceRulesResponse> {
+        const method = this.methods[9], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, ListPriceRulesResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: CalculatePrice(svyne.pricing.CalculatePriceRequest) returns (svyne.pricing.PriceBreakdown);
      */
     calculatePrice(input: CalculatePriceRequest, options?: RpcOptions): UnaryCall<CalculatePriceRequest, PriceBreakdown> {
-        const method = this.methods[9], opt = this._transport.mergeOptions(options);
+        const method = this.methods[10], opt = this._transport.mergeOptions(options);
         return stackIntercept<CalculatePriceRequest, PriceBreakdown>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SetTenantDefaultFeeFormula(svyne.pricing.SetTenantDefaultFeeFormulaRequest) returns (svyne.common.AckResponse);
      */
     setTenantDefaultFeeFormula(input: SetTenantDefaultFeeFormulaRequest, options?: RpcOptions): UnaryCall<SetTenantDefaultFeeFormulaRequest, AckResponse> {
-        const method = this.methods[10], opt = this._transport.mergeOptions(options);
+        const method = this.methods[11], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetTenantDefaultFeeFormulaRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

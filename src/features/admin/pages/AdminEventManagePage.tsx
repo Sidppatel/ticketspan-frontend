@@ -114,7 +114,7 @@ export function AdminEventManagePage() {
       {event.data ? <EditSection event={event.data} onSaved={event.reload} /> : null}
 
       <PricingManager eventsId={eventsId} />
-      <FloorPlanPanel eventsId={eventsId} />
+      {event.data && event.data.eventType !== 'Open' ? <FloorPlanPanel eventsId={eventsId} /> : null}
 
       {stats.data ? (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -125,6 +125,7 @@ export function AdminEventManagePage() {
         </div>
       ) : null}
 
+      {event.data && event.data.eventType !== 'Table' ? (
       <Card>
         <CardHeader>
           <CardTitle>Ticket types</CardTitle>
@@ -175,7 +176,9 @@ export function AdminEventManagePage() {
           </div>
         </CardContent>
       </Card>
+      ) : null}
 
+      {event.data && event.data.eventType !== 'Open' ? (
       <Card>
         <CardHeader>
           <CardTitle>Tables</CardTitle>
@@ -280,6 +283,7 @@ export function AdminEventManagePage() {
           </div>
         </CardContent>
       </Card>
+      ) : null}
 
       <Card>
         <CardHeader>
@@ -321,6 +325,7 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
   const [description, setDescription] = useState(event.description);
   const [category, setCategory] = useState(event.category);
   const [capacity, setCapacity] = useState(event.maxCapacity);
+  const [eventType, setEventType] = useState(event.eventType || 'Open');
   const [imagePath, setImagePath] = useState(event.imagePath);
   const [feesIncluded, setFeesIncluded] = useState(event.feesIncluded);
   const [saving, setSaving] = useState(false);
@@ -349,7 +354,9 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
         startDate: event.startDate,
         endDate: event.endDate,
         maxCapacity: capacity,
-        layoutMode: event.layoutMode,
+        // Open has no floor plan; Table/Both need the grid layout.
+        layoutMode: eventType === 'Open' ? 'Open' : 'Grid',
+        eventType,
         venuesId: event.venuesId,
         gridRows: 0,
         gridCols: 0,
@@ -380,6 +387,18 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
         <div className="space-y-1">
           <Label>Max capacity</Label>
           <Input type="number" value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} />
+        </div>
+        <div className="space-y-1">
+          <Label>Event type</Label>
+          <select
+            className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            value={eventType}
+            onChange={(e) => setEventType(e.target.value)}
+          >
+            <option value="Open">Open seating (ticket tiers)</option>
+            <option value="Table">Table based (floor plan)</option>
+            <option value="Both">Both (tiers + tables)</option>
+          </select>
         </div>
         <div className="space-y-1">
           <Label>Image</Label>

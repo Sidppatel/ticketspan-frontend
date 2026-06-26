@@ -17,8 +17,8 @@ export function AdminEventWizardPage() {
   const [description, setDescription] = useState('');
   const [categories, setCategories] = useState<EnumOption[]>([]);
   const [category, setCategory] = useState('');
-  const [layouts, setLayouts] = useState<EnumOption[]>([]);
-  const [layoutMode, setLayoutMode] = useState('');
+  const [eventTypes, setEventTypes] = useState<EnumOption[]>([]);
+  const [eventType, setEventType] = useState('Open');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [capacity, setCapacity] = useState(100);
@@ -44,11 +44,11 @@ export function AdminEventWizardPage() {
         }
       })
       .catch((caught) => setError(rpcErrorMessage(caught)));
-    listEnums('LayoutMode')
+    listEnums('EventType')
       .then((loaded) => {
-        setLayouts(loaded);
+        setEventTypes(loaded);
         if (loaded.length > 0) {
-          setLayoutMode(loaded[0].value);
+          setEventType(loaded[0].value);
         }
       })
       .catch((caught) => setError(rpcErrorMessage(caught)));
@@ -70,7 +70,9 @@ export function AdminEventWizardPage() {
       startDate: toEpochString(start),
       endDate: toEpochString(end),
       maxCapacity: capacity,
-      layoutMode,
+      // Open seating has no floor plan; Table/Both need the grid layout.
+      layoutMode: eventType === 'Open' ? 'Open' : 'Grid',
+      eventType,
       venuesId,
       gridRows: 0,
       gridCols: 0,
@@ -108,15 +110,19 @@ export function AdminEventWizardPage() {
           </select>
         </div>
         <div className="space-y-1">
-          <Label>Layout</Label>
+          <Label>Event type</Label>
           <select
             className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            value={layoutMode}
-            onChange={(e) => setLayoutMode(e.target.value)}
+            value={eventType}
+            onChange={(e) => setEventType(e.target.value)}
           >
-            {layouts.map((option) => (
+            {eventTypes.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.value === 'Grid' ? 'Table based' : option.value === 'Open' ? 'Open seating' : option.value}
+                {option.value === 'Open'
+                  ? 'Open seating (ticket tiers)'
+                  : option.value === 'Table'
+                    ? 'Table based (floor plan)'
+                    : 'Both (tiers + tables)'}
               </option>
             ))}
           </select>
