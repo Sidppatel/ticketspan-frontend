@@ -58,7 +58,12 @@ export async function deletePrice(pricesId: string): Promise<void> {
 }
 
 export async function createPriceRule(input: PriceRuleInput): Promise<string> {
-  const res = await callRpc(() => pricingClient.createPriceRule(input));
+  // Proto renamed prices_id → owner_id + scope. This service only creates
+  // per-price rules, so owner_id = pricesId and scope = 'Price'.
+  const { pricesId, ...rest } = input;
+  const res = await callRpc(() =>
+    pricingClient.createPriceRule({ ...rest, ownerId: pricesId, scope: 'Price' }),
+  );
   return res.value;
 }
 

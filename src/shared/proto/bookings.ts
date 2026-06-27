@@ -60,6 +60,85 @@ export interface Booking {
      * @generated from protobuf field: int32 seats_reserved = 10;
      */
     seatsReserved: number;
+    /**
+     * Cart lines (empty for single-line legacy bookings).
+     *
+     * @generated from protobuf field: repeated svyne.booking.BookingLine lines = 11;
+     */
+    lines: BookingLine[];
+}
+/**
+ * One line of a multi-item booking, for display on checkout / booking detail.
+ *
+ * @generated from protobuf message svyne.booking.BookingLine
+ */
+export interface BookingLine {
+    /**
+     * @generated from protobuf field: string booking_lines_id = 1;
+     */
+    bookingLinesId: string;
+    /**
+     * @generated from protobuf field: string kind = 2;
+     */
+    kind: string; // Ticket | Table
+    /**
+     * @generated from protobuf field: string label = 3;
+     */
+    label: string; // tier label or table label
+    /**
+     * @generated from protobuf field: string event_ticket_types_id = 4;
+     */
+    eventTicketTypesId: string;
+    /**
+     * @generated from protobuf field: string tables_id = 5;
+     */
+    tablesId: string;
+    /**
+     * @generated from protobuf field: int32 seats = 6;
+     */
+    seats: number;
+    /**
+     * @generated from protobuf field: int32 subtotal_cents = 7;
+     */
+    subtotalCents: number;
+    /**
+     * @generated from protobuf field: int32 fee_cents = 8;
+     */
+    feeCents: number;
+    /**
+     * @generated from protobuf field: int32 total_cents = 9;
+     */
+    totalCents: number;
+}
+/**
+ * @generated from protobuf message svyne.booking.CreateMultiBookingRequest
+ */
+export interface CreateMultiBookingRequest {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: repeated svyne.booking.BookingLineInput lines = 2;
+     */
+    lines: BookingLineInput[];
+}
+/**
+ * @generated from protobuf message svyne.booking.BookingLineInput
+ */
+export interface BookingLineInput {
+    /**
+     * @generated from protobuf field: string kind = 1;
+     */
+    kind: string; // Ticket | Table
+    /**
+     * @generated from protobuf field: string ref_id = 2;
+     */
+    refId: string; // event_ticket_types_id (Ticket) or tables_id (Table)
+    /**
+     * @generated from protobuf field: int32 seats = 3;
+     */
+    seats: number; // ticket quantity; ignored for tables (= capacity)
 }
 /**
  * @generated from protobuf message svyne.booking.CreateBookingRequest
@@ -423,7 +502,8 @@ class Booking$Type extends MessageType<Booking> {
             { no: 7, name: "subtotal_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 8, name: "fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 9, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 10, name: "seats_reserved", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 10, name: "seats_reserved", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 11, name: "lines", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => BookingLine }
         ]);
     }
     create(value?: PartialMessage<Booking>): Booking {
@@ -438,6 +518,7 @@ class Booking$Type extends MessageType<Booking> {
         message.feeCents = 0;
         message.totalCents = 0;
         message.seatsReserved = 0;
+        message.lines = [];
         if (value !== undefined)
             reflectionMergePartial<Booking>(this, message, value);
         return message;
@@ -476,6 +557,9 @@ class Booking$Type extends MessageType<Booking> {
                     break;
                 case /* int32 seats_reserved */ 10:
                     message.seatsReserved = reader.int32();
+                    break;
+                case /* repeated svyne.booking.BookingLine lines */ 11:
+                    message.lines.push(BookingLine.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -519,6 +603,9 @@ class Booking$Type extends MessageType<Booking> {
         /* int32 seats_reserved = 10; */
         if (message.seatsReserved !== 0)
             writer.tag(10, WireType.Varint).int32(message.seatsReserved);
+        /* repeated svyne.booking.BookingLine lines = 11; */
+        for (let i = 0; i < message.lines.length; i++)
+            BookingLine.internalBinaryWrite(message.lines[i], writer.tag(11, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -529,6 +616,235 @@ class Booking$Type extends MessageType<Booking> {
  * @generated MessageType for protobuf message svyne.booking.Booking
  */
 export const Booking = new Booking$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class BookingLine$Type extends MessageType<BookingLine> {
+    constructor() {
+        super("svyne.booking.BookingLine", [
+            { no: 1, name: "booking_lines_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "kind", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "label", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "event_ticket_types_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "tables_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "seats", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 7, name: "subtotal_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 8, name: "fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 9, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<BookingLine>): BookingLine {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.bookingLinesId = "";
+        message.kind = "";
+        message.label = "";
+        message.eventTicketTypesId = "";
+        message.tablesId = "";
+        message.seats = 0;
+        message.subtotalCents = 0;
+        message.feeCents = 0;
+        message.totalCents = 0;
+        if (value !== undefined)
+            reflectionMergePartial<BookingLine>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: BookingLine): BookingLine {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string booking_lines_id */ 1:
+                    message.bookingLinesId = reader.string();
+                    break;
+                case /* string kind */ 2:
+                    message.kind = reader.string();
+                    break;
+                case /* string label */ 3:
+                    message.label = reader.string();
+                    break;
+                case /* string event_ticket_types_id */ 4:
+                    message.eventTicketTypesId = reader.string();
+                    break;
+                case /* string tables_id */ 5:
+                    message.tablesId = reader.string();
+                    break;
+                case /* int32 seats */ 6:
+                    message.seats = reader.int32();
+                    break;
+                case /* int32 subtotal_cents */ 7:
+                    message.subtotalCents = reader.int32();
+                    break;
+                case /* int32 fee_cents */ 8:
+                    message.feeCents = reader.int32();
+                    break;
+                case /* int32 total_cents */ 9:
+                    message.totalCents = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: BookingLine, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string booking_lines_id = 1; */
+        if (message.bookingLinesId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.bookingLinesId);
+        /* string kind = 2; */
+        if (message.kind !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.kind);
+        /* string label = 3; */
+        if (message.label !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.label);
+        /* string event_ticket_types_id = 4; */
+        if (message.eventTicketTypesId !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.eventTicketTypesId);
+        /* string tables_id = 5; */
+        if (message.tablesId !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.tablesId);
+        /* int32 seats = 6; */
+        if (message.seats !== 0)
+            writer.tag(6, WireType.Varint).int32(message.seats);
+        /* int32 subtotal_cents = 7; */
+        if (message.subtotalCents !== 0)
+            writer.tag(7, WireType.Varint).int32(message.subtotalCents);
+        /* int32 fee_cents = 8; */
+        if (message.feeCents !== 0)
+            writer.tag(8, WireType.Varint).int32(message.feeCents);
+        /* int32 total_cents = 9; */
+        if (message.totalCents !== 0)
+            writer.tag(9, WireType.Varint).int32(message.totalCents);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.booking.BookingLine
+ */
+export const BookingLine = new BookingLine$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CreateMultiBookingRequest$Type extends MessageType<CreateMultiBookingRequest> {
+    constructor() {
+        super("svyne.booking.CreateMultiBookingRequest", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "lines", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => BookingLineInput }
+        ]);
+    }
+    create(value?: PartialMessage<CreateMultiBookingRequest>): CreateMultiBookingRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.lines = [];
+        if (value !== undefined)
+            reflectionMergePartial<CreateMultiBookingRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateMultiBookingRequest): CreateMultiBookingRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* repeated svyne.booking.BookingLineInput lines */ 2:
+                    message.lines.push(BookingLineInput.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: CreateMultiBookingRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* repeated svyne.booking.BookingLineInput lines = 2; */
+        for (let i = 0; i < message.lines.length; i++)
+            BookingLineInput.internalBinaryWrite(message.lines[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.booking.CreateMultiBookingRequest
+ */
+export const CreateMultiBookingRequest = new CreateMultiBookingRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class BookingLineInput$Type extends MessageType<BookingLineInput> {
+    constructor() {
+        super("svyne.booking.BookingLineInput", [
+            { no: 1, name: "kind", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "ref_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "seats", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<BookingLineInput>): BookingLineInput {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.kind = "";
+        message.refId = "";
+        message.seats = 0;
+        if (value !== undefined)
+            reflectionMergePartial<BookingLineInput>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: BookingLineInput): BookingLineInput {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string kind */ 1:
+                    message.kind = reader.string();
+                    break;
+                case /* string ref_id */ 2:
+                    message.refId = reader.string();
+                    break;
+                case /* int32 seats */ 3:
+                    message.seats = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: BookingLineInput, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string kind = 1; */
+        if (message.kind !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.kind);
+        /* string ref_id = 2; */
+        if (message.refId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.refId);
+        /* int32 seats = 3; */
+        if (message.seats !== 0)
+            writer.tag(3, WireType.Varint).int32(message.seats);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.booking.BookingLineInput
+ */
+export const BookingLineInput = new BookingLineInput$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CreateBookingRequest$Type extends MessageType<CreateBookingRequest> {
     constructor() {
@@ -1771,6 +2087,7 @@ export const BookingService = new ServiceType("svyne.booking.BookingService", [
     { name: "ListEventTicketTypes", options: {}, I: UuidValue, O: ListEventTicketTypesResponse },
     { name: "CreateBooking", options: {}, I: CreateBookingRequest, O: CreateBookingResponse },
     { name: "ReserveOpenCapacity", options: {}, I: ReserveOpenCapacityRequest, O: CreateBookingResponse },
+    { name: "CreateMultiBooking", options: {}, I: CreateMultiBookingRequest, O: CreateBookingResponse },
     { name: "CreatePaymentIntent", options: {}, I: PaymentIntentRequest, O: PaymentIntentResponse },
     { name: "GetPaymentStatus", options: {}, I: UuidValue, O: PaymentStatusResponse },
     { name: "ConfirmBooking", options: {}, I: ConfirmBookingRequest, O: AckResponse },

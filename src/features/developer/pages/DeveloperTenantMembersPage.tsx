@@ -9,8 +9,11 @@ import {
   getTenantStripeProfile,
   updateTenantStripeProfile,
 } from '@/features/developer/services/developerService';
+import { listFeeFormulas, previewFee, type FeeFormula } from '@/features/developer/services/developerFeeService';
+import { setTenantDefaultFeeFormula } from '@/features/admin/services/pricingService';
 import { roleLabel } from '@/shared/roles';
 import { rpcErrorMessage } from '@/shared/session';
+import { centsToUSD } from '@/shared/lib/format';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
@@ -31,6 +34,8 @@ export function DeveloperTenantMembersPage() {
       <h1 className="text-xl font-semibold">Tenant settings</h1>
 
       <TenantBasicForm tenantsId={tenantsId} />
+
+      <TenantDefaultFeeForm tenantsId={tenantsId} />
 
       {stripe.data ? (
         <Card>
@@ -122,6 +127,78 @@ function TenantBasicForm({ tenantsId }: { tenantsId: string }) {
             {saving ? 'Saving…' : 'Save details'}
           </Button>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TenantDefaultFeeForm({ tenantsId }: { tenantsId: string }) {
+  const [formulas, setFormulas] = useState<FeeFormula[]>([]);
+  const [selected, setSelected] = useState('');
+  const [status, setStatus] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    // Load the formula catalog and the tenant's current default in parallel.
+    Promise.all([listFeeFormulas(), getTenant(tenantsId)])
+      .then(([list, tenant]) => {
+        setFormulas(list);
+        setSelected(tenant.defaultFeeFormulasId);
+      })
+      .catch((e) => setStatus(rpcErrorMessage(e)));
+  }, [tenantsId]);
+
+  async function save() {
+    if (!selected) {
+      setStatus('Pick a formula first.');
+      return;
+    }
+    setSaving(true);
+    setStatus(null);
+    try {
+      await setTenantDefaultFeeFormula(tenantsId, selected);
+      setStatus('Default fee saved — auto-applies to every new event price.');
+    } catch (e) {
+      setStatus(rpcErrorMessage(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const active = formulas.filter((f) => f.isActive || f.feeFormulasId === selected);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Default fee formula</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-sm text-gray-600">
+          Auto-applied to every new ticket type and table this tenant creates. Developers can still
+          override per event or per price.
+        </p>
+        <div className="space-y-1">
+          <Label htmlFor="default-fee">Formula</Label>
+          <select
+            id="default-fee"
+            className="h-9 w-full rounded-md border border-gray-300 px-2 text-sm"
+            value={selected}
+            onChange={(e) => setSelected(e.target.value)}
+          >
+            <option value="">— none —</option>
+            {active.map((f) => (
+              <option key={f.feeFormulasId} value={f.feeFormulasId}>
+                {f.name} ({(f.percentBps / 100).toFixed(2)}% + {centsToUSD(f.flatCents)}
+                {' → '}on {centsToUSD(5000)} = {centsToUSD(previewFee(5000, f))})
+                {f.isActive ? '' : ' · inactive'}
+              </option>
+            ))}
+          </select>
+        </div>
+        {status ? <p className="text-sm text-gray-600">{status}</p> : null}
+        <Button onClick={save} disabled={saving}>
+          {saving ? 'Saving…' : 'Save default fee'}
+        </Button>
       </CardContent>
     </Card>
   );

@@ -38,10 +38,25 @@ export function BookingDetailPage() {
           <CardHeader>
             <CardTitle>Booking #{booking.data.bookingNumber}</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-gray-600">
+          <CardContent className="space-y-2 text-sm text-gray-600">
             <p>Status: {booking.data.status}</p>
-            <p>Total: {centsToUSD(booking.data.totalCents)}</p>
-            <p>Seats reserved: {booking.data.seatsReserved}</p>
+            {booking.data.lines.length > 0 ? (
+              <div className="divide-y rounded-md border">
+                {booking.data.lines.map((l) => (
+                  <div key={l.bookingLinesId} className="flex items-center justify-between px-3 py-1.5">
+                    <span>
+                      <span className="rounded bg-gray-100 px-1 text-xs uppercase text-gray-500">{l.kind}</span>{' '}
+                      <span className="font-medium text-gray-700">{l.label}</span>
+                      <span className="text-gray-500"> · {l.seats} {l.seats === 1 ? 'seat' : 'seats'}</span>
+                    </span>
+                    <span className="font-medium text-gray-700">{centsToUSD(l.totalCents)}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Seats reserved: {booking.data.seatsReserved}</p>
+            )}
+            <p className="font-medium text-gray-700">Total: {centsToUSD(booking.data.totalCents)}</p>
           </CardContent>
         </Card>
       ) : null}

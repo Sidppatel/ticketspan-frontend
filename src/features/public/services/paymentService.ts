@@ -63,6 +63,23 @@ export async function reserveTable(input: ReserveTableInput): Promise<ReserveRes
   return { bookingsId: response.bookingsId, bookingNumber: response.bookingNumber };
 }
 
+export interface CartLineInput {
+  kind: 'Ticket' | 'Table';
+  refId: string; // event_ticket_types_id (Ticket) or tables_id (Table)
+  seats: number; // ticket quantity; ignored for tables (server uses capacity)
+}
+
+// Cart checkout: one booking aggregating many ticket/table lines, one payment.
+export async function createMultiBooking(eventsId: string, lines: CartLineInput[]): Promise<ReserveResult> {
+  const response = await callRpc(() =>
+    bookingClient.createMultiBooking({
+      eventsId,
+      lines: lines.map((l) => ({ kind: l.kind, refId: l.refId, seats: l.seats })),
+    }),
+  );
+  return { bookingsId: response.bookingsId, bookingNumber: response.bookingNumber };
+}
+
 export async function createPaymentIntent(bookingsId: string): Promise<PaymentIntentResponse> {
   return callRpc(() => bookingClient.createPaymentIntent({ bookingsId }));
 }

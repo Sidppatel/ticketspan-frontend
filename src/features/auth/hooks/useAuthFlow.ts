@@ -11,12 +11,20 @@ import {
 } from '@/features/auth/services/authService';
 import { rpcErrorMessage } from '@/shared/session';
 import { homePathForRole } from '@/shared/roles';
+import { takeReturnTo } from '@/shared/auth/returnTo';
 
 export function useAuthFlow() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  // Prefer a pending return target (e.g. a guest checkout the user was sent
+  // away from); otherwise land on the role's home.
+  const goAfterAuth = useCallback(
+    (role: number) => navigate(takeReturnTo() ?? homePathForRole(role)),
+    [navigate],
+  );
 
   const run = useCallback(async (action: () => Promise<void>) => {
     setLoading(true);
@@ -35,27 +43,27 @@ export function useAuthFlow() {
     (email: string, password: string) =>
       run(async () => {
         const auth = await loginWithPassword(email, password);
-        navigate(homePathForRole(auth.user?.role ?? 0));
+        goAfterAuth(auth.user?.role ?? 0);
       }),
-    [run, navigate],
+    [run, goAfterAuth],
   );
 
   const google = useCallback(
     (googleToken: string) =>
       run(async () => {
         const auth = await loginWithGoogle(googleToken);
-        navigate(homePathForRole(auth.user?.role ?? 0));
+        goAfterAuth(auth.user?.role ?? 0);
       }),
-    [run, navigate],
+    [run, goAfterAuth],
   );
 
   const register = useCallback(
     (input: SignUpInput) =>
       run(async () => {
         const auth = await signUp(input);
-        navigate(homePathForRole(auth.user?.role ?? 0));
+        goAfterAuth(auth.user?.role ?? 0);
       }),
-    [run, navigate],
+    [run, goAfterAuth],
   );
 
   const magicLink = useCallback(

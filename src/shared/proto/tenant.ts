@@ -123,6 +123,13 @@ export interface Tenant {
      * @generated from protobuf field: bool archived = 9;
      */
     archived: boolean;
+    /**
+     * Tenant default service-fee formula. Auto-applied to every new event price;
+     * empty = no default set. Developer-only (set via PricingService).
+     *
+     * @generated from protobuf field: string default_fee_formulas_id = 10;
+     */
+    defaultFeeFormulasId: string;
 }
 /**
  * @generated from protobuf message svyne.tenant.CreateTenantRequest
@@ -510,7 +517,8 @@ class Tenant$Type extends MessageType<Tenant> {
             { no: 6, name: "member_count", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 7, name: "event_count", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 8, name: "total_revenue_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
-            { no: 9, name: "archived", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 9, name: "archived", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 10, name: "default_fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Tenant>): Tenant {
@@ -524,6 +532,7 @@ class Tenant$Type extends MessageType<Tenant> {
         message.eventCount = 0;
         message.totalRevenueCents = "0";
         message.archived = false;
+        message.defaultFeeFormulasId = "";
         if (value !== undefined)
             reflectionMergePartial<Tenant>(this, message, value);
         return message;
@@ -559,6 +568,9 @@ class Tenant$Type extends MessageType<Tenant> {
                     break;
                 case /* bool archived */ 9:
                     message.archived = reader.bool();
+                    break;
+                case /* string default_fee_formulas_id */ 10:
+                    message.defaultFeeFormulasId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -599,6 +611,9 @@ class Tenant$Type extends MessageType<Tenant> {
         /* bool archived = 9; */
         if (message.archived !== false)
             writer.tag(9, WireType.Varint).bool(message.archived);
+        /* string default_fee_formulas_id = 10; */
+        if (message.defaultFeeFormulasId !== "")
+            writer.tag(10, WireType.LengthDelimited).string(message.defaultFeeFormulasId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

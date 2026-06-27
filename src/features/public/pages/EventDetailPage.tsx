@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from '@/shared/hooks/useAsync';
 import {
   getEventBySlug,
@@ -7,21 +7,23 @@ import {
   calculatePrice,
   listEventTableTypes,
 } from '@/features/public/services/publicEventService';
+import { listEventTicketTypes, createMultiBooking } from '@/features/public/services/paymentService';
 import {
-  listEventTicketTypes,
-  reserveOpenCapacity,
-  reserveTable,
-} from '@/features/public/services/paymentService';
+  type CartItem,
+  savePendingCart,
+  takePendingCart,
+  clearPendingCart,
+} from '@/features/public/services/pendingCart';
 import type { EventTicketType } from '@/shared/proto/bookings';
 import type { Table } from '@/shared/proto/booking';
 import { rpcErrorMessage } from '@/shared/session';
+import { useAuth } from '@/shared/auth/useAuth';
+import { setReturnTo } from '@/shared/auth/returnTo';
 import { centsToUSD } from '@/shared/lib/format';
-import { addCents, multiplySeats } from '@/shared/lib/math';
+import { addCents } from '@/shared/lib/math';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-
 
 export function EventDetailPage() {
   const { slug = '' } = useParams();
@@ -47,30 +49,69 @@ export function EventDetailPage() {
           <p className="text-sm text-gray-500">Status: {event.status}</p>
         </CardContent>
       </Card>
-      <BookingPanel eventsId={event.eventsId} layoutMode={event.layoutMode} feesIncluded={event.feesIncluded} />
+      <CartBookingPanel
+        eventsId={event.eventsId}
+        eventType={event.eventType || 'Open'}
+        feesIncluded={event.feesIncluded}
+      />
     </div>
   );
 }
 
-function BookingPanel({
+function CartBookingPanel({
   eventsId,
-  layoutMode,
+  eventType,
   feesIncluded,
 }: {
   eventsId: string;
-  layoutMode: string;
+  eventType: string;
   feesIncluded: boolean;
 }) {
-  const isTableLayout = layoutMode === 'tables' || layoutMode === 'table' || layoutMode === 'Grid';
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+  const showTickets = eventType === 'Open' || eventType === 'Both';
+  const showTables = eventType === 'Table' || eventType === 'Both';
+
+  // Restore a selection stashed before bouncing a guest through login, so they
+  // come back to a pre-filled order without re-picking everything.
+  const [cart, setCart] = useState<CartItem[]>(() => takePendingCart(eventsId));
   const [busy, setBusy] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
 
-  async function goToCheckout(reserve: () => Promise<{ bookingsId: string }>) {
+  const upsert = useCallback((item: CartItem) => {
+    setCart((prev) => {
+      const next = prev.filter((i) => i.key !== item.key);
+      return [...next, item];
+    });
+  }, []);
+  const removeKey = useCallback((key: string) => {
+    setCart((prev) => prev.filter((i) => i.key !== key));
+  }, []);
+  const inCart = useCallback((key: string) => cart.some((i) => i.key === key), [cart]);
+
+  const subtotal = cart.reduce((s, i) => addCents(s, i.subtotal), 0);
+  const fee = cart.reduce((s, i) => addCents(s, i.fee), 0);
+  const total = addCents(subtotal, fee);
+
+  async function checkout() {
+    // Guest: stash the selection + where to return, then send to sign in / up.
+    // They land back here with the cart pre-filled and click through.
+    if (!isAuthenticated) {
+      savePendingCart(eventsId, cart);
+      setReturnTo(location.pathname + location.search);
+      navigate('/login');
+      return;
+    }
+
     setBusy(true);
     setBookingError(null);
     try {
-      const { bookingsId } = await reserve();
+      const { bookingsId } = await createMultiBooking(
+        eventsId,
+        cart.map((i) => ({ kind: i.kind, refId: i.refId, seats: i.kind === 'Ticket' ? i.seats : 0 })),
+      );
+      clearPendingCart(eventsId);
       navigate(`/checkout/${bookingsId}`);
     } catch (caught) {
       setBookingError(rpcErrorMessage(caught));
@@ -79,138 +120,147 @@ function BookingPanel({
     }
   }
 
-  return isTableLayout ? (
-    <TablePanel eventsId={eventsId} busy={busy} error={bookingError} onReserve={goToCheckout} feesIncluded={feesIncluded} />
-  ) : (
-    <OpenCapacityPanel eventsId={eventsId} busy={busy} error={bookingError} onReserve={goToCheckout} feesIncluded={feesIncluded} />
-  );
-}
-
-interface PanelProps {
-  eventsId: string;
-  busy: boolean;
-  error: string | null;
-  onReserve: (reserve: () => Promise<{ bookingsId: string }>) => void;
-  feesIncluded: boolean;
-}
-
-// Renders the price breakdown: a single all-in total when fees are "included",
-// otherwise the itemized price + fee = total.
-function PriceBreakdownRows({
-  priceLabel,
-  subtotal,
-  fee,
-  total,
-  feesIncluded,
-}: {
-  priceLabel: string;
-  subtotal: number;
-  fee: number;
-  total: number;
-  feesIncluded: boolean;
-}) {
-  if (feesIncluded) {
-    return (
-      <div className="flex justify-between text-sm font-medium text-gray-700">
-        <span>Total</span>
-        <span>{centsToUSD(total)}</span>
-      </div>
-    );
-  }
   return (
-    <div className="space-y-0.5 text-sm text-gray-700">
-      <div className="flex justify-between"><span>{priceLabel}</span><span>{centsToUSD(subtotal)}</span></div>
-      <div className="flex justify-between"><span>Service fee</span><span>{centsToUSD(fee)}</span></div>
-      <div className="flex justify-between font-medium"><span>Total</span><span>{centsToUSD(total)}</span></div>
+    <div className="space-y-4">
+      {showTickets ? (
+        <TicketTierSection eventsId={eventsId} feesIncluded={feesIncluded} cart={cart} upsert={upsert} removeKey={removeKey} />
+      ) : null}
+      {showTables ? (
+        <TableSection eventsId={eventsId} feesIncluded={feesIncluded} inCart={inCart} upsert={upsert} removeKey={removeKey} />
+      ) : null}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Your order</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {cart.length === 0 ? (
+            <p className="text-sm text-gray-500">No items yet. Add tickets or a table above.</p>
+          ) : (
+            <div className="divide-y">
+              {cart.map((i) => (
+                <div key={i.key} className="flex items-center justify-between py-2 text-sm">
+                  <span>
+                    <span className="rounded bg-gray-100 px-1 text-xs uppercase text-gray-500">{i.kind}</span>{' '}
+                    <span className="font-medium">{i.label}</span>
+                    <span className="text-gray-500"> · {i.seats} {i.seats === 1 ? 'seat' : 'seats'}</span>
+                  </span>
+                  <span className="flex items-center gap-3">
+                    <span className="font-medium">
+                      {centsToUSD(feesIncluded ? addCents(i.subtotal, i.fee) : i.subtotal)}
+                    </span>
+                    <button className="text-red-600" onClick={() => removeKey(i.key)} type="button">
+                      Remove
+                    </button>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {cart.length > 0 ? (
+            feesIncluded ? (
+              <div className="flex justify-between text-sm font-medium">
+                <span>Total</span>
+                <span>{centsToUSD(total)}</span>
+              </div>
+            ) : (
+              <div className="space-y-0.5 text-sm text-gray-700">
+                <div className="flex justify-between"><span>Subtotal</span><span>{centsToUSD(subtotal)}</span></div>
+                <div className="flex justify-between"><span>Service fee</span><span>{centsToUSD(fee)}</span></div>
+                <div className="flex justify-between font-medium"><span>Total</span><span>{centsToUSD(total)}</span></div>
+              </div>
+            )
+          ) : null}
+
+          {bookingError ? <p className="text-sm text-red-600">{bookingError}</p> : null}
+          <Button disabled={busy || cart.length === 0 || total <= 0} onClick={checkout}>
+            {busy ? 'Reserving…' : 'Continue to payment'}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
-function OpenCapacityPanel({ eventsId, busy, error, onReserve, feesIncluded }: PanelProps) {
+function TicketTierSection({
+  eventsId,
+  feesIncluded,
+  cart,
+  upsert,
+  removeKey,
+}: {
+  eventsId: string;
+  feesIncluded: boolean;
+  cart: CartItem[];
+  upsert: (i: CartItem) => void;
+  removeKey: (key: string) => void;
+}) {
   const loader = useCallback(() => listEventTicketTypes(eventsId), [eventsId]);
   const { data: ticketTypes, loading } = useAsync(loader);
-  const [selectedId, setSelectedId] = useState('');
-  const [seats, setSeats] = useState(1);
 
-  const selected = useMemo<EventTicketType | undefined>(
-    () => ticketTypes?.find((t) => t.eventTicketTypesId === selectedId),
-    [ticketTypes, selectedId],
-  );
-  const subtotal = multiplySeats(selected?.priceCents ?? 0, seats);
-  const fee = multiplySeats(selected?.platformFeeCents ?? 0, seats);
-  const total = addCents(subtotal, fee);
+  function seatsFor(refId: string): number {
+    return cart.find((i) => i.key === `Ticket:${refId}`)?.seats ?? 0;
+  }
+  function setSeats(tt: EventTicketType, seats: number) {
+    const key = `Ticket:${tt.eventTicketTypesId}`;
+    if (seats <= 0) {
+      removeKey(key);
+      return;
+    }
+    upsert({
+      key,
+      kind: 'Ticket',
+      refId: tt.eventTicketTypesId,
+      label: tt.label,
+      seats,
+      // eslint-disable-next-line
+      subtotal: tt.priceCents * seats,
+      // eslint-disable-next-line
+      fee: tt.platformFeeCents * seats,
+    });
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reserve tickets</CardTitle>
+        <CardTitle>Tickets</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2">
         {loading ? <p className="text-sm text-gray-500">Loading ticket types…</p> : null}
         {!loading && (ticketTypes ?? []).length === 0 ? (
           <p className="text-sm text-gray-500">No tickets on sale yet.</p>
         ) : null}
-
-        <div className="space-y-2">
-          {(ticketTypes ?? []).map((tt) => (
-            <button
-              key={tt.eventTicketTypesId}
-              type="button"
-              onClick={() => setSelectedId(tt.eventTicketTypesId)}
-              className={`flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm ${
-                selectedId === tt.eventTicketTypesId ? 'border-black bg-gray-50' : 'border-gray-200'
-              }`}
-            >
+        {(ticketTypes ?? []).map((tt) => {
+          const qty = seatsFor(tt.eventTicketTypesId);
+          const max = tt.maxQuantity && tt.maxQuantity > 0 ? tt.maxQuantity : undefined;
+          return (
+            <div key={tt.eventTicketTypesId} className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
               <span>
                 <span className="font-medium">{tt.label}</span>
                 {tt.description ? <span className="block text-xs text-gray-500">{tt.description}</span> : null}
-              </span>
-              <span className="text-right">
-                <span className="block font-medium">
-                  {centsToUSD(feesIncluded ? addCents(tt.priceCents, tt.platformFeeCents) : tt.priceCents)}
+                <span className="block text-xs text-gray-500">
+                  {centsToUSD(feesIncluded ? addCents(tt.priceCents, tt.platformFeeCents) : tt.priceCents)} each
+                  {!feesIncluded && tt.platformFeeCents > 0 ? ` + ${centsToUSD(tt.platformFeeCents)} fee` : ''}
                 </span>
-                {!feesIncluded && tt.platformFeeCents > 0 ? (
-                  <span className="block text-xs text-gray-500">+ {centsToUSD(tt.platformFeeCents)} service fee</span>
-                ) : null}
               </span>
-            </button>
-          ))}
-        </div>
-
-        <div className="space-y-1">
-          <Label htmlFor="seats">Quantity</Label>
-          <Input
-            id="seats"
-            type="number"
-            min={1}
-            max={selected?.maxQuantity && selected.maxQuantity > 0 ? selected.maxQuantity : undefined}
-            value={seats}
-            onChange={(e) => setSeats(Math.max(1, Number(e.target.value)))}
-          />
-        </div>
-
-        {selected ? (
-          <PriceBreakdownRows priceLabel="Ticket price" subtotal={subtotal} fee={fee} total={total} feesIncluded={feesIncluded} />
-        ) : null}
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-
-        <Button
-          disabled={busy || !selected || total <= 0}
-          onClick={() =>
-            onReserve(() =>
-              reserveOpenCapacity({
-                eventsId,
-                seats,
-                eventTicketTypesId: selectedId,
-                subtotalCents: subtotal,
-                feeCents: fee,
-                totalCents: total,
-              }),
-            )
-          }
-        >
-          {busy ? 'Reserving…' : 'Continue to payment'}
-        </Button>
+              <span className="flex items-center gap-2">
+                <Button type="button" size="sm" variant="outline" disabled={qty <= 0}
+                  onClick={() => setSeats(tt, qty - 1)}>−</Button>
+                <Input
+                  type="number"
+                  min={0}
+                  max={max}
+                  className="w-16 text-center"
+                  value={qty}
+                  onChange={(e) => setSeats(tt, Math.max(0, Math.min(max ?? Infinity, Number(e.target.value))))}
+                />
+                <Button type="button" size="sm" variant="outline" disabled={max !== undefined && qty >= max}
+                  onClick={() => setSeats(tt, qty + 1)}>+</Button>
+              </span>
+            </div>
+          );
+        })}
       </CardContent>
     </Card>
   );
@@ -229,18 +279,28 @@ function shapeRadius(shape: string): string {
   }
 }
 
-function TablePanel({ eventsId, busy, error, onReserve, feesIncluded }: PanelProps) {
+function TableSection({
+  eventsId,
+  feesIncluded,
+  inCart,
+  upsert,
+  removeKey,
+}: {
+  eventsId: string;
+  feesIncluded: boolean;
+  inCart: (key: string) => boolean;
+  upsert: (i: CartItem) => void;
+  removeKey: (key: string) => void;
+}) {
   const layoutLoader = useCallback(() => getEventLayout(eventsId), [eventsId]);
   const { data: layout, loading } = useAsync(layoutLoader);
   const typesLoader = useCallback(() => listEventTableTypes(eventsId), [eventsId]);
   const { data: types } = useAsync(typesLoader);
-  const typeById = useMemo(
-    () => new Map((types ?? []).map((t) => [t.eventTablesId, t])),
-    [types],
-  );
+  const typeById = useMemo(() => new Map((types ?? []).map((t) => [t.eventTablesId, t])), [types]);
 
-  // Grid dimensions: use the saved grid, but fall back to the bounds implied by
-  // placed tables/objects so the lattice always shows.
+  const [pending, setPending] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
   const grid = useMemo(() => {
     let rows = layout?.gridRows ?? 0;
     let cols = layout?.gridCols ?? 0;
@@ -255,7 +315,6 @@ function TablePanel({ eventsId, busy, error, onReserve, feesIncluded }: PanelPro
     return { rows, cols };
   }, [layout]);
 
-  // Cells covered by a table footprint or an object (skip drawing empty lattice there).
   const covered = useMemo(() => {
     const s = new Set<string>();
     for (const t of layout?.tables ?? [])
@@ -265,39 +324,48 @@ function TablePanel({ eventsId, busy, error, onReserve, feesIncluded }: PanelPro
     return s;
   }, [layout]);
 
-  const [tableId, setTableId] = useState('');
+  function capacityOf(table: Table): number {
+    return table.capacityOverride || typeById.get(table.eventTablesId)?.capacity || 1;
+  }
 
-  const [seats, setSeats] = useState(1);
-  const selected = useMemo<Table | undefined>(
-    () => layout?.tables.find((t) => t.tablesId === tableId),
-    [layout, tableId],
-  );
-
-  const priceLoader = useCallback(async () => {
-    if (!selected?.pricesId) return null;
-    try {
-      const b = await calculatePrice(selected.pricesId, seats);
-      return { subtotal: b.subtotalCents, fee: b.feeCents, total: b.totalCents };
-    } catch {
-      return null;
+  // Toggle a table in/out of the cart. Adding resolves the authoritative price
+  // (per-attendee / all-inclusive) from the server at the table's full capacity.
+  async function toggleTable(table: Table) {
+    const key = `Table:${table.tablesId}`;
+    if (inCart(key)) {
+      removeKey(key);
+      return;
     }
-  }, [selected, seats]);
-  const priced = useAsync(priceLoader).data;
-
-  const subtotal = priced?.subtotal ?? selected?.priceCents ?? 0;
-  const fee = priced?.fee ?? selected?.platformFeeCents ?? 0;
-  const total = priced?.total ?? addCents(subtotal, fee);
+    const cap = capacityOf(table);
+    setPending(table.tablesId);
+    setErr(null);
+    try {
+      let subtotal = table.priceCents;
+      let fee = table.platformFeeCents;
+      if (table.pricesId) {
+        const b = await calculatePrice(table.pricesId, cap);
+        subtotal = b.subtotalCents;
+        fee = b.feeCents;
+      }
+      upsert({ key, kind: 'Table', refId: table.tablesId, label: table.label, seats: cap, subtotal, fee });
+    } catch (caught) {
+      setErr(rpcErrorMessage(caught));
+    } finally {
+      setPending(null);
+    }
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Select a table</CardTitle>
+        <CardTitle>Tables</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {loading ? <p className="text-sm text-gray-500">Loading floor plan…</p> : null}
         {!loading && (layout?.tables ?? []).length === 0 ? (
           <p className="text-sm text-gray-500">No tables published yet.</p>
         ) : null}
+        {err ? <p className="text-sm text-red-600">{err}</p> : null}
 
         {layout && grid.rows > 0 && grid.cols > 0 ? (
           <div className="overflow-auto">
@@ -335,14 +403,14 @@ function TablePanel({ eventsId, busy, error, onReserve, feesIncluded }: PanelPro
                 const fill = table.colorOverride || type?.color || '#4f46e5';
                 const shape = table.shapeOverride || type?.shape || 'Rectangle';
                 const available = table.status === 'Available';
-                const isSel = tableId === table.tablesId;
+                const sel = inCart(`Table:${table.tablesId}`);
                 return (
                   <button
                     key={table.tablesId}
                     type="button"
-                    disabled={!available}
-                    title={`${table.label} · ${table.status}`}
-                    onClick={() => setTableId(table.tablesId)}
+                    disabled={!available || pending === table.tablesId}
+                    title={`${table.label} · ${table.status} · seats ${capacityOf(table)}`}
+                    onClick={() => toggleTable(table)}
                     style={{
                       gridRow: `${table.gridRow + 1} / span ${table.rowSpan || 1}`,
                       gridColumn: `${table.gridCol + 1} / span ${table.colSpan || 1}`,
@@ -350,7 +418,7 @@ function TablePanel({ eventsId, busy, error, onReserve, feesIncluded }: PanelPro
                     }}
                     className={`flex h-full w-full items-center justify-center border text-[10px] font-medium text-white ${shapeRadius(shape)} ${
                       available ? 'cursor-pointer hover:opacity-90' : 'cursor-not-allowed opacity-60'
-                    } ${isSel ? 'ring-2 ring-black ring-offset-1' : 'border-black/10'}`}
+                    } ${sel ? 'ring-2 ring-black ring-offset-1' : 'border-black/10'}`}
                   >
                     {table.label}
                   </button>
@@ -358,62 +426,30 @@ function TablePanel({ eventsId, busy, error, onReserve, feesIncluded }: PanelPro
               })}
             </div>
             <p className="mt-2 text-xs text-gray-500">
-              Tap an available table to select. Grey = booked/held. Green = entrance/exit/stage.
+              Tap an available table to add it (books the whole table at its capacity). Tap again to remove.
+              Grey = booked/held. Green = entrance/exit/stage.
             </p>
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {(layout?.tables ?? []).map((table) => (
-              <Button
-                key={table.tablesId}
-                size="sm"
-                variant={tableId === table.tablesId ? 'default' : 'outline'}
-                disabled={table.status !== 'Available'}
-                onClick={() => setTableId(table.tablesId)}
-              >
-                {table.label} ·{' '}
-                {centsToUSD(feesIncluded ? addCents(table.priceCents, table.platformFeeCents) : table.priceCents)}
-                {!feesIncluded && table.platformFeeCents > 0 ? ` + ${centsToUSD(table.platformFeeCents)} fee` : ''}
-              </Button>
-            ))}
+            {(layout?.tables ?? []).map((table) => {
+              const sel = inCart(`Table:${table.tablesId}`);
+              return (
+                <Button
+                  key={table.tablesId}
+                  size="sm"
+                  variant={sel ? 'default' : 'outline'}
+                  disabled={table.status !== 'Available' || pending === table.tablesId}
+                  onClick={() => toggleTable(table)}
+                >
+                  {table.label} ·{' '}
+                  {centsToUSD(feesIncluded ? addCents(table.priceCents, table.platformFeeCents) : table.priceCents)}
+                  {' · '}seats {capacityOf(table)}
+                </Button>
+              );
+            })}
           </div>
         )}
-
-        {selected ? (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="table-seats">Attendees</Label>
-              <Input
-                id="table-seats"
-                type="number"
-                min={1}
-                className="w-24"
-                value={seats}
-                onChange={(e) => setSeats(Math.max(1, Number(e.target.value)))}
-              />
-            </div>
-            <PriceBreakdownRows priceLabel="Table price" subtotal={subtotal} fee={fee} total={total} feesIncluded={feesIncluded} />
-          </div>
-        ) : null}
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-
-        <Button
-          disabled={busy || !selected || total <= 0}
-          onClick={() =>
-            onReserve(() =>
-              reserveTable({
-                eventsId,
-                tablesId: tableId,
-                seats,
-                subtotalCents: subtotal,
-                feeCents: fee,
-                totalCents: total,
-              }),
-            )
-          }
-        >
-          {busy ? 'Reserving…' : 'Continue to payment'}
-        </Button>
       </CardContent>
     </Card>
   );
