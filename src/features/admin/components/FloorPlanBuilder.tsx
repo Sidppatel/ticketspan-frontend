@@ -360,7 +360,7 @@ export function FloorPlanBuilder({ eventsId, onTypesChanged }: { eventsId: strin
 
   return (
     <div className="space-y-3">
-      {notice ? <p className="text-sm text-amber-700">{notice}</p> : null}
+      {notice ? <p className="text-sm text-amber-foreground">{notice}</p> : null}
 
       <div className="flex flex-wrap items-end gap-3">
         <Button size="sm" onClick={save} disabled={saving || !dirty}>
@@ -372,20 +372,20 @@ export function FloorPlanBuilder({ eventsId, onTypesChanged }: { eventsId: strin
       <div className="flex flex-wrap gap-2">
         {typeList.map((t: EventTableType) => (
           <span key={t.eventTablesId}
-            className="inline-flex items-center overflow-hidden rounded-md border border-gray-300">
+            className="inline-flex items-center overflow-hidden rounded-md border border-input">
             <button type="button" draggable
               onDragStart={(e) => startPaletteDrag(e, { drag: 'new-table', typeId: t.eventTablesId })}
-              className="cursor-grab px-2 py-1 text-sm hover:bg-gray-100">
+              className="cursor-grab px-2 py-1 text-sm hover:bg-muted">
               {t.label} · {t.defaultWidth}×{t.defaultHeight}px · {centsToUSD(t.priceCents)}
             </button>
             <button type="button" title="Delete table type and all its placed tables"
               onClick={() => deleteType(t.eventTablesId, t.label)}
-              className="border-l border-gray-300 px-2 py-1 text-sm text-red-600 hover:bg-red-50">
+              className="border-l border-input px-2 py-1 text-sm text-destructive hover:bg-destructive/10">
               ×
             </button>
           </span>
         ))}
-        {typeList.length === 0 ? <p className="text-sm text-gray-500">Add table types above to place them.</p> : null}
+        {typeList.length === 0 ? <p className="text-sm text-muted-foreground">Add table types above to place them.</p> : null}
         {OBJECT_TYPES.map((o) => (
           <Button key={o} size="sm" draggable
             onDragStart={(e) => startPaletteDrag(e, { drag: 'new-object', objectType: o })}
@@ -396,7 +396,7 @@ export function FloorPlanBuilder({ eventsId, onTypesChanged }: { eventsId: strin
       </div>
 
       {/* Canvas */}
-      <div className="overflow-auto rounded-md border bg-gray-100">
+      <div className="overflow-auto rounded-md border bg-muted">
         <div
           ref={canvasRef}
           onDragOver={(e) => e.preventDefault()}
@@ -434,7 +434,7 @@ export function FloorPlanBuilder({ eventsId, onTypesChanged }: { eventsId: strin
                   <button type="button" title="Delete table"
                     onPointerDown={(e) => e.stopPropagation()}
                     onClick={() => deleteTable(i)}
-                    className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-red-600 text-[11px] leading-none text-white shadow">
+                    className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-destructive text-[11px] leading-none text-white shadow">
                     ×
                   </button>
                 ) : null}
@@ -467,7 +467,7 @@ export function FloorPlanBuilder({ eventsId, onTypesChanged }: { eventsId: strin
                 <button type="button" title="Delete object"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={() => deleteObject(i)}
-                  className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-red-600 text-[11px] leading-none text-white shadow">
+                  className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-destructive text-[11px] leading-none text-white shadow">
                   ×
                 </button>
               ) : null}
@@ -481,7 +481,7 @@ export function FloorPlanBuilder({ eventsId, onTypesChanged }: { eventsId: strin
           ))}
         </div>
       </div>
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-muted-foreground">
         Drag a table type or object from the palette onto the canvas. Drag placed items to move, drag the
         corner handle to resize. Tables can't overlap each other. Click an item to select it, then use × to
         delete. Delete a palette table type (×) to remove it and all its placed tables.{dirty ? ' · Unsaved changes' : ''}

@@ -28,13 +28,13 @@ export function ForgotPasswordPage() {
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
-            {notice ? <p className="text-sm text-green-600">{notice}</p> : null}
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {notice ? <p className="text-sm text-success">{notice}</p> : null}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Sending…' : 'Send reset link'}
             </Button>
           </form>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             <Link to="/login">Back to sign in</Link>
           </div>
         </CardContent>

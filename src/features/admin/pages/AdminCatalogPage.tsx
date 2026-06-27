@@ -71,8 +71,8 @@ function VenuesSection() {
             Add venue
           </Button>
         </div>
-        {loading ? <p className="text-gray-500">Loading…</p> : null}
-        {error ? <p className="text-red-600">{error}</p> : null}
+        {loading ? <p className="text-muted-foreground">Loading…</p> : null}
+        {error ? <p className="text-destructive">{error}</p> : null}
         {(data ?? []).map((venue) => (
           <div key={venue.venuesId} className="border-b py-1 text-sm">
             {venue.name}
@@ -143,8 +143,8 @@ function NamedSection<T extends NamedItem>({
             Add
           </Button>
         </div>
-        {loading ? <p className="text-gray-500">Loading…</p> : null}
-        {error ? <p className="text-red-600">{error}</p> : null}
+        {loading ? <p className="text-muted-foreground">Loading…</p> : null}
+        {error ? <p className="text-destructive">{error}</p> : null}
         {(data ?? []).map((item) => (
           <div key={idOf(item)} className="flex items-center justify-between border-b py-1 text-sm">
             <span>{item.name}</span>

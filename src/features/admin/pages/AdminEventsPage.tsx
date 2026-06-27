@@ -28,17 +28,17 @@ export function AdminEventsPage() {
           <Button size="sm">New event</Button>
         </Link>
       </div>
-      {loading ? <p className="text-gray-500">Loading…</p> : null}
-      {error ? <p className="text-red-600">{error}</p> : null}
+      {loading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {error ? <p className="text-destructive">{error}</p> : null}
       <div className="space-y-2">
         {(data ?? []).map((event) => (
           <Card key={event.eventsId}>
             <CardContent className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <Link to={`/events/${event.eventsId}`} className="font-medium text-indigo-600">
+                <Link to={`/events/${event.eventsId}`} className="font-medium text-primary">
                   {event.title}
                 </Link>
-                <span className="ml-2 text-sm text-gray-500">{event.status}</span>
+                <span className="ml-2 text-sm text-muted-foreground">{event.status}</span>
               </div>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => act(() => changeEventStatus(event.eventsId, 'Published'))}>
@@ -55,7 +55,7 @@ export function AdminEventsPage() {
           </Card>
         ))}
       </div>
-      {!loading && (data ?? []).length === 0 ? <p className="text-gray-500">No events yet.</p> : null}
+      {!loading && (data ?? []).length === 0 ? <p className="text-muted-foreground">No events yet.</p> : null}
     </div>
   );
 }

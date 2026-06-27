@@ -28,7 +28,7 @@ export function DeveloperTenantMembersPage() {
 
   return (
     <div className="space-y-4">
-      <Link to="/" className="text-sm text-indigo-600">
+      <Link to="/" className="text-sm text-primary">
         ← Back to tenants
       </Link>
       <h1 className="text-xl font-semibold">Tenant settings</h1>
@@ -42,7 +42,7 @@ export function DeveloperTenantMembersPage() {
           <CardHeader>
             <CardTitle>Stripe status</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-gray-600">
+          <CardContent className="text-sm text-muted-foreground">
             <p>Account: {stripe.data.stripeConnectedAccountId || '—'}</p>
             <p>
               charges: {String(stripe.data.chargesEnabled)} · payouts: {String(stripe.data.payoutsEnabled)} ·
@@ -59,14 +59,14 @@ export function DeveloperTenantMembersPage() {
           <CardTitle>Members</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {members.loading ? <p className="text-gray-500">Loading…</p> : null}
-          {members.error ? <p className="text-red-600">{members.error}</p> : null}
+          {members.loading ? <p className="text-muted-foreground">Loading…</p> : null}
+          {members.error ? <p className="text-destructive">{members.error}</p> : null}
           {(members.data ?? []).map((member) => (
             <div key={member.usersId} className="flex items-center justify-between text-sm">
               <span>
                 {member.displayName} · {member.email}
               </span>
-              <span className="text-gray-500">{roleLabel(member.role)}</span>
+              <span className="text-muted-foreground">{roleLabel(member.role)}</span>
             </div>
           ))}
         </CardContent>
@@ -121,7 +121,7 @@ function TenantBasicForm({ tenantsId }: { tenantsId: string }) {
             />
           </div>
         ))}
-        {status ? <p className="text-sm text-gray-600 md:col-span-2">{status}</p> : null}
+        {status ? <p className="text-sm text-muted-foreground md:col-span-2">{status}</p> : null}
         <div className="md:col-span-2">
           <Button onClick={save} disabled={saving}>
             {saving ? 'Saving…' : 'Save details'}
@@ -173,7 +173,7 @@ function TenantDefaultFeeForm({ tenantsId }: { tenantsId: string }) {
         <CardTitle>Default fee formula</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           Auto-applied to every new ticket type and table this tenant creates. Developers can still
           override per event or per price.
         </p>
@@ -181,7 +181,7 @@ function TenantDefaultFeeForm({ tenantsId }: { tenantsId: string }) {
           <Label htmlFor="default-fee">Formula</Label>
           <select
             id="default-fee"
-            className="h-9 w-full rounded-md border border-gray-300 px-2 text-sm"
+            className="h-9 w-full rounded-md border border-input px-2 text-sm"
             value={selected}
             onChange={(e) => setSelected(e.target.value)}
           >
@@ -195,7 +195,7 @@ function TenantDefaultFeeForm({ tenantsId }: { tenantsId: string }) {
             ))}
           </select>
         </div>
-        {status ? <p className="text-sm text-gray-600">{status}</p> : null}
+        {status ? <p className="text-sm text-muted-foreground">{status}</p> : null}
         <Button onClick={save} disabled={saving}>
           {saving ? 'Saving…' : 'Save default fee'}
         </Button>
@@ -255,11 +255,11 @@ function StripeProfileForm({ tenantsId }: { tenantsId: string }) {
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {hasAccount === false ? (
-          <p className="text-sm text-amber-600 md:col-span-2">
+          <p className="text-sm text-amber-foreground md:col-span-2">
             No Stripe account yet — saved here now and used to pre-fill the seller's onboarding form when the admin clicks Start onboarding.
           </p>
         ) : (
-          <p className="text-sm text-green-700 md:col-span-2">
+          <p className="text-sm text-success md:col-span-2">
             Connected account exists — changes are pushed to Stripe on save.
           </p>
         )}
@@ -268,7 +268,7 @@ function StripeProfileForm({ tenantsId }: { tenantsId: string }) {
           <Label htmlFor="s-businessType">Business type</Label>
           <select
             id="s-businessType"
-            className="h-9 w-full rounded-md border border-gray-300 px-2 text-sm"
+            className="h-9 w-full rounded-md border border-input px-2 text-sm"
             value={form.businessType}
             onChange={(e) => setForm((p) => ({ ...p, businessType: e.target.value }))}
           >
@@ -296,7 +296,7 @@ function StripeProfileForm({ tenantsId }: { tenantsId: string }) {
           </div>
         ))}
 
-        {status ? <p className="text-sm text-gray-600 md:col-span-2">{status}</p> : null}
+        {status ? <p className="text-sm text-muted-foreground md:col-span-2">{status}</p> : null}
         <div className="md:col-span-2">
           <Button onClick={save} disabled={saving}>
             {saving ? 'Saving…' : 'Save Stripe profile'}

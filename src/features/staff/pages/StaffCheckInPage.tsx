@@ -53,9 +53,9 @@ export function StaffCheckInPage() {
             <Label htmlFor="qrToken">QR token</Label>
             <Input id="qrToken" value={qrToken} onChange={(e) => setQrToken(e.target.value)} />
           </div>
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
           {result ? (
-            <div className={result.valid ? 'text-green-600' : 'text-red-600'}>
+            <div className={result.valid ? 'text-success' : 'text-destructive'}>
               <p className="font-medium">{result.valid ? 'Valid' : 'Invalid'}</p>
               <p className="text-sm">{result.holderName}</p>
               <p className="text-sm">{result.message}</p>
@@ -70,7 +70,7 @@ export function StaffCheckInPage() {
             </Button>
           </div>
           {stats ? (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Total {stats.total} · Checked in {stats.checkedIn} · Remaining {stats.remaining}
             </p>
           ) : null}

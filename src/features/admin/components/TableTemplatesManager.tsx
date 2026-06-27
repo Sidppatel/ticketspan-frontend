@@ -46,7 +46,7 @@ export function TableTemplatesManager() {
         <CardTitle>Table types (catalog)</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {notice ? <p className="text-sm text-amber-700">{notice}</p> : null}
+        {notice ? <p className="text-sm text-amber-foreground">{notice}</p> : null}
 
         <div className="flex flex-wrap items-end gap-3">
           <div className="space-y-1">
@@ -60,7 +60,7 @@ export function TableTemplatesManager() {
           <div className="space-y-1">
             <Label>Shape</Label>
             <select
-              className="h-9 rounded-md border border-gray-300 px-2 text-sm"
+              className="h-9 rounded-md border border-input px-2 text-sm"
               value={shape}
               onChange={(e) => setShape(e.target.value)}
             >
@@ -115,7 +115,7 @@ export function TableTemplatesManager() {
             <div key={template.tableTemplatesId} className="flex items-center justify-between border-b py-1 text-sm">
               <span>
                 <span className="font-medium">{template.name}</span>{' '}
-                <span className="text-gray-500">
+                <span className="text-muted-foreground">
                   · {template.defaultShape} · cap {template.defaultCapacity} · {template.defaultWidth}×{template.defaultHeight}px · {centsToUSD(template.defaultPriceCents)}
                 </span>
               </span>

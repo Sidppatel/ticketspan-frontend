@@ -41,9 +41,9 @@ export function ClaimTicketPage() {
           <CardTitle>Claim ticket</CardTitle>
         </CardHeader>
         <CardContent>
-          {status === 'pending' ? <p className="text-gray-500">Claiming…</p> : null}
-          {status === 'done' ? <p className="text-green-600">Ticket claimed. Check My Bookings.</p> : null}
-          {status === 'error' ? <p className="text-red-600">{error}</p> : null}
+          {status === 'pending' ? <p className="text-muted-foreground">Claiming…</p> : null}
+          {status === 'done' ? <p className="text-success">Ticket claimed. Check My Bookings.</p> : null}
+          {status === 'error' ? <p className="text-destructive">{error}</p> : null}
         </CardContent>
       </Card>
     </div>

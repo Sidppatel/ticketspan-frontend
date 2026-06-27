@@ -59,7 +59,7 @@ export function AdminFinancialPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Financial</h1>
-      {error ? <p className="text-red-600">{error}</p> : null}
+      {error ? <p className="text-destructive">{error}</p> : null}
 
       <Card>
         <CardHeader>
@@ -83,7 +83,7 @@ export function AdminFinancialPage() {
             </Button>
           </div>
           {stripe ? (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               charges: {String(stripe.chargesEnabled)} · payouts: {String(stripe.payoutsEnabled)} · details:{' '}
               {String(stripe.detailsSubmitted)}
             </p>
@@ -114,7 +114,7 @@ export function AdminFinancialPage() {
             </Button>
           </div>
           {report ? (
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               <p>Gross: {centsToUSD(report.grossCents)}</p>
               <p>Fees: {centsToUSD(report.feesCents)}</p>
               <p>Net: {centsToUSD(report.netCents)}</p>

@@ -24,10 +24,10 @@ export function RegisterPage() {
             <CardTitle>Create account</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Select an organizer first, then create your account on their site.
             </p>
-            <Link to="/" className="text-sm text-indigo-600">
+            <Link to="/" className="text-sm text-primary">
               Browse organizers
             </Link>
           </CardContent>
@@ -43,7 +43,7 @@ export function RegisterPage() {
           <CardTitle>Create account</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-gray-600">Signing up for {tenantSlug}.</p>
+          <p className="text-sm text-muted-foreground">Signing up for {tenantSlug}.</p>
           <form
             className="space-y-4"
             onSubmit={(event) => {
@@ -76,8 +76,8 @@ export function RegisterPage() {
                 required
               />
             </div>
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
-            {notice ? <p className="text-sm text-green-600">{notice}</p> : null}
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {notice ? <p className="text-sm text-success">{notice}</p> : null}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Creating…' : 'Create account'}
             </Button>
@@ -86,7 +86,7 @@ export function RegisterPage() {
             Email me a sign-in link instead
           </Button>
           <GoogleSignInButton onToken={google} />
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             <Link to="/login">Back to sign in</Link>
           </div>
         </CardContent>

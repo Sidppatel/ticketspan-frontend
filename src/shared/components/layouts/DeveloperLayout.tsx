@@ -1,11 +1,14 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { PortalNav } from '@/shared/components/layouts/PortalNav';
+import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 
 export function DeveloperLayout() {
+  const { pathname } = useLocation();
+  const page = usePageEntrance<HTMLElement>();
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <PortalNav
-        title="Svyne Developer"
+        section="developer"
         links={[
           { to: '/', label: 'Tenants' },
           { to: '/dashboard', label: 'Overview' },
@@ -13,7 +16,7 @@ export function DeveloperLayout() {
           { to: '/logs', label: 'System Logs' },
         ]}
       />
-      <main className="mx-auto max-w-6xl px-6 py-6">
+      <main ref={page} key={pathname} className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
         <Outlet />
       </main>
     </div>

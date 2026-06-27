@@ -6,8 +6,6 @@ import {
   getEventStats,
   changeEventStatus,
   updateEvent,
-  createTicketType,
-  listTicketTypes,
   listEventTables,
   createEventTable,
   deleteEventTable,
@@ -16,6 +14,7 @@ import {
 import { listTableTemplates } from '@/features/admin/services/tableTemplateService';
 import type { TableTemplate } from '@/shared/proto/booking';
 import { PricingManager } from '@/features/admin/components/PricingManager';
+import { TicketTypesManager } from '@/features/admin/components/TicketTypesManager';
 import { FloorPlanPanel } from '@/features/admin/components/FloorPlanPanel';
 import { ImageUpload } from '@/shared/components/ImageUpload';
 import type { Event } from '@/shared/proto/event';
@@ -26,32 +25,72 @@ import {
 } from '@/features/admin/services/staffAdminService';
 import { rpcErrorMessage } from '@/shared/session';
 import { centsToUSD } from '@/shared/lib/format';
-import { addCents } from '@/shared/lib/math';
+import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 import { Label } from '@/shared/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import {
+  CalendarCheck2,
+  DollarSign,
+  FileEdit,
+  LayoutGrid,
+  Rocket,
+  Ticket,
+  TicketCheck,
+  Undo2,
+  UserCog,
+  type LucideIcon,
+} from 'lucide-react';
+
+const STATUS_STYLES: Record<string, string> = {
+  Published: 'bg-success/15 text-success ring-success/30',
+  Draft: 'bg-amber/15 text-amber-foreground ring-amber/30',
+  Cancelled: 'bg-destructive/15 text-destructive ring-destructive/30',
+};
+
+function StatusPill({ status }: { status: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ring-1 ring-inset',
+        STATUS_STYLES[status] ?? 'bg-muted text-muted-foreground ring-border',
+      )}
+    >
+      <span className="size-1.5 rounded-full bg-current" />
+      {status}
+    </span>
+  );
+}
+
+function SectionHeader({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
+  return (
+    <CardHeader className="flex flex-row items-center gap-2.5">
+      <span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary [&_svg]:size-4">
+        <Icon />
+      </span>
+      <CardTitle>{title}</CardTitle>
+    </CardHeader>
+  );
+}
 
 export function AdminEventManagePage() {
   const { eventsId = '' } = useParams();
   const eventLoader = useCallback(() => getEvent(eventsId), [eventsId]);
   const statsLoader = useCallback(() => getEventStats(eventsId), [eventsId]);
   const tablesLoader = useCallback(() => listEventTables(eventsId), [eventsId]);
-  const ticketTypesLoader = useCallback(() => listTicketTypes(eventsId), [eventsId]);
   const staffLoader = useCallback(() => listStaffForEvent(eventsId), [eventsId]);
   const templatesLoader = useCallback(() => listTableTemplates(), []);
 
   const event = useAsync(eventLoader);
   const stats = useAsync(statsLoader);
   const tables = useAsync(tablesLoader);
-  const ticketTypes = useAsync(ticketTypesLoader);
   const staff = useAsync(staffLoader);
   const templates = useAsync(templatesLoader);
 
   const templateList = templates.data ?? [];
 
-  const [ticketLabel, setTicketLabel] = useState('');
-  const [ticketPriceCents, setTicketPriceCents] = useState(0);
   // Admin picks a catalog table type; values below override the template defaults.
   const [tableTemplateId, setTableTemplateId] = useState('');
   const [tableLabel, setTableLabel] = useState('');
@@ -92,27 +131,43 @@ export function AdminEventManagePage() {
 
   return (
     <div className="space-y-6">
-      {event.loading ? <p className="text-gray-500">Loading…</p> : null}
-      {event.error ? <p className="text-red-600">{event.error}</p> : null}
-      {notice ? <p className="text-sm text-amber-700">{notice}</p> : null}
+      {event.loading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {event.error ? <p className="text-destructive">{event.error}</p> : null}
+      {notice ? <p className="text-sm text-amber-foreground">{notice}</p> : null}
 
       {event.data ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>{event.data.title}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-sm text-gray-500">Status: {event.data.status}</p>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => guard(() => changeEventStatus(eventsId, 'Published'), event.reload)}>
-                Publish
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => guard(() => changeEventStatus(eventsId, 'Draft'), event.reload)}>
-                Set draft
-              </Button>
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+          <div className="bg-gradient-to-br from-primary/10 via-card to-amber/5 p-5 md:p-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="space-y-2">
+                <StatusPill status={event.data.status} />
+                <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">
+                  {event.data.title}
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  {event.data.eventType || 'Open'} event · {event.data.category || 'Uncategorised'}
+                </p>
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <Button size="sm" onClick={() => guard(() => changeEventStatus(eventsId, 'Published'), event.reload)}>
+                  <Rocket /> Publish
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => guard(() => changeEventStatus(eventsId, 'Draft'), event.reload)}>
+                  <Undo2 /> Set draft
+                </Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+      ) : null}
+
+      {stats.data ? (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <Stat icon={CalendarCheck2} label="Bookings" value={stats.data.totalBookings} />
+          <Stat icon={Ticket} label="Tickets sold" value={stats.data.ticketsSold} />
+          <Stat icon={TicketCheck} label="Checked in" value={stats.data.checkedIn} />
+          <Stat icon={DollarSign} label="Revenue" value={centsToUSD(stats.data.revenueCents)} accent />
+        </div>
       ) : null}
 
       {event.data ? <EditSection event={event.data} onSaved={event.reload} /> : null}
@@ -122,80 +177,20 @@ export function AdminEventManagePage() {
         <FloorPlanPanel key={floorKey} eventsId={eventsId} onTypesChanged={() => setPricingKey((k) => k + 1)} />
       ) : null}
 
-      {stats.data ? (
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <Stat label="Bookings" value={stats.data.totalBookings} />
-          <Stat label="Tickets sold" value={stats.data.ticketsSold} />
-          <Stat label="Checked in" value={stats.data.checkedIn} />
-          <Stat label="Revenue" value={centsToUSD(stats.data.revenueCents)} />
-        </div>
-      ) : null}
-
       {event.data && event.data.eventType !== 'Table' ? (
-      <Card>
-        <CardHeader>
-          <CardTitle>Ticket types</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="space-y-1">
-              <Label>Label</Label>
-              <Input value={ticketLabel} onChange={(e) => setTicketLabel(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label>Price (cents)</Label>
-              <Input type="number" value={ticketPriceCents} onChange={(e) => setTicketPriceCents(Number(e.target.value))} />
-            </div>
-            {/* Service fee is developer-controlled (tenant default formula); not set here. */}
-            <Button
-              size="sm"
-              onClick={() =>
-                guard(() =>
-                  createTicketType({
-                    eventsId,
-                    label: ticketLabel,
-                    priceCents: ticketPriceCents,
-                    feeFormulasId: '',
-                    maxQuantity: 0,
-                    sortOrder: 0,
-                    description: '',
-                  }).then(() => {
-                    setTicketLabel('');
-                    ticketTypes.reload();
-                  }),
-                )
-              }
-            >
-              Add ticket type
-            </Button>
-          </div>
-
-          <div className="space-y-1">
-            {(ticketTypes.data ?? []).map((tt) => (
-              <div key={tt.eventTicketTypesId} className="flex items-center justify-between border-b py-1 text-sm">
-                <span>{tt.label}</span>
-                <span className="text-gray-600">
-                  {centsToUSD(tt.priceCents)} + fee {centsToUSD(tt.platformFeeCents)} = {centsToUSD(addCents(tt.priceCents, tt.platformFeeCents))}
-                </span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        <TicketTypesManager eventsId={eventsId} />
       ) : null}
 
       {event.data && event.data.eventType !== 'Open' ? (
       <Card>
-        <CardHeader>
-          <CardTitle>Tables</CardTitle>
-        </CardHeader>
+        <SectionHeader icon={LayoutGrid} title="Tables" />
         <CardContent className="space-y-3">
           {/* Admin reuses a catalog table type and overrides values; cannot create new types. */}
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1">
               <Label>Table type (catalog)</Label>
-              <select
-                className="h-9 rounded-md border border-gray-300 px-2 text-sm"
+              <Select
+                className="w-48"
                 value={tableTemplateId}
                 onChange={(e) => selectTemplate(e.target.value)}
               >
@@ -205,7 +200,7 @@ export function AdminEventManagePage() {
                     {t.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div className="space-y-1">
               <Label>Label</Label>
@@ -295,9 +290,7 @@ export function AdminEventManagePage() {
       ) : null}
 
       <Card>
-        <CardHeader>
-          <CardTitle>Staff</CardTitle>
-        </CardHeader>
+        <SectionHeader icon={UserCog} title="Staff" />
         <CardContent className="space-y-3">
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1">
@@ -379,9 +372,7 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Edit details</CardTitle>
-      </CardHeader>
+      <SectionHeader icon={FileEdit} title="Edit details" />
       <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="space-y-1">
           <Label>Title</Label>
@@ -397,15 +388,11 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
         </div>
         <div className="space-y-1">
           <Label>Event type</Label>
-          <select
-            className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            value={eventType}
-            onChange={(e) => setEventType(e.target.value)}
-          >
+          <Select value={eventType} onChange={(e) => setEventType(e.target.value)}>
             <option value="Open">Open seating (ticket tiers)</option>
             <option value="Table">Table based (floor plan)</option>
             <option value="Both">Both (tiers + tables)</option>
-          </select>
+          </Select>
         </div>
         <div className="space-y-1">
           <Label>Image</Label>
@@ -425,14 +412,14 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
             />
             <span>
               <span className="font-medium">Show fees included in price</span>
-              <span className="block text-gray-500">
+              <span className="block text-muted-foreground">
                 On = buyers see one all-in total. Off = price + fee shown separately. The developer fee amount is
                 unchanged either way.
               </span>
             </span>
           </label>
         </div>
-        {error ? <p className="text-sm text-red-600 md:col-span-2">{error}</p> : null}
+        {error ? <p className="text-sm text-destructive md:col-span-2">{error}</p> : null}
         <div className="md:col-span-2">
           <Button size="sm" onClick={save} disabled={saving}>
             {saving ? 'Saving…' : 'Save details'}
@@ -443,12 +430,30 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
   );
 }
 
-function Stat({ label, value }: { label: string; value: number | string }) {
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: number | string;
+  accent?: boolean;
+}) {
   return (
-    <Card>
+    <Card className={cn('relative overflow-hidden', accent && 'border-amber/40')}>
       <CardContent className="space-y-1">
-        <CardTitle>{value}</CardTitle>
-        <p className="text-sm text-gray-500">{label}</p>
+        <span
+          className={cn(
+            'flex size-8 items-center justify-center rounded-md [&_svg]:size-4',
+            accent ? 'bg-amber/15 text-amber-foreground' : 'bg-primary/10 text-primary',
+          )}
+        >
+          <Icon />
+        </span>
+        <p className="pt-1 font-display text-2xl font-semibold tracking-tight">{value}</p>
+        <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
       </CardContent>
     </Card>
   );

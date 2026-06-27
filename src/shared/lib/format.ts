@@ -6,6 +6,15 @@ export function centsToUSD(value: number | string): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
 }
 
+export function centsToUsdInput(cents: number): string {
+  return (cents / 100).toFixed(2);
+}
+
+export function usdToCents(value: string): number {
+  const dollars = parseFloat(value);
+  return Number.isFinite(dollars) ? Math.round(dollars * 100) : 0;
+}
+
 export function formatEpoch(value: number | string): string {
   const seconds = typeof value === 'string' ? Number(value) : value;
   if (!Number.isFinite(seconds) || seconds === 0) {

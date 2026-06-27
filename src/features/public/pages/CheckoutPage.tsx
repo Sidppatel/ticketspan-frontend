@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import {
@@ -13,10 +13,9 @@ import {
   cancelBooking,
 } from '@/features/public/services/paymentService';
 import { rpcErrorMessage } from '@/shared/session';
+import { centsToUSD } from '@/shared/lib/format';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-
-const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 interface IntentState {
   clientSecret: string;
@@ -59,7 +58,7 @@ export function CheckoutPage() {
           <CardTitle>Checkout unavailable</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-destructive">{error}</p>
           <Button variant="outline" onClick={() => navigate(-1)}>
             Go back
           </Button>
@@ -69,7 +68,7 @@ export function CheckoutPage() {
   }
 
   if (!intent || !stripePromise) {
-    return <p className="text-gray-500">Preparing secure checkout…</p>;
+    return <p className="text-muted-foreground">Preparing secure checkout…</p>;
   }
 
   return (
@@ -89,19 +88,16 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
   const [submitting, setSubmitting] = useState(false);
   const [polling, setPolling] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [expired, setExpired] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState<number | null>(
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(() =>
     intent.holdExpiresAt > 0 ? Math.max(0, intent.holdExpiresAt - Math.floor(Date.now() / 1000)) : null,
   );
+  const expired = secondsLeft !== null && secondsLeft <= 0;
   const cancelledRef = useRef(false);
 
   // Hold countdown.
   useEffect(() => {
     if (secondsLeft === null) return;
-    if (secondsLeft <= 0) {
-      setExpired(true);
-      return;
-    }
+    if (secondsLeft <= 0) return;
     const id = setTimeout(() => setSecondsLeft((s) => (s === null ? null : s - 1)), 1000);
     return () => clearTimeout(id);
   }, [secondsLeft]);
@@ -170,18 +166,18 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Complete payment · {money(intent.amountCents)}</CardTitle>
+        <CardTitle>Complete payment · {centsToUSD(intent.amountCents)}</CardTitle>
       </CardHeader>
       <CardContent>
         {secondsLeft !== null && !expired ? (
-          <p className="mb-3 text-sm text-amber-600">
+          <p className="mb-3 text-sm text-amber-foreground">
             Seats held for {mm}:{String(ss).padStart(2, '0')}
           </p>
         ) : null}
 
         {expired ? (
           <div className="space-y-3">
-            <p className="text-sm text-red-600">Your hold expired. Please start the booking again.</p>
+            <p className="text-sm text-destructive">Your hold expired. Please start the booking again.</p>
             <Button variant="outline" onClick={() => navigate(-1)}>
               Back to event
             </Button>
@@ -189,10 +185,10 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <PaymentElement />
-            {message ? <p className="text-sm text-red-600">{message}</p> : null}
+            {message ? <p className="text-sm text-destructive">{message}</p> : null}
             <div className="flex gap-2">
               <Button type="submit" disabled={!stripe || submitting || polling}>
-                {polling ? 'Confirming…' : submitting ? 'Processing…' : `Pay ${money(intent.amountCents)}`}
+                {polling ? 'Confirming…' : submitting ? 'Processing…' : `Pay ${centsToUSD(intent.amountCents)}`}
               </Button>
               <Button type="button" variant="outline" onClick={handleCancel} disabled={submitting || polling}>
                 Cancel

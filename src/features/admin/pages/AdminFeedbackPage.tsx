@@ -21,8 +21,8 @@ export function AdminFeedbackPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Feedback</h1>
-      {loading ? <p className="text-gray-500">Loading…</p> : null}
-      {error ? <p className="text-red-600">{error}</p> : null}
+      {loading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {error ? <p className="text-destructive">{error}</p> : null}
       <div className="space-y-2">
         {(data ?? []).map((item) => (
           <Card key={item.feedbacksId}>
@@ -31,7 +31,7 @@ export function AdminFeedbackPage() {
                 <p className="font-medium">
                   {item.name} · {item.type} · {item.rating}/5
                 </p>
-                <p className="text-gray-600">{item.message}</p>
+                <p className="text-muted-foreground">{item.message}</p>
               </div>
               <Button size="sm" variant="ghost" onClick={() => remove(item.feedbacksId)}>
                 Delete
@@ -40,7 +40,7 @@ export function AdminFeedbackPage() {
           </Card>
         ))}
       </div>
-      {!loading && (data ?? []).length === 0 ? <p className="text-gray-500">No feedback.</p> : null}
+      {!loading && (data ?? []).length === 0 ? <p className="text-muted-foreground">No feedback.</p> : null}
     </div>
   );
 }

@@ -58,8 +58,8 @@ export function FeedbackPage() {
           <Label>Message</Label>
           <Input value={message} onChange={(e) => setMessage(e.target.value)} />
         </div>
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        {done ? <p className="text-sm text-green-600">Thanks for the feedback.</p> : null}
+        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {done ? <p className="text-sm text-success">Thanks for the feedback.</p> : null}
         <Button onClick={submit} disabled={submitting}>
           {submitting ? 'Sending…' : 'Submit'}
         </Button>

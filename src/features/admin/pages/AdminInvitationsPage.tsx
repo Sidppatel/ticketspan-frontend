@@ -44,7 +44,7 @@ export function AdminInvitationsPage() {
           <div className="space-y-1">
             <Label>Role</Label>
             <select
-              className="h-10 rounded-md border border-gray-300 px-3 text-sm"
+              className="h-10 rounded-md border border-input px-3 text-sm"
               value={role}
               onChange={(e) => setRole(Number(e.target.value))}
             >
@@ -69,8 +69,8 @@ export function AdminInvitationsPage() {
         </CardContent>
       </Card>
 
-      {loading ? <p className="text-gray-500">Loading…</p> : null}
-      {error ? <p className="text-red-600">{error}</p> : null}
+      {loading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {error ? <p className="text-destructive">{error}</p> : null}
       <div className="space-y-2">
         {(data ?? []).map((invitation) => (
           <Card key={invitation.invitationsId}>

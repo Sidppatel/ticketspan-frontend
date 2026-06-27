@@ -16,6 +16,7 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Select } from '@/shared/ui/select';
 
 const PRICING_TYPES = ['TicketTier', 'Table', 'AddOn'];
 
@@ -51,7 +52,7 @@ export function PricingManager({ eventsId }: { eventsId: string }) {
         <CardTitle>Pricing</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {notice ? <p className="text-sm text-amber-700">{notice}</p> : null}
+        {notice ? <p className="text-sm text-amber-foreground">{notice}</p> : null}
 
         <div className="flex flex-wrap items-end gap-3">
           <div className="space-y-1">
@@ -60,8 +61,8 @@ export function PricingManager({ eventsId }: { eventsId: string }) {
           </div>
           <div className="space-y-1">
             <Label>Type</Label>
-            <select
-              className="h-9 rounded-md border border-gray-300 px-2 text-sm"
+            <Select
+              className="w-40"
               value={pricingType}
               onChange={(e) => setPricingType(e.target.value)}
             >
@@ -70,7 +71,7 @@ export function PricingManager({ eventsId }: { eventsId: string }) {
                   {t}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="space-y-1">
             <Label>Base price (cents)</Label>
@@ -147,6 +148,7 @@ function PriceRow({
   const rulesLoader = useCallback(() => listPriceRules(price.pricesId), [price.pricesId]);
   const rules = useAsync(rulesLoader);
   const [seats, setSeats] = useState(price.pricingType === 'Table' ? 4 : 1);
+  const [at, setAt] = useState('');
   const [preview, setPreview] = useState<PriceBreakdown | null>(null);
 
   const [ruleName, setRuleName] = useState('');
@@ -171,7 +173,7 @@ function PriceRow({
       <div className="flex items-center justify-between">
         <div className="text-sm">
           <span className="font-medium">{price.name}</span>{' '}
-          <span className="text-gray-500">
+          <span className="text-muted-foreground">
             · {price.pricingType} · {centsToUSD(price.basePriceCents)}
             {price.pricingType === 'Table'
               ? price.isAllInclusive
@@ -191,15 +193,20 @@ function PriceRow({
           <Label>Seats</Label>
           <Input className="w-20" type="number" value={seats} onChange={(e) => setSeats(Number(e.target.value))} />
         </div>
+        <div className="space-y-1">
+          <Label>At (rule preview)</Label>
+          <Input className="w-44" type="datetime-local" value={at} onChange={(e) => setAt(e.target.value)} />
+        </div>
         <Button
           size="sm"
           variant="outline"
-          onClick={() => guard(() => calculatePrice(price.pricesId, seats).then(setPreview))}
+          onClick={() => guard(() => calculatePrice(price.pricesId, seats, toEpoch(at)).then(setPreview))}
         >
           Calculate
         </Button>
         {preview ? (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
+            {at ? `At ${new Date(at).toLocaleString()} · ` : 'Now · '}
             Subtotal {centsToUSD(preview.subtotalCents)} · Fee {centsToUSD(preview.feeCents)} · Buyer pays{' '}
             <span className="font-medium">{centsToUSD(preview.totalCents)}</span>
           </p>
@@ -207,7 +214,7 @@ function PriceRow({
       </div>
 
       <div className="mt-3 border-t pt-2">
-        <p className="mb-1 text-xs font-medium text-gray-500">Rules (highest priority active rule wins)</p>
+        <p className="mb-1 text-xs font-medium text-muted-foreground">Rules (highest priority active rule wins)</p>
         {(rules.data ?? []).map((rule: PriceRule) => (
           <div key={rule.priceRulesId} className="flex items-center justify-between py-0.5 text-sm">
             <span>
@@ -230,8 +237,8 @@ function PriceRow({
           </div>
           <div className="space-y-1">
             <Label>Type</Label>
-            <select
-              className="h-9 rounded-md border border-gray-300 px-2 text-sm"
+            <Select
+              className="w-36"
               value={ruleType}
               onChange={(e) => setRuleType(e.target.value)}
             >
@@ -240,7 +247,7 @@ function PriceRow({
                   {t}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="space-y-1">
             <Label>Priority</Label>

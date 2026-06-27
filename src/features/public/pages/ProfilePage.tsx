@@ -80,7 +80,7 @@ export function ProfilePage() {
   }
 
   if (loading) {
-    return <p className="text-gray-500">Loading…</p>;
+    return <p className="text-muted-foreground">Loading…</p>;
   }
 
   return (
@@ -92,11 +92,11 @@ export function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
-            <div className="h-20 w-20 overflow-hidden rounded-full bg-gray-100">
+            <div className="h-20 w-20 overflow-hidden rounded-full bg-muted">
               {user?.avatarUrl ? (
                 <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">No photo</div>
+                <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">No photo</div>
               )}
             </div>
             <div className="space-y-1">
@@ -108,11 +108,11 @@ export function ProfilePage() {
                 disabled={uploading}
                 onChange={(e) => onAvatar(e.target.files?.[0])}
               />
-              {uploading ? <p className="text-xs text-gray-500">Uploading…</p> : null}
+              {uploading ? <p className="text-xs text-muted-foreground">Uploading…</p> : null}
             </div>
           </div>
 
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted-foreground">
             <p>Email: {user?.email}</p>
             <p>Role: {roleLabel(role)}</p>
             <p>Tenant: {user?.tenantSlug || '—'}</p>
@@ -130,8 +130,8 @@ export function ProfilePage() {
             <Labeled label="Zip" value={form.zip} onChange={field('zip')} />
           </div>
 
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
-          {notice ? <p className="text-sm text-green-600">{notice}</p> : null}
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+          {notice ? <p className="text-sm text-success">{notice}</p> : null}
           <Button onClick={save} disabled={saving}>
             {saving ? 'Saving…' : 'Save changes'}
           </Button>

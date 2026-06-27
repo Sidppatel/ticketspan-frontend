@@ -31,10 +31,10 @@ export function EventDetailPage() {
   const { data: event, loading, error } = useAsync(loader);
 
   if (loading) {
-    return <p className="text-gray-500">Loading…</p>;
+    return <p className="text-muted-foreground">Loading…</p>;
   }
   if (error || !event) {
-    return <p className="text-red-600">{error ?? 'Event not found.'}</p>;
+    return <p className="text-destructive">{error ?? 'Event not found.'}</p>;
   }
 
   return (
@@ -44,9 +44,9 @@ export function EventDetailPage() {
           <CardTitle>{event.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <p className="text-gray-700">{event.description}</p>
-          <p className="text-sm text-gray-500">Category: {event.category}</p>
-          <p className="text-sm text-gray-500">Status: {event.status}</p>
+          <p className="text-foreground">{event.description}</p>
+          <p className="text-sm text-muted-foreground">Category: {event.category}</p>
+          <p className="text-sm text-muted-foreground">Status: {event.status}</p>
         </CardContent>
       </Card>
       <CartBookingPanel
@@ -135,21 +135,21 @@ function CartBookingPanel({
         </CardHeader>
         <CardContent className="space-y-3">
           {cart.length === 0 ? (
-            <p className="text-sm text-gray-500">No items yet. Add tickets or a table above.</p>
+            <p className="text-sm text-muted-foreground">No items yet. Add tickets or a table above.</p>
           ) : (
             <div className="divide-y">
               {cart.map((i) => (
                 <div key={i.key} className="flex items-center justify-between py-2 text-sm">
                   <span>
-                    <span className="rounded bg-gray-100 px-1 text-xs uppercase text-gray-500">{i.kind}</span>{' '}
+                    <span className="rounded bg-muted px-1 text-xs uppercase text-muted-foreground">{i.kind}</span>{' '}
                     <span className="font-medium">{i.label}</span>
-                    <span className="text-gray-500"> · {i.seats} {i.seats === 1 ? 'seat' : 'seats'}</span>
+                    <span className="text-muted-foreground"> · {i.seats} {i.seats === 1 ? 'seat' : 'seats'}</span>
                   </span>
                   <span className="flex items-center gap-3">
                     <span className="font-medium">
                       {centsToUSD(feesIncluded ? addCents(i.subtotal, i.fee) : i.subtotal)}
                     </span>
-                    <button className="text-red-600" onClick={() => removeKey(i.key)} type="button">
+                    <button className="text-destructive" onClick={() => removeKey(i.key)} type="button">
                       Remove
                     </button>
                   </span>
@@ -165,7 +165,7 @@ function CartBookingPanel({
                 <span>{centsToUSD(total)}</span>
               </div>
             ) : (
-              <div className="space-y-0.5 text-sm text-gray-700">
+              <div className="space-y-0.5 text-sm text-foreground">
                 <div className="flex justify-between"><span>Subtotal</span><span>{centsToUSD(subtotal)}</span></div>
                 <div className="flex justify-between"><span>Service fee</span><span>{centsToUSD(fee)}</span></div>
                 <div className="flex justify-between font-medium"><span>Total</span><span>{centsToUSD(total)}</span></div>
@@ -173,7 +173,7 @@ function CartBookingPanel({
             )
           ) : null}
 
-          {bookingError ? <p className="text-sm text-red-600">{bookingError}</p> : null}
+          {bookingError ? <p className="text-sm text-destructive">{bookingError}</p> : null}
           <Button disabled={busy || cart.length === 0 || total <= 0} onClick={checkout}>
             {busy ? 'Reserving…' : 'Continue to payment'}
           </Button>
@@ -227,9 +227,9 @@ function TicketTierSection({
         <CardTitle>Tickets</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {loading ? <p className="text-sm text-gray-500">Loading ticket types…</p> : null}
+        {loading ? <p className="text-sm text-muted-foreground">Loading ticket types…</p> : null}
         {!loading && (ticketTypes ?? []).length === 0 ? (
-          <p className="text-sm text-gray-500">No tickets on sale yet.</p>
+          <p className="text-sm text-muted-foreground">No tickets on sale yet.</p>
         ) : null}
         {(ticketTypes ?? []).map((tt) => {
           const qty = seatsFor(tt.eventTicketTypesId);
@@ -238,8 +238,8 @@ function TicketTierSection({
             <div key={tt.eventTicketTypesId} className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
               <span>
                 <span className="font-medium">{tt.label}</span>
-                {tt.description ? <span className="block text-xs text-gray-500">{tt.description}</span> : null}
-                <span className="block text-xs text-gray-500">
+                {tt.description ? <span className="block text-xs text-muted-foreground">{tt.description}</span> : null}
+                <span className="block text-xs text-muted-foreground">
                   {centsToUSD(feesIncluded ? addCents(tt.priceCents, tt.platformFeeCents) : tt.priceCents)} each
                   {!feesIncluded && tt.platformFeeCents > 0 ? ` + ${centsToUSD(tt.platformFeeCents)} fee` : ''}
                 </span>
@@ -353,14 +353,14 @@ function TableSection({
         <CardTitle>Tables</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {loading ? <p className="text-sm text-gray-500">Loading floor plan…</p> : null}
+        {loading ? <p className="text-sm text-muted-foreground">Loading floor plan…</p> : null}
         {!loading && (layout?.tables ?? []).length === 0 ? (
-          <p className="text-sm text-gray-500">No tables published yet.</p>
+          <p className="text-sm text-muted-foreground">No tables published yet.</p>
         ) : null}
-        {err ? <p className="text-sm text-red-600">{err}</p> : null}
+        {err ? <p className="text-sm text-destructive">{err}</p> : null}
 
         {layout && (layout.tables.length > 0 || layout.objects.length > 0) ? (
-          <div className="overflow-auto rounded-md border bg-gray-100">
+          <div className="overflow-auto rounded-md border bg-muted">
             <div className="relative" style={{ width: canvas.w, height: canvas.h }}>
               {layout.objects.map((o) => (
                 <div
@@ -402,7 +402,7 @@ function TableSection({
                 );
               })}
             </div>
-            <p className="mt-2 px-2 pb-2 text-xs text-gray-500">
+            <p className="mt-2 px-2 pb-2 text-xs text-muted-foreground">
               Tap an available table to add it (books the whole table at its capacity). Tap again to remove.
               Grey = booked/held. Green = entrance/exit/stage.
             </p>

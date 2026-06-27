@@ -40,12 +40,12 @@ export function FloorPlanPanel({ eventsId, onTypesChanged }: { eventsId: string;
         <CardTitle>Floor plan</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
-        {notice ? <p className="text-sm text-amber-700">{notice}</p> : null}
+        {notice ? <p className="text-sm text-amber-foreground">{notice}</p> : null}
 
         <FloorPlanBuilder key={builderKey} eventsId={eventsId} onTypesChanged={onTypesChanged} />
 
         <section className="space-y-2 border-t pt-4">
-          <p className="text-sm font-medium text-gray-600">Reusable templates</p>
+          <p className="text-sm font-medium text-muted-foreground">Reusable templates</p>
           <div className="flex flex-wrap items-end gap-2">
             <div className="space-y-1">
               <Label>Save current as</Label>

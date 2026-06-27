@@ -31,32 +31,32 @@ export function BookingDetailPage() {
 
   return (
     <div className="space-y-4">
-      {booking.loading ? <p className="text-gray-500">Loading…</p> : null}
-      {booking.error ? <p className="text-red-600">{booking.error}</p> : null}
+      {booking.loading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {booking.error ? <p className="text-destructive">{booking.error}</p> : null}
       {booking.data ? (
         <Card>
           <CardHeader>
             <CardTitle>Booking #{booking.data.bookingNumber}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-gray-600">
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>Status: {booking.data.status}</p>
             {booking.data.lines.length > 0 ? (
               <div className="divide-y rounded-md border">
                 {booking.data.lines.map((l) => (
                   <div key={l.bookingLinesId} className="flex items-center justify-between px-3 py-1.5">
                     <span>
-                      <span className="rounded bg-gray-100 px-1 text-xs uppercase text-gray-500">{l.kind}</span>{' '}
-                      <span className="font-medium text-gray-700">{l.label}</span>
-                      <span className="text-gray-500"> · {l.seats} {l.seats === 1 ? 'seat' : 'seats'}</span>
+                      <span className="rounded bg-muted px-1 text-xs uppercase text-muted-foreground">{l.kind}</span>{' '}
+                      <span className="font-medium text-foreground">{l.label}</span>
+                      <span className="text-muted-foreground"> · {l.seats} {l.seats === 1 ? 'seat' : 'seats'}</span>
                     </span>
-                    <span className="font-medium text-gray-700">{centsToUSD(l.totalCents)}</span>
+                    <span className="font-medium text-foreground">{centsToUSD(l.totalCents)}</span>
                   </div>
                 ))}
               </div>
             ) : (
               <p>Seats reserved: {booking.data.seatsReserved}</p>
             )}
-            <p className="font-medium text-gray-700">Total: {centsToUSD(booking.data.totalCents)}</p>
+            <p className="font-medium text-foreground">Total: {centsToUSD(booking.data.totalCents)}</p>
           </CardContent>
         </Card>
       ) : null}
@@ -69,8 +69,8 @@ export function BookingDetailPage() {
           {(tickets.data ?? []).map((ticket) => (
             <div key={ticket.ticketsId} className="flex flex-wrap items-center gap-2 border-b py-2 text-sm">
               <span className="font-medium">{ticket.ticketCode}</span>
-              <span className="text-gray-500">seat {ticket.seatNumber}</span>
-              <span className="text-gray-400">{ticket.status}</span>
+              <span className="text-muted-foreground">seat {ticket.seatNumber}</span>
+              <span className="text-muted-foreground">{ticket.status}</span>
               <Input
                 className="w-48"
                 placeholder="invite email"
@@ -83,7 +83,7 @@ export function BookingDetailPage() {
             </div>
           ))}
           {!tickets.loading && (tickets.data ?? []).length === 0 ? (
-            <p className="text-gray-500">No tickets.</p>
+            <p className="text-muted-foreground">No tickets.</p>
           ) : null}
         </CardContent>
       </Card>

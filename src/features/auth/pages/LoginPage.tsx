@@ -7,16 +7,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
 import { GoogleSignInButton } from '@/features/auth/components/GoogleSignInButton';
 import { resolvePortalContext } from '@/shared/subdomain';
+import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 
 export function LoginPage() {
+  const page = usePageEntrance<HTMLDivElement>();
   const { login, google, loading, error } = useAuthFlow();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const allowRegister = resolvePortalContext().portal === 'public';
 
   return (
-    <div className="mx-auto mt-16 max-w-sm">
-      <Card>
+    <div ref={page} className="mx-auto mt-10 max-w-sm sm:mt-16">
+      <div className="mb-6 text-center">
+        <span className="text-2xl font-bold tracking-tight" style={{ color: 'var(--brand-primary)' }}>
+          svyne
+        </span>
+        <p className="mt-1 text-sm text-muted-foreground">Welcome back. Sign in to continue.</p>
+      </div>
+      <Card className="shadow-md">
         <CardHeader>
           <CardTitle>Sign in</CardTitle>
         </CardHeader>
@@ -43,15 +51,31 @@ export function LoginPage() {
                 required
               />
             </div>
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Signing in…' : 'Sign in'}
             </Button>
           </form>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-card px-2 uppercase tracking-wide text-muted-foreground">or</span>
+            </div>
+          </div>
           <GoogleSignInButton onToken={google} />
-          <div className="flex justify-between text-sm text-gray-600">
-            {allowRegister ? <Link to="/register">Create account</Link> : <span />}
-            <Link to="/forgot-password">Forgot password?</Link>
+          <div className="flex justify-between text-sm">
+            {allowRegister ? (
+              <Link to="/register" className="font-medium text-primary hover:underline">
+                Create account
+              </Link>
+            ) : (
+              <span />
+            )}
+            <Link to="/forgot-password" className="text-muted-foreground hover:text-foreground hover:underline">
+              Forgot password?
+            </Link>
           </div>
         </CardContent>
       </Card>

@@ -41,15 +41,15 @@ export function AdminBookingsPage() {
           <Input value={status} onChange={(e) => setStatus(e.target.value)} placeholder="paid / pending…" />
         </div>
       </div>
-      {loading ? <p className="text-gray-500">Loading…</p> : null}
-      {error ? <p className="text-red-600">{error}</p> : null}
+      {loading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {error ? <p className="text-destructive">{error}</p> : null}
       <div className="space-y-2">
         {(data ?? []).map((booking) => (
           <Card key={booking.bookingsId}>
             <CardContent className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-sm">
                 <p className="font-medium">#{booking.bookingNumber}</p>
-                <p className="text-gray-500">
+                <p className="text-muted-foreground">
                   {booking.status} · {centsToUSD(booking.totalCents)} · seats {booking.seatsReserved}
                 </p>
               </div>
@@ -68,7 +68,7 @@ export function AdminBookingsPage() {
           </Card>
         ))}
       </div>
-      {!loading && (data ?? []).length === 0 ? <p className="text-gray-500">No bookings.</p> : null}
+      {!loading && (data ?? []).length === 0 ? <p className="text-muted-foreground">No bookings.</p> : null}
     </div>
   );
 }

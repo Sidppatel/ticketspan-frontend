@@ -41,7 +41,7 @@ export function MagicLinkVerifyPage() {
           <CardTitle>Verifying…</CardTitle>
         </CardHeader>
         <CardContent>
-          {error ? <p className="text-sm text-red-600">{error}</p> : <p className="text-gray-500">One moment.</p>}
+          {error ? <p className="text-sm text-destructive">{error}</p> : <p className="text-muted-foreground">One moment.</p>}
         </CardContent>
       </Card>
     </div>

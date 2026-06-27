@@ -11,8 +11,8 @@ export function DeveloperDashboardPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Platform overview</h1>
-      {loading ? <p className="text-gray-500">Loading…</p> : null}
-      {error ? <p className="text-red-600">{error}</p> : null}
+      {loading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {error ? <p className="text-destructive">{error}</p> : null}
       {data ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Stat label="Tenants" value={data.totalTenants} />
@@ -29,7 +29,7 @@ function Stat({ label, value }: { label: string; value: number | string }) {
     <Card>
       <CardContent className="space-y-1">
         <CardTitle>{value}</CardTitle>
-        <p className="text-sm text-gray-500">{label}</p>
+        <p className="text-sm text-muted-foreground">{label}</p>
       </CardContent>
     </Card>
   );

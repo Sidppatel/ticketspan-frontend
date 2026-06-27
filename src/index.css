@@ -1,13 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400..700&display=swap');
 @import 'tailwindcss';
 
 :root {
-  --brand-primary: #4f46e5;
-  --brand-secondary: #0ea5e9;
-  --brand-accent: #f59e0b;
-  --brand-font: ui-sans-serif, system-ui, sans-serif;
+  --brand-font: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --brand-font-display: 'Fraunces', 'Inter', ui-serif, Georgia, serif;
+  --gradient-bg: var(--background);
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-amber: var(--amber);
+  --color-amber-foreground: var(--amber-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --font-sans: var(--brand-font);
+  --font-display: var(--brand-font-display);
+}
+
+@keyframes svyne-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes svyne-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes svyne-slide-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes svyne-slide-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes svyne-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes svyne-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 body {
-  font-family: var(--brand-font);
   margin: 0;
+  background-color: var(--background);
+  background-image: var(--gradient-bg);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: var(--foreground);
+  font-family: var(--brand-font);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--brand-font-display);
+  letter-spacing: -0.01em;
+}
+
+.svyne-page {
+  animation: svyne-fade-up 0.4s ease-out both;
+}
+
+.svyne-overlay[data-state='open'] {
+  animation: svyne-fade 0.2s ease-out;
+}
+
+.svyne-sheet-left[data-state='open'] {
+  animation: svyne-slide-left 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.svyne-sheet-right[data-state='open'] {
+  animation: svyne-slide-right 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svyne-page,
+  .svyne-overlay[data-state='open'],
+  .svyne-sheet-left[data-state='open'],
+  .svyne-sheet-right[data-state='open'] {
+    animation: none;
+  }
 }

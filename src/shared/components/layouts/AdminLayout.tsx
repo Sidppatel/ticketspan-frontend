@@ -1,10 +1,13 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { PortalNav } from '@/shared/components/layouts/PortalNav';
 import { useAuth } from '@/shared/auth/useAuth';
 import { canManageTenantSettings } from '@/shared/roles';
+import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 
 export function AdminLayout() {
   const { role } = useAuth();
+  const { pathname } = useLocation();
+  const page = usePageEntrance<HTMLElement>();
   const links = [
     { to: '/', label: 'Dashboard' },
     { to: '/events', label: 'Events' },
@@ -19,9 +22,9 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <PortalNav title="Svyne Admin" links={links} />
-      <main className="mx-auto max-w-6xl px-6 py-6">
+    <div className="min-h-screen bg-background">
+      <PortalNav section="admin" links={links} />
+      <main ref={page} key={pathname} className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
         <Outlet />
       </main>
     </div>

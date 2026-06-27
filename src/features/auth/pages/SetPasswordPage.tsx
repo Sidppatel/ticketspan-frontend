@@ -15,19 +15,16 @@ export function SetPasswordPage() {
   const token = params.get('token') ?? '';
   const { submitNewPassword, loading, error, notice } = useAuthFlow();
   const [password, setPassword] = useState('');
-  const [tokenState, setTokenState] = useState<TokenState>('checking');
-  const [tokenError, setTokenError] = useState('');
+  const [tokenState, setTokenState] = useState<TokenState>(token ? 'checking' : 'invalid');
+  const [tokenError, setTokenError] = useState(token ? '' : 'Missing token in link.');
 
   // Validate the reset link before showing the form. The token is single-use and
   // is only consumed on submit, so an already-used or expired link is rejected here.
   useEffect(() => {
     if (!token) {
-      setTokenState('invalid');
-      setTokenError('Missing token in link.');
       return;
     }
     let active = true;
-    setTokenState('checking');
     validateResetToken(token)
       .then(() => {
         if (active) setTokenState('valid');
@@ -59,7 +56,7 @@ export function SetPasswordPage() {
 
           {tokenState === 'invalid' ? (
             <div className="space-y-2">
-              <p className="text-sm text-red-600">{tokenError}</p>
+              <p className="text-sm text-destructive">{tokenError}</p>
               <Button
                 variant="outline"
                 className="w-full"
@@ -88,8 +85,8 @@ export function SetPasswordPage() {
                   required
                 />
               </div>
-              {error ? <p className="text-sm text-red-600">{error}</p> : null}
-              {notice ? <p className="text-sm text-green-600">{notice}</p> : null}
+              {error ? <p className="text-sm text-destructive">{error}</p> : null}
+              {notice ? <p className="text-sm text-success">{notice}</p> : null}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Saving…' : 'Set password'}
               </Button>

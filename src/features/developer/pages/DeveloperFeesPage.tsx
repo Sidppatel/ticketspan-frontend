@@ -87,7 +87,7 @@ export function DeveloperFeesPage() {
   return (
     <div className="space-y-8">
       <h1 className="text-xl font-semibold">Service fees</h1>
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
       {/* ── Fee formulas ─────────────────────────────────────────── */}
       <Card>
@@ -121,25 +121,25 @@ export function DeveloperFeesPage() {
             {submitting ? 'Adding…' : 'Add formula'}
           </Button>
 
-          {formulas.loading ? <p className="text-gray-500">Loading…</p> : null}
+          {formulas.loading ? <p className="text-muted-foreground">Loading…</p> : null}
           <div className="divide-y rounded-md border">
             {formulaList.map((f) => (
               <div key={f.feeFormulasId} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
                 <div>
                   <span className="font-medium">{f.name}</span>{' '}
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-muted-foreground">
                     {(f.percentBps / 100).toFixed(2)}% + {centsToUSD(f.flatCents)}
                     {f.minFeeCents ? ` · min ${centsToUSD(f.minFeeCents)}` : ''}
                     {f.maxFeeCents ? ` · max ${centsToUSD(f.maxFeeCents)}` : ''}
                   </span>
-                  {!f.isActive ? <span className="ml-2 text-xs text-amber-600">inactive</span> : null}
+                  {!f.isActive ? <span className="ml-2 text-xs text-amber-foreground">inactive</span> : null}
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <span className="text-gray-500">on {centsToUSD(previewPrice)} → {centsToUSD(previewFee(previewPrice, f))}</span>
-                  <button className="text-indigo-600" onClick={() => toggleActive(f)}>
+                  <span className="text-muted-foreground">on {centsToUSD(previewPrice)} → {centsToUSD(previewFee(previewPrice, f))}</span>
+                  <button className="text-primary" onClick={() => toggleActive(f)}>
                     {f.isActive ? 'Disable' : 'Enable'}
                   </button>
-                  <button className="text-red-600" onClick={() => removeFormula(f.feeFormulasId)}>
+                  <button className="text-destructive" onClick={() => removeFormula(f.feeFormulasId)}>
                     Delete
                   </button>
                 </div>
@@ -155,18 +155,18 @@ export function DeveloperFeesPage() {
           <CardTitle>All events</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {events.loading ? <p className="text-gray-500">Loading…</p> : null}
+          {events.loading ? <p className="text-muted-foreground">Loading…</p> : null}
           {(events.data ?? []).map((ev) => (
             <div key={ev.eventsId} className="rounded-md border">
-              <div className="flex items-center justify-between border-b bg-gray-50 px-3 py-2">
+              <div className="flex items-center justify-between border-b bg-muted px-3 py-2">
                 <span className="font-medium">{ev.title}</span>
-                <span className="text-sm text-gray-500">{ev.tenantName} · {ev.status}</span>
+                <span className="text-sm text-muted-foreground">{ev.tenantName} · {ev.status}</span>
               </div>
               {ev.items.length === 0 ? (
-                <p className="px-3 py-2 text-sm text-gray-400">No ticket types or tables.</p>
+                <p className="px-3 py-2 text-sm text-muted-foreground">No ticket types or tables.</p>
               ) : (
                 <table className="w-full text-sm">
-                  <thead className="text-left text-gray-500">
+                  <thead className="text-left text-muted-foreground">
                     <tr>
                       <th className="px-3 py-1 font-normal">Item</th>
                       <th className="px-3 py-1 font-normal">Price</th>
@@ -178,13 +178,13 @@ export function DeveloperFeesPage() {
                     {ev.items.map((it) => (
                       <tr key={`${it.kind}-${it.id}`} className="border-t">
                         <td className="px-3 py-1">
-                          <span className="rounded bg-gray-100 px-1 text-xs uppercase text-gray-500">{it.kind}</span>{' '}
+                          <span className="rounded bg-muted px-1 text-xs uppercase text-muted-foreground">{it.kind}</span>{' '}
                           {it.label}
                         </td>
                         <td className="px-3 py-1">{centsToUSD(it.priceCents)}</td>
                         <td className="px-3 py-1">
                           <select
-                            className="h-8 rounded-md border border-gray-300 px-1 text-sm"
+                            className="h-8 rounded-md border border-input px-1 text-sm"
                             value={it.feeFormulasId}
                             onChange={(e) => assign(it.kind as 'ticket' | 'table', it.id, e.target.value)}
                           >

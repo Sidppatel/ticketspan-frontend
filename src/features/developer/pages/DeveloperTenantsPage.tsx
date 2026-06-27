@@ -72,15 +72,15 @@ export function DeveloperTenantsPage() {
             </div>
           ))}
           <div className="md:col-span-2 mt-2 border-t pt-3">
-            <p className="text-sm font-medium text-gray-700">Stripe onboarding prefill (optional)</p>
-            <p className="text-xs text-gray-500">Pre-fills the seller's Stripe Express onboarding form.</p>
+            <p className="text-sm font-medium text-foreground">Stripe onboarding prefill (optional)</p>
+            <p className="text-xs text-muted-foreground">Pre-fills the seller's Stripe Express onboarding form.</p>
           </div>
 
           <div className="space-y-1">
             <Label htmlFor="businessType">Business type</Label>
             <select
               id="businessType"
-              className="h-9 w-full rounded-md border border-gray-300 px-2 text-sm"
+              className="h-9 w-full rounded-md border border-input px-2 text-sm"
               value={form.businessType}
               onChange={(e) => setForm((prev) => ({ ...prev, businessType: e.target.value }))}
             >
@@ -109,7 +109,7 @@ export function DeveloperTenantsPage() {
             </div>
           ))}
 
-          {formError ? <p className="text-sm text-red-600 md:col-span-2">{formError}</p> : null}
+          {formError ? <p className="text-sm text-destructive md:col-span-2">{formError}</p> : null}
           <div className="md:col-span-2">
             <Button onClick={submit} disabled={submitting}>
               {submitting ? 'Creating…' : 'Create tenant'}
@@ -118,17 +118,17 @@ export function DeveloperTenantsPage() {
         </CardContent>
       </Card>
 
-      {loading ? <p className="text-gray-500">Loading…</p> : null}
-      {error ? <p className="text-red-600">{error}</p> : null}
+      {loading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {error ? <p className="text-destructive">{error}</p> : null}
       <div className="space-y-2">
         {(data ?? []).map((tenant) => (
           <Card key={tenant.tenantsId}>
             <CardContent className="flex flex-wrap items-center justify-between gap-2">
-              <Link to={`/tenants/${tenant.tenantsId}`} className="font-medium text-indigo-600">
-                {tenant.name} <span className="text-gray-400">/{tenant.slug}</span>
+              <Link to={`/tenants/${tenant.tenantsId}`} className="font-medium text-primary">
+                {tenant.name} <span className="text-muted-foreground">/{tenant.slug}</span>
               </Link>
               <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   {tenant.memberCount} members · {tenant.eventCount} events
                 </span>
                 <Button

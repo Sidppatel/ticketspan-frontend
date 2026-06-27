@@ -8,8 +8,10 @@ import { toEpochString } from '@/shared/lib/format';
 import { rpcErrorMessage } from '@/shared/session';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 import { Label } from '@/shared/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { DateTimePicker } from '@/shared/ui/date-time-picker';
 
 export function AdminEventWizardPage() {
   const navigate = useNavigate();
@@ -21,7 +23,6 @@ export function AdminEventWizardPage() {
   const [eventType, setEventType] = useState('Open');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
-  const [capacity, setCapacity] = useState(100);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [venuesId, setVenuesId] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -69,7 +70,7 @@ export function AdminEventWizardPage() {
       category,
       startDate: toEpochString(start),
       endDate: toEpochString(end),
-      maxCapacity: capacity,
+      maxCapacity: 0,
       // Open seating has no floor plan; Table/Both need the grid layout.
       layoutMode: eventType === 'Open' ? 'Open' : 'Grid',
       eventType,
@@ -95,25 +96,17 @@ export function AdminEventWizardPage() {
         <Field label="Title" value={title} onChange={setTitle} />
         <div className="space-y-1">
           <Label>Category</Label>
-          <select
-            className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
+          <Select value={category} onChange={(e) => setCategory(e.target.value)}>
             {categories.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.value}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="space-y-1">
           <Label>Event type</Label>
-          <select
-            className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            value={eventType}
-            onChange={(e) => setEventType(e.target.value)}
-          >
+          <Select value={eventType} onChange={(e) => setEventType(e.target.value)}>
             {eventTypes.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.value === 'Open'
@@ -123,40 +116,32 @@ export function AdminEventWizardPage() {
                     : 'Both (tiers + tables)'}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="space-y-1">
           <Label>Venue</Label>
-          <select
-            className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-            value={venuesId}
-            onChange={(e) => setVenuesId(e.target.value)}
-          >
+          <Select value={venuesId} onChange={(e) => setVenuesId(e.target.value)}>
             {venues.length === 0 ? <option value="">No venues — create one first</option> : null}
             {venues.map((venue) => (
               <option key={venue.venuesId} value={venue.venuesId}>
                 {venue.name}
               </option>
             ))}
-          </select>
-        </div>
-        <div className="space-y-1">
-          <Label>Max capacity</Label>
-          <Input type="number" value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} />
+          </Select>
         </div>
         <div className="space-y-1">
           <Label>Start</Label>
-          <Input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} />
+          <DateTimePicker value={start} onChange={setStart} />
         </div>
         <div className="space-y-1">
           <Label>End</Label>
-          <Input type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
+          <DateTimePicker value={end} onChange={setEnd} />
         </div>
         <div className="space-y-1 md:col-span-2">
           <Label>Description</Label>
           <Input value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
-        {error ? <p className="text-sm text-red-600 md:col-span-2">{error}</p> : null}
+        {error ? <p className="text-sm text-destructive md:col-span-2">{error}</p> : null}
         <div className="md:col-span-2">
           <Button onClick={submit} disabled={submitting}>
             {submitting ? 'Creating…' : 'Create event'}

@@ -105,6 +105,18 @@ export async function listTicketTypes(eventsId: string): Promise<EventTicketType
   return response.ticketTypes;
 }
 
+export async function deleteTicketType(eventTicketTypesId: string): Promise<void> {
+  await callRpc(() => tableBookingClient.deleteEventTicketType({ value: eventTicketTypesId }));
+}
+
+export async function replaceTicketType(
+  eventTicketTypesId: string,
+  draft: TicketTypeDraft,
+): Promise<string> {
+  await deleteTicketType(eventTicketTypesId);
+  return createTicketType(draft);
+}
+
 export async function listEventTables(eventsId: string): Promise<Table[]> {
   const response = await callRpc(() => tableBookingClient.listTablesForEvent({ value: eventsId }));
   return response.tables;

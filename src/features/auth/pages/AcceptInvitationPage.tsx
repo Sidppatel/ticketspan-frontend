@@ -37,7 +37,7 @@ export function AcceptInvitationPage() {
           <CardTitle>Accept invitation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {token ? null : <p className="text-sm text-red-600">Missing token in link.</p>}
+          {token ? null : <p className="text-sm text-destructive">Missing token in link.</p>}
           <div className="space-y-1">
             <Label>First name</Label>
             <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
@@ -50,7 +50,7 @@ export function AcceptInvitationPage() {
             <Label>Password</Label>
             <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
           <Button className="w-full" onClick={submit} disabled={submitting || !token}>
             {submitting ? 'Saving…' : 'Accept and continue'}
           </Button>
