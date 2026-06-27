@@ -9,6 +9,10 @@ export async function listVenues(): Promise<Venue[]> {
   return response.venues;
 }
 
+export async function getVenue(venuesId: string): Promise<Venue> {
+  return callRpc(() => venueClient.getVenue({ value: venuesId }));
+}
+
 export interface VenueDraft {
   name: string;
   description: string;

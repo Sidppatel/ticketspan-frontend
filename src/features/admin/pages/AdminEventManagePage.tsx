@@ -12,6 +12,8 @@ import {
   setEventFeesIncluded,
 } from '@/features/admin/services/eventAdminService';
 import { listTableTemplates } from '@/features/admin/services/tableTemplateService';
+import { getVenue } from '@/features/admin/services/catalogService';
+import { tzForState } from '@/shared/lib/timezone';
 import type { TableTemplate } from '@/shared/proto/booking';
 import { PricingManager } from '@/features/admin/components/PricingManager';
 import { TicketTypesManager } from '@/features/admin/components/TicketTypesManager';
@@ -84,6 +86,13 @@ export function AdminEventManagePage() {
   const templatesLoader = useCallback(() => listTableTemplates(), []);
 
   const event = useAsync(eventLoader);
+  const venuesId = event.data?.venuesId;
+  const venueLoader = useCallback(
+    () => (venuesId ? getVenue(venuesId) : Promise.resolve(null)),
+    [venuesId],
+  );
+  const venue = useAsync(venueLoader);
+  const timeZone = tzForState(venue.data?.state);
   const stats = useAsync(statsLoader);
   const tables = useAsync(tablesLoader);
   const staff = useAsync(staffLoader);
@@ -172,7 +181,12 @@ export function AdminEventManagePage() {
 
       {event.data ? <EditSection event={event.data} onSaved={event.reload} /> : null}
 
-      <PricingManager key={pricingKey} eventsId={eventsId} />
+      <PricingManager
+        key={pricingKey}
+        eventsId={eventsId}
+        eventType={event.data?.eventType || 'Open'}
+        timeZone={timeZone}
+      />
       {event.data && event.data.eventType !== 'Open' ? (
         <FloorPlanPanel key={floorKey} eventsId={eventsId} onTypesChanged={() => setPricingKey((k) => k + 1)} />
       ) : null}

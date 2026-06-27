@@ -4,7 +4,7 @@ import { createEvent, type EventDraft } from '@/features/admin/services/eventAdm
 import { listVenues } from '@/features/admin/services/catalogService';
 import type { Venue } from '@/shared/proto/catalog';
 import { listEnums, type EnumOption } from '@/shared/enums';
-import { toEpochString } from '@/shared/lib/format';
+import { tzForState, zonedInputToEpoch } from '@/shared/lib/timezone';
 import { rpcErrorMessage } from '@/shared/session';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -27,6 +27,7 @@ export function AdminEventWizardPage() {
   const [venuesId, setVenuesId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const venueTz = tzForState(venues.find((v) => v.venuesId === venuesId)?.state);
 
   useEffect(() => {
     listVenues()
@@ -68,8 +69,8 @@ export function AdminEventWizardPage() {
       description,
       status: 'Draft',
       category,
-      startDate: toEpochString(start),
-      endDate: toEpochString(end),
+      startDate: zonedInputToEpoch(start, venueTz),
+      endDate: zonedInputToEpoch(end, venueTz),
       maxCapacity: 0,
       // Open seating has no floor plan; Table/Both need the grid layout.
       layoutMode: eventType === 'Open' ? 'Open' : 'Grid',
@@ -131,11 +132,11 @@ export function AdminEventWizardPage() {
         </div>
         <div className="space-y-1">
           <Label>Start</Label>
-          <DateTimePicker value={start} onChange={setStart} />
+          <DateTimePicker value={start} onChange={setStart} timeZone={venueTz} />
         </div>
         <div className="space-y-1">
           <Label>End</Label>
-          <DateTimePicker value={end} onChange={setEnd} />
+          <DateTimePicker value={end} onChange={setEnd} timeZone={venueTz} />
         </div>
         <div className="space-y-1 md:col-span-2">
           <Label>Description</Label>

@@ -52,6 +52,10 @@ export interface Venue {
      * @generated from protobuf field: bool is_active = 8;
      */
     isActive: boolean;
+    /**
+     * @generated from protobuf field: string state = 9;
+     */
+    state: string;
 }
 /**
  * @generated from protobuf message svyne.catalog.CreateVenueRequest
@@ -328,7 +332,8 @@ class Venue$Type extends MessageType<Venue> {
             { no: 5, name: "phone", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 6, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 7, name: "website", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 8, name: "is_active", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 8, name: "is_active", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 9, name: "state", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Venue>): Venue {
@@ -341,6 +346,7 @@ class Venue$Type extends MessageType<Venue> {
         message.email = "";
         message.website = "";
         message.isActive = false;
+        message.state = "";
         if (value !== undefined)
             reflectionMergePartial<Venue>(this, message, value);
         return message;
@@ -373,6 +379,9 @@ class Venue$Type extends MessageType<Venue> {
                     break;
                 case /* bool is_active */ 8:
                     message.isActive = reader.bool();
+                    break;
+                case /* string state */ 9:
+                    message.state = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -410,6 +419,9 @@ class Venue$Type extends MessageType<Venue> {
         /* bool is_active = 8; */
         if (message.isActive !== false)
             writer.tag(8, WireType.Varint).bool(message.isActive);
+        /* string state = 9; */
+        if (message.state !== "")
+            writer.tag(9, WireType.LengthDelimited).string(message.state);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

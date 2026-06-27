@@ -5,15 +5,18 @@ import { Button } from '@/shared/ui/button';
 import { Calendar } from '@/shared/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { cn } from '@/shared/lib/cn';
+import { zoneAbbrev } from '@/shared/lib/timezone';
 
 const FORMAT = "yyyy-MM-dd'T'HH:mm";
 
 export function DateTimePicker({
   value,
   onChange,
+  timeZone,
 }: {
   value: string;
   onChange: (value: string) => void;
+  timeZone?: string;
 }) {
   const parsed = value ? parse(value, FORMAT, new Date(0)) : undefined;
 
@@ -147,6 +150,11 @@ export function DateTimePicker({
           {parsed ? (isPM ? 'PM' : 'AM') : 'AM'}
         </button>
       </div>
+      {timeZone ? (
+        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {zoneAbbrev(timeZone)}
+        </span>
+      ) : null}
     </div>
   );
 }
