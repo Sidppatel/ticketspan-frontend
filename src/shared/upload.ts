@@ -7,6 +7,10 @@ export interface UploadResult {
   storageKey: string;
 }
 
+export function imageUrl(imagesId: string): string {
+  return `${BACKEND_URL}/images/${imagesId}`;
+}
+
 export async function uploadImage(
   file: File,
   entityType: string,

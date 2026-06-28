@@ -1,6 +1,6 @@
 import { eventClient, bookingClient, tableBookingClient, pricingClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
-import type { Event } from '@/shared/proto/event';
+import type { Event, EventImage } from '@/shared/proto/event';
 import type { Booking } from '@/shared/proto/bookings';
 import type { EventLayout } from '@/shared/proto/booking';
 import type { PriceBreakdown } from '@/shared/proto/pricing';
@@ -20,6 +20,11 @@ export async function listPublicEvents(search: string): Promise<Event[]> {
 
 export async function getEventBySlug(slug: string): Promise<Event> {
   return callRpc(() => eventClient.getEventBySlug({ slug }));
+}
+
+export async function listEventImages(eventsId: string, type: string): Promise<EventImage[]> {
+  const response = await callRpc(() => eventClient.listEventImages({ eventsId, type }));
+  return response.images;
 }
 
 export async function listMyBookings(): Promise<Booking[]> {

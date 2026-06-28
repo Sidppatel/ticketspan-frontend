@@ -4,6 +4,7 @@ import { useAsync } from '@/shared/hooks/useAsync';
 import { listPublicEvents } from '@/features/public/services/publicEventService';
 import { Input } from '@/shared/ui/input';
 import { Card, CardContent, CardTitle } from '@/shared/ui/card';
+import { imageUrl } from '@/shared/upload';
 
 export function EventListPage() {
   const [search, setSearch] = useState('');
@@ -27,7 +28,14 @@ export function EventListPage() {
             className="svyne-page rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
           >
-            <Card interactive className="group h-full">
+            <Card interactive className="group h-full overflow-hidden">
+              {event.primaryImageId ? (
+                <img
+                  src={imageUrl(event.primaryImageId)}
+                  alt=""
+                  className="aspect-[4/3] w-full object-cover"
+                />
+              ) : null}
               <CardContent className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <CardTitle className="transition-colors group-hover:text-primary">{event.title}</CardTitle>

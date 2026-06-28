@@ -1,6 +1,6 @@
 import { eventClient, tableBookingClient, bookingClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
-import type { Event, EventStats, ScheduleItem } from '@/shared/proto/event';
+import type { Event, EventStats, ScheduleItem, EventImage, MediaSettings } from '@/shared/proto/event';
 import type { Table } from '@/shared/proto/booking';
 import type { EventTicketType } from '@/shared/proto/bookings';
 
@@ -228,4 +228,37 @@ export async function setEventFeesIncluded(eventsId: string, feesIncluded: boole
 export async function listEventTableTypes(eventsId: string) {
   const response = await callRpc(() => tableBookingClient.listEventTableTypes({ value: eventsId }));
   return response.tableTypes;
+}
+
+export async function listEventImages(eventsId: string, type: string): Promise<EventImage[]> {
+  const response = await callRpc(() => eventClient.listEventImages({ eventsId, type }));
+  return response.images;
+}
+
+export async function addEventImage(
+  eventsId: string,
+  imagesId: string,
+  type: string,
+): Promise<EventImage> {
+  return callRpc(() => eventClient.addEventImage({ eventsId, imagesId, type }));
+}
+
+export async function removeEventImage(eventsId: string, imagesId: string): Promise<void> {
+  await callRpc(() => eventClient.removeEventImage({ eventsId, imagesId }));
+}
+
+export async function setPrimaryEventImage(eventsId: string, imagesId: string): Promise<void> {
+  await callRpc(() => eventClient.setPrimaryEventImage({ eventsId, imagesId }));
+}
+
+export async function reorderEventImages(
+  eventsId: string,
+  type: string,
+  imagesId: string[],
+): Promise<void> {
+  await callRpc(() => eventClient.reorderEventImages({ eventsId, type, imagesId }));
+}
+
+export async function getMediaSettings(): Promise<MediaSettings> {
+  return callRpc(() => eventClient.getMediaSettings({}));
 }

@@ -5,6 +5,14 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { EventService } from "./event";
+import type { MediaSettings } from "./event";
+import type { Empty } from "./common";
+import type { ReorderEventImagesRequest } from "./event";
+import type { RemoveEventImageRequest } from "./event";
+import type { EventImage } from "./event";
+import type { AddEventImageRequest } from "./event";
+import type { ListEventImagesResponse } from "./event";
+import type { ListEventImagesRequest } from "./event";
 import type { UpdateScheduleItemRequest } from "./event";
 import type { CreateScheduleItemRequest } from "./event";
 import type { ListScheduleItemsResponse } from "./event";
@@ -84,6 +92,30 @@ export interface IEventServiceClient {
      * @generated from protobuf rpc: DeleteScheduleItem(svyne.common.UuidValue) returns (svyne.common.AckResponse);
      */
     deleteScheduleItem(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
+    /**
+     * @generated from protobuf rpc: ListEventImages(svyne.event.ListEventImagesRequest) returns (svyne.event.ListEventImagesResponse);
+     */
+    listEventImages(input: ListEventImagesRequest, options?: RpcOptions): UnaryCall<ListEventImagesRequest, ListEventImagesResponse>;
+    /**
+     * @generated from protobuf rpc: AddEventImage(svyne.event.AddEventImageRequest) returns (svyne.event.EventImage);
+     */
+    addEventImage(input: AddEventImageRequest, options?: RpcOptions): UnaryCall<AddEventImageRequest, EventImage>;
+    /**
+     * @generated from protobuf rpc: RemoveEventImage(svyne.event.RemoveEventImageRequest) returns (svyne.common.AckResponse);
+     */
+    removeEventImage(input: RemoveEventImageRequest, options?: RpcOptions): UnaryCall<RemoveEventImageRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: SetPrimaryEventImage(svyne.event.RemoveEventImageRequest) returns (svyne.common.AckResponse);
+     */
+    setPrimaryEventImage(input: RemoveEventImageRequest, options?: RpcOptions): UnaryCall<RemoveEventImageRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: ReorderEventImages(svyne.event.ReorderEventImagesRequest) returns (svyne.common.AckResponse);
+     */
+    reorderEventImages(input: ReorderEventImagesRequest, options?: RpcOptions): UnaryCall<ReorderEventImagesRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: GetMediaSettings(svyne.common.Empty) returns (svyne.event.MediaSettings);
+     */
+    getMediaSettings(input: Empty, options?: RpcOptions): UnaryCall<Empty, MediaSettings>;
 }
 /**
  * @generated from protobuf service svyne.event.EventService
@@ -191,5 +223,47 @@ export class EventServiceClient implements IEventServiceClient, ServiceInfo {
     deleteScheduleItem(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
         const method = this.methods[13], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ListEventImages(svyne.event.ListEventImagesRequest) returns (svyne.event.ListEventImagesResponse);
+     */
+    listEventImages(input: ListEventImagesRequest, options?: RpcOptions): UnaryCall<ListEventImagesRequest, ListEventImagesResponse> {
+        const method = this.methods[14], opt = this._transport.mergeOptions(options);
+        return stackIntercept<ListEventImagesRequest, ListEventImagesResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: AddEventImage(svyne.event.AddEventImageRequest) returns (svyne.event.EventImage);
+     */
+    addEventImage(input: AddEventImageRequest, options?: RpcOptions): UnaryCall<AddEventImageRequest, EventImage> {
+        const method = this.methods[15], opt = this._transport.mergeOptions(options);
+        return stackIntercept<AddEventImageRequest, EventImage>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: RemoveEventImage(svyne.event.RemoveEventImageRequest) returns (svyne.common.AckResponse);
+     */
+    removeEventImage(input: RemoveEventImageRequest, options?: RpcOptions): UnaryCall<RemoveEventImageRequest, AckResponse> {
+        const method = this.methods[16], opt = this._transport.mergeOptions(options);
+        return stackIntercept<RemoveEventImageRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: SetPrimaryEventImage(svyne.event.RemoveEventImageRequest) returns (svyne.common.AckResponse);
+     */
+    setPrimaryEventImage(input: RemoveEventImageRequest, options?: RpcOptions): UnaryCall<RemoveEventImageRequest, AckResponse> {
+        const method = this.methods[17], opt = this._transport.mergeOptions(options);
+        return stackIntercept<RemoveEventImageRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ReorderEventImages(svyne.event.ReorderEventImagesRequest) returns (svyne.common.AckResponse);
+     */
+    reorderEventImages(input: ReorderEventImagesRequest, options?: RpcOptions): UnaryCall<ReorderEventImagesRequest, AckResponse> {
+        const method = this.methods[18], opt = this._transport.mergeOptions(options);
+        return stackIntercept<ReorderEventImagesRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: GetMediaSettings(svyne.common.Empty) returns (svyne.event.MediaSettings);
+     */
+    getMediaSettings(input: Empty, options?: RpcOptions): UnaryCall<Empty, MediaSettings> {
+        const method = this.methods[19], opt = this._transport.mergeOptions(options);
+        return stackIntercept<Empty, MediaSettings>("unary", this._transport, method, opt, input);
     }
 }

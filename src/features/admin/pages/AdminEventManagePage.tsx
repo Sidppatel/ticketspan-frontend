@@ -20,6 +20,7 @@ import { PricingManager } from '@/features/admin/components/PricingManager';
 import { ScheduleTimeline } from '@/features/admin/components/ScheduleTimeline';
 import { TicketTypesManager } from '@/features/admin/components/TicketTypesManager';
 import { FloorPlanPanel } from '@/features/admin/components/FloorPlanPanel';
+import { EventMediaManager } from '@/features/admin/components/EventMediaManager';
 import type { Event } from '@/shared/proto/event';
 import {
   listStaffForEvent,
@@ -188,6 +189,8 @@ export function AdminEventManagePage() {
       ) : null}
 
       {event.data ? <EditSection event={event.data} timeZone={timeZone} onSaved={event.reload} /> : null}
+
+      <EventMediaManager eventsId={eventsId} />
 
       {event.data ? (
         <ScheduleTimeline
