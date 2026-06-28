@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { getEventLayout, saveEventLayout } from '@/features/admin/services/layoutService';
@@ -27,10 +27,12 @@ type PlacedObject = {
   posY: number;
   width: number;
   height: number;
+  color: string;
 };
 
 const OBJECT_TYPES = ['Entry', 'Exit', 'Stage'];
 const OBJECT_GLYPH: Record<string, string> = { Entry: '→', Exit: '←', Stage: '▭' };
+const OBJECT_DEFAULT_COLOR: Record<string, string> = { Entry: '#059669', Exit: '#059669', Stage: '#059669' };
 const CANVAS_W = 1000;
 const CANVAS_H = 640;
 const SNAP = 5;
@@ -98,34 +100,50 @@ export function FloorPlanBuilder({
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<Drag | null>(null);
 
+  const draftKey = `floorplan-draft:${eventsId}`;
+
   const [prevLayoutData, setPrevLayoutData] = useState<unknown>(null);
   if (layout.data && layout.data !== prevLayoutData) {
     setPrevLayoutData(layout.data);
-    setTables(
-      layout.data.tables.map((t: Table) => ({
-        tablesId: t.tablesId,
-        eventTablesId: t.eventTablesId,
-        label: t.label,
-        posX: t.posX,
-        posY: t.posY,
-        width: t.width || DEFAULT_SIZE,
-        height: t.height || DEFAULT_SIZE,
-        shapeOverride: t.shapeOverride || '',
-        colorOverride: t.colorOverride || '',
-      })),
-    );
-    setObjects(
-      layout.data.objects.map((o: LayoutObject) => ({
-        layoutObjectsId: o.layoutObjectsId,
-        objectType: o.objectType,
-        posX: o.posX,
-        posY: o.posY,
-        width: o.width || DEFAULT_SIZE,
-        height: o.height || DEFAULT_SIZE,
-      })),
-    );
-    setDirty(false);
+    const draftRaw = window.localStorage.getItem(draftKey);
+    const draft = draftRaw ? (JSON.parse(draftRaw) as { tables: PlacedTable[]; objects: PlacedObject[] }) : null;
+    if (draft) {
+      setTables(draft.tables);
+      setObjects(draft.objects);
+      setDirty(true);
+    } else {
+      setTables(
+        layout.data.tables.map((t: Table) => ({
+          tablesId: t.tablesId,
+          eventTablesId: t.eventTablesId,
+          label: t.label,
+          posX: t.posX,
+          posY: t.posY,
+          width: t.width || DEFAULT_SIZE,
+          height: t.height || DEFAULT_SIZE,
+          shapeOverride: t.shapeOverride || '',
+          colorOverride: t.colorOverride || '',
+        })),
+      );
+      setObjects(
+        layout.data.objects.map((o: LayoutObject) => ({
+          layoutObjectsId: o.layoutObjectsId,
+          objectType: o.objectType,
+          posX: o.posX,
+          posY: o.posY,
+          width: o.width || DEFAULT_SIZE,
+          height: o.height || DEFAULT_SIZE,
+          color: o.color || OBJECT_DEFAULT_COLOR[o.objectType] || '#059669',
+        })),
+      );
+      setDirty(false);
+    }
   }
+
+  useEffect(() => {
+    if (!dirty) return;
+    window.localStorage.setItem(draftKey, JSON.stringify({ tables, objects }));
+  }, [tables, objects, dirty, draftKey]);
 
   const typeList = useMemo(() => types.data ?? [], [types.data]);
   const typeById = useMemo(() => {
@@ -134,11 +152,12 @@ export function FloorPlanBuilder({
     return m;
   }, [typeList]);
 
-  function nextTableLabel() {
-    let n = tables.length + 1;
-    const used = new Set(tables.map((t) => t.label));
-    while (used.has(`T${n}`)) n += 1;
-    return `T${n}`;
+  function nextTableLabel(typeId: string) {
+    const typeName = typeById.get(typeId)?.label || 'Table';
+    const used = new Set(tables.filter((t) => t.eventTablesId === typeId).map((t) => t.label));
+    let n = 1;
+    while (used.has(`${typeName} - ${n}`)) n += 1;
+    return `${typeName} - ${n}`;
   }
 
   // Pointer position relative to the canvas origin.
@@ -171,7 +190,7 @@ export function FloorPlanBuilder({
     setTables((prev) => [
       ...prev,
       {
-        tablesId: '', eventTablesId: typeId, label: nextTableLabel(),
+        tablesId: '', eventTablesId: typeId, label: nextTableLabel(typeId),
         posX: px, posY: py, width: w, height: h, shapeOverride: '', colorOverride: '',
       },
     ]);
@@ -186,6 +205,7 @@ export function FloorPlanBuilder({
         posX: clamp(snap(cx - DEFAULT_SIZE / 2), 0, CANVAS_W - DEFAULT_SIZE),
         posY: clamp(snap(cy - DEFAULT_SIZE / 2), 0, CANVAS_H - DEFAULT_SIZE),
         width: DEFAULT_SIZE, height: DEFAULT_SIZE,
+        color: OBJECT_DEFAULT_COLOR[objectType] || '#059669',
       },
     ]);
     setDirty(true);
@@ -352,12 +372,13 @@ export function FloorPlanBuilder({
               posY: o.posY,
               width: o.width,
               height: o.height,
-              color: '',
+              color: o.color,
               sortOrder: 0,
             }) as LayoutObject,
         ),
       );
       setDirty(false);
+      window.localStorage.removeItem(draftKey);
       setNotice('Layout saved');
       layout.reload();
       onLayoutSaved?.();
@@ -439,7 +460,20 @@ export function FloorPlanBuilder({
                   selected === `t${i}` ? 'border-black ring-2 ring-black' : 'border-black/10'
                 }`}
               >
-                {t.label}
+                {selected === `t${i}` ? (
+                  <input
+                    value={t.label}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onChange={(e) => {
+                      const label = e.target.value;
+                      setTables((prev) => prev.map((x, idx) => (idx === i ? { ...x, label } : x)));
+                      setDirty(true);
+                    }}
+                    className="z-10 w-[90%] rounded border-none bg-white/90 px-1 text-center text-[11px] text-black"
+                  />
+                ) : (
+                  t.label
+                )}
                 {selected === `t${i}` ? (
                   <button type="button" title="Delete table"
                     onPointerDown={(e) => e.stopPropagation()}
@@ -466,20 +500,34 @@ export function FloorPlanBuilder({
               title={`${o.objectType} (drag to move, corner to resize, click to select)`}
               style={{
                 position: 'absolute', left: o.posX, top: o.posY, width: o.width, height: o.height,
-                touchAction: 'none',
+                backgroundColor: o.color, touchAction: 'none',
               }}
-              className={`flex cursor-move select-none items-center justify-center rounded bg-emerald-600 text-xs text-white ${
-                selected === `o${i}` ? 'border-2 border-black ring-2 ring-black' : 'border border-emerald-700'
+              className={`flex cursor-move select-none items-center justify-center rounded text-xs text-white ${
+                selected === `o${i}` ? 'border-2 border-black ring-2 ring-black' : 'border border-black/20'
               }`}
             >
               {OBJECT_GLYPH[o.objectType] ?? o.objectType[0]} {o.objectType}
               {selected === `o${i}` ? (
-                <button type="button" title="Delete object"
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={() => deleteObject(i)}
-                  className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-destructive text-[11px] leading-none text-white shadow">
-                  ×
-                </button>
+                <>
+                  <input
+                    type="color"
+                    value={o.color}
+                    title="Change color"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onChange={(e) => {
+                      const color = e.target.value;
+                      setObjects((prev) => prev.map((x, idx) => (idx === i ? { ...x, color } : x)));
+                      setDirty(true);
+                    }}
+                    className="absolute -bottom-2 -left-2 h-5 w-5 cursor-pointer rounded-full border border-white p-0 shadow"
+                  />
+                  <button type="button" title="Delete object"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={() => deleteObject(i)}
+                    className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-destructive text-[11px] leading-none text-white shadow">
+                    ×
+                  </button>
+                </>
               ) : null}
               <span
                 onPointerDown={(e) => onItemPointerDown(e, 'object', 'resize', i)}

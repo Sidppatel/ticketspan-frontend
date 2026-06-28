@@ -102,10 +102,7 @@ export function AdminEventManagePage() {
 
   const typeList = tableTypes.data ?? [];
   const usedTemplateNames = new Set(typeList.map((t) => t.label));
-  const usedColors = new Set(typeList.map((t) => t.color));
-  const templateList = (templates.data ?? []).filter(
-    (t) => !usedTemplateNames.has(t.name) && !usedColors.has(t.defaultColor),
-  );
+  const templateList = (templates.data ?? []).filter((t) => !usedTemplateNames.has(t.name));
 
   // Admin picks a catalog table type; values below override the template defaults.
   const [tableTemplateId, setTableTemplateId] = useState('');
@@ -113,8 +110,8 @@ export function AdminEventManagePage() {
   const [tableCapacity, setTableCapacity] = useState(8);
   const [tablePriceCents, setTablePriceCents] = useState(0);
   const [tableColor, setTableColor] = useState('');
-  const [tableIsAllInclusive, setTableIsAllInclusive] = useState(true);
-  const [tablePerAttendeeCents, setTablePerAttendeeCents] = useState(0);
+  const tableIsAllInclusive = true;
+  const tablePerAttendeeCents = 0;
   const [tableWidth, setTableWidth] = useState(80);
   const [tableHeight, setTableHeight] = useState(80);
 
@@ -233,6 +230,10 @@ export function AdminEventManagePage() {
               </Select>
             </div>
             <div className="space-y-1">
+              <Label>Table type name</Label>
+              <Input className="w-32" value={tableLabel} disabled readOnly />
+            </div>
+            <div className="space-y-1">
               <Label>Color</Label>
               <span
                 className="flex h-9 w-14 items-center justify-center rounded-md border border-input"
@@ -243,38 +244,34 @@ export function AdminEventManagePage() {
             </div>
             <div className="space-y-1">
               <Label>Capacity</Label>
-              <Input type="number" value={tableCapacity} onChange={(e) => setTableCapacity(Number(e.target.value))} />
+              <Input
+                type="number"
+                disabled={!tableTemplateId}
+                value={tableCapacity}
+                onChange={(e) => setTableCapacity(Number(e.target.value))}
+              />
             </div>
             <div className="space-y-1">
               <Label>Price (cents)</Label>
-              <Input type="number" value={tablePriceCents} onChange={(e) => setTablePriceCents(Number(e.target.value))} />
+              <Input
+                type="number"
+                disabled={!tableTemplateId}
+                value={tablePriceCents}
+                onChange={(e) => setTablePriceCents(Number(e.target.value))}
+              />
             </div>
             <div className="space-y-1">
               <Label>Width (px)</Label>
-              <Input className="w-20" type="number" min={20} value={tableWidth} onChange={(e) => setTableWidth(Number(e.target.value))} />
+              <Input className="w-20" type="number" value={tableWidth} disabled readOnly />
             </div>
             <div className="space-y-1">
               <Label>Height (px)</Label>
-              <Input className="w-20" type="number" min={20} value={tableHeight} onChange={(e) => setTableHeight(Number(e.target.value))} />
+              <Input className="w-20" type="number" value={tableHeight} disabled readOnly />
             </div>
             <label className="flex items-center gap-2 self-center text-sm">
-              <input
-                type="checkbox"
-                checked={tableIsAllInclusive}
-                onChange={(e) => setTableIsAllInclusive(e.target.checked)}
-              />
+              <input type="checkbox" checked={tableIsAllInclusive} disabled readOnly />
               All-inclusive (flat table price)
             </label>
-            {!tableIsAllInclusive && (
-              <div className="space-y-1">
-                <Label>Per attendee (cents)</Label>
-                <Input
-                  type="number"
-                  value={tablePerAttendeeCents}
-                  onChange={(e) => setTablePerAttendeeCents(Number(e.target.value))}
-                />
-              </div>
-            )}
             <Button
               size="sm"
               disabled={!tableTemplateId}
