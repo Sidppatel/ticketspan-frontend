@@ -24,6 +24,7 @@ export function TicketTypesManager({ eventsId }: { eventsId: string }) {
   const [label, setLabel] = useState('');
   const [priceUsd, setPriceUsd] = useState('');
   const [description, setDescription] = useState('');
+  const [capacity, setCapacity] = useState(0);
 
   async function guard(action: () => Promise<void>) {
     setNotice(null);
@@ -62,6 +63,17 @@ export function TicketTypesManager({ eventsId }: { eventsId: string }) {
               placeholder="0.00"
             />
           </div>
+          <div className="space-y-1">
+            <Label>Capacity</Label>
+            <Input
+              className="w-24"
+              type="number"
+              min={0}
+              value={capacity}
+              onChange={(e) => setCapacity(Number(e.target.value))}
+              placeholder="0"
+            />
+          </div>
           <div className="space-y-1 flex-1 min-w-48">
             <Label>Description</Label>
             <Input value={description} onChange={(e) => setDescription(e.target.value)} />
@@ -79,10 +91,12 @@ export function TicketTypesManager({ eventsId }: { eventsId: string }) {
                   maxQuantity: 0,
                   sortOrder: 0,
                   description,
+                  capacity,
                 }).then(() => {
                   setLabel('');
                   setPriceUsd('');
                   setDescription('');
+                  setCapacity(0);
                   ticketTypes.reload();
                 }),
               )
@@ -122,6 +136,7 @@ function TicketTypeRow({
   const [label, setLabel] = useState(tt.label);
   const [priceUsd, setPriceUsd] = useState(centsToUsdInput(tt.priceCents));
   const [description, setDescription] = useState(tt.description);
+  const [capacity, setCapacity] = useState(tt.capacity);
 
   async function guard(action: () => Promise<void>) {
     try {
@@ -142,6 +157,10 @@ function TicketTypeRow({
           <Label>Price (USD)</Label>
           <Input className="w-28" type="number" min={0} step="0.01" value={priceUsd} onChange={(e) => setPriceUsd(e.target.value)} />
         </div>
+        <div className="space-y-1">
+          <Label>Capacity</Label>
+          <Input className="w-24" type="number" min={0} value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} />
+        </div>
         <div className="space-y-1 flex-1 min-w-48">
           <Label>Description</Label>
           <Input value={description} onChange={(e) => setDescription(e.target.value)} />
@@ -159,6 +178,7 @@ function TicketTypeRow({
                 maxQuantity: tt.maxQuantity,
                 sortOrder: 0,
                 description,
+                capacity,
               }).then(() => {
                 setEditing(false);
                 onChanged();
@@ -180,6 +200,7 @@ function TicketTypeRow({
       <div className="min-w-0">
         <span className="font-medium">{tt.label}</span>
         {tt.description ? <span className="block truncate text-xs text-muted-foreground">{tt.description}</span> : null}
+        {tt.capacity ? <span className="block text-xs text-muted-foreground">Capacity {tt.capacity}</span> : null}
       </div>
       <div className="flex shrink-0 items-center gap-3">
         <span className="text-muted-foreground tabular-nums">

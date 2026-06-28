@@ -330,6 +330,10 @@ export interface CreateEventTicketTypeRequest {
      * @generated from protobuf field: string description = 7;
      */
     description: string;
+    /**
+     * @generated from protobuf field: int32 capacity = 8;
+     */
+    capacity: number; // seats this tier contributes to event capacity (0 = uncapped)
 }
 /**
  * @generated from protobuf message svyne.booking.UpdateEventTicketTypeRequest
@@ -367,6 +371,10 @@ export interface UpdateEventTicketTypeRequest {
      * @generated from protobuf field: bool is_active = 8;
      */
     isActive: boolean;
+    /**
+     * @generated from protobuf field: int32 capacity = 9;
+     */
+    capacity: number; // seats this tier contributes to event capacity (0 = uncapped)
 }
 /**
  * A catalog price rule on a table template (mirrors pricing.PriceRule, keyed by
@@ -1354,7 +1362,8 @@ class CreateEventTicketTypeRequest$Type extends MessageType<CreateEventTicketTyp
             { no: 4, name: "fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "max_quantity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 6, name: "sort_order", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 7, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 7, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<CreateEventTicketTypeRequest>): CreateEventTicketTypeRequest {
@@ -1366,6 +1375,7 @@ class CreateEventTicketTypeRequest$Type extends MessageType<CreateEventTicketTyp
         message.maxQuantity = 0;
         message.sortOrder = 0;
         message.description = "";
+        message.capacity = 0;
         if (value !== undefined)
             reflectionMergePartial<CreateEventTicketTypeRequest>(this, message, value);
         return message;
@@ -1395,6 +1405,9 @@ class CreateEventTicketTypeRequest$Type extends MessageType<CreateEventTicketTyp
                     break;
                 case /* string description */ 7:
                     message.description = reader.string();
+                    break;
+                case /* int32 capacity */ 8:
+                    message.capacity = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1429,6 +1442,9 @@ class CreateEventTicketTypeRequest$Type extends MessageType<CreateEventTicketTyp
         /* string description = 7; */
         if (message.description !== "")
             writer.tag(7, WireType.LengthDelimited).string(message.description);
+        /* int32 capacity = 8; */
+        if (message.capacity !== 0)
+            writer.tag(8, WireType.Varint).int32(message.capacity);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1450,7 +1466,8 @@ class UpdateEventTicketTypeRequest$Type extends MessageType<UpdateEventTicketTyp
             { no: 5, name: "max_quantity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 6, name: "sort_order", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 7, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 8, name: "is_active", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 8, name: "is_active", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 9, name: "capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<UpdateEventTicketTypeRequest>): UpdateEventTicketTypeRequest {
@@ -1463,6 +1480,7 @@ class UpdateEventTicketTypeRequest$Type extends MessageType<UpdateEventTicketTyp
         message.sortOrder = 0;
         message.description = "";
         message.isActive = false;
+        message.capacity = 0;
         if (value !== undefined)
             reflectionMergePartial<UpdateEventTicketTypeRequest>(this, message, value);
         return message;
@@ -1495,6 +1513,9 @@ class UpdateEventTicketTypeRequest$Type extends MessageType<UpdateEventTicketTyp
                     break;
                 case /* bool is_active */ 8:
                     message.isActive = reader.bool();
+                    break;
+                case /* int32 capacity */ 9:
+                    message.capacity = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1532,6 +1553,9 @@ class UpdateEventTicketTypeRequest$Type extends MessageType<UpdateEventTicketTyp
         /* bool is_active = 8; */
         if (message.isActive !== false)
             writer.tag(8, WireType.Varint).bool(message.isActive);
+        /* int32 capacity = 9; */
+        if (message.capacity !== 0)
+            writer.tag(9, WireType.Varint).int32(message.capacity);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

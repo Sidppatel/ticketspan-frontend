@@ -11,6 +11,7 @@ export interface RuleDraft {
   name: string;
   ruleType: string;
   percent: number;
+  capacity: number;
   activeFrom: string;
   activeUntil: string;
 }
@@ -33,6 +34,7 @@ export function RuleDialog({
   const [name, setName] = useState('');
   const [ruleType, setRuleType] = useState('Presale');
   const [percent, setPercent] = useState(10);
+  const [capacity, setCapacity] = useState(0);
   const [from, setFrom] = useState('');
   const [until, setUntil] = useState('');
   const [busy, setBusy] = useState(false);
@@ -80,6 +82,7 @@ export function RuleDialog({
         name: name.trim(),
         ruleType: ruleType.trim() || 'Custom',
         percent,
+        capacity,
         activeFrom: zonedInputToEpoch(from, timeZone),
         activeUntil: zonedInputToEpoch(until, timeZone),
       });
@@ -160,6 +163,16 @@ export function RuleDialog({
                 onChange={(e) => setPercent(Number(e.target.value))}
               />
             </div>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="rule-capacity">Capacity (people/seats, 0 = no cap)</Label>
+            <Input
+              id="rule-capacity"
+              type="number"
+              min={0}
+              value={capacity}
+              onChange={(e) => setCapacity(Number(e.target.value))}
+            />
           </div>
           <div className="space-y-1">
             <div className="flex items-baseline justify-between">

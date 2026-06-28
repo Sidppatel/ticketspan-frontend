@@ -12,7 +12,6 @@ export interface EventDraft {
   category: string;
   startDate: string;
   endDate: string;
-  maxCapacity: number;
   layoutMode: string;
   eventType: string;
   venuesId: string;
@@ -33,7 +32,6 @@ export async function createEvent(draft: EventDraft): Promise<string> {
       isFeatured: false,
       layoutMode: draft.layoutMode,
       eventType: draft.eventType,
-      maxCapacity: draft.maxCapacity,
       venuesId: draft.venuesId,
       scheduledPublishAt: '0',
     }),
@@ -52,7 +50,6 @@ export async function updateEvent(eventsId: string, draft: EventDraft): Promise<
       endDate: draft.endDate,
       imagePath: draft.imagePath,
       isFeatured: false,
-      maxCapacity: draft.maxCapacity,
       venuesId: draft.venuesId,
       eventType: draft.eventType,
     }),
@@ -83,6 +80,7 @@ export interface TicketTypeDraft {
   maxQuantity: number;
   sortOrder: number;
   description: string;
+  capacity: number;
 }
 
 export async function createTicketType(draft: TicketTypeDraft): Promise<string> {
@@ -95,6 +93,7 @@ export async function createTicketType(draft: TicketTypeDraft): Promise<string> 
       maxQuantity: draft.maxQuantity,
       sortOrder: draft.sortOrder,
       description: draft.description,
+      capacity: draft.capacity,
     }),
   );
   return response.value;
@@ -122,6 +121,7 @@ export async function updateTicketType(
       maxQuantity: draft.maxQuantity,
       sortOrder: draft.sortOrder,
       description: draft.description,
+      capacity: draft.capacity,
       isActive: true,
     }),
   );

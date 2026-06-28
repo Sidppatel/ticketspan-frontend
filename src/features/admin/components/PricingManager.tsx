@@ -89,6 +89,7 @@ export function PricingManager({
             activeUntil: draft.activeUntil,
             minRemaining: -1,
             maxRemaining: -1,
+            capacity: draft.capacity,
           }),
         ),
       ).then(() => state.reload()),

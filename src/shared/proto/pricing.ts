@@ -206,6 +206,10 @@ export interface PriceRule {
      * @generated from protobuf field: string events_id = 13;
      */
     eventsId: string; // set when scope = Event; empty otherwise
+    /**
+     * @generated from protobuf field: int32 capacity = 14;
+     */
+    capacity: number; // discount applies only to this many people/seats (0 = no cap)
 }
 /**
  * @generated from protobuf message svyne.pricing.CreatePriceRuleRequest
@@ -254,6 +258,10 @@ export interface CreatePriceRuleRequest {
      * @generated from protobuf field: string scope = 10;
      */
     scope: string; // Price | Event; empty = Price
+    /**
+     * @generated from protobuf field: int32 capacity = 11;
+     */
+    capacity: number; // discount applies only to this many people/seats (0 = no cap)
 }
 /**
  * @generated from protobuf message svyne.pricing.UpdatePriceRuleRequest
@@ -299,6 +307,10 @@ export interface UpdatePriceRuleRequest {
      * @generated from protobuf field: bool is_active = 10;
      */
     isActive: boolean;
+    /**
+     * @generated from protobuf field: int32 capacity = 11;
+     */
+    capacity: number; // discount applies only to this many people/seats (0 = no cap)
 }
 /**
  * @generated from protobuf message svyne.pricing.ListPriceRulesResponse
@@ -764,7 +776,8 @@ class PriceRule$Type extends MessageType<PriceRule> {
             { no: 10, name: "max_remaining", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 11, name: "is_active", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 12, name: "scope", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 13, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 13, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 14, name: "capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<PriceRule>): PriceRule {
@@ -782,6 +795,7 @@ class PriceRule$Type extends MessageType<PriceRule> {
         message.isActive = false;
         message.scope = "";
         message.eventsId = "";
+        message.capacity = 0;
         if (value !== undefined)
             reflectionMergePartial<PriceRule>(this, message, value);
         return message;
@@ -829,6 +843,9 @@ class PriceRule$Type extends MessageType<PriceRule> {
                     break;
                 case /* string events_id */ 13:
                     message.eventsId = reader.string();
+                    break;
+                case /* int32 capacity */ 14:
+                    message.capacity = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -881,6 +898,9 @@ class PriceRule$Type extends MessageType<PriceRule> {
         /* string events_id = 13; */
         if (message.eventsId !== "")
             writer.tag(13, WireType.LengthDelimited).string(message.eventsId);
+        /* int32 capacity = 14; */
+        if (message.capacity !== 0)
+            writer.tag(14, WireType.Varint).int32(message.capacity);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -904,7 +924,8 @@ class CreatePriceRuleRequest$Type extends MessageType<CreatePriceRuleRequest> {
             { no: 7, name: "active_until", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 8, name: "min_remaining", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 9, name: "max_remaining", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 10, name: "scope", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 10, name: "scope", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 11, name: "capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<CreatePriceRuleRequest>): CreatePriceRuleRequest {
@@ -919,6 +940,7 @@ class CreatePriceRuleRequest$Type extends MessageType<CreatePriceRuleRequest> {
         message.minRemaining = 0;
         message.maxRemaining = 0;
         message.scope = "";
+        message.capacity = 0;
         if (value !== undefined)
             reflectionMergePartial<CreatePriceRuleRequest>(this, message, value);
         return message;
@@ -957,6 +979,9 @@ class CreatePriceRuleRequest$Type extends MessageType<CreatePriceRuleRequest> {
                     break;
                 case /* string scope */ 10:
                     message.scope = reader.string();
+                    break;
+                case /* int32 capacity */ 11:
+                    message.capacity = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1000,6 +1025,9 @@ class CreatePriceRuleRequest$Type extends MessageType<CreatePriceRuleRequest> {
         /* string scope = 10; */
         if (message.scope !== "")
             writer.tag(10, WireType.LengthDelimited).string(message.scope);
+        /* int32 capacity = 11; */
+        if (message.capacity !== 0)
+            writer.tag(11, WireType.Varint).int32(message.capacity);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1023,7 +1051,8 @@ class UpdatePriceRuleRequest$Type extends MessageType<UpdatePriceRuleRequest> {
             { no: 7, name: "active_until", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 8, name: "min_remaining", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 9, name: "max_remaining", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 10, name: "is_active", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 10, name: "is_active", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 11, name: "capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<UpdatePriceRuleRequest>): UpdatePriceRuleRequest {
@@ -1038,6 +1067,7 @@ class UpdatePriceRuleRequest$Type extends MessageType<UpdatePriceRuleRequest> {
         message.minRemaining = 0;
         message.maxRemaining = 0;
         message.isActive = false;
+        message.capacity = 0;
         if (value !== undefined)
             reflectionMergePartial<UpdatePriceRuleRequest>(this, message, value);
         return message;
@@ -1076,6 +1106,9 @@ class UpdatePriceRuleRequest$Type extends MessageType<UpdatePriceRuleRequest> {
                     break;
                 case /* bool is_active */ 10:
                     message.isActive = reader.bool();
+                    break;
+                case /* int32 capacity */ 11:
+                    message.capacity = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1119,6 +1152,9 @@ class UpdatePriceRuleRequest$Type extends MessageType<UpdatePriceRuleRequest> {
         /* bool is_active = 10; */
         if (message.isActive !== false)
             writer.tag(10, WireType.Varint).bool(message.isActive);
+        /* int32 capacity = 11; */
+        if (message.capacity !== 0)
+            writer.tag(11, WireType.Varint).int32(message.capacity);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

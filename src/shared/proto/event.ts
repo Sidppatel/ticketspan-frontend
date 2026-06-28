@@ -82,9 +82,9 @@ export interface Event {
      */
     layoutMode: string;
     /**
-     * @generated from protobuf field: int32 max_capacity = 13;
+     * @generated from protobuf field: int32 total_capacity = 13;
      */
-    maxCapacity: number;
+    totalCapacity: number; // calculated: sum of ticket-type / table capacity (read-only)
     /**
      * @generated from protobuf field: string venues_id = 14;
      */
@@ -160,10 +160,6 @@ export interface CreateEventRequest {
      */
     layoutMode: string;
     /**
-     * @generated from protobuf field: int32 max_capacity = 11;
-     */
-    maxCapacity: number;
-    /**
      * @generated from protobuf field: string venues_id = 14;
      */
     venuesId: string;
@@ -221,10 +217,6 @@ export interface UpdateEventRequest {
      * @generated from protobuf field: bool is_featured = 8;
      */
     isFeatured: boolean;
-    /**
-     * @generated from protobuf field: int32 max_capacity = 9;
-     */
-    maxCapacity: number;
     /**
      * @generated from protobuf field: string venues_id = 10;
      */
@@ -382,7 +374,7 @@ class Event$Type extends MessageType<Event> {
             { no: 10, name: "image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 11, name: "is_featured", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 12, name: "layout_mode", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 13, name: "max_capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 13, name: "total_capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 14, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 15, name: "performers_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 16, name: "sponsors_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
@@ -404,7 +396,7 @@ class Event$Type extends MessageType<Event> {
         message.imagePath = "";
         message.isFeatured = false;
         message.layoutMode = "";
-        message.maxCapacity = 0;
+        message.totalCapacity = 0;
         message.venuesId = "";
         message.performersJson = "";
         message.sponsorsJson = "";
@@ -455,8 +447,8 @@ class Event$Type extends MessageType<Event> {
                 case /* string layout_mode */ 12:
                     message.layoutMode = reader.string();
                     break;
-                case /* int32 max_capacity */ 13:
-                    message.maxCapacity = reader.int32();
+                case /* int32 total_capacity */ 13:
+                    message.totalCapacity = reader.int32();
                     break;
                 case /* string venues_id */ 14:
                     message.venuesId = reader.string();
@@ -521,9 +513,9 @@ class Event$Type extends MessageType<Event> {
         /* string layout_mode = 12; */
         if (message.layoutMode !== "")
             writer.tag(12, WireType.LengthDelimited).string(message.layoutMode);
-        /* int32 max_capacity = 13; */
-        if (message.maxCapacity !== 0)
-            writer.tag(13, WireType.Varint).int32(message.maxCapacity);
+        /* int32 total_capacity = 13; */
+        if (message.totalCapacity !== 0)
+            writer.tag(13, WireType.Varint).int32(message.totalCapacity);
         /* string venues_id = 14; */
         if (message.venuesId !== "")
             writer.tag(14, WireType.LengthDelimited).string(message.venuesId);
@@ -610,7 +602,6 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
             { no: 8, name: "image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 9, name: "is_featured", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 10, name: "layout_mode", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 11, name: "max_capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 14, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 15, name: "scheduled_publish_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 16, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
@@ -628,7 +619,6 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         message.imagePath = "";
         message.isFeatured = false;
         message.layoutMode = "";
-        message.maxCapacity = 0;
         message.venuesId = "";
         message.scheduledPublishAt = "0";
         message.eventType = "";
@@ -670,9 +660,6 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
                     break;
                 case /* string layout_mode */ 10:
                     message.layoutMode = reader.string();
-                    break;
-                case /* int32 max_capacity */ 11:
-                    message.maxCapacity = reader.int32();
                     break;
                 case /* string venues_id */ 14:
                     message.venuesId = reader.string();
@@ -725,9 +712,6 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         /* string layout_mode = 10; */
         if (message.layoutMode !== "")
             writer.tag(10, WireType.LengthDelimited).string(message.layoutMode);
-        /* int32 max_capacity = 11; */
-        if (message.maxCapacity !== 0)
-            writer.tag(11, WireType.Varint).int32(message.maxCapacity);
         /* string venues_id = 14; */
         if (message.venuesId !== "")
             writer.tag(14, WireType.LengthDelimited).string(message.venuesId);
@@ -806,7 +790,6 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
             { no: 6, name: "end_date", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 7, name: "image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 8, name: "is_featured", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 9, name: "max_capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 10, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 11, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
@@ -821,7 +804,6 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         message.endDate = "0";
         message.imagePath = "";
         message.isFeatured = false;
-        message.maxCapacity = 0;
         message.venuesId = "";
         message.eventType = "";
         if (value !== undefined)
@@ -856,9 +838,6 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
                     break;
                 case /* bool is_featured */ 8:
                     message.isFeatured = reader.bool();
-                    break;
-                case /* int32 max_capacity */ 9:
-                    message.maxCapacity = reader.int32();
                     break;
                 case /* string venues_id */ 10:
                     message.venuesId = reader.string();
@@ -902,9 +881,6 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         /* bool is_featured = 8; */
         if (message.isFeatured !== false)
             writer.tag(8, WireType.Varint).bool(message.isFeatured);
-        /* int32 max_capacity = 9; */
-        if (message.maxCapacity !== 0)
-            writer.tag(9, WireType.Varint).int32(message.maxCapacity);
         /* string venues_id = 10; */
         if (message.venuesId !== "")
             writer.tag(10, WireType.LengthDelimited).string(message.venuesId);

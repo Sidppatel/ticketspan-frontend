@@ -71,7 +71,6 @@ export function AdminEventWizardPage() {
       category,
       startDate: zonedInputToEpoch(start, venueTz),
       endDate: zonedInputToEpoch(end, venueTz),
-      maxCapacity: 0,
       // Open seating has no floor plan; Table/Both need the grid layout.
       layoutMode: eventType === 'Open' ? 'Open' : 'Grid',
       eventType,

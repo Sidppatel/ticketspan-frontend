@@ -247,6 +247,10 @@ export interface EventTicketType {
      * @generated from protobuf field: string fee_formulas_id = 7;
      */
     feeFormulasId: string;
+    /**
+     * @generated from protobuf field: int32 capacity = 8;
+     */
+    capacity: number; // seats this tier contributes to event capacity (0 = uncapped)
 }
 /**
  * @generated from protobuf message svyne.booking.ListEventTicketTypesResponse
@@ -1092,7 +1096,8 @@ class EventTicketType$Type extends MessageType<EventTicketType> {
             { no: 4, name: "platform_fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 5, name: "max_quantity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 6, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 7, name: "fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 7, name: "fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "capacity", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<EventTicketType>): EventTicketType {
@@ -1104,6 +1109,7 @@ class EventTicketType$Type extends MessageType<EventTicketType> {
         message.maxQuantity = 0;
         message.description = "";
         message.feeFormulasId = "";
+        message.capacity = 0;
         if (value !== undefined)
             reflectionMergePartial<EventTicketType>(this, message, value);
         return message;
@@ -1133,6 +1139,9 @@ class EventTicketType$Type extends MessageType<EventTicketType> {
                     break;
                 case /* string fee_formulas_id */ 7:
                     message.feeFormulasId = reader.string();
+                    break;
+                case /* int32 capacity */ 8:
+                    message.capacity = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1167,6 +1176,9 @@ class EventTicketType$Type extends MessageType<EventTicketType> {
         /* string fee_formulas_id = 7; */
         if (message.feeFormulasId !== "")
             writer.tag(7, WireType.LengthDelimited).string(message.feeFormulasId);
+        /* int32 capacity = 8; */
+        if (message.capacity !== 0)
+            writer.tag(8, WireType.Varint).int32(message.capacity);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

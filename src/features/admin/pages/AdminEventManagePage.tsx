@@ -340,7 +340,6 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
   const [title, setTitle] = useState(event.title);
   const [description, setDescription] = useState(event.description);
   const [category, setCategory] = useState(event.category);
-  const [capacity, setCapacity] = useState(event.maxCapacity);
   const [eventType, setEventType] = useState(event.eventType || 'Open');
   const [imagePath, setImagePath] = useState(event.imagePath);
   const [feesIncluded, setFeesIncluded] = useState(event.feesIncluded);
@@ -369,7 +368,6 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
         category,
         startDate: event.startDate,
         endDate: event.endDate,
-        maxCapacity: capacity,
         // Open has no floor plan; Table/Both need the grid layout.
         layoutMode: eventType === 'Open' ? 'Open' : 'Grid',
         eventType,
@@ -397,8 +395,8 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
           <Input value={category} onChange={(e) => setCategory(e.target.value)} />
         </div>
         <div className="space-y-1">
-          <Label>Max capacity</Label>
-          <Input type="number" value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} />
+          <Label>Event capacity</Label>
+          <Input type="number" value={event.totalCapacity} readOnly disabled />
         </div>
         <div className="space-y-1">
           <Label>Event type</Label>

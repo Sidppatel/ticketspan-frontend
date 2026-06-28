@@ -24,6 +24,7 @@ export interface PriceRuleInput {
   activeUntil: string;
   minRemaining: number; // -1 = unset
   maxRemaining: number;
+  capacity: number; // people/seats the discount applies to; 0 = no cap
 }
 
 export async function createPrice(input: PriceInput): Promise<string> {
