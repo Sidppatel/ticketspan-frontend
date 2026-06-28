@@ -23,6 +23,7 @@ import {
 import { rpcErrorMessage } from '@/shared/session';
 import { centsToUSD, centsToUsdInput, usdToCents } from '@/shared/lib/format';
 import { formatEpochInZone } from '@/shared/lib/timezone';
+import { cn } from '@/shared/lib/cn';
 import type { Price } from '@/shared/proto/pricing';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -70,6 +71,8 @@ export function PricingManager({
   const tables = prices.filter((p) => p.pricingType === 'Table');
   const addOns = prices.filter((p) => p.pricingType === 'AddOn');
 
+  const noApplicablePrices = (!showTickets || tickets.length === 0) && (!showTables || tables.length === 0);
+
   const now = nowSeconds();
   const active = groups.find((g) => isWindowActive(g.activeFrom, g.activeUntil, now)) ?? null;
   const percent = active?.percent ?? 0;
@@ -101,7 +104,7 @@ export function PricingManager({
   }
 
   return (
-    <Card>
+    <Card className={cn(noApplicablePrices && "opacity-50 pointer-events-none")}>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -109,7 +112,7 @@ export function PricingManager({
           </p>
           <CardTitle className="mt-1 font-display text-xl">Prices &amp; rules</CardTitle>
         </div>
-        <Button size="sm" onClick={() => setDialogOpen(true)}>
+        <Button size="sm" onClick={() => setDialogOpen(true)} disabled={noApplicablePrices}>
           <Plus /> New rule
         </Button>
       </CardHeader>
@@ -121,13 +124,13 @@ export function PricingManager({
         <RuleStrip groups={groups} now={now} timeZone={timeZone} onRemove={removeGroup} />
 
         {showTickets ? (
-          <Section label="Ticket types" count={tickets.length} defaultOpen={!active}>
+          <Section label="Ticket types" count={tickets.length} defaultOpen={!active} disabled={tickets.length === 0}>
             <PriceList prices={tickets} percent={percent} />
           </Section>
         ) : null}
 
         {showTables ? (
-          <Section label="Table types" count={tables.length} defaultOpen={!active}>
+          <Section label="Table types" count={tables.length} defaultOpen={!active} disabled={tables.length === 0}>
             <PriceList prices={tables} percent={percent} />
           </Section>
         ) : null}
@@ -224,12 +227,14 @@ function Section({
   count,
   defaultOpen,
   editable,
+  disabled,
   children,
 }: {
   label: string;
   count: number;
   defaultOpen?: boolean;
   editable?: boolean;
+  disabled?: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(Boolean(defaultOpen));
@@ -259,10 +264,11 @@ function Section({
   );
 
   return (
-    <div className="rounded-xl border border-border">
+    <div className={cn("rounded-xl border border-border", disabled && "opacity-50 pointer-events-none")}>
       <button
         type="button"
         aria-expanded={open}
+        disabled={disabled}
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >

@@ -10,9 +10,11 @@ import {
   createEventTable,
   deleteEventTable,
   setEventFeesIncluded,
+  listTicketTypes,
 } from '@/features/admin/services/eventAdminService';
 import { listTableTemplates } from '@/features/admin/services/tableTemplateService';
 import { getVenue } from '@/features/admin/services/catalogService';
+import { getEventLayout } from '@/features/admin/services/layoutService';
 import { tzForState, epochToZonedInput, zonedInputToEpoch, zoneAbbrev } from '@/shared/lib/timezone';
 import { DateTimePicker } from '@/shared/ui/date-time-picker';
 import type { TableTemplate } from '@/shared/proto/booking';
@@ -86,6 +88,8 @@ export function AdminEventManagePage() {
   const tableTypesLoader = useCallback(() => listEventTableTypes(eventsId), [eventsId]);
   const staffLoader = useCallback(() => listStaffForEvent(eventsId), [eventsId]);
   const templatesLoader = useCallback(() => listTableTemplates(), []);
+  const ticketTypesLoader = useCallback(() => listTicketTypes(eventsId), [eventsId]);
+  const layoutLoader = useCallback(() => getEventLayout(eventsId), [eventsId]);
 
   const event = useAsync(eventLoader);
   const venuesId = event.data?.venuesId;
@@ -99,6 +103,12 @@ export function AdminEventManagePage() {
   const tableTypes = useAsync(tableTypesLoader);
   const staff = useAsync(staffLoader);
   const templates = useAsync(templatesLoader);
+  const ticketTypes = useAsync(ticketTypesLoader);
+  const layout = useAsync(layoutLoader);
+
+  const hasTicketTypes = (ticketTypes.data ?? []).length > 0;
+  const hasTablesInFloorPlan = (layout.data?.tables ?? []).length > 0;
+  const canPublish = hasTicketTypes || hasTablesInFloorPlan;
 
   const typeList = tableTypes.data ?? [];
   const usedTemplateNames = new Set(typeList.map((t) => t.label));
@@ -164,7 +174,12 @@ export function AdminEventManagePage() {
                 </p>
               </div>
               <div className="flex shrink-0 gap-2">
-                <Button size="sm" onClick={() => guard(() => changeEventStatus(eventsId, 'Published'), event.reload)}>
+                <Button 
+                  size="sm" 
+                  disabled={!canPublish}
+                  title={canPublish ? "Publish this event" : "Cannot publish until you add at least one ticket type or place a table on the floor plan"}
+                  onClick={() => guard(() => changeEventStatus(eventsId, 'Published'), event.reload)}
+                >
                   <Rocket /> Publish
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => guard(() => changeEventStatus(eventsId, 'Draft'), event.reload)}>
