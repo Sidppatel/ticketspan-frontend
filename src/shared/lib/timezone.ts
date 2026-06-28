@@ -104,6 +104,29 @@ export function formatEpochInZone(epoch: string | number, timeZone: string): str
   );
 }
 
+export function formatTimeInZone(epoch: string | number, timeZone: string): string {
+  const seconds = Number(epoch);
+  if (!Number.isFinite(seconds) || seconds === 0) {
+    return '—';
+  }
+  return new Intl.DateTimeFormat('en-US', { timeZone, timeStyle: 'short' }).format(
+    new Date(seconds * 1000),
+  );
+}
+
+export function formatTimeRangeInZone(
+  startEpoch: string | number,
+  endEpoch: string | number,
+  timeZone: string,
+): string {
+  return `${formatTimeInZone(startEpoch, timeZone)} – ${formatTimeInZone(endEpoch, timeZone)}`;
+}
+
+export function epochSeconds(epoch: string | number): number {
+  const seconds = Number(epoch);
+  return Number.isFinite(seconds) ? seconds : 0;
+}
+
 export function zoneAbbrev(timeZone: string, epoch?: string | number): string {
   const seconds = epoch ? Number(epoch) : Math.floor(Date.now() / 1000);
   const dtf = new Intl.DateTimeFormat('en-US', { timeZone, timeZoneName: 'short' });

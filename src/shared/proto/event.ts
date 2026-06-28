@@ -17,6 +17,94 @@ import { MessageType } from "@protobuf-ts/runtime";
 import { PageMeta } from "./common";
 import { PageRequest } from "./common";
 /**
+ * @generated from protobuf message svyne.event.ScheduleItem
+ */
+export interface ScheduleItem {
+    /**
+     * @generated from protobuf field: string schedule_items_id = 1;
+     */
+    scheduleItemsId: string;
+    /**
+     * @generated from protobuf field: string events_id = 2;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: string title = 3;
+     */
+    title: string;
+    /**
+     * @generated from protobuf field: string type_category = 4;
+     */
+    typeCategory: string;
+    /**
+     * @generated from protobuf field: int64 start_time = 5;
+     */
+    startTime: string;
+    /**
+     * @generated from protobuf field: int64 end_time = 6;
+     */
+    endTime: string;
+}
+/**
+ * @generated from protobuf message svyne.event.ListScheduleItemsResponse
+ */
+export interface ListScheduleItemsResponse {
+    /**
+     * @generated from protobuf field: repeated svyne.event.ScheduleItem items = 1;
+     */
+    items: ScheduleItem[];
+}
+/**
+ * @generated from protobuf message svyne.event.CreateScheduleItemRequest
+ */
+export interface CreateScheduleItemRequest {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: string title = 2;
+     */
+    title: string;
+    /**
+     * @generated from protobuf field: string type_category = 3;
+     */
+    typeCategory: string;
+    /**
+     * @generated from protobuf field: int64 start_time = 4;
+     */
+    startTime: string;
+    /**
+     * @generated from protobuf field: int64 end_time = 5;
+     */
+    endTime: string;
+}
+/**
+ * @generated from protobuf message svyne.event.UpdateScheduleItemRequest
+ */
+export interface UpdateScheduleItemRequest {
+    /**
+     * @generated from protobuf field: string schedule_items_id = 1;
+     */
+    scheduleItemsId: string;
+    /**
+     * @generated from protobuf field: string title = 2;
+     */
+    title: string;
+    /**
+     * @generated from protobuf field: string type_category = 3;
+     */
+    typeCategory: string;
+    /**
+     * @generated from protobuf field: int64 start_time = 4;
+     */
+    startTime: string;
+    /**
+     * @generated from protobuf field: int64 end_time = 5;
+     */
+    endTime: string;
+}
+/**
  * @generated from protobuf message svyne.event.SetEventFeesIncludedRequest
  */
 export interface SetEventFeesIncludedRequest {
@@ -303,6 +391,298 @@ export interface EventStats {
      */
     checkedIn: number;
 }
+// @generated message type with reflection information, may provide speed optimized methods
+class ScheduleItem$Type extends MessageType<ScheduleItem> {
+    constructor() {
+        super("svyne.event.ScheduleItem", [
+            { no: 1, name: "schedule_items_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "type_category", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "start_time", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 6, name: "end_time", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ScheduleItem>): ScheduleItem {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.scheduleItemsId = "";
+        message.eventsId = "";
+        message.title = "";
+        message.typeCategory = "";
+        message.startTime = "0";
+        message.endTime = "0";
+        if (value !== undefined)
+            reflectionMergePartial<ScheduleItem>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ScheduleItem): ScheduleItem {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string schedule_items_id */ 1:
+                    message.scheduleItemsId = reader.string();
+                    break;
+                case /* string events_id */ 2:
+                    message.eventsId = reader.string();
+                    break;
+                case /* string title */ 3:
+                    message.title = reader.string();
+                    break;
+                case /* string type_category */ 4:
+                    message.typeCategory = reader.string();
+                    break;
+                case /* int64 start_time */ 5:
+                    message.startTime = reader.int64().toString();
+                    break;
+                case /* int64 end_time */ 6:
+                    message.endTime = reader.int64().toString();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ScheduleItem, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string schedule_items_id = 1; */
+        if (message.scheduleItemsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.scheduleItemsId);
+        /* string events_id = 2; */
+        if (message.eventsId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.eventsId);
+        /* string title = 3; */
+        if (message.title !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.title);
+        /* string type_category = 4; */
+        if (message.typeCategory !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.typeCategory);
+        /* int64 start_time = 5; */
+        if (message.startTime !== "0")
+            writer.tag(5, WireType.Varint).int64(message.startTime);
+        /* int64 end_time = 6; */
+        if (message.endTime !== "0")
+            writer.tag(6, WireType.Varint).int64(message.endTime);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.event.ScheduleItem
+ */
+export const ScheduleItem = new ScheduleItem$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ListScheduleItemsResponse$Type extends MessageType<ListScheduleItemsResponse> {
+    constructor() {
+        super("svyne.event.ListScheduleItemsResponse", [
+            { no: 1, name: "items", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => ScheduleItem }
+        ]);
+    }
+    create(value?: PartialMessage<ListScheduleItemsResponse>): ListScheduleItemsResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.items = [];
+        if (value !== undefined)
+            reflectionMergePartial<ListScheduleItemsResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ListScheduleItemsResponse): ListScheduleItemsResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* repeated svyne.event.ScheduleItem items */ 1:
+                    message.items.push(ScheduleItem.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ListScheduleItemsResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* repeated svyne.event.ScheduleItem items = 1; */
+        for (let i = 0; i < message.items.length; i++)
+            ScheduleItem.internalBinaryWrite(message.items[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.event.ListScheduleItemsResponse
+ */
+export const ListScheduleItemsResponse = new ListScheduleItemsResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CreateScheduleItemRequest$Type extends MessageType<CreateScheduleItemRequest> {
+    constructor() {
+        super("svyne.event.CreateScheduleItemRequest", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "type_category", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "start_time", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 5, name: "end_time", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+        ]);
+    }
+    create(value?: PartialMessage<CreateScheduleItemRequest>): CreateScheduleItemRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.title = "";
+        message.typeCategory = "";
+        message.startTime = "0";
+        message.endTime = "0";
+        if (value !== undefined)
+            reflectionMergePartial<CreateScheduleItemRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateScheduleItemRequest): CreateScheduleItemRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* string title */ 2:
+                    message.title = reader.string();
+                    break;
+                case /* string type_category */ 3:
+                    message.typeCategory = reader.string();
+                    break;
+                case /* int64 start_time */ 4:
+                    message.startTime = reader.int64().toString();
+                    break;
+                case /* int64 end_time */ 5:
+                    message.endTime = reader.int64().toString();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: CreateScheduleItemRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* string title = 2; */
+        if (message.title !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.title);
+        /* string type_category = 3; */
+        if (message.typeCategory !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.typeCategory);
+        /* int64 start_time = 4; */
+        if (message.startTime !== "0")
+            writer.tag(4, WireType.Varint).int64(message.startTime);
+        /* int64 end_time = 5; */
+        if (message.endTime !== "0")
+            writer.tag(5, WireType.Varint).int64(message.endTime);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.event.CreateScheduleItemRequest
+ */
+export const CreateScheduleItemRequest = new CreateScheduleItemRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class UpdateScheduleItemRequest$Type extends MessageType<UpdateScheduleItemRequest> {
+    constructor() {
+        super("svyne.event.UpdateScheduleItemRequest", [
+            { no: 1, name: "schedule_items_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "type_category", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "start_time", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 5, name: "end_time", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+        ]);
+    }
+    create(value?: PartialMessage<UpdateScheduleItemRequest>): UpdateScheduleItemRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.scheduleItemsId = "";
+        message.title = "";
+        message.typeCategory = "";
+        message.startTime = "0";
+        message.endTime = "0";
+        if (value !== undefined)
+            reflectionMergePartial<UpdateScheduleItemRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateScheduleItemRequest): UpdateScheduleItemRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string schedule_items_id */ 1:
+                    message.scheduleItemsId = reader.string();
+                    break;
+                case /* string title */ 2:
+                    message.title = reader.string();
+                    break;
+                case /* string type_category */ 3:
+                    message.typeCategory = reader.string();
+                    break;
+                case /* int64 start_time */ 4:
+                    message.startTime = reader.int64().toString();
+                    break;
+                case /* int64 end_time */ 5:
+                    message.endTime = reader.int64().toString();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: UpdateScheduleItemRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string schedule_items_id = 1; */
+        if (message.scheduleItemsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.scheduleItemsId);
+        /* string title = 2; */
+        if (message.title !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.title);
+        /* string type_category = 3; */
+        if (message.typeCategory !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.typeCategory);
+        /* int64 start_time = 4; */
+        if (message.startTime !== "0")
+            writer.tag(4, WireType.Varint).int64(message.startTime);
+        /* int64 end_time = 5; */
+        if (message.endTime !== "0")
+            writer.tag(5, WireType.Varint).int64(message.endTime);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.event.UpdateScheduleItemRequest
+ */
+export const UpdateScheduleItemRequest = new UpdateScheduleItemRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SetEventFeesIncludedRequest$Type extends MessageType<SetEventFeesIncludedRequest> {
     constructor() {
@@ -1207,5 +1587,9 @@ export const EventService = new ServiceType("svyne.event.EventService", [
     { name: "SearchEvents", options: {}, I: SearchEventsRequest, O: ListEventsResponse },
     { name: "ChangeEventStatus", options: {}, I: ChangeEventStatusRequest, O: AckResponse },
     { name: "GetEventStats", options: {}, I: UuidValue, O: EventStats },
-    { name: "SetEventFeesIncluded", options: {}, I: SetEventFeesIncludedRequest, O: AckResponse }
+    { name: "SetEventFeesIncluded", options: {}, I: SetEventFeesIncludedRequest, O: AckResponse },
+    { name: "ListScheduleItems", options: {}, I: UuidValue, O: ListScheduleItemsResponse },
+    { name: "CreateScheduleItem", options: {}, I: CreateScheduleItemRequest, O: UuidValue },
+    { name: "UpdateScheduleItem", options: {}, I: UpdateScheduleItemRequest, O: AckResponse },
+    { name: "DeleteScheduleItem", options: {}, I: UuidValue, O: AckResponse }
 ]);

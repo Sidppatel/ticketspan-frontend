@@ -1,6 +1,6 @@
 import { eventClient, tableBookingClient, bookingClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
-import type { Event, EventStats } from '@/shared/proto/event';
+import type { Event, EventStats, ScheduleItem } from '@/shared/proto/event';
 import type { Table } from '@/shared/proto/booking';
 import type { EventTicketType } from '@/shared/proto/bookings';
 
@@ -70,6 +70,53 @@ export async function getEvent(eventsId: string): Promise<Event> {
 
 export async function getEventStats(eventsId: string): Promise<EventStats> {
   return callRpc(() => eventClient.getEventStats({ value: eventsId }));
+}
+
+export interface ScheduleItemDraft {
+  title: string;
+  typeCategory: string;
+  startTime: string;
+  endTime: string;
+}
+
+export async function listScheduleItems(eventsId: string): Promise<ScheduleItem[]> {
+  const response = await callRpc(() => eventClient.listScheduleItems({ value: eventsId }));
+  return response.items;
+}
+
+export async function createScheduleItem(
+  eventsId: string,
+  draft: ScheduleItemDraft,
+): Promise<string> {
+  const response = await callRpc(() =>
+    eventClient.createScheduleItem({
+      eventsId,
+      title: draft.title,
+      typeCategory: draft.typeCategory,
+      startTime: draft.startTime,
+      endTime: draft.endTime,
+    }),
+  );
+  return response.value;
+}
+
+export async function updateScheduleItem(
+  scheduleItemsId: string,
+  draft: ScheduleItemDraft,
+): Promise<void> {
+  await callRpc(() =>
+    eventClient.updateScheduleItem({
+      scheduleItemsId,
+      title: draft.title,
+      typeCategory: draft.typeCategory,
+      startTime: draft.startTime,
+      endTime: draft.endTime,
+    }),
+  );
+}
+
+export async function deleteScheduleItem(scheduleItemsId: string): Promise<void> {
+  await callRpc(() => eventClient.deleteScheduleItem({ value: scheduleItemsId }));
 }
 
 export interface TicketTypeDraft {

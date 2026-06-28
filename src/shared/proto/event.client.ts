@@ -5,6 +5,9 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { EventService } from "./event";
+import type { UpdateScheduleItemRequest } from "./event";
+import type { CreateScheduleItemRequest } from "./event";
+import type { ListScheduleItemsResponse } from "./event";
 import type { SetEventFeesIncludedRequest } from "./event";
 import type { EventStats } from "./event";
 import type { ChangeEventStatusRequest } from "./event";
@@ -65,6 +68,22 @@ export interface IEventServiceClient {
      * @generated from protobuf rpc: SetEventFeesIncluded(svyne.event.SetEventFeesIncludedRequest) returns (svyne.common.AckResponse);
      */
     setEventFeesIncluded(input: SetEventFeesIncludedRequest, options?: RpcOptions): UnaryCall<SetEventFeesIncludedRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: ListScheduleItems(svyne.common.UuidValue) returns (svyne.event.ListScheduleItemsResponse);
+     */
+    listScheduleItems(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListScheduleItemsResponse>;
+    /**
+     * @generated from protobuf rpc: CreateScheduleItem(svyne.event.CreateScheduleItemRequest) returns (svyne.common.UuidValue);
+     */
+    createScheduleItem(input: CreateScheduleItemRequest, options?: RpcOptions): UnaryCall<CreateScheduleItemRequest, UuidValue>;
+    /**
+     * @generated from protobuf rpc: UpdateScheduleItem(svyne.event.UpdateScheduleItemRequest) returns (svyne.common.AckResponse);
+     */
+    updateScheduleItem(input: UpdateScheduleItemRequest, options?: RpcOptions): UnaryCall<UpdateScheduleItemRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: DeleteScheduleItem(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    deleteScheduleItem(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
 }
 /**
  * @generated from protobuf service svyne.event.EventService
@@ -144,5 +163,33 @@ export class EventServiceClient implements IEventServiceClient, ServiceInfo {
     setEventFeesIncluded(input: SetEventFeesIncludedRequest, options?: RpcOptions): UnaryCall<SetEventFeesIncludedRequest, AckResponse> {
         const method = this.methods[9], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetEventFeesIncludedRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ListScheduleItems(svyne.common.UuidValue) returns (svyne.event.ListScheduleItemsResponse);
+     */
+    listScheduleItems(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListScheduleItemsResponse> {
+        const method = this.methods[10], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, ListScheduleItemsResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: CreateScheduleItem(svyne.event.CreateScheduleItemRequest) returns (svyne.common.UuidValue);
+     */
+    createScheduleItem(input: CreateScheduleItemRequest, options?: RpcOptions): UnaryCall<CreateScheduleItemRequest, UuidValue> {
+        const method = this.methods[11], opt = this._transport.mergeOptions(options);
+        return stackIntercept<CreateScheduleItemRequest, UuidValue>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: UpdateScheduleItem(svyne.event.UpdateScheduleItemRequest) returns (svyne.common.AckResponse);
+     */
+    updateScheduleItem(input: UpdateScheduleItemRequest, options?: RpcOptions): UnaryCall<UpdateScheduleItemRequest, AckResponse> {
+        const method = this.methods[12], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UpdateScheduleItemRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: DeleteScheduleItem(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    deleteScheduleItem(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
+        const method = this.methods[13], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

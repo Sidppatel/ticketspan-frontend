@@ -13,12 +13,13 @@ import {
 } from '@/features/admin/services/eventAdminService';
 import { listTableTemplates } from '@/features/admin/services/tableTemplateService';
 import { getVenue } from '@/features/admin/services/catalogService';
-import { tzForState } from '@/shared/lib/timezone';
+import { tzForState, epochToZonedInput, zonedInputToEpoch, zoneAbbrev } from '@/shared/lib/timezone';
+import { DateTimePicker } from '@/shared/ui/date-time-picker';
 import type { TableTemplate } from '@/shared/proto/booking';
 import { PricingManager } from '@/features/admin/components/PricingManager';
+import { ScheduleTimeline } from '@/features/admin/components/ScheduleTimeline';
 import { TicketTypesManager } from '@/features/admin/components/TicketTypesManager';
 import { FloorPlanPanel } from '@/features/admin/components/FloorPlanPanel';
-import { ImageUpload } from '@/shared/components/ImageUpload';
 import type { Event } from '@/shared/proto/event';
 import {
   listStaffForEvent,
@@ -186,7 +187,16 @@ export function AdminEventManagePage() {
         </div>
       ) : null}
 
-      {event.data ? <EditSection event={event.data} onSaved={event.reload} /> : null}
+      {event.data ? <EditSection event={event.data} timeZone={timeZone} onSaved={event.reload} /> : null}
+
+      {event.data ? (
+        <ScheduleTimeline
+          eventsId={eventsId}
+          eventStart={event.data.startDate}
+          eventEnd={event.data.endDate}
+          timeZone={timeZone}
+        />
+      ) : null}
 
       <PricingManager
         key={`pricing-${pricingKey}`}
@@ -371,13 +381,22 @@ export function AdminEventManagePage() {
   );
 }
 
-function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) {
+function EditSection({
+  event,
+  timeZone,
+  onSaved,
+}: {
+  event: Event;
+  timeZone: string;
+  onSaved: () => void;
+}) {
   const [title, setTitle] = useState(event.title);
   const [description, setDescription] = useState(event.description);
   const [category, setCategory] = useState(event.category);
   const [eventType, setEventType] = useState(event.eventType || 'Open');
-  const [imagePath, setImagePath] = useState(event.imagePath);
   const [feesIncluded, setFeesIncluded] = useState(event.feesIncluded);
+  const [start, setStart] = useState(epochToZonedInput(event.startDate, timeZone));
+  const [end, setEnd] = useState(epochToZonedInput(event.endDate, timeZone));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -401,13 +420,13 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
         description,
         status: event.status,
         category,
-        startDate: event.startDate,
-        endDate: event.endDate,
+        startDate: zonedInputToEpoch(start, timeZone),
+        endDate: zonedInputToEpoch(end, timeZone),
         // Open has no floor plan; Table/Both need the grid layout.
         layoutMode: eventType === 'Open' ? 'Open' : 'Grid',
         eventType,
         venuesId: event.venuesId,
-        imagePath,
+        imagePath: event.imagePath,
       });
       onSaved();
     } catch (caught) {
@@ -442,8 +461,15 @@ function EditSection({ event, onSaved }: { event: Event; onSaved: () => void }) 
           </Select>
         </div>
         <div className="space-y-1">
-          <Label>Image</Label>
-          <ImageUpload entityType="event" entityId={event.eventsId} onUploaded={setImagePath} />
+          <div className="flex items-baseline justify-between">
+            <Label>Event starts</Label>
+            <span className="text-xs text-muted-foreground">Times in {zoneAbbrev(timeZone)}</span>
+          </div>
+          <DateTimePicker value={start} onChange={setStart} timeZone={timeZone} />
+        </div>
+        <div className="space-y-1">
+          <Label>Event ends</Label>
+          <DateTimePicker value={end} onChange={setEnd} timeZone={timeZone} />
         </div>
         <div className="space-y-1 md:col-span-2">
           <Label>Description</Label>
