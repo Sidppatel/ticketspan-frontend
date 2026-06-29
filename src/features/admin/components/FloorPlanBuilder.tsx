@@ -161,6 +161,13 @@ export function FloorPlanBuilder({
     });
     return s;
   }, [layout.data]);
+  const lockedTableIds = useMemo(() => {
+    const s = new Set<string>();
+    (layout.data?.tables ?? []).forEach((t) => {
+      if (t.status && t.status !== 'Available') s.add(t.tablesId);
+    });
+    return s;
+  }, [layout.data]);
 
   function nextTableLabel(typeId: string) {
     const typeName = typeById.get(typeId)?.label || 'Table';
@@ -177,14 +184,17 @@ export function FloorPlanBuilder({
     return { x: clientX - rect.left, y: clientY - rect.top };
   }
 
-  // True if the rect would overlap any table other than ignoreIdx (AABB).
-  function tableOverlap(x: number, y: number, w: number, h: number, ignoreIdx: number): boolean {
-    return tables.some(
-      (t, i) =>
-        i !== ignoreIdx &&
-        x < t.posX + t.width && x + w > t.posX &&
-        y < t.posY + t.height && y + h > t.posY,
-    );
+  // True if the rect would overlap any other placed item — table or object —
+  // except the one being dragged (kind+ignoreIdx). AABB. Nothing may overlap.
+  function collides(
+    x: number, y: number, w: number, h: number,
+    kind: 'table' | 'object', ignoreIdx: number,
+  ): boolean {
+    const hit = (px: number, py: number, pw: number, ph: number) =>
+      x < px + pw && x + w > px && y < py + ph && y + h > py;
+    const hitTable = tables.some((t, i) => !(kind === 'table' && i === ignoreIdx) && hit(t.posX, t.posY, t.width, t.height));
+    const hitObject = objects.some((o, i) => !(kind === 'object' && i === ignoreIdx) && hit(o.posX, o.posY, o.width, o.height));
+    return hitTable || hitObject;
   }
 
   function placeTable(typeId: string, cx: number, cy: number) {
@@ -193,8 +203,8 @@ export function FloorPlanBuilder({
     const h = Math.max(MIN_SIZE, t?.defaultHeight || DEFAULT_SIZE);
     const px = clamp(snap(cx - w / 2), 0, CANVAS_W - w);
     const py = clamp(snap(cy - h / 2), 0, CANVAS_H - h);
-    if (tableOverlap(px, py, w, h, -1)) {
-      setNotice("No room here — tables can't overlap");
+    if (collides(px, py, w, h, 'table', -1)) {
+      setNotice("No room here — items can't overlap");
       return;
     }
     setTables((prev) => [
@@ -208,12 +218,17 @@ export function FloorPlanBuilder({
   }
 
   function placeObject(objectType: string, cx: number, cy: number) {
+    const px = clamp(snap(cx - DEFAULT_SIZE / 2), 0, CANVAS_W - DEFAULT_SIZE);
+    const py = clamp(snap(cy - DEFAULT_SIZE / 2), 0, CANVAS_H - DEFAULT_SIZE);
+    if (collides(px, py, DEFAULT_SIZE, DEFAULT_SIZE, 'object', -1)) {
+      setNotice("No room here — items can't overlap");
+      return;
+    }
     setObjects((prev) => [
       ...prev,
       {
         layoutObjectsId: '', objectType,
-        posX: clamp(snap(cx - DEFAULT_SIZE / 2), 0, CANVAS_W - DEFAULT_SIZE),
-        posY: clamp(snap(cy - DEFAULT_SIZE / 2), 0, CANVAS_H - DEFAULT_SIZE),
+        posX: px, posY: py,
         width: DEFAULT_SIZE, height: DEFAULT_SIZE,
         color: OBJECT_DEFAULT_COLOR[objectType] || '#059669',
       },
@@ -252,9 +267,13 @@ export function FloorPlanBuilder({
     e.stopPropagation();
     const item = kind === 'table' ? tables[idx] : objects[idx];
     if (!item) return;
-    if (kind === 'table' && (item as PlacedTable).status !== 'Available') {
-      setNotice(`"${(item as PlacedTable).label}" is ${(item as PlacedTable).status.toLowerCase()} — sold/held tables can't be moved or removed`);
-      return;
+    if (kind === 'table') {
+      const pt = item as PlacedTable;
+      const ptLocked = (pt.status && pt.status !== 'Available') || (pt.tablesId && lockedTableIds.has(pt.tablesId));
+      if (ptLocked) {
+        setNotice(`"${pt.label}" is sold/held — sold/held tables can't be moved or removed`);
+        return;
+      }
     }
     (e.target as Element).setPointerCapture(e.pointerId);
     dragRef.current = {
@@ -283,9 +302,9 @@ export function FloorPlanBuilder({
         nw = clamp(snap(d.origW + dx), MIN_SIZE, CANVAS_W - base.posX);
         nh = clamp(snap(d.origH + dy), MIN_SIZE, CANVAS_H - base.posY);
       }
-      // Reject the step that would overlap another table; item stays put.
-      if (tableOverlap(nx, ny, nw, nh, d.idx)) {
-        setNotice("Tables can't overlap");
+      // Reject the step that would overlap another item; item stays put.
+      if (collides(nx, ny, nw, nh, 'table', d.idx)) {
+        setNotice("Items can't overlap");
         return;
       }
       setTables((prev) => prev.map((x, i) => (i === d.idx ? { ...x, posX: nx, posY: ny, width: nw, height: nh } : x)));
@@ -293,23 +312,21 @@ export function FloorPlanBuilder({
       return;
     }
 
-    setObjects((prev) =>
-      prev.map((x, i) => {
-        if (i !== d.idx) return x;
-        if (d.mode === 'move') {
-          return {
-            ...x,
-            posX: clamp(snap(d.origX + dx), 0, CANVAS_W - x.width),
-            posY: clamp(snap(d.origY + dy), 0, CANVAS_H - x.height),
-          };
-        }
-        return {
-          ...x,
-          width: clamp(snap(d.origW + dx), MIN_SIZE, CANVAS_W - x.posX),
-          height: clamp(snap(d.origH + dy), MIN_SIZE, CANVAS_H - x.posY),
-        };
-      }),
-    );
+    const obase = objects[d.idx];
+    if (!obase) return;
+    let ox = obase.posX, oy = obase.posY, ow = obase.width, oh = obase.height;
+    if (d.mode === 'move') {
+      ox = clamp(snap(d.origX + dx), 0, CANVAS_W - obase.width);
+      oy = clamp(snap(d.origY + dy), 0, CANVAS_H - obase.height);
+    } else {
+      ow = clamp(snap(d.origW + dx), MIN_SIZE, CANVAS_W - obase.posX);
+      oh = clamp(snap(d.origH + dy), MIN_SIZE, CANVAS_H - obase.posY);
+    }
+    if (collides(ox, oy, ow, oh, 'object', d.idx)) {
+      setNotice("Items can't overlap");
+      return;
+    }
+    setObjects((prev) => prev.map((x, i) => (i === d.idx ? { ...x, posX: ox, posY: oy, width: ow, height: oh } : x)));
     setDirty(true);
   }
 
@@ -466,7 +483,7 @@ export function FloorPlanBuilder({
             const type = typeById.get(t.eventTablesId);
             const fill = t.colorOverride || type?.color || '#4f46e5';
             const sh = t.shapeOverride || type?.shape || 'Rectangle';
-            const locked = !!t.status && t.status !== 'Available';
+            const locked = (!!t.status && t.status !== 'Available') || (!!t.tablesId && lockedTableIds.has(t.tablesId));
             return (
               <div
                 key={`t${i}`}
