@@ -17,6 +17,102 @@ import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { PageMeta } from "./common";
 /**
+ * @generated from protobuf message svyne.catalog.GetBySlugRequest
+ */
+export interface GetBySlugRequest {
+    /**
+     * @generated from protobuf field: string slug = 1;
+     */
+    slug: string;
+}
+/**
+ * @generated from protobuf message svyne.catalog.PublicLinkedEvent
+ */
+export interface PublicLinkedEvent {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: string title = 2;
+     */
+    title: string;
+    /**
+     * @generated from protobuf field: string slug = 3;
+     */
+    slug: string;
+    /**
+     * @generated from protobuf field: int64 start_date = 4;
+     */
+    startDate: string;
+    /**
+     * @generated from protobuf field: string primary_image_path = 5;
+     */
+    primaryImagePath: string;
+    /**
+     * @generated from protobuf field: string category = 6;
+     */
+    category: string;
+}
+/**
+ * @generated from protobuf message svyne.catalog.PublicPerformer
+ */
+export interface PublicPerformer {
+    /**
+     * @generated from protobuf field: string performers_id = 1;
+     */
+    performersId: string;
+    /**
+     * @generated from protobuf field: string name = 2;
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: string slug = 3;
+     */
+    slug: string;
+    /**
+     * @generated from protobuf field: string primary_image_path = 4;
+     */
+    primaryImagePath: string;
+    /**
+     * @generated from protobuf field: string meta_json = 5;
+     */
+    metaJson: string;
+    /**
+     * @generated from protobuf field: repeated svyne.catalog.PublicLinkedEvent events = 6;
+     */
+    events: PublicLinkedEvent[];
+}
+/**
+ * @generated from protobuf message svyne.catalog.PublicSponsor
+ */
+export interface PublicSponsor {
+    /**
+     * @generated from protobuf field: string sponsors_id = 1;
+     */
+    sponsorsId: string;
+    /**
+     * @generated from protobuf field: string name = 2;
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: string slug = 3;
+     */
+    slug: string;
+    /**
+     * @generated from protobuf field: string primary_image_path = 4;
+     */
+    primaryImagePath: string;
+    /**
+     * @generated from protobuf field: string meta_json = 5;
+     */
+    metaJson: string;
+    /**
+     * @generated from protobuf field: repeated svyne.catalog.PublicLinkedEvent events = 6;
+     */
+    events: PublicLinkedEvent[];
+}
+/**
  * @generated from protobuf message svyne.catalog.Venue
  */
 export interface Venue {
@@ -454,6 +550,314 @@ export interface SetEventLinksRequest {
      */
     linksJson: string;
 }
+// @generated message type with reflection information, may provide speed optimized methods
+class GetBySlugRequest$Type extends MessageType<GetBySlugRequest> {
+    constructor() {
+        super("svyne.catalog.GetBySlugRequest", [
+            { no: 1, name: "slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<GetBySlugRequest>): GetBySlugRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.slug = "";
+        if (value !== undefined)
+            reflectionMergePartial<GetBySlugRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetBySlugRequest): GetBySlugRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string slug */ 1:
+                    message.slug = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: GetBySlugRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string slug = 1; */
+        if (message.slug !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.slug);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.catalog.GetBySlugRequest
+ */
+export const GetBySlugRequest = new GetBySlugRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class PublicLinkedEvent$Type extends MessageType<PublicLinkedEvent> {
+    constructor() {
+        super("svyne.catalog.PublicLinkedEvent", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "start_date", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 5, name: "primary_image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "category", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<PublicLinkedEvent>): PublicLinkedEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.title = "";
+        message.slug = "";
+        message.startDate = "0";
+        message.primaryImagePath = "";
+        message.category = "";
+        if (value !== undefined)
+            reflectionMergePartial<PublicLinkedEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PublicLinkedEvent): PublicLinkedEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* string title */ 2:
+                    message.title = reader.string();
+                    break;
+                case /* string slug */ 3:
+                    message.slug = reader.string();
+                    break;
+                case /* int64 start_date */ 4:
+                    message.startDate = reader.int64().toString();
+                    break;
+                case /* string primary_image_path */ 5:
+                    message.primaryImagePath = reader.string();
+                    break;
+                case /* string category */ 6:
+                    message.category = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: PublicLinkedEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* string title = 2; */
+        if (message.title !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.title);
+        /* string slug = 3; */
+        if (message.slug !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.slug);
+        /* int64 start_date = 4; */
+        if (message.startDate !== "0")
+            writer.tag(4, WireType.Varint).int64(message.startDate);
+        /* string primary_image_path = 5; */
+        if (message.primaryImagePath !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.primaryImagePath);
+        /* string category = 6; */
+        if (message.category !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.category);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.catalog.PublicLinkedEvent
+ */
+export const PublicLinkedEvent = new PublicLinkedEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class PublicPerformer$Type extends MessageType<PublicPerformer> {
+    constructor() {
+        super("svyne.catalog.PublicPerformer", [
+            { no: 1, name: "performers_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "primary_image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "meta_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "events", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => PublicLinkedEvent }
+        ]);
+    }
+    create(value?: PartialMessage<PublicPerformer>): PublicPerformer {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.performersId = "";
+        message.name = "";
+        message.slug = "";
+        message.primaryImagePath = "";
+        message.metaJson = "";
+        message.events = [];
+        if (value !== undefined)
+            reflectionMergePartial<PublicPerformer>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PublicPerformer): PublicPerformer {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string performers_id */ 1:
+                    message.performersId = reader.string();
+                    break;
+                case /* string name */ 2:
+                    message.name = reader.string();
+                    break;
+                case /* string slug */ 3:
+                    message.slug = reader.string();
+                    break;
+                case /* string primary_image_path */ 4:
+                    message.primaryImagePath = reader.string();
+                    break;
+                case /* string meta_json */ 5:
+                    message.metaJson = reader.string();
+                    break;
+                case /* repeated svyne.catalog.PublicLinkedEvent events */ 6:
+                    message.events.push(PublicLinkedEvent.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: PublicPerformer, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string performers_id = 1; */
+        if (message.performersId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.performersId);
+        /* string name = 2; */
+        if (message.name !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.name);
+        /* string slug = 3; */
+        if (message.slug !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.slug);
+        /* string primary_image_path = 4; */
+        if (message.primaryImagePath !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.primaryImagePath);
+        /* string meta_json = 5; */
+        if (message.metaJson !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.metaJson);
+        /* repeated svyne.catalog.PublicLinkedEvent events = 6; */
+        for (let i = 0; i < message.events.length; i++)
+            PublicLinkedEvent.internalBinaryWrite(message.events[i], writer.tag(6, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.catalog.PublicPerformer
+ */
+export const PublicPerformer = new PublicPerformer$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class PublicSponsor$Type extends MessageType<PublicSponsor> {
+    constructor() {
+        super("svyne.catalog.PublicSponsor", [
+            { no: 1, name: "sponsors_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "primary_image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "meta_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "events", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => PublicLinkedEvent }
+        ]);
+    }
+    create(value?: PartialMessage<PublicSponsor>): PublicSponsor {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.sponsorsId = "";
+        message.name = "";
+        message.slug = "";
+        message.primaryImagePath = "";
+        message.metaJson = "";
+        message.events = [];
+        if (value !== undefined)
+            reflectionMergePartial<PublicSponsor>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PublicSponsor): PublicSponsor {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string sponsors_id */ 1:
+                    message.sponsorsId = reader.string();
+                    break;
+                case /* string name */ 2:
+                    message.name = reader.string();
+                    break;
+                case /* string slug */ 3:
+                    message.slug = reader.string();
+                    break;
+                case /* string primary_image_path */ 4:
+                    message.primaryImagePath = reader.string();
+                    break;
+                case /* string meta_json */ 5:
+                    message.metaJson = reader.string();
+                    break;
+                case /* repeated svyne.catalog.PublicLinkedEvent events */ 6:
+                    message.events.push(PublicLinkedEvent.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: PublicSponsor, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string sponsors_id = 1; */
+        if (message.sponsorsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.sponsorsId);
+        /* string name = 2; */
+        if (message.name !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.name);
+        /* string slug = 3; */
+        if (message.slug !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.slug);
+        /* string primary_image_path = 4; */
+        if (message.primaryImagePath !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.primaryImagePath);
+        /* string meta_json = 5; */
+        if (message.metaJson !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.metaJson);
+        /* repeated svyne.catalog.PublicLinkedEvent events = 6; */
+        for (let i = 0; i < message.events.length; i++)
+            PublicLinkedEvent.internalBinaryWrite(message.events[i], writer.tag(6, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.catalog.PublicSponsor
+ */
+export const PublicSponsor = new PublicSponsor$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Venue$Type extends MessageType<Venue> {
     constructor() {
@@ -1871,7 +2275,8 @@ export const PerformerService = new ServiceType("svyne.catalog.PerformerService"
     { name: "UpdatePerformer", options: {}, I: UpdatePerformerRequest, O: AckResponse },
     { name: "DeletePerformer", options: {}, I: UuidValue, O: AckResponse },
     { name: "ListPerformers", options: {}, I: PageRequest, O: ListPerformersResponse },
-    { name: "SetEventPerformers", options: {}, I: SetEventLinksRequest, O: AckResponse }
+    { name: "SetEventPerformers", options: {}, I: SetEventLinksRequest, O: AckResponse },
+    { name: "GetPerformerBySlug", options: {}, I: GetBySlugRequest, O: PublicPerformer }
 ]);
 /**
  * @generated ServiceType for protobuf service svyne.catalog.SponsorService
@@ -1881,5 +2286,6 @@ export const SponsorService = new ServiceType("svyne.catalog.SponsorService", [
     { name: "UpdateSponsor", options: {}, I: UpdateSponsorRequest, O: AckResponse },
     { name: "DeleteSponsor", options: {}, I: UuidValue, O: AckResponse },
     { name: "ListSponsors", options: {}, I: PageRequest, O: ListSponsorsResponse },
-    { name: "SetEventSponsors", options: {}, I: SetEventLinksRequest, O: AckResponse }
+    { name: "SetEventSponsors", options: {}, I: SetEventLinksRequest, O: AckResponse },
+    { name: "GetSponsorBySlug", options: {}, I: GetBySlugRequest, O: PublicSponsor }
 ]);

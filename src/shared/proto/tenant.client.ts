@@ -10,9 +10,11 @@ import type { TenantStripeProfile } from "./tenant";
 import type { TenantStripeStatus } from "./tenant";
 import type { ListTenantMembersResponse } from "./tenant";
 import type { ListPublicTenantsResponse } from "./tenant";
-import type { Empty } from "./common";
 import type { ListTenantsResponse } from "./tenant";
 import type { PageRequest } from "./common";
+import type { UpdateMyTenantBrandingRequest } from "./tenant";
+import type { UpdateMyTenantContactRequest } from "./tenant";
+import type { Empty } from "./common";
 import type { Tenant } from "./tenant";
 import type { UuidValue } from "./common";
 import type { AckResponse } from "./common";
@@ -42,6 +44,18 @@ export interface ITenantServiceClient {
      * @generated from protobuf rpc: GetTenant(svyne.common.UuidValue) returns (svyne.tenant.Tenant);
      */
     getTenant(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, Tenant>;
+    /**
+     * @generated from protobuf rpc: GetMyTenant(svyne.common.Empty) returns (svyne.tenant.Tenant);
+     */
+    getMyTenant(input: Empty, options?: RpcOptions): UnaryCall<Empty, Tenant>;
+    /**
+     * @generated from protobuf rpc: UpdateMyTenantContact(svyne.tenant.UpdateMyTenantContactRequest) returns (svyne.common.AckResponse);
+     */
+    updateMyTenantContact(input: UpdateMyTenantContactRequest, options?: RpcOptions): UnaryCall<UpdateMyTenantContactRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: UpdateMyTenantBranding(svyne.tenant.UpdateMyTenantBrandingRequest) returns (svyne.common.AckResponse);
+     */
+    updateMyTenantBranding(input: UpdateMyTenantBrandingRequest, options?: RpcOptions): UnaryCall<UpdateMyTenantBrandingRequest, AckResponse>;
     /**
      * @generated from protobuf rpc: ListTenants(svyne.common.PageRequest) returns (svyne.tenant.ListTenantsResponse);
      */
@@ -105,45 +119,66 @@ export class TenantServiceClient implements ITenantServiceClient, ServiceInfo {
         return stackIntercept<UuidValue, Tenant>("unary", this._transport, method, opt, input);
     }
     /**
+     * @generated from protobuf rpc: GetMyTenant(svyne.common.Empty) returns (svyne.tenant.Tenant);
+     */
+    getMyTenant(input: Empty, options?: RpcOptions): UnaryCall<Empty, Tenant> {
+        const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        return stackIntercept<Empty, Tenant>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: UpdateMyTenantContact(svyne.tenant.UpdateMyTenantContactRequest) returns (svyne.common.AckResponse);
+     */
+    updateMyTenantContact(input: UpdateMyTenantContactRequest, options?: RpcOptions): UnaryCall<UpdateMyTenantContactRequest, AckResponse> {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UpdateMyTenantContactRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: UpdateMyTenantBranding(svyne.tenant.UpdateMyTenantBrandingRequest) returns (svyne.common.AckResponse);
+     */
+    updateMyTenantBranding(input: UpdateMyTenantBrandingRequest, options?: RpcOptions): UnaryCall<UpdateMyTenantBrandingRequest, AckResponse> {
+        const method = this.methods[6], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UpdateMyTenantBrandingRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: ListTenants(svyne.common.PageRequest) returns (svyne.tenant.ListTenantsResponse);
      */
     listTenants(input: PageRequest, options?: RpcOptions): UnaryCall<PageRequest, ListTenantsResponse> {
-        const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        const method = this.methods[7], opt = this._transport.mergeOptions(options);
         return stackIntercept<PageRequest, ListTenantsResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ListPublicTenants(svyne.common.Empty) returns (svyne.tenant.ListPublicTenantsResponse);
      */
     listPublicTenants(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListPublicTenantsResponse> {
-        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        const method = this.methods[8], opt = this._transport.mergeOptions(options);
         return stackIntercept<Empty, ListPublicTenantsResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ListTenantMembers(svyne.common.UuidValue) returns (svyne.tenant.ListTenantMembersResponse);
      */
     listTenantMembers(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListTenantMembersResponse> {
-        const method = this.methods[6], opt = this._transport.mergeOptions(options);
+        const method = this.methods[9], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, ListTenantMembersResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetTenantStripeStatus(svyne.common.UuidValue) returns (svyne.tenant.TenantStripeStatus);
      */
     getTenantStripeStatus(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, TenantStripeStatus> {
-        const method = this.methods[7], opt = this._transport.mergeOptions(options);
+        const method = this.methods[10], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, TenantStripeStatus>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetTenantStripeProfile(svyne.common.UuidValue) returns (svyne.tenant.TenantStripeProfile);
      */
     getTenantStripeProfile(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, TenantStripeProfile> {
-        const method = this.methods[8], opt = this._transport.mergeOptions(options);
+        const method = this.methods[11], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, TenantStripeProfile>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: UpdateTenantStripeProfile(svyne.tenant.UpdateTenantStripeProfileRequest) returns (svyne.common.AckResponse);
      */
     updateTenantStripeProfile(input: UpdateTenantStripeProfileRequest, options?: RpcOptions): UnaryCall<UpdateTenantStripeProfileRequest, AckResponse> {
-        const method = this.methods[9], opt = this._transport.mergeOptions(options);
+        const method = this.methods[12], opt = this._transport.mergeOptions(options);
         return stackIntercept<UpdateTenantStripeProfileRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

@@ -1,0 +1,8 @@
+name = "svyne-event-frontend"
+compatibility_date = "2026-06-28"
+pages_build_output_dir = "dist"
+
+# VITE_BACKEND_URL is read by functions/[[path]].ts for crawler prerender.
+# Set it per-environment in the Cloudflare Pages dashboard (or below for local).
+# [vars]
+# VITE_BACKEND_URL = "https://api.svyne.example"

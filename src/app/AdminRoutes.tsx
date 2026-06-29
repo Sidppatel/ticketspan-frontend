@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 import { NotFoundPage } from '@/shared/components/StatusPages';
 import { AdminLayout } from '@/shared/components/layouts/AdminLayout';
-import { canAccessAdmin } from '@/shared/roles';
+import { canAccessAdmin, canManageTenantSettings } from '@/shared/roles';
 import { authRoutes } from '@/app/authRoutes';
 import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage';
 import { AdminEventsPage } from '@/features/admin/pages/AdminEventsPage';
@@ -15,6 +15,8 @@ import { AdminPerformersPage } from '@/features/admin/pages/AdminPerformersPage'
 import { AdminSponsorsPage } from '@/features/admin/pages/AdminSponsorsPage';
 import { AdminInvitationsPage } from '@/features/admin/pages/AdminInvitationsPage';
 import { AdminFinancialPage } from '@/features/admin/pages/AdminFinancialPage';
+import { AdminProfilePage } from '@/features/admin/pages/AdminProfilePage';
+import { AdminTenantSettingsPage } from '@/features/admin/pages/AdminTenantSettingsPage';
 import { AdminFeedbackPage } from '@/features/admin/pages/AdminFeedbackPage';
 import { AdminLogsPage } from '@/features/admin/pages/AdminLogsPage';
 
@@ -41,6 +43,15 @@ export default function AdminRoutes() {
         <Route path="sponsors" element={<AdminSponsorsPage />} />
         <Route path="invitations" element={<AdminInvitationsPage />} />
         <Route path="financial" element={<AdminFinancialPage />} />
+        <Route path="profile" element={<AdminProfilePage />} />
+        <Route
+          path="settings"
+          element={
+            <ProtectedRoute allow={canManageTenantSettings}>
+              <AdminTenantSettingsPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="feedback" element={<AdminFeedbackPage />} />
         <Route path="logs" element={<AdminLogsPage />} />
       </Route>

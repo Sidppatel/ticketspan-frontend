@@ -7,6 +7,8 @@ import { EventListPage } from '@/features/public/pages/EventListPage';
 import { TenantLandingPage } from '@/features/public/pages/TenantLandingPage';
 import { currentTenantSlug } from '@/shared/subdomain';
 import { EventDetailPage } from '@/features/public/pages/EventDetailPage';
+import { PerformerProfilePage } from '@/features/public/pages/PerformerProfilePage';
+import { SponsorProfilePage } from '@/features/public/pages/SponsorProfilePage';
 import { MyBookingsPage } from '@/features/public/pages/MyBookingsPage';
 import { ProfilePage } from '@/features/public/pages/ProfilePage';
 import { BookingDetailPage } from '@/features/public/pages/BookingDetailPage';
@@ -21,6 +23,8 @@ export default function PublicRoutes() {
       <Route element={<PublicLayout />}>
         <Route index element={currentTenantSlug() ? <EventListPage /> : <TenantLandingPage />} />
         <Route path="events/:slug" element={<EventDetailPage />} />
+        <Route path="performers/:slug" element={<PerformerProfilePage />} />
+        <Route path="sponsors/:slug" element={<SponsorProfilePage />} />
         <Route path="claim" element={<ClaimTicketPage />} />
         <Route
           path="my-bookings"

@@ -3,10 +3,13 @@
 // @generated from protobuf file "catalog.proto" (package "svyne.catalog", syntax proto3)
 // tslint:disable
 import { SponsorService } from "./catalog";
+import type { PublicSponsor } from "./catalog";
 import type { ListSponsorsResponse } from "./catalog";
 import type { UpdateSponsorRequest } from "./catalog";
 import type { CreateSponsorRequest } from "./catalog";
 import { PerformerService } from "./catalog";
+import type { PublicPerformer } from "./catalog";
+import type { GetBySlugRequest } from "./catalog";
 import type { SetEventLinksRequest } from "./catalog";
 import type { ListPerformersResponse } from "./catalog";
 import type { UpdatePerformerRequest } from "./catalog";
@@ -167,6 +170,10 @@ export interface IPerformerServiceClient {
      * @generated from protobuf rpc: SetEventPerformers(svyne.catalog.SetEventLinksRequest) returns (svyne.common.AckResponse);
      */
     setEventPerformers(input: SetEventLinksRequest, options?: RpcOptions): UnaryCall<SetEventLinksRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: GetPerformerBySlug(svyne.catalog.GetBySlugRequest) returns (svyne.catalog.PublicPerformer);
+     */
+    getPerformerBySlug(input: GetBySlugRequest, options?: RpcOptions): UnaryCall<GetBySlugRequest, PublicPerformer>;
 }
 /**
  * @generated from protobuf service svyne.catalog.PerformerService
@@ -212,6 +219,13 @@ export class PerformerServiceClient implements IPerformerServiceClient, ServiceI
         const method = this.methods[4], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetEventLinksRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
+    /**
+     * @generated from protobuf rpc: GetPerformerBySlug(svyne.catalog.GetBySlugRequest) returns (svyne.catalog.PublicPerformer);
+     */
+    getPerformerBySlug(input: GetBySlugRequest, options?: RpcOptions): UnaryCall<GetBySlugRequest, PublicPerformer> {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept<GetBySlugRequest, PublicPerformer>("unary", this._transport, method, opt, input);
+    }
 }
 /**
  * @generated from protobuf service svyne.catalog.SponsorService
@@ -237,6 +251,10 @@ export interface ISponsorServiceClient {
      * @generated from protobuf rpc: SetEventSponsors(svyne.catalog.SetEventLinksRequest) returns (svyne.common.AckResponse);
      */
     setEventSponsors(input: SetEventLinksRequest, options?: RpcOptions): UnaryCall<SetEventLinksRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: GetSponsorBySlug(svyne.catalog.GetBySlugRequest) returns (svyne.catalog.PublicSponsor);
+     */
+    getSponsorBySlug(input: GetBySlugRequest, options?: RpcOptions): UnaryCall<GetBySlugRequest, PublicSponsor>;
 }
 /**
  * @generated from protobuf service svyne.catalog.SponsorService
@@ -281,5 +299,12 @@ export class SponsorServiceClient implements ISponsorServiceClient, ServiceInfo 
     setEventSponsors(input: SetEventLinksRequest, options?: RpcOptions): UnaryCall<SetEventLinksRequest, AckResponse> {
         const method = this.methods[4], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetEventLinksRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: GetSponsorBySlug(svyne.catalog.GetBySlugRequest) returns (svyne.catalog.PublicSponsor);
+     */
+    getSponsorBySlug(input: GetBySlugRequest, options?: RpcOptions): UnaryCall<GetBySlugRequest, PublicSponsor> {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept<GetBySlugRequest, PublicSponsor>("unary", this._transport, method, opt, input);
     }
 }

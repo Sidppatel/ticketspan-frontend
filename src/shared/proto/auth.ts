@@ -15,6 +15,15 @@ import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 /**
+ * @generated from protobuf message svyne.auth.LinkGoogleRequest
+ */
+export interface LinkGoogleRequest {
+    /**
+     * @generated from protobuf field: string google_token = 1;
+     */
+    googleToken: string;
+}
+/**
  * @generated from protobuf message svyne.auth.UpdateProfileRequest
  */
 export interface UpdateProfileRequest {
@@ -287,7 +296,58 @@ export interface UserProfile {
      * @generated from protobuf field: string zip = 14;
      */
     zip: string;
+    /**
+     * @generated from protobuf field: bool google_connected = 15;
+     */
+    googleConnected: boolean;
 }
+// @generated message type with reflection information, may provide speed optimized methods
+class LinkGoogleRequest$Type extends MessageType<LinkGoogleRequest> {
+    constructor() {
+        super("svyne.auth.LinkGoogleRequest", [
+            { no: 1, name: "google_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<LinkGoogleRequest>): LinkGoogleRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.googleToken = "";
+        if (value !== undefined)
+            reflectionMergePartial<LinkGoogleRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LinkGoogleRequest): LinkGoogleRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string google_token */ 1:
+                    message.googleToken = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: LinkGoogleRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string google_token = 1; */
+        if (message.googleToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.googleToken);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.auth.LinkGoogleRequest
+ */
+export const LinkGoogleRequest = new LinkGoogleRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class UpdateProfileRequest$Type extends MessageType<UpdateProfileRequest> {
     constructor() {
@@ -1091,7 +1151,8 @@ class UserProfile$Type extends MessageType<UserProfile> {
             { no: 11, name: "address_line", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 12, name: "city", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 13, name: "state", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 14, name: "zip", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 14, name: "zip", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 15, name: "google_connected", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<UserProfile>): UserProfile {
@@ -1110,6 +1171,7 @@ class UserProfile$Type extends MessageType<UserProfile> {
         message.city = "";
         message.state = "";
         message.zip = "";
+        message.googleConnected = false;
         if (value !== undefined)
             reflectionMergePartial<UserProfile>(this, message, value);
         return message;
@@ -1160,6 +1222,9 @@ class UserProfile$Type extends MessageType<UserProfile> {
                     break;
                 case /* string zip */ 14:
                     message.zip = reader.string();
+                    break;
+                case /* bool google_connected */ 15:
+                    message.googleConnected = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1215,6 +1280,9 @@ class UserProfile$Type extends MessageType<UserProfile> {
         /* string zip = 14; */
         if (message.zip !== "")
             writer.tag(14, WireType.LengthDelimited).string(message.zip);
+        /* bool google_connected = 15; */
+        if (message.googleConnected !== false)
+            writer.tag(15, WireType.Varint).bool(message.googleConnected);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1241,5 +1309,7 @@ export const AuthService = new ServiceType("svyne.auth.AuthService", [
     { name: "SetPassword", options: {}, I: SetPasswordRequest, O: AckResponse },
     { name: "Me", options: {}, I: Empty, O: UserProfile },
     { name: "UpdateProfile", options: {}, I: UpdateProfileRequest, O: UserProfile },
-    { name: "SetAvatar", options: {}, I: SetAvatarRequest, O: UserProfile }
+    { name: "SetAvatar", options: {}, I: SetAvatarRequest, O: UserProfile },
+    { name: "LinkGoogle", options: {}, I: LinkGoogleRequest, O: UserProfile },
+    { name: "UnlinkGoogle", options: {}, I: Empty, O: UserProfile }
 ]);

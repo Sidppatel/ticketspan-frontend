@@ -305,6 +305,10 @@ export interface Event {
      * @generated from protobuf field: string primary_image_id = 19;
      */
     primaryImageId: string; // images_id of primary thumbnail (fallback event image)
+    /**
+     * @generated from protobuf field: string extra_info_json = 20;
+     */
+    extraInfoJson: string; // JSON array [{key,value,isPublic,sortOrder}]
 }
 /**
  * @generated from protobuf message svyne.event.GetEventBySlugRequest
@@ -425,6 +429,10 @@ export interface UpdateEventRequest {
      * @generated from protobuf field: string event_type = 11;
      */
     eventType: string; // Open | Table | Both; empty = unchanged
+    /**
+     * @generated from protobuf field: string extra_info_json = 12;
+     */
+    extraInfoJson: string; // JSON array [{key,value,isPublic,sortOrder}]; empty = unchanged
 }
 /**
  * @generated from protobuf message svyne.event.ChangeEventStatusRequest
@@ -1289,7 +1297,8 @@ class Event$Type extends MessageType<Event> {
             { no: 16, name: "sponsors_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 17, name: "fees_included", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 18, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 19, name: "primary_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 19, name: "primary_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 20, name: "extra_info_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Event>): Event {
@@ -1313,6 +1322,7 @@ class Event$Type extends MessageType<Event> {
         message.feesIncluded = false;
         message.eventType = "";
         message.primaryImageId = "";
+        message.extraInfoJson = "";
         if (value !== undefined)
             reflectionMergePartial<Event>(this, message, value);
         return message;
@@ -1378,6 +1388,9 @@ class Event$Type extends MessageType<Event> {
                     break;
                 case /* string primary_image_id */ 19:
                     message.primaryImageId = reader.string();
+                    break;
+                case /* string extra_info_json */ 20:
+                    message.extraInfoJson = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1448,6 +1461,9 @@ class Event$Type extends MessageType<Event> {
         /* string primary_image_id = 19; */
         if (message.primaryImageId !== "")
             writer.tag(19, WireType.LengthDelimited).string(message.primaryImageId);
+        /* string extra_info_json = 20; */
+        if (message.extraInfoJson !== "")
+            writer.tag(20, WireType.LengthDelimited).string(message.extraInfoJson);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1708,7 +1724,8 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
             { no: 7, name: "image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 8, name: "is_featured", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 10, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 11, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 11, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 12, name: "extra_info_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<UpdateEventRequest>): UpdateEventRequest {
@@ -1723,6 +1740,7 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         message.isFeatured = false;
         message.venuesId = "";
         message.eventType = "";
+        message.extraInfoJson = "";
         if (value !== undefined)
             reflectionMergePartial<UpdateEventRequest>(this, message, value);
         return message;
@@ -1761,6 +1779,9 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
                     break;
                 case /* string event_type */ 11:
                     message.eventType = reader.string();
+                    break;
+                case /* string extra_info_json */ 12:
+                    message.extraInfoJson = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1804,6 +1825,9 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         /* string event_type = 11; */
         if (message.eventType !== "")
             writer.tag(11, WireType.LengthDelimited).string(message.eventType);
+        /* string extra_info_json = 12; */
+        if (message.extraInfoJson !== "")
+            writer.tag(12, WireType.LengthDelimited).string(message.extraInfoJson);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

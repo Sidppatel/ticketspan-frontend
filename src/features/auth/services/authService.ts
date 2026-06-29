@@ -104,6 +104,16 @@ export async function setAvatar(imagesId: string): Promise<void> {
   useAuthStore.getState().setUser(profile);
 }
 
+export async function linkGoogle(googleToken: string): Promise<void> {
+  const profile = await callRpc(() => authClient.linkGoogle({ googleToken }));
+  useAuthStore.getState().setUser(profile);
+}
+
+export async function unlinkGoogle(): Promise<void> {
+  const profile = await callRpc(() => authClient.unlinkGoogle({}));
+  useAuthStore.getState().setUser(profile);
+}
+
 export async function logout(): Promise<void> {
   const refreshToken = useAuthStore.getState().refreshToken ?? '';
   try {

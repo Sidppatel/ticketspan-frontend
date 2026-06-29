@@ -16,6 +16,7 @@ export interface EventDraft {
   eventType: string;
   venuesId: string;
   imagePath: string;
+  extraInfoJson?: string;
 }
 
 export async function createEvent(draft: EventDraft): Promise<string> {
@@ -52,6 +53,25 @@ export async function updateEvent(eventsId: string, draft: EventDraft): Promise<
       isFeatured: false,
       venuesId: draft.venuesId,
       eventType: draft.eventType,
+      extraInfoJson: draft.extraInfoJson ?? '',
+    }),
+  );
+}
+
+export async function setEventExtraInfo(event: Event, extraInfoJson: string): Promise<void> {
+  await callRpc(() =>
+    eventClient.updateEvent({
+      eventsId: event.eventsId,
+      title: event.title,
+      description: event.description,
+      category: event.category,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      imagePath: event.imagePath,
+      isFeatured: event.isFeatured,
+      venuesId: event.venuesId,
+      eventType: event.eventType,
+      extraInfoJson,
     }),
   );
 }

@@ -109,6 +109,10 @@ export interface StripeStatus {
      * @generated from protobuf field: bool details_submitted = 3;
      */
     detailsSubmitted: boolean;
+    /**
+     * @generated from protobuf field: string bank_last4 = 4;
+     */
+    bankLast4: string;
 }
 /**
  * @generated from protobuf message svyne.admin.StripeOnboardingLink
@@ -663,7 +667,8 @@ class StripeStatus$Type extends MessageType<StripeStatus> {
         super("svyne.admin.StripeStatus", [
             { no: 1, name: "charges_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 2, name: "payouts_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 3, name: "details_submitted", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 3, name: "details_submitted", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 4, name: "bank_last4", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<StripeStatus>): StripeStatus {
@@ -671,6 +676,7 @@ class StripeStatus$Type extends MessageType<StripeStatus> {
         message.chargesEnabled = false;
         message.payoutsEnabled = false;
         message.detailsSubmitted = false;
+        message.bankLast4 = "";
         if (value !== undefined)
             reflectionMergePartial<StripeStatus>(this, message, value);
         return message;
@@ -688,6 +694,9 @@ class StripeStatus$Type extends MessageType<StripeStatus> {
                     break;
                 case /* bool details_submitted */ 3:
                     message.detailsSubmitted = reader.bool();
+                    break;
+                case /* string bank_last4 */ 4:
+                    message.bankLast4 = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -710,6 +719,9 @@ class StripeStatus$Type extends MessageType<StripeStatus> {
         /* bool details_submitted = 3; */
         if (message.detailsSubmitted !== false)
             writer.tag(3, WireType.Varint).bool(message.detailsSubmitted);
+        /* string bank_last4 = 4; */
+        if (message.bankLast4 !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.bankLast4);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

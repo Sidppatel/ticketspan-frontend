@@ -18,10 +18,12 @@ export function AdminLayout() {
     { to: '/sponsors', label: 'Sponsors' },
     { to: '/feedback', label: 'Feedback' },
     { to: '/logs', label: 'Logs' },
+    { to: '/profile', label: 'Profile' },
   ];
   if (canManageTenantSettings(role)) {
     links.push({ to: '/invitations', label: 'Invitations' });
     links.push({ to: '/financial', label: 'Financial' });
+    links.push({ to: '/settings', label: 'Settings' });
   }
 
   return (

@@ -5,6 +5,7 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { AuthService } from "./auth";
+import type { LinkGoogleRequest } from "./auth";
 import type { SetAvatarRequest } from "./auth";
 import type { UpdateProfileRequest } from "./auth";
 import type { UserProfile } from "./auth";
@@ -82,6 +83,14 @@ export interface IAuthServiceClient {
      * @generated from protobuf rpc: SetAvatar(svyne.auth.SetAvatarRequest) returns (svyne.auth.UserProfile);
      */
     setAvatar(input: SetAvatarRequest, options?: RpcOptions): UnaryCall<SetAvatarRequest, UserProfile>;
+    /**
+     * @generated from protobuf rpc: LinkGoogle(svyne.auth.LinkGoogleRequest) returns (svyne.auth.UserProfile);
+     */
+    linkGoogle(input: LinkGoogleRequest, options?: RpcOptions): UnaryCall<LinkGoogleRequest, UserProfile>;
+    /**
+     * @generated from protobuf rpc: UnlinkGoogle(svyne.common.Empty) returns (svyne.auth.UserProfile);
+     */
+    unlinkGoogle(input: Empty, options?: RpcOptions): UnaryCall<Empty, UserProfile>;
 }
 /**
  * @generated from protobuf service svyne.auth.AuthService
@@ -184,5 +193,19 @@ export class AuthServiceClient implements IAuthServiceClient, ServiceInfo {
     setAvatar(input: SetAvatarRequest, options?: RpcOptions): UnaryCall<SetAvatarRequest, UserProfile> {
         const method = this.methods[12], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetAvatarRequest, UserProfile>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: LinkGoogle(svyne.auth.LinkGoogleRequest) returns (svyne.auth.UserProfile);
+     */
+    linkGoogle(input: LinkGoogleRequest, options?: RpcOptions): UnaryCall<LinkGoogleRequest, UserProfile> {
+        const method = this.methods[13], opt = this._transport.mergeOptions(options);
+        return stackIntercept<LinkGoogleRequest, UserProfile>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: UnlinkGoogle(svyne.common.Empty) returns (svyne.auth.UserProfile);
+     */
+    unlinkGoogle(input: Empty, options?: RpcOptions): UnaryCall<Empty, UserProfile> {
+        const method = this.methods[14], opt = this._transport.mergeOptions(options);
+        return stackIntercept<Empty, UserProfile>("unary", this._transport, method, opt, input);
     }
 }

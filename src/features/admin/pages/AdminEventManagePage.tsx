@@ -15,6 +15,7 @@ import {
 import { listTableTemplates } from '@/features/admin/services/tableTemplateService';
 import { getVenue, listVenues } from '@/features/admin/services/catalogService';
 import { EventCatalogLinks } from '@/features/admin/components/EventCatalogLinks';
+import { EventExtraInfoEditor } from '@/features/admin/components/EventExtraInfoEditor';
 import { getEventLayout } from '@/features/admin/services/layoutService';
 import { tzForState, epochToZonedInput, zonedInputToEpoch, zoneAbbrev } from '@/shared/lib/timezone';
 import { DateTimePicker } from '@/shared/ui/date-time-picker';
@@ -211,6 +212,8 @@ export function AdminEventManagePage() {
           onChanged={event.reload}
         />
       ) : null}
+
+      {event.data ? <EventExtraInfoEditor event={event.data} onSaved={event.reload} /> : null}
 
       <EventMediaManager eventsId={eventsId} />
 
