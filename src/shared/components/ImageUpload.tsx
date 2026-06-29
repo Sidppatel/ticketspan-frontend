@@ -34,8 +34,8 @@ export function ImageUpload({ entityType, entityId, onUploaded }: ImageUploadPro
   return (
     <div className="space-y-1">
       <Input type="file" accept="image/*" onChange={(e) => handle(e.target.files?.[0])} disabled={uploading} />
-      {uploading ? <p className="text-xs text-gray-500">Uploading…</p> : null}
-      {storageKey ? <p className="text-xs text-green-600">Uploaded: {storageKey}</p> : null}
+      {uploading ? <p className="text-xs text-muted-foreground">Uploading…</p> : null}
+      {storageKey ? <p className="text-xs text-success">Uploaded: {storageKey}</p> : null}
       {error ? <p className="text-xs text-red-600">{error}</p> : null}
     </div>
   );

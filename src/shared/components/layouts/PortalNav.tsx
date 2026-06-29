@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
-import { Menu, Moon, Sun } from 'lucide-react';
+import { Menu, ChevronDown } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/shared/ui/sheet';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { useAuth } from '@/shared/auth/useAuth';
-import { useDarkMode } from '@/shared/hooks/useDarkMode';
 import { roleLabel } from '@/shared/roles';
 import { logout } from '@/features/auth/services/authService';
 import { cn } from '@/shared/lib/cn';
@@ -17,7 +17,9 @@ export interface NavLink {
 function linkClasses({ isActive }: { isActive: boolean }): string {
   return cn(
     'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-    isActive ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+    isActive
+      ? 'bg-marigold/15 text-foreground'
+      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
   );
 }
 
@@ -32,15 +34,6 @@ function Brand({ section, className }: { section?: string; className?: string })
         </>
       ) : null}
     </span>
-  );
-}
-
-function ThemeToggle() {
-  const { isDark, toggle } = useDarkMode();
-  return (
-    <Button variant="ghost" size="icon" aria-label="Toggle theme" onClick={toggle}>
-      {isDark ? <Sun /> : <Moon />}
-    </Button>
   );
 }
 
@@ -99,15 +92,38 @@ export function PortalNav({ section, links }: { section?: string; links: NavLink
         <Brand section={section} className="text-base" />
 
         <nav className="ml-4 hidden items-center gap-1 md:flex">
-          {links.map((link) => (
-            <RouterNavLink key={link.to} to={link.to} end={link.to === '/'} className={linkClasses}>
-              {link.label}
-            </RouterNavLink>
-          ))}
+          {links.length > 5 ? (
+            <>
+              {links.slice(0, 4).map((link) => (
+                <RouterNavLink key={link.to} to={link.to} end={link.to === '/'} className={linkClasses}>
+                  {link.label}
+                </RouterNavLink>
+              ))}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground font-medium text-sm h-9 px-3">
+                    More <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="flex flex-col gap-1 w-48 bg-card border border-border p-1 shadow-md">
+                  {links.slice(4).map((link) => (
+                    <RouterNavLink key={link.to} to={link.to} end={link.to === '/'} className={cn(linkClasses, "block w-full text-left")}>
+                      {link.label}
+                    </RouterNavLink>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            </>
+          ) : (
+            links.map((link) => (
+              <RouterNavLink key={link.to} to={link.to} end={link.to === '/'} className={linkClasses}>
+                {link.label}
+              </RouterNavLink>
+            ))
+          )}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
-          <ThemeToggle />
           {isAuthenticated ? (
             <>
               <span className="hidden text-sm text-muted-foreground lg:inline">{roleLabel(role)}</span>

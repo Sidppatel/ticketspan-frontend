@@ -1,59 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
 /*
- * SINGLE SOURCE OF TRUTH for all colors — Expo design system (DESIGN-expo.md).
- * Pure-white canvas, near-black ink, BLACK primary CTAs (the only brand voltage),
- * blue reserved for inline links only. Inter (sans) + JetBrains Mono (code).
+ * SINGLE SOURCE OF TRUTH for all colors — Box Office design system (DESIGN.md).
+ * Warm porcelain canvas, deep plum ink, CRANBERRY primary CTAs (the only action color),
+ * MARIGOLD as the single signature voltage (prices, urgency, ticket perforation).
+ * Bricolage Grotesque (display) + Inter (body) + JetBrains Mono (ticket codes).
  * Light mode only.
  */
 :root {
-  /* Type — Inter everywhere, JetBrains Mono on code */
   --brand-font: 'Inter', -apple-system, system-ui, sans-serif;
-  --brand-font-display: 'Inter', -apple-system, system-ui, sans-serif;
+  --brand-font-display: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
   --brand-font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-  --radius: 0.75rem; /* cards 12px (lg); buttons resolve to ~10px (md) */
+  --radius: 0.75rem; /* cards 12px (lg); buttons resolve to ~8px (md) */
 
   /* Backgrounds */
-  --background: #ffffff; /* canvas */
-  --foreground: #171717; /* ink */
-  --card: #ffffff; /* surface-card */
-  --card-foreground: #171717;
+  --background: #fbf6f0; /* warm porcelain canvas */
+  --foreground: #241522; /* plum ink */
+  --card: #ffffff; /* clean surface for depth on warm canvas */
+  --card-foreground: #241522;
   --popover: #ffffff;
-  --popover-foreground: #171717;
+  --popover-foreground: #241522;
 
-  /* Actions — black is the only CTA fill */
-  --primary: #000000; /* primary CTA */
-  --primary-foreground: #ffffff; /* on-primary */
-  --secondary: #f0f0f3; /* surface-strong — secondary buttons/badges */
-  --secondary-foreground: #171717;
-  --muted: #fafafa; /* canvas-soft */
-  --muted-foreground: #60646c; /* body gray */
-  --accent: #f0f0f3; /* surface-strong — hover/highlight */
-  --accent-foreground: #171717;
+  /* Actions — cranberry is the only CTA fill */
+  --primary: #a4123f; /* cranberry box-office CTA */
+  --primary-foreground: #fff7f2;
+  --secondary: #f0e6db; /* warm sand — secondary buttons/badges */
+  --secondary-foreground: #241522;
+  --muted: #f4ece3; /* soft warm panel */
+  --muted-foreground: #6b5a66; /* plum-gray body/meta */
+  --accent: #f4ece3; /* hover/highlight */
+  --accent-foreground: #241522;
 
-  /* Status — *-foreground here are used as readable TEXT on light tints
-     (text-amber-foreground / text-destructive), so they must be dark, not white. */
-  --amber: #ab6400; /* warning */
-  --amber-foreground: #ab6400; /* dark amber text on amber/15 tint */
-  --success: #16a34a;
-  --success-foreground: #ffffff; /* white text on solid success bg */
-  --warning: #ab6400;
-  --destructive: #b3261e; /* readable error red (Expo #eb8e90 is too pale for text) */
+  /* Signature voltage — marigold; *-foreground is readable dark-gold TEXT on a marigold tint */
+  --marigold: #f5a524; /* prices, urgency, ticket perforation, active nav */
+  --marigold-foreground: #5a3b00;
+  /* Back-compat alias: existing components reference --amber */
+  --amber: #c9871f;
+  --amber-foreground: #5a3b00;
+
+  /* Status — *-foreground are readable TEXT on light tints, so dark not white */
+  --success: #2f7d5b;
+  --success-foreground: #ffffff;
+  --warning: #c9871f;
+  --destructive: #b3261e;
   --destructive-foreground: #ffffff;
 
   /* Borders & focus */
-  --border: #dcdee0; /* hairline-strong */
-  --input: #dcdee0;
-  --ring: #171717; /* focus thickens to ink */
+  --border: #e7d9cb; /* warm hairline */
+  --input: #e7d9cb;
+  --ring: #a4123f; /* focus = brand cranberry */
 
-  /* Expo: no atmospheric wash outside the hero — flat white floor */
+  /* Box Office: flat warm floor, no atmospheric wash */
   --gradient-bg: none;
 
   /* Brand vars consumed by wordmark/nav (LoginPage, PortalNav) */
   --brand-primary: var(--primary);
   --brand-secondary: var(--accent);
-  --brand-accent: var(--amber);
+  --brand-accent: var(--marigold);
 }
 
 @theme inline {
@@ -71,6 +75,8 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-marigold: var(--marigold);
+  --color-marigold-foreground: var(--marigold-foreground);
   --color-amber: var(--amber);
   --color-amber-foreground: var(--amber-foreground);
   --color-success: var(--success);
@@ -82,24 +88,21 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Expo named surfaces (utilities: bg-/text-/border-<name>) */
-  --color-canvas: #ffffff;
-  --color-canvas-soft: #fafafa;
-  --color-surface-strong: #f0f0f3;
-  --color-surface-dark: #171717; /* dark cards, code blocks, IDE mockups */
-  --color-surface-dark-elevated: #1a1a1a;
-  --color-ink: #171717;
-  --color-body: #60646c;
-  --color-on-dark: #ffffff;
-  --color-on-dark-soft: #b0b4ba;
-  --color-text-link: #0d74ce; /* inline body links only — never a CTA */
-  --color-text-link-secondary: #476cff;
-  --color-hairline: #f0f0f3;
-  --color-hairline-soft: #f5f5f7;
-  --color-hairline-strong: #dcdee0;
-  --color-accent-preview: #8145b5;
-  --color-sky-light: #cfe7ff; /* hero gradient wash only */
-  --color-sky-mid: #a8c8e8;
+  /* Box Office named surfaces (utilities: bg-/text-/border-<name>) */
+  --color-canvas: #fbf6f0;
+  --color-canvas-soft: #f4ece3;
+  --color-surface-strong: #f0e6db;
+  --color-surface-dark: #241522; /* dark plum panels, footers */
+  --color-surface-dark-elevated: #2e1b2c;
+  --color-ink: #241522;
+  --color-body: #6b5a66;
+  --color-on-dark: #fff7f2;
+  --color-on-dark-soft: #cdbcc6;
+  --color-text-link: #a4123f; /* inline body links — cranberry, never blue */
+  --color-text-link-secondary: #7f5539;
+  --color-hairline: #f0e6db;
+  --color-hairline-soft: #f4ece3;
+  --color-hairline-strong: #e7d9cb;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 4px); /* ~8px CTA */
@@ -159,6 +162,16 @@
   }
 }
 
+@keyframes svyne-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
 body {
   margin: 0;
   background-color: var(--background);
@@ -180,6 +193,38 @@ h3 {
   animation: svyne-fade-up 0.4s ease-out both;
 }
 
+/* Signature: ticket-stub perforation — a marigold dashed tear line with two
+   notches bitten out at the ends. Place between the stub and the event body.
+   The notch fill defaults to the page canvas; override --svyne-notch on a
+   non-canvas surface (e.g. inside a white card use --svyne-notch:#ffffff). */
+.svyne-ticket-edge {
+  --svyne-notch: var(--background);
+  position: relative;
+  height: 0;
+  border-top: 2px dashed var(--marigold);
+}
+.svyne-ticket-edge::before,
+.svyne-ticket-edge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--svyne-notch);
+  transform: translateY(-50%);
+}
+.svyne-ticket-edge::before {
+  left: -8px;
+}
+.svyne-ticket-edge::after {
+  right: -8px;
+}
+
+.svyne-urgent {
+  animation: svyne-pulse 1.8s ease-in-out infinite;
+}
+
 .svyne-overlay[data-state='open'] {
   animation: svyne-fade 0.2s ease-out;
 }
@@ -196,7 +241,8 @@ h3 {
   .svyne-page,
   .svyne-overlay[data-state='open'],
   .svyne-sheet-left[data-state='open'],
-  .svyne-sheet-right[data-state='open'] {
+  .svyne-sheet-right[data-state='open'],
+  .svyne-urgent {
     animation: none;
   }
 }

@@ -164,13 +164,20 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
   const ss = secondsLeft === null ? null : secondsLeft % 60;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Complete payment · {centsToUSD(intent.amountCents)}</CardTitle>
+    <Card className="overflow-hidden">
+      <CardHeader className="flex items-center justify-between gap-2 border-b-0">
+        <CardTitle>Complete payment</CardTitle>
+        <span className="font-display text-2xl font-bold text-marigold">
+          {centsToUSD(intent.amountCents)}
+        </span>
       </CardHeader>
+      <div
+        className="svyne-ticket-edge mx-4"
+        style={{ ['--svyne-notch' as string]: '#ffffff' } as React.CSSProperties}
+      />
       <CardContent>
         {secondsLeft !== null && !expired ? (
-          <p className="mb-3 text-sm text-amber-foreground">
+          <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-marigold/15 px-2.5 py-1 text-sm font-medium text-marigold-foreground">
             Seats held for {mm}:{String(ss).padStart(2, '0')}
           </p>
         ) : null}
@@ -186,11 +193,11 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
           <form onSubmit={handleSubmit} className="space-y-4">
             <PaymentElement />
             {message ? <p className="text-sm text-destructive">{message}</p> : null}
-            <div className="flex gap-2">
-              <Button type="submit" disabled={!stripe || submitting || polling}>
+            <div className="sticky bottom-0 -mx-4 -mb-4 flex gap-2 border-t border-border bg-card/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:static sm:m-0 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+              <Button type="submit" size="lg" className="flex-1 sm:flex-none" disabled={!stripe || submitting || polling}>
                 {polling ? 'Confirming…' : submitting ? 'Processing…' : `Pay ${centsToUSD(intent.amountCents)}`}
               </Button>
-              <Button type="button" variant="outline" onClick={handleCancel} disabled={submitting || polling}>
+              <Button type="button" variant="outline" size="lg" onClick={handleCancel} disabled={submitting || polling}>
                 Cancel
               </Button>
             </div>
