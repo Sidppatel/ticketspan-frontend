@@ -207,6 +207,14 @@ export interface ITicketServiceClient {
      * @generated from protobuf rpc: ListTickets(svyne.common.UuidValue) returns (svyne.booking.ListTicketsResponse);
      */
     listTickets(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListTicketsResponse>;
+    /**
+     * @generated from protobuf rpc: ClaimTicketSelf(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    claimTicketSelf(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
+    /**
+     * @generated from protobuf rpc: RevokeTicket(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    revokeTicket(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
 }
 /**
  * @generated from protobuf service svyne.booking.TicketService
@@ -244,6 +252,20 @@ export class TicketServiceClient implements ITicketServiceClient, ServiceInfo {
     listTickets(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListTicketsResponse> {
         const method = this.methods[3], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, ListTicketsResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ClaimTicketSelf(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    claimTicketSelf(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
+        const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: RevokeTicket(svyne.common.UuidValue) returns (svyne.common.AckResponse);
+     */
+    revokeTicket(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
 }
 /**

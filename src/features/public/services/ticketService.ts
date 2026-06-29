@@ -18,3 +18,11 @@ export async function inviteTicket(ticketsId: string, email: string): Promise<vo
 export async function claimTicket(token: string): Promise<void> {
   await callRpc(() => ticketClient.claimTicket({ token }));
 }
+
+export async function claimTicketSelf(ticketsId: string): Promise<void> {
+  await callRpc(() => ticketClient.claimTicketSelf({ value: ticketsId }));
+}
+
+export async function revokeTicket(ticketsId: string): Promise<void> {
+  await callRpc(() => ticketClient.revokeTicket({ value: ticketsId }));
+}

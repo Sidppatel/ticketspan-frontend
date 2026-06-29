@@ -2657,7 +2657,9 @@ export const TicketService = new ServiceType("svyne.booking.TicketService", [
     { name: "GetTicket", options: {}, I: UuidValue, O: Ticket },
     { name: "ClaimTicket", options: {}, I: ClaimTicketRequest, O: AckResponse },
     { name: "InviteTicket", options: {}, I: InviteTicketRequest, O: AckResponse },
-    { name: "ListTickets", options: {}, I: UuidValue, O: ListTicketsResponse }
+    { name: "ListTickets", options: {}, I: UuidValue, O: ListTicketsResponse },
+    { name: "ClaimTicketSelf", options: {}, I: UuidValue, O: AckResponse },
+    { name: "RevokeTicket", options: {}, I: UuidValue, O: AckResponse }
 ]);
 /**
  * @generated ServiceType for protobuf service svyne.booking.CheckInService

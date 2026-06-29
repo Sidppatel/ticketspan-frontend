@@ -1,10 +1,13 @@
 import { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsync } from '@/shared/hooks/useAsync';
+import { useAuth } from '@/shared/auth/useAuth';
 import {
   getBooking,
   listTickets,
   inviteTicket,
+  claimTicketSelf,
+  revokeTicket,
 } from '@/features/public/services/ticketService';
 import { rpcErrorMessage } from '@/shared/session';
 import { centsToUSD } from '@/shared/lib/format';
@@ -14,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 
 export function BookingDetailPage() {
   const { bookingsId = '' } = useParams();
+  const { user } = useAuth();
   const bookingLoader = useCallback(() => getBooking(bookingsId), [bookingsId]);
   const ticketsLoader = useCallback(() => listTickets(bookingsId), [bookingsId]);
   const booking = useAsync(bookingLoader);
@@ -23,6 +27,24 @@ export function BookingDetailPage() {
   async function invite(ticketId: string) {
     try {
       await inviteTicket(ticketId, emails[ticketId] ?? '');
+      tickets.reload();
+    } catch (caught) {
+      window.alert(rpcErrorMessage(caught));
+    }
+  }
+
+  async function handleClaimSelf(ticketId: string) {
+    try {
+      await claimTicketSelf(ticketId);
+      tickets.reload();
+    } catch (caught) {
+      window.alert(rpcErrorMessage(caught));
+    }
+  }
+
+  async function handleRevoke(ticketId: string) {
+    try {
+      await revokeTicket(ticketId);
       tickets.reload();
     } catch (caught) {
       window.alert(rpcErrorMessage(caught));
@@ -66,30 +88,57 @@ export function BookingDetailPage() {
           <CardTitle>Tickets</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {(tickets.data ?? []).map((ticket) => (
-            <div key={ticket.ticketsId} className="flex flex-wrap items-center gap-2 border-b py-2 text-sm">
-              <span className="font-medium">{ticket.ticketCode}</span>
-              <span className="text-muted-foreground">seat {ticket.seatNumber}</span>
-              <span className="text-muted-foreground">{ticket.status}</span>
-              {ticket.status !== 'CheckedIn' ? (
-                <>
-                  <Input
-                    className="w-48"
-                    placeholder="invite email"
-                    value={emails[ticket.ticketsId] ?? ''}
-                    onChange={(e) => setEmails((prev) => ({ ...prev, [ticket.ticketsId]: e.target.value }))}
-                  />
-                  <Button size="sm" variant="outline" onClick={() => invite(ticket.ticketsId)}>
-                    Invite
-                  </Button>
-                </>
-              ) : (
-                <span className="text-success font-semibold px-2 py-0.5 bg-success/10 rounded-md">
-                  Checked In
-                </span>
-              )}
-            </div>
-          ))}
+          {(() => {
+            const hasClaimedAny = (tickets.data ?? []).some(
+              (t) => t.guestUsersId === user?.usersId && (t.status === 'Claimed' || t.status === 'CheckedIn')
+            );
+            return (tickets.data ?? []).map((ticket) => {
+              const isClaimedByMe = ticket.guestUsersId === user?.usersId && ticket.status === 'Claimed';
+              const isClaimedByOthers = ticket.status === 'Claimed' && ticket.guestUsersId !== user?.usersId;
+              return (
+                <div key={ticket.ticketsId} className="flex flex-wrap items-center gap-2 border-b py-2 text-sm">
+                  <span className="font-medium">{ticket.ticketCode}</span>
+                  <span className="text-muted-foreground">seat {ticket.seatNumber}</span>
+                  <span className="text-muted-foreground">{ticket.status}</span>
+                  {ticket.status === 'CheckedIn' ? (
+                    <span className="text-success font-semibold px-2 py-0.5 bg-success/10 rounded-md">
+                      Checked In
+                    </span>
+                  ) : isClaimedByMe ? (
+                    <Button size="sm" variant="destructive" onClick={() => handleRevoke(ticket.ticketsId)}>
+                      Revoke
+                    </Button>
+                  ) : (
+                    <>
+                      <Input
+                        className="w-48"
+                        placeholder="invite email"
+                        value={emails[ticket.ticketsId] ?? ''}
+                        onChange={(e) => setEmails((prev) => ({ ...prev, [ticket.ticketsId]: e.target.value }))}
+                        disabled={hasClaimedAny || isClaimedByOthers}
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => invite(ticket.ticketsId)}
+                        disabled={hasClaimedAny || isClaimedByOthers || !(emails[ticket.ticketsId] ?? '').trim()}
+                      >
+                        Invite
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleClaimSelf(ticket.ticketsId)}
+                        disabled={hasClaimedAny || isClaimedByOthers}
+                      >
+                        Claim for myself
+                      </Button>
+                    </>
+                  )}
+                </div>
+              );
+            });
+          })()}
           {!tickets.loading && (tickets.data ?? []).length === 0 ? (
             <p className="text-muted-foreground">No tickets.</p>
           ) : null}
