@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { PortalNav } from '@/shared/components/layouts/PortalNav';
 import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 import { useAuth } from '@/shared/auth/useAuth';
+import { cn } from '@/shared/lib/cn';
 
 export function PublicLayout() {
   const { role, isAuthenticated } = useAuth();
@@ -20,10 +21,19 @@ export function PublicLayout() {
     links.push({ to: '/staff', label: 'Check-In' });
   }
 
+  const isFullBleedPage = pathname.startsWith('/events/');
+
   return (
     <div className="min-h-screen bg-background">
       <PortalNav links={links} />
-      <main ref={page} key={pathname} className="mx-auto max-w-5xl px-4 py-6 md:px-6 md:py-8">
+      <main 
+        ref={page} 
+        key={pathname} 
+        className={cn(
+          "mx-auto w-full",
+          isFullBleedPage ? "" : "max-w-7xl px-4 py-6 md:px-6 md:py-8"
+        )}
+      >
         <Outlet />
       </main>
     </div>
