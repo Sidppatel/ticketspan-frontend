@@ -7,26 +7,23 @@ export interface CartItem {
   refId: string;
   label: string;
   seats: number;
-  subtotal: number;
-  fee: number;
 }
 
 const keyFor = (eventsId: string) => `pendingCart:${eventsId}`;
 
 export function savePendingCart(eventsId: string, cart: CartItem[]): void {
   try {
-    sessionStorage.setItem(keyFor(eventsId), JSON.stringify(cart));
+    localStorage.setItem(keyFor(eventsId), JSON.stringify(cart));
   } catch {
     // non-fatal
   }
 }
 
-// Reads and clears the stashed cart for an event. Returns [] if none/invalid.
+// Reads the stashed cart for an event. Returns [] if none/invalid.
 export function takePendingCart(eventsId: string): CartItem[] {
   try {
-    const raw = sessionStorage.getItem(keyFor(eventsId));
+    const raw = localStorage.getItem(keyFor(eventsId));
     if (!raw) return [];
-    sessionStorage.removeItem(keyFor(eventsId));
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? (parsed as CartItem[]) : [];
   } catch {
@@ -36,7 +33,22 @@ export function takePendingCart(eventsId: string): CartItem[] {
 
 export function clearPendingCart(eventsId: string): void {
   try {
-    sessionStorage.removeItem(keyFor(eventsId));
+    localStorage.removeItem(keyFor(eventsId));
+  } catch {
+    // non-fatal
+  }
+}
+
+export function clearAllPendingCarts(): void {
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('pendingCart:')) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
   } catch {
     // non-fatal
   }

@@ -5,12 +5,11 @@ import type { Price, PriceRule, PriceBreakdown } from '@/shared/proto/pricing';
 export interface PriceInput {
   eventsId: string;
   name: string;
-  pricingType: string; // TicketTier | Table | AddOn
+  pricingType: string; // TicketTier | Table
   basePriceCents: number;
   perAttendeeCents: number;
   isAllInclusive: boolean;
   feeFormulasId: string; // honored only for developers
-  parentPricesId: string;
   maxQuantity: number;
 }
 

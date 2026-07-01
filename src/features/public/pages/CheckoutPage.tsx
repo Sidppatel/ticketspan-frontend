@@ -12,6 +12,7 @@ import {
   getPaymentStatus,
   cancelBooking,
 } from '@/features/public/services/paymentService';
+import { clearAllPendingCarts } from '@/features/public/services/pendingCart';
 import { rpcErrorMessage } from '@/shared/session';
 import { centsToUSD } from '@/shared/lib/format';
 import { Button } from '@/shared/ui/button';
@@ -108,6 +109,7 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
       try {
         const status = await getPaymentStatus(bookingsId);
         if (status.bookingStatus === 'Paid') {
+          clearAllPendingCarts();
           navigate(`/bookings/${bookingsId}`);
           return;
         }
@@ -122,6 +124,7 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
       await new Promise((r) => setTimeout(r, 1500));
     }
     // Webhook may lag; send the user to their booking which reflects final state.
+    clearAllPendingCarts();
     navigate(`/bookings/${bookingsId}`);
   }, [bookingsId, navigate]);
 

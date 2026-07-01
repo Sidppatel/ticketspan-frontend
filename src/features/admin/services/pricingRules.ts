@@ -8,6 +8,7 @@ export interface RuleGroup {
   activeUntil: string;
   percent: number;
   priceRuleIds: string[];
+  rules: PriceRule[];
 }
 
 export function discountedCents(baseCents: number, percent: number): number {
@@ -76,10 +77,12 @@ export function groupEventRules(prices: Price[], rules: PriceRule[]): RuleGroup[
         activeUntil: rule.activeUntil,
         percent: derivePercent(baseById.get(rule.pricesId) ?? 0, rule.priceCents),
         priceRuleIds: [],
+        rules: [],
       };
       groups.set(key, group);
     }
     group.priceRuleIds.push(rule.priceRulesId);
+    group.rules.push(rule);
   }
   return [...groups.values()];
 }

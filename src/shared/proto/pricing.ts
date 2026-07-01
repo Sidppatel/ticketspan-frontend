@@ -33,7 +33,7 @@ export interface Price {
     /**
      * @generated from protobuf field: string pricing_type = 4;
      */
-    pricingType: string; // TicketTier | Table | AddOn
+    pricingType: string; // TicketTier | Table
     /**
      * @generated from protobuf field: int32 base_price_cents = 5;
      */
@@ -50,10 +50,6 @@ export interface Price {
      * @generated from protobuf field: string fee_formulas_id = 8;
      */
     feeFormulasId: string; // developer-only override; empty = tenant default
-    /**
-     * @generated from protobuf field: string parent_prices_id = 9;
-     */
-    parentPricesId: string; // AddOn parent; empty = none
     /**
      * @generated from protobuf field: int32 max_quantity = 10;
      */
@@ -95,10 +91,6 @@ export interface CreatePriceRequest {
      * @generated from protobuf field: string fee_formulas_id = 7;
      */
     feeFormulasId: string; // honored only for developers
-    /**
-     * @generated from protobuf field: string parent_prices_id = 8;
-     */
-    parentPricesId: string;
     /**
      * @generated from protobuf field: int32 max_quantity = 9;
      */
@@ -343,6 +335,12 @@ export interface CalculatePriceRequest {
     remaining: number; // -1 = unknown
 }
 /**
+ * Full server-authoritative breakdown for one priced line. Every surface (admin
+ * preview, customer checkout, persisted booking snapshot) renders these numbers;
+ * pricing math lives only in the backend engine (app.price_breakdown).
+ *   subtotal_cents/fee_cents/total_cents are retained as convenience aggregates:
+ *   subtotal = selling, fee = platform + gateway + tax, total = final.
+ *
  * @generated from protobuf message svyne.pricing.PriceBreakdown
  */
 export interface PriceBreakdown {
@@ -358,6 +356,50 @@ export interface PriceBreakdown {
      * @generated from protobuf field: int32 total_cents = 3;
      */
     totalCents: number;
+    /**
+     * @generated from protobuf field: int32 base_price_cents = 4;
+     */
+    basePriceCents: number; // original price before any rule
+    /**
+     * @generated from protobuf field: int32 selling_price_cents = 5;
+     */
+    sellingPriceCents: number; // price after the active rule
+    /**
+     * @generated from protobuf field: int32 discount_cents = 6;
+     */
+    discountCents: number; // base - selling (>= 0)
+    /**
+     * @generated from protobuf field: string applied_price_rules_id = 7;
+     */
+    appliedPriceRulesId: string; // empty = no rule active
+    /**
+     * @generated from protobuf field: string applied_rule_name = 8;
+     */
+    appliedRuleName: string; // empty = no rule active
+    /**
+     * @generated from protobuf field: int32 platform_fee_cents = 9;
+     */
+    platformFeeCents: number;
+    /**
+     * @generated from protobuf field: int32 gateway_fee_cents = 10;
+     */
+    gatewayFeeCents: number;
+    /**
+     * @generated from protobuf field: int32 tax_cents = 11;
+     */
+    taxCents: number;
+    /**
+     * @generated from protobuf field: int32 final_price_cents = 12;
+     */
+    finalPriceCents: number; // what the customer pays
+    /**
+     * @generated from protobuf field: int32 organizer_net_cents = 13;
+     */
+    organizerNetCents: number; // what the organizer receives (= selling)
+    /**
+     * @generated from protobuf field: string currency = 14;
+     */
+    currency: string;
 }
 /**
  * @generated from protobuf message svyne.pricing.SetTenantDefaultFeeFormulaRequest
@@ -384,7 +426,6 @@ class Price$Type extends MessageType<Price> {
             { no: 6, name: "per_attendee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 7, name: "is_all_inclusive", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 8, name: "fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 9, name: "parent_prices_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 10, name: "max_quantity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 11, name: "is_active", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
@@ -399,7 +440,6 @@ class Price$Type extends MessageType<Price> {
         message.perAttendeeCents = 0;
         message.isAllInclusive = false;
         message.feeFormulasId = "";
-        message.parentPricesId = "";
         message.maxQuantity = 0;
         message.isActive = false;
         if (value !== undefined)
@@ -434,9 +474,6 @@ class Price$Type extends MessageType<Price> {
                     break;
                 case /* string fee_formulas_id */ 8:
                     message.feeFormulasId = reader.string();
-                    break;
-                case /* string parent_prices_id */ 9:
-                    message.parentPricesId = reader.string();
                     break;
                 case /* int32 max_quantity */ 10:
                     message.maxQuantity = reader.int32();
@@ -480,9 +517,6 @@ class Price$Type extends MessageType<Price> {
         /* string fee_formulas_id = 8; */
         if (message.feeFormulasId !== "")
             writer.tag(8, WireType.LengthDelimited).string(message.feeFormulasId);
-        /* string parent_prices_id = 9; */
-        if (message.parentPricesId !== "")
-            writer.tag(9, WireType.LengthDelimited).string(message.parentPricesId);
         /* int32 max_quantity = 10; */
         if (message.maxQuantity !== 0)
             writer.tag(10, WireType.Varint).int32(message.maxQuantity);
@@ -510,7 +544,6 @@ class CreatePriceRequest$Type extends MessageType<CreatePriceRequest> {
             { no: 5, name: "per_attendee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 6, name: "is_all_inclusive", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 7, name: "fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 8, name: "parent_prices_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 9, name: "max_quantity", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
@@ -523,7 +556,6 @@ class CreatePriceRequest$Type extends MessageType<CreatePriceRequest> {
         message.perAttendeeCents = 0;
         message.isAllInclusive = false;
         message.feeFormulasId = "";
-        message.parentPricesId = "";
         message.maxQuantity = 0;
         if (value !== undefined)
             reflectionMergePartial<CreatePriceRequest>(this, message, value);
@@ -554,9 +586,6 @@ class CreatePriceRequest$Type extends MessageType<CreatePriceRequest> {
                     break;
                 case /* string fee_formulas_id */ 7:
                     message.feeFormulasId = reader.string();
-                    break;
-                case /* string parent_prices_id */ 8:
-                    message.parentPricesId = reader.string();
                     break;
                 case /* int32 max_quantity */ 9:
                     message.maxQuantity = reader.int32();
@@ -594,9 +623,6 @@ class CreatePriceRequest$Type extends MessageType<CreatePriceRequest> {
         /* string fee_formulas_id = 7; */
         if (message.feeFormulasId !== "")
             writer.tag(7, WireType.LengthDelimited).string(message.feeFormulasId);
-        /* string parent_prices_id = 8; */
-        if (message.parentPricesId !== "")
-            writer.tag(8, WireType.LengthDelimited).string(message.parentPricesId);
         /* int32 max_quantity = 9; */
         if (message.maxQuantity !== 0)
             writer.tag(9, WireType.Varint).int32(message.maxQuantity);
@@ -1289,7 +1315,18 @@ class PriceBreakdown$Type extends MessageType<PriceBreakdown> {
         super("svyne.pricing.PriceBreakdown", [
             { no: 1, name: "subtotal_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 2, name: "fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 3, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 3, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 4, name: "base_price_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 5, name: "selling_price_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 6, name: "discount_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 7, name: "applied_price_rules_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "applied_rule_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 9, name: "platform_fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 10, name: "gateway_fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 11, name: "tax_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 12, name: "final_price_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 13, name: "organizer_net_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 14, name: "currency", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<PriceBreakdown>): PriceBreakdown {
@@ -1297,6 +1334,17 @@ class PriceBreakdown$Type extends MessageType<PriceBreakdown> {
         message.subtotalCents = 0;
         message.feeCents = 0;
         message.totalCents = 0;
+        message.basePriceCents = 0;
+        message.sellingPriceCents = 0;
+        message.discountCents = 0;
+        message.appliedPriceRulesId = "";
+        message.appliedRuleName = "";
+        message.platformFeeCents = 0;
+        message.gatewayFeeCents = 0;
+        message.taxCents = 0;
+        message.finalPriceCents = 0;
+        message.organizerNetCents = 0;
+        message.currency = "";
         if (value !== undefined)
             reflectionMergePartial<PriceBreakdown>(this, message, value);
         return message;
@@ -1314,6 +1362,39 @@ class PriceBreakdown$Type extends MessageType<PriceBreakdown> {
                     break;
                 case /* int32 total_cents */ 3:
                     message.totalCents = reader.int32();
+                    break;
+                case /* int32 base_price_cents */ 4:
+                    message.basePriceCents = reader.int32();
+                    break;
+                case /* int32 selling_price_cents */ 5:
+                    message.sellingPriceCents = reader.int32();
+                    break;
+                case /* int32 discount_cents */ 6:
+                    message.discountCents = reader.int32();
+                    break;
+                case /* string applied_price_rules_id */ 7:
+                    message.appliedPriceRulesId = reader.string();
+                    break;
+                case /* string applied_rule_name */ 8:
+                    message.appliedRuleName = reader.string();
+                    break;
+                case /* int32 platform_fee_cents */ 9:
+                    message.platformFeeCents = reader.int32();
+                    break;
+                case /* int32 gateway_fee_cents */ 10:
+                    message.gatewayFeeCents = reader.int32();
+                    break;
+                case /* int32 tax_cents */ 11:
+                    message.taxCents = reader.int32();
+                    break;
+                case /* int32 final_price_cents */ 12:
+                    message.finalPriceCents = reader.int32();
+                    break;
+                case /* int32 organizer_net_cents */ 13:
+                    message.organizerNetCents = reader.int32();
+                    break;
+                case /* string currency */ 14:
+                    message.currency = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1336,6 +1417,39 @@ class PriceBreakdown$Type extends MessageType<PriceBreakdown> {
         /* int32 total_cents = 3; */
         if (message.totalCents !== 0)
             writer.tag(3, WireType.Varint).int32(message.totalCents);
+        /* int32 base_price_cents = 4; */
+        if (message.basePriceCents !== 0)
+            writer.tag(4, WireType.Varint).int32(message.basePriceCents);
+        /* int32 selling_price_cents = 5; */
+        if (message.sellingPriceCents !== 0)
+            writer.tag(5, WireType.Varint).int32(message.sellingPriceCents);
+        /* int32 discount_cents = 6; */
+        if (message.discountCents !== 0)
+            writer.tag(6, WireType.Varint).int32(message.discountCents);
+        /* string applied_price_rules_id = 7; */
+        if (message.appliedPriceRulesId !== "")
+            writer.tag(7, WireType.LengthDelimited).string(message.appliedPriceRulesId);
+        /* string applied_rule_name = 8; */
+        if (message.appliedRuleName !== "")
+            writer.tag(8, WireType.LengthDelimited).string(message.appliedRuleName);
+        /* int32 platform_fee_cents = 9; */
+        if (message.platformFeeCents !== 0)
+            writer.tag(9, WireType.Varint).int32(message.platformFeeCents);
+        /* int32 gateway_fee_cents = 10; */
+        if (message.gatewayFeeCents !== 0)
+            writer.tag(10, WireType.Varint).int32(message.gatewayFeeCents);
+        /* int32 tax_cents = 11; */
+        if (message.taxCents !== 0)
+            writer.tag(11, WireType.Varint).int32(message.taxCents);
+        /* int32 final_price_cents = 12; */
+        if (message.finalPriceCents !== 0)
+            writer.tag(12, WireType.Varint).int32(message.finalPriceCents);
+        /* int32 organizer_net_cents = 13; */
+        if (message.organizerNetCents !== 0)
+            writer.tag(13, WireType.Varint).int32(message.organizerNetCents);
+        /* string currency = 14; */
+        if (message.currency !== "")
+            writer.tag(14, WireType.LengthDelimited).string(message.currency);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

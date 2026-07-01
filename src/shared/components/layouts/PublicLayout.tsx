@@ -3,6 +3,7 @@ import { PortalNav } from '@/shared/components/layouts/PortalNav';
 import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 import { useAuth } from '@/shared/auth/useAuth';
 import { cn } from '@/shared/lib/cn';
+import { FLAGS } from '@/shared/lib/flags';
 
 export function PublicLayout() {
   const { role, isAuthenticated } = useAuth();
@@ -25,7 +26,7 @@ export function PublicLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PortalNav links={links} />
+      <PortalNav links={links} transparent={isFullBleedPage && FLAGS.newEventPage} />
       <main 
         ref={page} 
         key={pathname} 

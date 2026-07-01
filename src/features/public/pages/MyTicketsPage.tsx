@@ -37,12 +37,17 @@ export function MyTicketsPage() {
               <CardContent className="p-5 flex items-center justify-between gap-4">
                 <div className="flex-1 space-y-3 min-w-0">
                   <div className="space-y-1">
-                    <Link
-                      to={`/events/${ticket.eventSlug}`}
-                      className="block font-semibold text-lg text-foreground hover:text-primary transition-colors truncate"
-                    >
-                      {ticket.eventTitle}
-                    </Link>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Link
+                        to={`/events/${ticket.eventSlug}`}
+                        className="font-semibold text-lg text-foreground hover:text-primary transition-colors truncate max-w-[240px]"
+                      >
+                        {ticket.eventTitle}
+                      </Link>
+                      <span className="inline-block px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                        {ticket.ticketTypeLabel || 'General Entry'}
+                      </span>
+                    </div>
                     <p className="text-sm text-muted-foreground truncate">{ticket.venueName}</p>
                     <p className="text-xs text-muted-foreground/80">{formatEpoch(ticket.eventStartDate)}</p>
                   </div>
@@ -70,7 +75,7 @@ export function MyTicketsPage() {
                       type="button"
                       onClick={() => setActiveQr({
                         qrToken: ticket.qrToken,
-                        label: `Ticket: ${ticket.ticketCode}`,
+                        label: `${ticket.ticketTypeLabel || 'General Entry'} (${ticket.ticketCode})`,
                         bookingNumber: ticket.bookingNumber,
                       })}
                       className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group"

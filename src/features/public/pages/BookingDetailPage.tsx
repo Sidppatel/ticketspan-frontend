@@ -66,7 +66,9 @@ export function BookingDetailPage() {
             <p>Status: {booking.data.status}</p>
             {booking.data.lines.length > 0 ? (
               <div className="divide-y rounded-md border">
-                {booking.data.lines.map((l) => (
+                {booking.data.lines
+                  .filter((l) => !(l.kind === 'Ticket' && l.totalCents === 0 && l.tablesId))
+                  .map((l) => (
                   <div key={l.bookingLinesId} className="flex items-center justify-between px-3 py-1.5">
                     <span>
                       <span className="rounded bg-muted px-1 text-xs uppercase text-muted-foreground">{l.kind}</span>{' '}

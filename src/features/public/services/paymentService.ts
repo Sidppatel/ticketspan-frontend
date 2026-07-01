@@ -4,6 +4,7 @@ import type {
   PaymentIntentResponse,
   PaymentStatusResponse,
   EventTicketType,
+  CartQuote,
 } from '@/shared/proto/bookings';
 
 export async function listEventTicketTypes(eventsId: string): Promise<EventTicketType[]> {
@@ -78,6 +79,15 @@ export async function createMultiBooking(eventsId: string, lines: CartLineInput[
     }),
   );
   return { bookingsId: response.bookingsId, bookingNumber: response.bookingNumber };
+}
+
+export async function quoteCart(eventsId: string, lines: CartLineInput[]): Promise<CartQuote> {
+  return callRpc(() =>
+    bookingClient.quoteCart({
+      eventsId,
+      lines: lines.map((l) => ({ kind: l.kind, refId: l.refId, seats: l.seats })),
+    }),
+  );
 }
 
 export async function createPaymentIntent(bookingsId: string): Promise<PaymentIntentResponse> {

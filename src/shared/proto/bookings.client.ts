@@ -27,6 +27,7 @@ import type { ConfirmBookingRequest } from "./bookings";
 import type { PaymentStatusResponse } from "./bookings";
 import type { PaymentIntentResponse } from "./bookings";
 import type { PaymentIntentRequest } from "./bookings";
+import type { CartQuote } from "./bookings";
 import type { CreateMultiBookingRequest } from "./bookings";
 import type { ReserveOpenCapacityRequest } from "./bookings";
 import type { CreateBookingResponse } from "./bookings";
@@ -58,6 +59,14 @@ export interface IBookingServiceClient {
      * @generated from protobuf rpc: CreateMultiBooking(svyne.booking.CreateMultiBookingRequest) returns (svyne.booking.CreateBookingResponse);
      */
     createMultiBooking(input: CreateMultiBookingRequest, options?: RpcOptions): UnaryCall<CreateMultiBookingRequest, CreateBookingResponse>;
+    /**
+     * Preview a cart's full pricing breakdown WITHOUT reserving anything. Same engine
+     * as checkout (app.price_breakdown), so the customer checkout page and admin
+     * multi-item preview render identical numbers.
+     *
+     * @generated from protobuf rpc: QuoteCart(svyne.booking.CreateMultiBookingRequest) returns (svyne.booking.CartQuote);
+     */
+    quoteCart(input: CreateMultiBookingRequest, options?: RpcOptions): UnaryCall<CreateMultiBookingRequest, CartQuote>;
     /**
      * @generated from protobuf rpc: CreatePaymentIntent(svyne.booking.PaymentIntentRequest) returns (svyne.booking.PaymentIntentResponse);
      */
@@ -131,59 +140,70 @@ export class BookingServiceClient implements IBookingServiceClient, ServiceInfo 
         return stackIntercept<CreateMultiBookingRequest, CreateBookingResponse>("unary", this._transport, method, opt, input);
     }
     /**
+     * Preview a cart's full pricing breakdown WITHOUT reserving anything. Same engine
+     * as checkout (app.price_breakdown), so the customer checkout page and admin
+     * multi-item preview render identical numbers.
+     *
+     * @generated from protobuf rpc: QuoteCart(svyne.booking.CreateMultiBookingRequest) returns (svyne.booking.CartQuote);
+     */
+    quoteCart(input: CreateMultiBookingRequest, options?: RpcOptions): UnaryCall<CreateMultiBookingRequest, CartQuote> {
+        const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        return stackIntercept<CreateMultiBookingRequest, CartQuote>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: CreatePaymentIntent(svyne.booking.PaymentIntentRequest) returns (svyne.booking.PaymentIntentResponse);
      */
     createPaymentIntent(input: PaymentIntentRequest, options?: RpcOptions): UnaryCall<PaymentIntentRequest, PaymentIntentResponse> {
-        const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
         return stackIntercept<PaymentIntentRequest, PaymentIntentResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetPaymentStatus(svyne.common.UuidValue) returns (svyne.booking.PaymentStatusResponse);
      */
     getPaymentStatus(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, PaymentStatusResponse> {
-        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        const method = this.methods[6], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, PaymentStatusResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ConfirmBooking(svyne.booking.ConfirmBookingRequest) returns (svyne.common.AckResponse);
      */
     confirmBooking(input: ConfirmBookingRequest, options?: RpcOptions): UnaryCall<ConfirmBookingRequest, AckResponse> {
-        const method = this.methods[6], opt = this._transport.mergeOptions(options);
+        const method = this.methods[7], opt = this._transport.mergeOptions(options);
         return stackIntercept<ConfirmBookingRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: CancelBooking(svyne.common.UuidValue) returns (svyne.common.AckResponse);
      */
     cancelBooking(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
-        const method = this.methods[7], opt = this._transport.mergeOptions(options);
+        const method = this.methods[8], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: RefundBooking(svyne.common.UuidValue) returns (svyne.common.AckResponse);
      */
     refundBooking(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
-        const method = this.methods[8], opt = this._transport.mergeOptions(options);
+        const method = this.methods[9], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetBooking(svyne.common.UuidValue) returns (svyne.booking.Booking);
      */
     getBooking(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, Booking> {
-        const method = this.methods[9], opt = this._transport.mergeOptions(options);
+        const method = this.methods[10], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, Booking>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ListBookings(svyne.booking.ListBookingsRequest) returns (svyne.booking.ListBookingsResponse);
      */
     listBookings(input: ListBookingsRequest, options?: RpcOptions): UnaryCall<ListBookingsRequest, ListBookingsResponse> {
-        const method = this.methods[10], opt = this._transport.mergeOptions(options);
+        const method = this.methods[11], opt = this._transport.mergeOptions(options);
         return stackIntercept<ListBookingsRequest, ListBookingsResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetBookingStats(svyne.common.UuidValue) returns (svyne.booking.BookingStats);
      */
     getBookingStats(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, BookingStats> {
-        const method = this.methods[11], opt = this._transport.mergeOptions(options);
+        const method = this.methods[12], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, BookingStats>("unary", this._transport, method, opt, input);
     }
 }

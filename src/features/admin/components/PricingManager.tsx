@@ -1,16 +1,13 @@
-import { useCallback, useRef, useState, type ReactNode } from 'react';
-import { gsap } from 'gsap';
-import { useGSAP } from '@gsap/react';
-import { ChevronDown, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { Plus, Sparkles, Trash2 } from 'lucide-react';
 import { useAsync } from '@/shared/hooks/useAsync';
 import {
   listPricesForEvent,
   listPriceRules,
-  createPrice,
-  updatePrice,
-  deletePrice,
   createPriceRule,
   deletePriceRule,
+  updatePriceRule,
+  calculatePrice,
 } from '@/features/admin/services/pricingService';
 import {
   groupEventRules,
@@ -24,14 +21,13 @@ import { rpcErrorMessage } from '@/shared/session';
 import { centsToUSD, centsToUsdInput, usdToCents } from '@/shared/lib/format';
 import { formatEpochInZone } from '@/shared/lib/timezone';
 import { cn } from '@/shared/lib/cn';
-import type { Price } from '@/shared/proto/pricing';
+import type { Price, PriceRule } from '@/shared/proto/pricing';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { RuleDialog, type RuleDraft } from '@/features/admin/components/RuleDialog';
 
-const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 
 export function PricingManager({
   eventsId,
@@ -65,17 +61,15 @@ export function PricingManager({
     }
   }
 
-  const prices = state.data?.prices ?? [];
-  const groups = state.data?.groups ?? [];
-  const tickets = prices.filter((p) => p.pricingType === 'TicketTier');
-  const tables = prices.filter((p) => p.pricingType === 'Table');
-  const addOns = prices.filter((p) => p.pricingType === 'AddOn');
+  const prices = useMemo(() => state.data?.prices ?? [], [state.data]);
+  const groups = useMemo(() => state.data?.groups ?? [], [state.data]);
+  const tickets = useMemo(() => prices.filter((p) => p.pricingType === 'TicketTier'), [prices]);
+  const tables = useMemo(() => prices.filter((p) => p.pricingType === 'Table'), [prices]);
 
   const noApplicablePrices = (!showTickets || tickets.length === 0) && (!showTables || tables.length === 0);
 
   const now = nowSeconds();
-  const active = groups.find((g) => isWindowActive(g.activeFrom, g.activeUntil, now)) ?? null;
-  const percent = active?.percent ?? 0;
+
 
   function createRule(draft: RuleDraft) {
     const owners = [...tickets, ...tables];
@@ -104,7 +98,7 @@ export function PricingManager({
   }
 
   return (
-    <Card className={cn(noApplicablePrices && "opacity-50 pointer-events-none")}>
+    <Card>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -121,28 +115,16 @@ export function PricingManager({
         {notice ? <p className="text-sm text-amber-foreground">{notice}</p> : null}
         {state.loading ? <p className="text-sm text-muted-foreground">Loading prices…</p> : null}
 
-        <RuleStrip groups={groups} now={now} timeZone={timeZone} onRemove={removeGroup} />
+        <RuleStrip
+          groups={groups}
+          prices={prices}
+          now={now}
+          timeZone={timeZone}
+          onRemove={removeGroup}
+          onChanged={state.reload}
+          onError={setNotice}
+        />
 
-        {showTickets ? (
-          <Section label="Ticket types" count={tickets.length} defaultOpen={!active} disabled={tickets.length === 0}>
-            <PriceList prices={tickets} percent={percent} />
-          </Section>
-        ) : null}
-
-        {showTables ? (
-          <Section label="Table types" count={tables.length} defaultOpen={!active} disabled={tables.length === 0}>
-            <PriceList prices={tables} percent={percent} />
-          </Section>
-        ) : null}
-
-        <Section label="Add-ons" count={addOns.length} defaultOpen editable>
-          <AddOnEditor
-            eventsId={eventsId}
-            addOns={addOns}
-            onChanged={state.reload}
-            onError={setNotice}
-          />
-        </Section>
       </CardContent>
 
       {dialogOpen ? (
@@ -154,14 +136,20 @@ export function PricingManager({
 
 function RuleStrip({
   groups,
+  prices,
   now,
   timeZone,
   onRemove,
+  onChanged,
+  onError,
 }: {
   groups: RuleGroup[];
+  prices: Price[];
   now: number;
   timeZone: string;
   onRemove: (group: RuleGroup) => void;
+  onChanged: () => void;
+  onError: (message: string) => void;
 }) {
   if (groups.length === 0) {
     return (
@@ -172,341 +160,213 @@ function RuleStrip({
   }
   return (
     <div className="space-y-2">
-      {groups.map((g) => {
-        const live = isWindowActive(g.activeFrom, g.activeUntil, now);
-        return (
-          <div
-            key={g.key}
-            className={
-              live
-                ? 'rounded-xl border border-amber/50 bg-amber/10 p-3'
-                : 'rounded-xl border border-border p-3'
-            }
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  {live ? <Sparkles className="size-4 text-amber-foreground" /> : null}
-                  <span className="truncate font-medium">{g.name}</span>
-                  <span className="rounded-full bg-success/15 px-2 py-0.5 text-xs font-semibold text-success">
-                    −{g.percent}%
-                  </span>
-                </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {g.ruleType} · {formatEpochInZone(g.activeFrom, timeZone)} →{' '}
-                  {formatEpochInZone(g.activeUntil, timeZone)}
-                  {live ? '' : ' · scheduled'}
-                </p>
-              </div>
-              <Button
-                size="icon"
-                variant="ghost"
-                aria-label={`Delete rule ${g.name}`}
-                onClick={() => onRemove(g)}
-              >
-                <Trash2 />
-              </Button>
-            </div>
-            {live ? (
-              <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-amber/20">
-                <div
-                  className="h-full rounded-full bg-amber"
-                  style={{ width: `${windowProgress(g.activeFrom, g.activeUntil, now)}%` }}
-                />
-              </div>
-            ) : null}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function Section({
-  label,
-  count,
-  defaultOpen,
-  editable,
-  disabled,
-  children,
-}: {
-  label: string;
-  count: number;
-  defaultOpen?: boolean;
-  editable?: boolean;
-  disabled?: boolean;
-  children: ReactNode;
-}) {
-  const [open, setOpen] = useState(Boolean(defaultOpen));
-  const body = useRef<HTMLDivElement>(null);
-  const chevron = useRef<SVGSVGElement>(null);
-
-  useGSAP(
-    () => {
-      const el = body.current;
-      if (!el) {
-        return;
-      }
-      if (reduced()) {
-        gsap.set(el, { height: open ? 'auto' : 0 });
-        gsap.set(chevron.current, { rotate: open ? 180 : 0 });
-        return;
-      }
-      gsap.to(el, {
-        height: open ? 'auto' : 0,
-        autoAlpha: open ? 1 : 0,
-        duration: open ? 0.35 : 0.28,
-        ease: open ? 'power2.out' : 'power2.in',
-      });
-      gsap.to(chevron.current, { rotate: open ? 180 : 0, duration: 0.3, ease: 'power2.out' });
-    },
-    { dependencies: [open] },
-  );
-
-  return (
-    <div className={cn("rounded-xl border border-border", disabled && "opacity-50 pointer-events-none")}>
-      <button
-        type="button"
-        aria-expanded={open}
-        disabled={disabled}
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <span className="flex items-center gap-2">
-          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {label}
-          </span>
-          <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
-            {count}
-          </span>
-          {editable ? (
-            <span className="text-[0.6rem] font-medium uppercase tracking-wider text-amber-foreground">
-              editable
-            </span>
-          ) : null}
-        </span>
-        <ChevronDown ref={chevron} className="size-4 shrink-0 text-muted-foreground" />
-      </button>
-      <div ref={body} className="overflow-hidden" style={{ height: defaultOpen ? undefined : 0 }}>
-        <div className="space-y-2 px-3 pb-3">{children}</div>
-      </div>
-    </div>
-  );
-}
-
-function PriceList({ prices, percent }: { prices: Price[]; percent: number }) {
-  if (prices.length === 0) {
-    return <p className="py-1 text-sm text-muted-foreground">None defined yet.</p>;
-  }
-  return (
-    <ul className="divide-y divide-border">
-      {prices.map((p) => (
-        <li key={p.pricesId} className="flex items-center justify-between gap-4 py-2.5">
-          <span className="truncate text-sm font-medium">{p.name}</span>
-          <PriceFigure baseCents={p.basePriceCents} percent={percent} />
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function PriceFigure({ baseCents, percent }: { baseCents: number; percent: number }) {
-  const numRef = useRef<HTMLSpanElement>(null);
-  const strike = useRef<HTMLSpanElement>(null);
-  const target = discountedCents(baseCents, percent);
-
-  useGSAP(
-    () => {
-      if (percent <= 0 || !numRef.current) {
-        return;
-      }
-      if (reduced()) {
-        numRef.current.textContent = centsToUSD(target);
-        return;
-      }
-      gsap.fromTo(strike.current, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: 'power2.out' });
-      const counter = { value: baseCents };
-      gsap.to(counter, {
-        value: target,
-        duration: 0.6,
-        ease: 'power2.out',
-        onUpdate: () => {
-          if (numRef.current) {
-            numRef.current.textContent = centsToUSD(counter.value);
-          }
-        },
-      });
-    },
-    { dependencies: [percent, baseCents, target] },
-  );
-
-  if (percent <= 0) {
-    return <span className="font-display text-base font-semibold tabular-nums">{centsToUSD(baseCents)}</span>;
-  }
-
-  return (
-    <span className="inline-flex items-baseline gap-2">
-      <span className="relative text-sm text-muted-foreground">
-        {centsToUSD(baseCents)}
-        <span
-          ref={strike}
-          className="absolute left-0 top-1/2 h-px w-full origin-left bg-muted-foreground"
-          aria-hidden
+      {groups.map((g) => (
+        <RuleGroupItem
+          key={g.key}
+          group={g}
+          prices={prices}
+          now={now}
+          timeZone={timeZone}
+          onRemove={onRemove}
+          onChanged={onChanged}
+          onError={onError}
         />
-      </span>
-      <span ref={numRef} className="font-display text-base font-semibold tabular-nums text-success">
-        {centsToUSD(target)}
-      </span>
-    </span>
+      ))}
+    </div>
   );
 }
 
-function AddOnEditor({
-  eventsId,
-  addOns,
+function RuleGroupItem({
+  group,
+  prices,
+  now,
+  timeZone,
+  onRemove,
   onChanged,
   onError,
 }: {
-  eventsId: string;
-  addOns: Price[];
+  group: RuleGroup;
+  prices: Price[];
+  now: number;
+  timeZone: string;
+  onRemove: (group: RuleGroup) => void;
   onChanged: () => void;
   onError: (message: string) => void;
 }) {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+  const [expanded, setExpanded] = useState(false);
+  const live = isWindowActive(group.activeFrom, group.activeUntil, now);
 
-  async function guard(action: () => Promise<void>) {
+  return (
+    <div
+      className={cn(
+        'rounded-xl border p-3 transition-colors',
+        live ? 'border-amber/50 bg-amber/10' : 'border-border'
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            {live ? <Sparkles className="size-4 text-amber-foreground" /> : null}
+            <span className="truncate font-medium">{group.name}</span>
+            <span className="rounded-full bg-success/15 px-2 py-0.5 text-xs font-semibold text-success">
+              −{group.percent}%
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {group.ruleType} · {formatEpochInZone(group.activeFrom, timeZone)} →{' '}
+            {formatEpochInZone(group.activeUntil, timeZone)}
+            {live ? '' : ' · scheduled'}
+          </p>
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setExpanded(!expanded)}
+            className="text-xs h-8 px-2"
+          >
+            {expanded ? 'Hide prices' : 'Edit prices'}
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="size-8"
+            aria-label={`Delete rule ${group.name}`}
+            onClick={() => onRemove(group)}
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        </div>
+      </div>
+
+      {live ? (
+        <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-amber/20">
+          <div
+            className="h-full rounded-full bg-amber"
+            style={{ width: `${windowProgress(group.activeFrom, group.activeUntil, now)}%` }}
+          />
+        </div>
+      ) : null}
+
+      {expanded && (
+        <div className="mt-3 border-t border-border/50 pt-2 space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            Rule Prices (does not affect base price)
+          </p>
+          {group.rules.map((rule) => {
+            const price = prices.find((p) => p.pricesId === rule.pricesId);
+            if (!price) return null;
+            return (
+              <RulePriceRow
+                key={rule.priceRulesId}
+                priceName={price.name}
+                basePriceCents={price.basePriceCents}
+                rule={rule}
+                onChanged={onChanged}
+                onError={onError}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RulePriceRow({
+  priceName,
+  basePriceCents,
+  rule,
+  onChanged,
+  onError,
+}: {
+  priceName: string;
+  basePriceCents: number;
+  rule: PriceRule;
+  onChanged: () => void;
+  onError: (message: string) => void;
+}) {
+  const [value, setValue] = useState(centsToUsdInput(rule.priceCents));
+  const dirty = usdToCents(value) !== rule.priceCents;
+
+  const fetchBreakdown = useCallback(() => {
+    return calculatePrice(rule.pricesId, 1, rule.activeFrom?.toString());
+  }, [rule.pricesId, rule.activeFrom]);
+  const { data: breakdown } = useAsync(fetchBreakdown);
+
+  async function handleSave() {
     try {
-      await action();
-    } catch (caught) {
-      onError(rpcErrorMessage(caught));
+      await updatePriceRule({
+        priceRulesId: rule.priceRulesId,
+        name: rule.name,
+        ruleType: rule.ruleType,
+        priority: rule.priority,
+        priceCents: usdToCents(value),
+        activeFrom: rule.activeFrom,
+        activeUntil: rule.activeUntil,
+        minRemaining: rule.minRemaining,
+        maxRemaining: rule.maxRemaining,
+        isActive: rule.isActive,
+        capacity: rule.capacity,
+        pricesId: rule.pricesId,
+      });
+      onChanged();
+    } catch (err) {
+      onError(rpcErrorMessage(err));
     }
   }
 
   return (
-    <div className="space-y-2">
-      {addOns.length === 0 ? (
-        <p className="py-1 text-sm text-muted-foreground">No add-ons yet.</p>
-      ) : (
-        addOns.map((p) => (
-          <AddOnRow key={p.pricesId} price={p} onChanged={onChanged} onError={onError} />
-        ))
-      )}
-
-      <div className="mt-2 flex flex-col gap-2 border-t border-dashed border-border pt-3 sm:flex-row sm:items-end">
-        <div className="flex-1 space-y-1">
-          <Label htmlFor="addon-name">New add-on</Label>
+    <div className="space-y-1.5 py-1.5 border-b border-border/30 last:border-0">
+      <div className="flex items-center gap-4 text-sm">
+        <span className="flex-1 truncate font-medium text-foreground">{priceName}</span>
+        <span className="text-xs text-muted-foreground line-through font-display">
+          {centsToUSD(basePriceCents)}
+        </span>
+        <div className="relative w-28">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+            $
+          </span>
           <Input
-            id="addon-name"
-            value={name}
-            placeholder="Parking pass"
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="w-full space-y-1 sm:w-32">
-          <Label htmlFor="addon-price">Price ($)</Label>
-          <Input
-            id="addon-price"
+            className="pl-6 text-right font-display tabular-nums h-8 text-xs"
             inputMode="decimal"
-            value={price}
-            placeholder="0.00"
-            onChange={(e) => setPrice(e.target.value)}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
           />
         </div>
         <Button
           size="sm"
-          disabled={!name.trim()}
-          onClick={() =>
-            guard(() =>
-              createPrice({
-                eventsId,
-                name: name.trim(),
-                pricingType: 'AddOn',
-                basePriceCents: usdToCents(price),
-                perAttendeeCents: 0,
-                isAllInclusive: false,
-                feeFormulasId: '',
-                parentPricesId: '',
-                maxQuantity: 0,
-              }).then(() => {
-                setName('');
-                setPrice('');
-                onChanged();
-              }),
-            )
-          }
+          className="h-8 text-xs"
+          variant={dirty ? 'default' : 'outline'}
+          disabled={!dirty}
+          onClick={handleSave}
         >
-          <Plus /> Add
+          Save
         </Button>
       </div>
+      {breakdown ? (
+        <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground bg-secondary/30 rounded-lg p-2 sm:grid-cols-5">
+          <div>
+            <span className="block font-medium text-foreground">Platform Fee</span>
+            <span className="tabular-nums">{centsToUSD(breakdown.platformFeeCents)}</span>
+          </div>
+          <div>
+            <span className="block font-medium text-foreground">Final Price</span>
+            <span className="tabular-nums text-success font-semibold">{centsToUSD(breakdown.finalPriceCents)}</span>
+          </div>
+          <div>
+            <span className="block font-medium text-foreground">Organizer Net</span>
+            <span className="tabular-nums text-info font-semibold">{centsToUSD(breakdown.organizerNetCents)}</span>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function AddOnRow({
-  price,
-  onChanged,
-  onError,
-}: {
-  price: Price;
-  onChanged: () => void;
-  onError: (message: string) => void;
-}) {
-  const [value, setValue] = useState(centsToUsdInput(price.basePriceCents));
-  const dirty = usdToCents(value) !== price.basePriceCents;
 
-  async function guard(action: () => Promise<void>) {
-    try {
-      await action();
-    } catch (caught) {
-      onError(rpcErrorMessage(caught));
-    }
-  }
 
-  return (
-    <div className="flex items-center gap-2 py-1">
-      <span className="flex-1 truncate text-sm font-medium">{price.name}</span>
-      <div className="relative w-28">
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-          $
-        </span>
-        <Input
-          className="pl-6 text-right font-display tabular-nums"
-          inputMode="decimal"
-          value={value}
-          aria-label={`${price.name} price`}
-          onChange={(e) => setValue(e.target.value)}
-        />
-      </div>
-      <Button
-        size="sm"
-        variant={dirty ? 'default' : 'outline'}
-        disabled={!dirty}
-        onClick={() =>
-          guard(() =>
-            updatePrice({
-              pricesId: price.pricesId,
-              name: price.name,
-              basePriceCents: usdToCents(value),
-              perAttendeeCents: price.perAttendeeCents,
-              isAllInclusive: price.isAllInclusive,
-              maxQuantity: price.maxQuantity,
-              isActive: price.isActive,
-              feeFormulasId: price.feeFormulasId,
-            }).then(onChanged),
-          )
-        }
-      >
-        Save
-      </Button>
-      <Button
-        size="icon"
-        variant="ghost"
-        aria-label={`Delete ${price.name}`}
-        onClick={() => guard(() => deletePrice(price.pricesId).then(onChanged))}
-      >
-        <Trash2 />
-      </Button>
-    </div>
-  );
-}
+
+
+
+

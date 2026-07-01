@@ -17,6 +17,7 @@ import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { PageMeta } from "./common";
 import { PageRequest } from "./common";
+import { PriceBreakdown } from "./pricing";
 /**
  * @generated from protobuf message svyne.booking.Booking
  */
@@ -69,7 +70,9 @@ export interface Booking {
     lines: BookingLine[];
 }
 /**
- * One line of a multi-item booking, for display on checkout / booking detail.
+ * One line of a booking, for display on checkout / booking detail. Carries the
+ * immutable pricing snapshot captured at purchase so historical bookings always
+ * show the original price even after rules/prices change.
  *
  * @generated from protobuf message svyne.booking.BookingLine
  */
@@ -101,15 +104,51 @@ export interface BookingLine {
     /**
      * @generated from protobuf field: int32 subtotal_cents = 7;
      */
-    subtotalCents: number;
+    subtotalCents: number; // = selling
     /**
      * @generated from protobuf field: int32 fee_cents = 8;
      */
-    feeCents: number;
+    feeCents: number; // = platform + gateway + tax
     /**
      * @generated from protobuf field: int32 total_cents = 9;
      */
-    totalCents: number;
+    totalCents: number; // = final
+    /**
+     * @generated from protobuf field: int32 base_price_cents = 10;
+     */
+    basePriceCents: number;
+    /**
+     * @generated from protobuf field: int32 selling_price_cents = 11;
+     */
+    sellingPriceCents: number;
+    /**
+     * @generated from protobuf field: int32 discount_cents = 12;
+     */
+    discountCents: number;
+    /**
+     * @generated from protobuf field: string applied_rule_name = 13;
+     */
+    appliedRuleName: string; // empty = no rule
+    /**
+     * @generated from protobuf field: int32 platform_fee_cents = 14;
+     */
+    platformFeeCents: number;
+    /**
+     * @generated from protobuf field: int32 gateway_fee_cents = 15;
+     */
+    gatewayFeeCents: number;
+    /**
+     * @generated from protobuf field: int32 tax_cents = 16;
+     */
+    taxCents: number;
+    /**
+     * @generated from protobuf field: int32 final_price_cents = 17;
+     */
+    finalPriceCents: number;
+    /**
+     * @generated from protobuf field: string currency = 18;
+     */
+    currency: string;
 }
 /**
  * @generated from protobuf message svyne.booking.CreateMultiBookingRequest
@@ -123,6 +162,84 @@ export interface CreateMultiBookingRequest {
      * @generated from protobuf field: repeated svyne.booking.BookingLineInput lines = 2;
      */
     lines: BookingLineInput[];
+}
+/**
+ * One previewed cart line: the sellable identity + its full breakdown.
+ *
+ * @generated from protobuf message svyne.booking.CartQuoteLine
+ */
+export interface CartQuoteLine {
+    /**
+     * @generated from protobuf field: string kind = 1;
+     */
+    kind: string; // Ticket | Table
+    /**
+     * @generated from protobuf field: string ref_id = 2;
+     */
+    refId: string; // event_ticket_types_id (Ticket) or tables_id (Table)
+    /**
+     * @generated from protobuf field: string label = 3;
+     */
+    label: string;
+    /**
+     * @generated from protobuf field: int32 seats = 4;
+     */
+    seats: number;
+    /**
+     * @generated from protobuf field: svyne.pricing.PriceBreakdown breakdown = 5;
+     */
+    breakdown?: PriceBreakdown;
+}
+/**
+ * A non-reserving preview of an entire cart: per-line breakdowns + summed totals.
+ *
+ * @generated from protobuf message svyne.booking.CartQuote
+ */
+export interface CartQuote {
+    /**
+     * @generated from protobuf field: repeated svyne.booking.CartQuoteLine lines = 1;
+     */
+    lines: CartQuoteLine[];
+    /**
+     * @generated from protobuf field: int32 base_total_cents = 2;
+     */
+    baseTotalCents: number; // sum of line base prices (pre-discount)
+    /**
+     * @generated from protobuf field: int32 subtotal_cents = 3;
+     */
+    subtotalCents: number; // sum of selling prices
+    /**
+     * @generated from protobuf field: int32 discount_cents = 4;
+     */
+    discountCents: number; // base_total - subtotal
+    /**
+     * @generated from protobuf field: int32 platform_fee_cents = 5;
+     */
+    platformFeeCents: number;
+    /**
+     * @generated from protobuf field: int32 gateway_fee_cents = 6;
+     */
+    gatewayFeeCents: number;
+    /**
+     * @generated from protobuf field: int32 tax_cents = 7;
+     */
+    taxCents: number;
+    /**
+     * @generated from protobuf field: int32 fee_cents = 8;
+     */
+    feeCents: number; // platform + gateway + tax
+    /**
+     * @generated from protobuf field: int32 total_cents = 9;
+     */
+    totalCents: number; // final amount the customer pays
+    /**
+     * @generated from protobuf field: int32 organizer_net_cents = 10;
+     */
+    organizerNetCents: number;
+    /**
+     * @generated from protobuf field: string currency = 11;
+     */
+    currency: string;
 }
 /**
  * @generated from protobuf message svyne.booking.BookingLineInput
@@ -431,6 +548,10 @@ export interface Ticket {
      * @generated from protobuf field: string booking_number = 11;
      */
     bookingNumber: string;
+    /**
+     * @generated from protobuf field: string ticket_type_label = 12;
+     */
+    ticketTypeLabel: string;
 }
 /**
  * @generated from protobuf message svyne.booking.ClaimTicketRequest
@@ -775,7 +896,16 @@ class BookingLine$Type extends MessageType<BookingLine> {
             { no: 6, name: "seats", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 7, name: "subtotal_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 8, name: "fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 9, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 9, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 10, name: "base_price_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 11, name: "selling_price_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 12, name: "discount_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 13, name: "applied_rule_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 14, name: "platform_fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 15, name: "gateway_fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 16, name: "tax_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 17, name: "final_price_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 18, name: "currency", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<BookingLine>): BookingLine {
@@ -789,6 +919,15 @@ class BookingLine$Type extends MessageType<BookingLine> {
         message.subtotalCents = 0;
         message.feeCents = 0;
         message.totalCents = 0;
+        message.basePriceCents = 0;
+        message.sellingPriceCents = 0;
+        message.discountCents = 0;
+        message.appliedRuleName = "";
+        message.platformFeeCents = 0;
+        message.gatewayFeeCents = 0;
+        message.taxCents = 0;
+        message.finalPriceCents = 0;
+        message.currency = "";
         if (value !== undefined)
             reflectionMergePartial<BookingLine>(this, message, value);
         return message;
@@ -824,6 +963,33 @@ class BookingLine$Type extends MessageType<BookingLine> {
                     break;
                 case /* int32 total_cents */ 9:
                     message.totalCents = reader.int32();
+                    break;
+                case /* int32 base_price_cents */ 10:
+                    message.basePriceCents = reader.int32();
+                    break;
+                case /* int32 selling_price_cents */ 11:
+                    message.sellingPriceCents = reader.int32();
+                    break;
+                case /* int32 discount_cents */ 12:
+                    message.discountCents = reader.int32();
+                    break;
+                case /* string applied_rule_name */ 13:
+                    message.appliedRuleName = reader.string();
+                    break;
+                case /* int32 platform_fee_cents */ 14:
+                    message.platformFeeCents = reader.int32();
+                    break;
+                case /* int32 gateway_fee_cents */ 15:
+                    message.gatewayFeeCents = reader.int32();
+                    break;
+                case /* int32 tax_cents */ 16:
+                    message.taxCents = reader.int32();
+                    break;
+                case /* int32 final_price_cents */ 17:
+                    message.finalPriceCents = reader.int32();
+                    break;
+                case /* string currency */ 18:
+                    message.currency = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -864,6 +1030,33 @@ class BookingLine$Type extends MessageType<BookingLine> {
         /* int32 total_cents = 9; */
         if (message.totalCents !== 0)
             writer.tag(9, WireType.Varint).int32(message.totalCents);
+        /* int32 base_price_cents = 10; */
+        if (message.basePriceCents !== 0)
+            writer.tag(10, WireType.Varint).int32(message.basePriceCents);
+        /* int32 selling_price_cents = 11; */
+        if (message.sellingPriceCents !== 0)
+            writer.tag(11, WireType.Varint).int32(message.sellingPriceCents);
+        /* int32 discount_cents = 12; */
+        if (message.discountCents !== 0)
+            writer.tag(12, WireType.Varint).int32(message.discountCents);
+        /* string applied_rule_name = 13; */
+        if (message.appliedRuleName !== "")
+            writer.tag(13, WireType.LengthDelimited).string(message.appliedRuleName);
+        /* int32 platform_fee_cents = 14; */
+        if (message.platformFeeCents !== 0)
+            writer.tag(14, WireType.Varint).int32(message.platformFeeCents);
+        /* int32 gateway_fee_cents = 15; */
+        if (message.gatewayFeeCents !== 0)
+            writer.tag(15, WireType.Varint).int32(message.gatewayFeeCents);
+        /* int32 tax_cents = 16; */
+        if (message.taxCents !== 0)
+            writer.tag(16, WireType.Varint).int32(message.taxCents);
+        /* int32 final_price_cents = 17; */
+        if (message.finalPriceCents !== 0)
+            writer.tag(17, WireType.Varint).int32(message.finalPriceCents);
+        /* string currency = 18; */
+        if (message.currency !== "")
+            writer.tag(18, WireType.LengthDelimited).string(message.currency);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -929,6 +1122,211 @@ class CreateMultiBookingRequest$Type extends MessageType<CreateMultiBookingReque
  * @generated MessageType for protobuf message svyne.booking.CreateMultiBookingRequest
  */
 export const CreateMultiBookingRequest = new CreateMultiBookingRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CartQuoteLine$Type extends MessageType<CartQuoteLine> {
+    constructor() {
+        super("svyne.booking.CartQuoteLine", [
+            { no: 1, name: "kind", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "ref_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "label", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "seats", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 5, name: "breakdown", kind: "message", T: () => PriceBreakdown }
+        ]);
+    }
+    create(value?: PartialMessage<CartQuoteLine>): CartQuoteLine {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.kind = "";
+        message.refId = "";
+        message.label = "";
+        message.seats = 0;
+        if (value !== undefined)
+            reflectionMergePartial<CartQuoteLine>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CartQuoteLine): CartQuoteLine {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string kind */ 1:
+                    message.kind = reader.string();
+                    break;
+                case /* string ref_id */ 2:
+                    message.refId = reader.string();
+                    break;
+                case /* string label */ 3:
+                    message.label = reader.string();
+                    break;
+                case /* int32 seats */ 4:
+                    message.seats = reader.int32();
+                    break;
+                case /* svyne.pricing.PriceBreakdown breakdown */ 5:
+                    message.breakdown = PriceBreakdown.internalBinaryRead(reader, reader.uint32(), options, message.breakdown);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: CartQuoteLine, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string kind = 1; */
+        if (message.kind !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.kind);
+        /* string ref_id = 2; */
+        if (message.refId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.refId);
+        /* string label = 3; */
+        if (message.label !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.label);
+        /* int32 seats = 4; */
+        if (message.seats !== 0)
+            writer.tag(4, WireType.Varint).int32(message.seats);
+        /* svyne.pricing.PriceBreakdown breakdown = 5; */
+        if (message.breakdown)
+            PriceBreakdown.internalBinaryWrite(message.breakdown, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.booking.CartQuoteLine
+ */
+export const CartQuoteLine = new CartQuoteLine$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CartQuote$Type extends MessageType<CartQuote> {
+    constructor() {
+        super("svyne.booking.CartQuote", [
+            { no: 1, name: "lines", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => CartQuoteLine },
+            { no: 2, name: "base_total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 3, name: "subtotal_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 4, name: "discount_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 5, name: "platform_fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 6, name: "gateway_fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 7, name: "tax_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 8, name: "fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 9, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 10, name: "organizer_net_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 11, name: "currency", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<CartQuote>): CartQuote {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.lines = [];
+        message.baseTotalCents = 0;
+        message.subtotalCents = 0;
+        message.discountCents = 0;
+        message.platformFeeCents = 0;
+        message.gatewayFeeCents = 0;
+        message.taxCents = 0;
+        message.feeCents = 0;
+        message.totalCents = 0;
+        message.organizerNetCents = 0;
+        message.currency = "";
+        if (value !== undefined)
+            reflectionMergePartial<CartQuote>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CartQuote): CartQuote {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* repeated svyne.booking.CartQuoteLine lines */ 1:
+                    message.lines.push(CartQuoteLine.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                case /* int32 base_total_cents */ 2:
+                    message.baseTotalCents = reader.int32();
+                    break;
+                case /* int32 subtotal_cents */ 3:
+                    message.subtotalCents = reader.int32();
+                    break;
+                case /* int32 discount_cents */ 4:
+                    message.discountCents = reader.int32();
+                    break;
+                case /* int32 platform_fee_cents */ 5:
+                    message.platformFeeCents = reader.int32();
+                    break;
+                case /* int32 gateway_fee_cents */ 6:
+                    message.gatewayFeeCents = reader.int32();
+                    break;
+                case /* int32 tax_cents */ 7:
+                    message.taxCents = reader.int32();
+                    break;
+                case /* int32 fee_cents */ 8:
+                    message.feeCents = reader.int32();
+                    break;
+                case /* int32 total_cents */ 9:
+                    message.totalCents = reader.int32();
+                    break;
+                case /* int32 organizer_net_cents */ 10:
+                    message.organizerNetCents = reader.int32();
+                    break;
+                case /* string currency */ 11:
+                    message.currency = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: CartQuote, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* repeated svyne.booking.CartQuoteLine lines = 1; */
+        for (let i = 0; i < message.lines.length; i++)
+            CartQuoteLine.internalBinaryWrite(message.lines[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* int32 base_total_cents = 2; */
+        if (message.baseTotalCents !== 0)
+            writer.tag(2, WireType.Varint).int32(message.baseTotalCents);
+        /* int32 subtotal_cents = 3; */
+        if (message.subtotalCents !== 0)
+            writer.tag(3, WireType.Varint).int32(message.subtotalCents);
+        /* int32 discount_cents = 4; */
+        if (message.discountCents !== 0)
+            writer.tag(4, WireType.Varint).int32(message.discountCents);
+        /* int32 platform_fee_cents = 5; */
+        if (message.platformFeeCents !== 0)
+            writer.tag(5, WireType.Varint).int32(message.platformFeeCents);
+        /* int32 gateway_fee_cents = 6; */
+        if (message.gatewayFeeCents !== 0)
+            writer.tag(6, WireType.Varint).int32(message.gatewayFeeCents);
+        /* int32 tax_cents = 7; */
+        if (message.taxCents !== 0)
+            writer.tag(7, WireType.Varint).int32(message.taxCents);
+        /* int32 fee_cents = 8; */
+        if (message.feeCents !== 0)
+            writer.tag(8, WireType.Varint).int32(message.feeCents);
+        /* int32 total_cents = 9; */
+        if (message.totalCents !== 0)
+            writer.tag(9, WireType.Varint).int32(message.totalCents);
+        /* int32 organizer_net_cents = 10; */
+        if (message.organizerNetCents !== 0)
+            writer.tag(10, WireType.Varint).int32(message.organizerNetCents);
+        /* string currency = 11; */
+        if (message.currency !== "")
+            writer.tag(11, WireType.LengthDelimited).string(message.currency);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.booking.CartQuote
+ */
+export const CartQuote = new CartQuote$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class BookingLineInput$Type extends MessageType<BookingLineInput> {
     constructor() {
@@ -1824,7 +2222,8 @@ class Ticket$Type extends MessageType<Ticket> {
             { no: 8, name: "event_start_date", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 9, name: "venue_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 10, name: "event_slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 11, name: "booking_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 11, name: "booking_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 12, name: "ticket_type_label", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Ticket>): Ticket {
@@ -1840,6 +2239,7 @@ class Ticket$Type extends MessageType<Ticket> {
         message.venueName = "";
         message.eventSlug = "";
         message.bookingNumber = "";
+        message.ticketTypeLabel = "";
         if (value !== undefined)
             reflectionMergePartial<Ticket>(this, message, value);
         return message;
@@ -1881,6 +2281,9 @@ class Ticket$Type extends MessageType<Ticket> {
                     break;
                 case /* string booking_number */ 11:
                     message.bookingNumber = reader.string();
+                    break;
+                case /* string ticket_type_label */ 12:
+                    message.ticketTypeLabel = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1927,6 +2330,9 @@ class Ticket$Type extends MessageType<Ticket> {
         /* string booking_number = 11; */
         if (message.bookingNumber !== "")
             writer.tag(11, WireType.LengthDelimited).string(message.bookingNumber);
+        /* string ticket_type_label = 12; */
+        if (message.ticketTypeLabel !== "")
+            writer.tag(12, WireType.LengthDelimited).string(message.ticketTypeLabel);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2701,6 +3107,7 @@ export const BookingService = new ServiceType("svyne.booking.BookingService", [
     { name: "CreateBooking", options: {}, I: CreateBookingRequest, O: CreateBookingResponse },
     { name: "ReserveOpenCapacity", options: {}, I: ReserveOpenCapacityRequest, O: CreateBookingResponse },
     { name: "CreateMultiBooking", options: {}, I: CreateMultiBookingRequest, O: CreateBookingResponse },
+    { name: "QuoteCart", options: {}, I: CreateMultiBookingRequest, O: CartQuote },
     { name: "CreatePaymentIntent", options: {}, I: PaymentIntentRequest, O: PaymentIntentResponse },
     { name: "GetPaymentStatus", options: {}, I: UuidValue, O: PaymentStatusResponse },
     { name: "ConfirmBooking", options: {}, I: ConfirmBookingRequest, O: AckResponse },
