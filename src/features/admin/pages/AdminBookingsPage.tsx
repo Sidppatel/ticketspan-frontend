@@ -1,74 +1,182 @@
 import { useCallback, useState } from 'react';
 import { useAsync } from '@/shared/hooks/useAsync';
-import {
-  listBookings,
-  cancelBooking,
-  refundBooking,
-  confirmBooking,
-} from '@/features/admin/services/bookingAdminService';
-import { rpcErrorMessage } from '@/shared/session';
+import { listBookings } from '@/features/admin/services/bookingAdminService';
 import { centsToUSD } from '@/shared/lib/format';
-import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
-import { Card, CardContent } from '@/shared/ui/card';
+import { CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { cn } from '@/shared/lib/cn';
+import { ChevronDown, ChevronUp, Ticket, Calendar, CreditCard } from 'lucide-react';
+import type { Booking } from '@/shared/proto/bookings';
 
 export function AdminBookingsPage() {
   const [eventsId, setEventsId] = useState('');
-  const [status, setStatus] = useState('');
-  const loader = useCallback(() => listBookings(eventsId, status), [eventsId, status]);
-  const { data, loading, error, reload } = useAsync(loader);
+  
+  // 1. Show Only Paid Bookings
+  const loader = useCallback(() => listBookings(eventsId, 'Paid'), [eventsId]);
+  const { data, loading, error } = useAsync(loader);
 
-  async function act(action: () => Promise<void>) {
-    try {
-      await action();
-      reload();
-    } catch (caught) {
-      window.alert(rpcErrorMessage(caught));
-    }
-  }
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(prev => (prev === id ? null : id));
+  };
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Bookings</h1>
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="space-y-1">
-          <Label>Event ID</Label>
-          <Input value={eventsId} onChange={(e) => setEventsId(e.target.value)} />
-        </div>
-        <div className="space-y-1">
-          <Label>Status</Label>
-          <Input value={status} onChange={(e) => setStatus(e.target.value)} placeholder="paid / pending…" />
-        </div>
+    <div className="space-y-8 max-w-5xl mx-auto py-2">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-extrabold tracking-tight font-display text-foreground md:text-3xl">Bookings</h1>
+        <p className="text-xs text-muted-foreground">Manage confirmed event reservations and view payment details.</p>
       </div>
-      {loading ? <p className="text-muted-foreground">Loading…</p> : null}
-      {error ? <p className="text-destructive">{error}</p> : null}
-      <div className="space-y-2">
+
+      <div className="svyne-float-card border border-border bg-card shadow-xl rounded-2xl overflow-hidden transition-all duration-300">
+        <CardHeader className="border-b border-border/20 px-6 py-4">
+          <CardTitle className="text-base font-bold font-display text-foreground flex items-center gap-2">
+            Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="space-y-1.5 md:col-span-1">
+              <Label>Event ID</Label>
+              <div className="svyne-spring-input">
+                <Input 
+                  value={eventsId} 
+                  onChange={(e) => setEventsId(e.target.value)} 
+                  placeholder="Filter by Event ID..."
+                  className="h-10 bg-background border-border text-sm"
+                />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center gap-2 justify-center py-8">
+          <div className="size-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground font-semibold">Loading bookings…</p>
+        </div>
+      ) : null}
+
+      {error ? (
+        <p className="text-xs font-semibold text-destructive bg-destructive/10 border border-destructive/20 rounded-xl p-3 leading-normal">
+          {error}
+        </p>
+      ) : null}
+
+      <div className="space-y-3">
         {(data ?? []).map((booking) => (
-          <Card key={booking.bookingsId}>
-            <CardContent className="flex flex-wrap items-center justify-between gap-2">
-              <div className="text-sm">
-                <p className="font-medium">#{booking.bookingNumber}</p>
-                <p className="text-muted-foreground">
-                  {booking.status} · {centsToUSD(booking.subtotalCents)} · seats {booking.seatsReserved}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => act(() => confirmBooking(booking.bookingsId, ''))}>
-                  Confirm
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => act(() => cancelBooking(booking.bookingsId))}>
-                  Cancel
-                </Button>
-                <Button size="sm" variant="destructive" onClick={() => act(() => refundBooking(booking.bookingsId))}>
-                  Refund
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <BookingRow 
+            key={booking.bookingsId} 
+            booking={booking} 
+            isExpanded={expandedId === booking.bookingsId}
+            onToggle={() => toggleExpand(booking.bookingsId)}
+          />
         ))}
       </div>
-      {!loading && (data ?? []).length === 0 ? <p className="text-muted-foreground">No bookings.</p> : null}
+      
+      {!loading && (data ?? []).length === 0 ? (
+        <p className="text-sm font-medium text-muted-foreground text-center py-8">No paid bookings found.</p>
+      ) : null}
+    </div>
+  );
+}
+
+function BookingRow({ booking, isExpanded, onToggle }: { booking: Booking; isExpanded: boolean; onToggle: () => void }) {
+  return (
+    <div
+      className={cn(
+        "rounded-2xl border bg-card transition-all duration-300 overflow-hidden flex flex-col h-fit cursor-pointer hover:border-primary/50",
+        isExpanded ? "border-border shadow-md" : "border-border-soft shadow-sm"
+      )}
+      onClick={onToggle}
+    >
+      <div className="p-5 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-4">
+          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <Ticket className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <span className="font-bold text-sm text-foreground font-display block">
+              Order #{booking.bookingNumber}
+            </span>
+            <span className="text-[11px] uppercase font-bold tracking-widest text-muted-foreground">
+              {booking.eventTitle || 'Unknown Event'} · {booking.seatsReserved} Seats
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <span className="font-bold text-sm text-foreground block">
+              {centsToUSD(booking.totalCents)}
+            </span>
+            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full">
+              {booking.status}
+            </span>
+          </div>
+          <div className="text-muted-foreground transition-transform duration-200">
+            {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+          </div>
+        </div>
+      </div>
+
+      <div className={cn(
+        "grid transition-all duration-300 ease-in-out overflow-hidden border-t border-border/10",
+        isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+      )}>
+        <div className="overflow-hidden">
+          <div className="p-5 bg-muted/20 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <Calendar className="h-4 w-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Event Details</p>
+                  <p className="text-sm font-medium text-foreground">{booking.eventTitle || 'N/A'}</p>
+                  <p className="text-xs text-muted-foreground">ID: {booking.eventsId}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <CreditCard className="h-4 w-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Payment Details</p>
+                  <p className="text-sm font-medium text-foreground">
+                    Tx: {booking.paymentTransactionId || 'N/A'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <CreditCard className="h-4 w-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Payment Summary</p>
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-1 mt-1 text-xs">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="font-medium text-right">{centsToUSD(booking.subtotalCents)}</span>
+                    <span className="text-muted-foreground">Fees</span>
+                    <span className="font-medium text-right">{centsToUSD(booking.feeCents)}</span>
+                    <span className="text-muted-foreground font-semibold pt-1 border-t border-border/40 mt-1">Total Paid</span>
+                    <span className="font-bold text-foreground text-right pt-1 border-t border-border/40 mt-1">{centsToUSD(booking.totalCents)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Ticket className="h-4 w-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Ticket Info</p>
+                  <p className="text-sm font-medium text-foreground">{booking.seatsReserved} Total Seats</p>
+                  <p className="text-xs text-muted-foreground">{booking.ticketsClaimed} / {booking.ticketsTotal} Tickets Claimed</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

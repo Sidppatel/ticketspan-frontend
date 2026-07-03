@@ -1,4 +1,4 @@
-import { tenantClient, logClient, dashboardClient } from '@/shared/apiClient';
+import { tenantClient, logClient, dashboardClient, tenantTierClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
 import type {
   Tenant,
@@ -8,6 +8,27 @@ import type {
   TenantStripeProfile,
 } from '@/shared/proto/tenant';
 import type { LogEntry, DeveloperDashboard } from '@/shared/proto/admin';
+import type { TenantReportingAccessRow } from '@/shared/proto/reporting';
+
+export const TENANT_TIERS = ['free', 'starter', 'professional', 'business', 'enterprise'] as const;
+export type TenantTier = (typeof TENANT_TIERS)[number];
+
+export async function listTenantReportingAccess(search: string): Promise<TenantReportingAccessRow[]> {
+  const response = await callRpc(() =>
+    tenantTierClient.listTenantReportingAccess({ offset: 0, limit: 200, search }),
+  );
+  return response.tenants;
+}
+
+export async function setTenantTier(tenantsId: string, tier: TenantTier): Promise<string> {
+  const response = await callRpc(() => tenantTierClient.setTenantTier({ tenantsId, tier }));
+  return response.message;
+}
+
+export async function setTenantAdvancedReporting(tenantsId: string, enabled: boolean): Promise<string> {
+  const response = await callRpc(() => tenantTierClient.setTenantAdvancedReporting({ tenantsId, enabled }));
+  return response.message;
+}
 
 export async function getDeveloperDashboard(): Promise<DeveloperDashboard> {
   return callRpc(() => dashboardClient.getDeveloperDashboard({}));

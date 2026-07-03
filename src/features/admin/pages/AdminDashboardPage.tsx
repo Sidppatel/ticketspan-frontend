@@ -12,7 +12,7 @@ export function AdminDashboardPage() {
   const loader = useCallback(() => getAdminDashboard(), []);
   const { data, loading, error } = useAsync(loader);
 
-  const bookingsLoader = useCallback(() => listBookings('', ''), []);
+  const bookingsLoader = useCallback(() => listBookings('', 'Paid'), []);
   const { data: bookings, loading: bookingsLoading } = useAsync(bookingsLoader);
   const recentBookings = (bookings ?? []).slice(0, 8);
 

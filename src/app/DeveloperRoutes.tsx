@@ -9,6 +9,7 @@ import { DeveloperTenantMembersPage } from '@/features/developer/pages/Developer
 import { DeveloperDashboardPage } from '@/features/developer/pages/DeveloperDashboardPage';
 import { DeveloperLogsPage } from '@/features/developer/pages/DeveloperLogsPage';
 import { DeveloperFeesPage } from '@/features/developer/pages/DeveloperFeesPage';
+import { DeveloperReportingAccessPage } from '@/features/developer/pages/DeveloperReportingAccessPage';
 
 export default function DeveloperRoutes() {
   return (
@@ -25,6 +26,7 @@ export default function DeveloperRoutes() {
         <Route path="dashboard" element={<DeveloperDashboardPage />} />
         <Route path="tenants/:tenantsId" element={<DeveloperTenantMembersPage />} />
         <Route path="fees" element={<DeveloperFeesPage />} />
+        <Route path="reporting-access" element={<DeveloperReportingAccessPage />} />
         <Route path="logs" element={<DeveloperLogsPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />

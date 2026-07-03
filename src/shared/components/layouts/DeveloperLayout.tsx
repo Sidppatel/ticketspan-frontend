@@ -13,6 +13,7 @@ export function DeveloperLayout() {
           { to: '/', label: 'Tenants' },
           { to: '/dashboard', label: 'Overview' },
           { to: '/fees', label: 'Fees' },
+          { to: '/reporting-access', label: 'Reporting Access' },
           { to: '/logs', label: 'System Logs' },
         ]}
       />

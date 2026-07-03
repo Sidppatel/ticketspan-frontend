@@ -90,6 +90,10 @@ export interface Booking {
      * @generated from protobuf field: int32 tickets_claimed = 16;
      */
     ticketsClaimed: number;
+    /**
+     * @generated from protobuf field: string payment_transaction_id = 17;
+     */
+    paymentTransactionId: string;
 }
 /**
  * One line of a booking, for display on checkout / booking detail. Carries the
@@ -811,7 +815,8 @@ class Booking$Type extends MessageType<Booking> {
             { no: 13, name: "event_slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 14, name: "event_start_date", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 15, name: "tickets_total", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 16, name: "tickets_claimed", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 16, name: "tickets_claimed", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 17, name: "payment_transaction_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Booking>): Booking {
@@ -832,6 +837,7 @@ class Booking$Type extends MessageType<Booking> {
         message.eventStartDate = "0";
         message.ticketsTotal = 0;
         message.ticketsClaimed = 0;
+        message.paymentTransactionId = "";
         if (value !== undefined)
             reflectionMergePartial<Booking>(this, message, value);
         return message;
@@ -888,6 +894,9 @@ class Booking$Type extends MessageType<Booking> {
                     break;
                 case /* int32 tickets_claimed */ 16:
                     message.ticketsClaimed = reader.int32();
+                    break;
+                case /* string payment_transaction_id */ 17:
+                    message.paymentTransactionId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -949,6 +958,9 @@ class Booking$Type extends MessageType<Booking> {
         /* int32 tickets_claimed = 16; */
         if (message.ticketsClaimed !== 0)
             writer.tag(16, WireType.Varint).int32(message.ticketsClaimed);
+        /* string payment_transaction_id = 17; */
+        if (message.paymentTransactionId !== "")
+            writer.tag(17, WireType.LengthDelimited).string(message.paymentTransactionId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
