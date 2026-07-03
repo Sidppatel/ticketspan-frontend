@@ -12,7 +12,11 @@ export function DeveloperLayout() {
         links={[
           { to: '/', label: 'Tenants' },
           { to: '/dashboard', label: 'Overview' },
+          { to: '/billing', label: 'Billing' },
+          { to: '/pay-per-event', label: 'Pay Per Event' },
           { to: '/fees', label: 'Fees' },
+          { to: '/fee-overrides', label: 'Fee Overrides' },
+          { to: '/revenue', label: 'Revenue' },
           { to: '/reporting-access', label: 'Reporting Access' },
           { to: '/logs', label: 'System Logs' },
         ]}

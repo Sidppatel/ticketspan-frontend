@@ -30,6 +30,7 @@ import { FeeServiceClient } from '@/shared/proto/fees.client';
 import { PricingServiceClient } from '@/shared/proto/pricing.client';
 import { FloorPlanServiceClient } from '@/shared/proto/floorplan.client';
 import { ReportingServiceClient, TenantTierServiceClient } from '@/shared/proto/reporting.client';
+import { DeveloperBillingServiceClient } from '@/shared/proto/billing.client';
 
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:5262';
 
@@ -82,3 +83,4 @@ export const pricingClient = new PricingServiceClient(transport);
 export const floorPlanClient = new FloorPlanServiceClient(transport);
 export const reportingClient = new ReportingServiceClient(transport);
 export const tenantTierClient = new TenantTierServiceClient(transport);
+export const developerBillingClient = new DeveloperBillingServiceClient(transport);

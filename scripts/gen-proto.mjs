@@ -26,6 +26,7 @@ const protoFiles = [
   'pricing.proto',
   'floorplan.proto',
   'reporting.proto',
+  'billing.proto',
 ];
 
 mkdirSync(outDir, { recursive: true });
