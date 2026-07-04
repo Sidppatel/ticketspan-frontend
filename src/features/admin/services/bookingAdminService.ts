@@ -25,10 +25,6 @@ export async function cancelBooking(bookingsId: string): Promise<void> {
   await callRpc(() => bookingClient.cancelBooking({ value: bookingsId }));
 }
 
-export async function refundBooking(bookingsId: string): Promise<void> {
-  await callRpc(() => bookingClient.refundBooking({ value: bookingsId }));
-}
-
 export async function listTickets(bookingsId: string): Promise<Ticket[]> {
   const response = await callRpc(() => ticketClient.listTickets({ value: bookingsId }));
   return response.tickets;

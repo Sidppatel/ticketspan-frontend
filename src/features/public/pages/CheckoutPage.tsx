@@ -347,6 +347,10 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
               </p>
             ) : null}
 
+            <p className="text-xs text-muted-foreground">
+              All ticket sales are final. No refunds.
+            </p>
+
             <div className="flex gap-3 pt-3">
               <Button type="submit" size="lg" className="h-12 flex-1" disabled={!stripe || submitting || polling}>
                 {polling ? 'Confirming…' : submitting ? 'Processing…' : `Pay ${centsToUSD(intent.amountCents)}`}

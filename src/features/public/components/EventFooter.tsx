@@ -41,7 +41,7 @@ export function EventFooter({ organizerName = 'Organizer', className, light = fa
             <ul className="space-y-2">
               <li><a href="/terms" className="hover:underline hover:text-accent-burgundy transition-colors">Terms of Service</a></li>
               <li><a href="/privacy" className="hover:underline hover:text-accent-burgundy transition-colors">Privacy Policy</a></li>
-              <li><a href="/refund" className="hover:underline hover:text-accent-burgundy transition-colors">Refund Policy</a></li>
+              <li className={light ? 'text-white/70' : 'text-muted-foreground'}>All Sales Final — No Refunds</li>
             </ul>
           </div>
           <div className="space-y-3 text-xs">
