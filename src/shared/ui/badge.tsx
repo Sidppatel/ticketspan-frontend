@@ -10,7 +10,7 @@ const badgeVariants = cva('inline-flex items-center gap-1 rounded-full px-2 py-0
       success: 'bg-success/12 text-success',
       warn: 'bg-warning/12 text-warning',
       danger: 'bg-destructive/12 text-destructive',
-      voltage: 'bg-voltage/15 text-voltage-ink',
+      voltage: 'bg-voltage text-voltage-ink',
     },
   },
   defaultVariants: {
