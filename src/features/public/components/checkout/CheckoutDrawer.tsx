@@ -15,6 +15,7 @@ interface CheckoutDrawerProps {
   onClose: (completed?: boolean) => void;
   bookingsId: string;
   cartTotalCents: number;
+  preferredMethod?: 'card' | 'ach';
 }
 
 export function CheckoutDrawer({
@@ -22,6 +23,7 @@ export function CheckoutDrawer({
   onClose,
   bookingsId,
   cartTotalCents,
+  preferredMethod = 'card',
 }: CheckoutDrawerProps) {
   const [step, setStep] = useState<3 | 4 | 5>(3);
   const [buyerInfo, setBuyerInfo] = useState<BuyerInfo>({ name: '', email: '', phone: '' });
@@ -86,6 +88,8 @@ export function CheckoutDrawer({
           {step === 4 && (
             <PaymentStep
               bookingsId={bookingsId}
+              preferredMethod={preferredMethod}
+              buyerInfo={buyerInfo}
               onBack={handleBack}
               onPaymentSuccess={() => {
                 console.log('[Telemetry]: checkout_purchase_completed', { bookingsId });

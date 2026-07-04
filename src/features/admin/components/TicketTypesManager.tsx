@@ -172,9 +172,12 @@ function TicketTypeRow({
             onChange={(e) => setPriceUsd(e.target.value)}
           />
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1 relative">
           <Label>Capacity</Label>
           <Input className="w-24" type="number" min={0} value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} />
+          {capacity < tt.soldCount && (
+            <p className="text-[10px] text-destructive absolute top-full mt-1 w-max">Min {tt.soldCount} tickets</p>
+          )}
         </div>
         <div className="space-y-1 flex-1 min-w-48">
           <Label>Description</Label>
@@ -182,7 +185,7 @@ function TicketTypeRow({
         </div>
         <Button
           size="sm"
-          disabled={!label.trim()}
+          disabled={!label.trim() || capacity < tt.soldCount}
           onClick={() =>
             guard(() =>
               updateTicketType(tt.eventTicketTypesId, {

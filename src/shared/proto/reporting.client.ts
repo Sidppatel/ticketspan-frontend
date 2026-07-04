@@ -3,6 +3,7 @@
 // @generated from protobuf file "reporting.proto" (package "svyne.reporting", syntax proto3)
 // tslint:disable
 import { TenantTierService } from "./reporting";
+import type { SetTenantAchRequest } from "./reporting";
 import type { SetTenantAdvancedReportingRequest } from "./reporting";
 import type { AckResponse } from "./common";
 import type { SetTenantTierRequest } from "./reporting";
@@ -120,6 +121,13 @@ export interface ITenantTierServiceClient {
      * @generated from protobuf rpc: SetTenantAdvancedReporting(svyne.reporting.SetTenantAdvancedReportingRequest) returns (svyne.common.AckResponse);
      */
     setTenantAdvancedReporting(input: SetTenantAdvancedReportingRequest, options?: RpcOptions): UnaryCall<SetTenantAdvancedReportingRequest, AckResponse>;
+    /**
+     * Developer gate for ACH: enable/disable ACH for a tenant and set the fee formula
+     * that replaces the service fee when a buyer pays by ACH.
+     *
+     * @generated from protobuf rpc: SetTenantAch(svyne.reporting.SetTenantAchRequest) returns (svyne.common.AckResponse);
+     */
+    setTenantAch(input: SetTenantAchRequest, options?: RpcOptions): UnaryCall<SetTenantAchRequest, AckResponse>;
 }
 /**
  * @generated from protobuf service svyne.reporting.TenantTierService
@@ -150,5 +158,15 @@ export class TenantTierServiceClient implements ITenantTierServiceClient, Servic
     setTenantAdvancedReporting(input: SetTenantAdvancedReportingRequest, options?: RpcOptions): UnaryCall<SetTenantAdvancedReportingRequest, AckResponse> {
         const method = this.methods[2], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetTenantAdvancedReportingRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * Developer gate for ACH: enable/disable ACH for a tenant and set the fee formula
+     * that replaces the service fee when a buyer pays by ACH.
+     *
+     * @generated from protobuf rpc: SetTenantAch(svyne.reporting.SetTenantAchRequest) returns (svyne.common.AckResponse);
+     */
+    setTenantAch(input: SetTenantAchRequest, options?: RpcOptions): UnaryCall<SetTenantAchRequest, AckResponse> {
+        const method = this.methods[3], opt = this._transport.mergeOptions(options);
+        return stackIntercept<SetTenantAchRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

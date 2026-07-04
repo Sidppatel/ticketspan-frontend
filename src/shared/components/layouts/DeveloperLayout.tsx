@@ -10,8 +10,8 @@ export function DeveloperLayout() {
       <PortalNav
         section="developer"
         links={[
-          { to: '/', label: 'Tenants' },
-          { to: '/dashboard', label: 'Overview' },
+          { to: '/', label: 'Dashboard' },
+          { to: '/tenants', label: 'Tenants' },
           { to: '/billing', label: 'Billing' },
           { to: '/pay-per-event', label: 'Pay Per Event' },
           { to: '/fees', label: 'Fees' },

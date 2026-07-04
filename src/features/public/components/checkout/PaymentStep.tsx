@@ -10,6 +10,7 @@ import {
   createPaymentIntent,
   getPaymentStatus,
   cancelBooking,
+  updatePaymentIntentForMethod,
 } from '@/features/public/services/paymentService';
 import { rpcErrorMessage } from '@/shared/session';
 import { PriceBadge } from '../PriceBadge';
@@ -24,20 +25,28 @@ interface IntentState {
   holdExpiresAt: number;
 }
 
+interface BuyerPrefill {
+  name: string;
+  email: string;
+  phone: string;
+}
+
 interface PaymentStepProps {
   bookingsId: string;
   onPaymentSuccess: () => void;
   onBack: () => void;
+  preferredMethod?: 'card' | 'ach';
+  buyerInfo?: BuyerPrefill;
 }
 
-export function PaymentStep({ bookingsId, onPaymentSuccess, onBack }: PaymentStepProps) {
+export function PaymentStep({ bookingsId, onPaymentSuccess, onBack, preferredMethod = 'card', buyerInfo }: PaymentStepProps) {
   const [intent, setIntent] = useState<IntentState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
 
   useEffect(() => {
     let active = true;
-    createPaymentIntent(bookingsId)
+    createPaymentIntent(bookingsId, preferredMethod)
       .then((res) => {
         if (!active) return;
         setIntent({
@@ -53,7 +62,7 @@ export function PaymentStep({ bookingsId, onPaymentSuccess, onBack }: PaymentSte
     return () => {
       active = false;
     };
-  }, [bookingsId]);
+  }, [bookingsId, preferredMethod]);
 
   if (error) {
     return (
@@ -117,6 +126,8 @@ export function PaymentStep({ bookingsId, onPaymentSuccess, onBack }: PaymentSte
       <StripeCheckoutForm
         bookingsId={bookingsId}
         intent={intent}
+        preferredMethod={preferredMethod}
+        buyerInfo={buyerInfo}
         onPaymentSuccess={onPaymentSuccess}
         onBack={onBack}
       />
@@ -127,11 +138,15 @@ export function PaymentStep({ bookingsId, onPaymentSuccess, onBack }: PaymentSte
 function StripeCheckoutForm({
   bookingsId,
   intent,
+  preferredMethod,
+  buyerInfo,
   onPaymentSuccess,
   onBack,
 }: {
   bookingsId: string;
   intent: IntentState;
+  preferredMethod: 'card' | 'ach';
+  buyerInfo?: BuyerPrefill;
   onPaymentSuccess: () => void;
   onBack: () => void;
 }) {
@@ -140,6 +155,29 @@ function StripeCheckoutForm({
   const [submitting, setSubmitting] = useState(false);
   const [polling, setPolling] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [amountCents, setAmountCents] = useState(intent.amountCents);
+  const [savingsCents, setSavingsCents] = useState(0);
+  const [repricing, setRepricing] = useState(false);
+  const methodRef = useRef<'card' | 'ach'>(preferredMethod);
+
+  const handleMethodChange = useCallback(
+    async (type: string | undefined) => {
+      const method: 'card' | 'ach' = type === 'us_bank_account' ? 'ach' : 'card';
+      if (method === methodRef.current) return;
+      methodRef.current = method;
+      setRepricing(true);
+      try {
+        const res = await updatePaymentIntentForMethod(bookingsId, method);
+        setAmountCents(res.totalCents);
+        setSavingsCents(res.savingsCents);
+      } catch {
+        methodRef.current = method === 'ach' ? 'card' : 'ach';
+      } finally {
+        setRepricing(false);
+      }
+    },
+    [bookingsId],
+  );
   const [secondsLeft, setSecondsLeft] = useState<number | null>(() =>
     intent.holdExpiresAt > 0 ? Math.max(0, intent.holdExpiresAt - Math.floor(Date.now() / 1000)) : null
   );
@@ -225,7 +263,7 @@ function StripeCheckoutForm({
         </div>
         <div className="text-right">
           <p className="text-[10px] text-white/50 uppercase tracking-wider font-bold">Total Charged</p>
-          <PriceBadge priceCents={intent.amountCents} className="text-xl font-extrabold text-accent-gold font-display" />
+          <PriceBadge priceCents={amountCents} className="text-xl font-extrabold text-accent-gold font-display" />
         </div>
       </div>
 
@@ -248,8 +286,27 @@ function StripeCheckoutForm({
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
-          <PaymentElement />
-          
+          <PaymentElement
+            options={{
+              wallets: { link: 'never' },
+              defaultValues: {
+                billingDetails: {
+                  name: buyerInfo?.name || undefined,
+                  email: buyerInfo?.email || undefined,
+                  phone: buyerInfo?.phone || undefined,
+                },
+              },
+            }}
+            onChange={(e) => handleMethodChange(e.value.type)}
+          />
+
+          {savingsCents > 0 && (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-success/10 border border-success/20 text-success text-[11px] font-bold uppercase tracking-wider">
+              <ShieldCheck className="size-4 shrink-0" />
+              <span>You save {centsToUSD(savingsCents)} paying by bank (ACH)</span>
+            </div>
+          )}
+
           {message && (
             <div className="flex items-start gap-2.5 p-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-[11px] leading-relaxed">
               <AlertCircle className="size-4 shrink-0 mt-0.5" />
@@ -268,10 +325,10 @@ function StripeCheckoutForm({
             </Button>
             <Button
               type="submit"
-              disabled={!stripe || submitting || polling}
+              disabled={!stripe || submitting || polling || repricing}
               className="flex-1 bg-accent-burgundy hover:bg-accent-burgundy/95 text-white py-5 shadow-lg relative"
             >
-              {polling ? 'Verifying…' : submitting ? 'Authorizing…' : `Pay ${centsToUSD(intent.amountCents)}`}
+              {repricing ? 'Updating…' : polling ? 'Verifying…' : submitting ? 'Authorizing…' : `Pay ${centsToUSD(amountCents)}`}
             </Button>
           </div>
         </form>

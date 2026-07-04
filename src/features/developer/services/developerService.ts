@@ -36,8 +36,17 @@ export async function setTenantAdvancedReporting(tenantsId: string, enabled: boo
   return response.message;
 }
 
+export async function setTenantAch(tenantsId: string, enabled: boolean, feeFormulasId: string): Promise<string> {
+  const response = await callRpc(() => tenantTierClient.setTenantAch({ tenantsId, enabled, feeFormulasId }));
+  return response.message;
+}
+
 export async function getDeveloperDashboard(): Promise<DeveloperDashboard> {
   return callRpc(() => dashboardClient.getDeveloperDashboard({}));
+}
+
+export function achEnabledCount(tenants: Tenant[]): number {
+  return tenants.filter((tenant) => tenant.achEnabled).length;
 }
 
 export async function listTenantMembers(tenantsId: string): Promise<TenantMember[]> {

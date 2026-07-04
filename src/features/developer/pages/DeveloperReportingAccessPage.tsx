@@ -4,9 +4,11 @@ import {
   listTenantReportingAccess,
   setTenantTier,
   setTenantAdvancedReporting,
+  setTenantAch,
   TENANT_TIERS,
   type TenantTier,
 } from '@/features/developer/services/developerService';
+import { listFeeFormulas } from '@/features/developer/services/developerFeeService';
 import { rpcErrorMessage } from '@/shared/session';
 import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
@@ -25,6 +27,8 @@ export function DeveloperReportingAccessPage() {
 
   const loader = useCallback(() => listTenantReportingAccess(submittedSearch), [submittedSearch]);
   const { data, loading, error, reload } = useAsync(loader);
+  const { data: feeFormulas } = useAsync(useCallback(() => listFeeFormulas(), []));
+  const [achFormulaByTenant, setAchFormulaByTenant] = useState<Record<string, string>>({});
 
   async function runAction(tenantsId: string, action: () => Promise<string>) {
     setBusyTenantId(tenantsId);
@@ -51,6 +55,19 @@ export function DeveloperReportingAccessPage() {
 
   function toggleOverride(tenantsId: string, enabled: boolean) {
     void runAction(tenantsId, () => setTenantAdvancedReporting(tenantsId, enabled));
+  }
+
+  function achFormulaFor(tenant: { tenantsId: string; achFeeFormulasId: string }): string {
+    return achFormulaByTenant[tenant.tenantsId] ?? tenant.achFeeFormulasId ?? '';
+  }
+
+  function toggleAch(tenant: { tenantsId: string; achFeeFormulasId: string }, enabled: boolean) {
+    const formula = achFormulaFor(tenant);
+    if (enabled && !formula) {
+      setActionError('Pick an ACH fee formula before enabling ACH.');
+      return;
+    }
+    void runAction(tenant.tenantsId, () => setTenantAch(tenant.tenantsId, enabled, formula));
   }
 
   return (
@@ -89,6 +106,8 @@ export function DeveloperReportingAccessPage() {
                 <th className="py-2 pr-3">Tier</th>
                 <th className="py-2 pr-3">Advanced reporting</th>
                 <th className="py-2 pr-3">Developer override</th>
+                <th className="py-2 pr-3">ACH fee</th>
+                <th className="py-2 pr-3">ACH enabled</th>
                 <th className="py-2">Status</th>
               </tr>
             </thead>
@@ -133,6 +152,31 @@ export function DeveloperReportingAccessPage() {
                       disabled={busyTenantId === tenant.tenantsId}
                       label={`Advanced reporting override for ${tenant.name}`}
                       onCheckedChange={(enabled) => toggleOverride(tenant.tenantsId, enabled)}
+                    />
+                  </td>
+                  <td className="py-2 pr-3">
+                    <Select
+                      className="h-8 w-44"
+                      value={achFormulaFor(tenant)}
+                      disabled={busyTenantId === tenant.tenantsId}
+                      onChange={(e) =>
+                        setAchFormulaByTenant((prev) => ({ ...prev, [tenant.tenantsId]: e.target.value }))
+                      }
+                    >
+                      <option value="">— none —</option>
+                      {(feeFormulas ?? []).map((f) => (
+                        <option key={f.feeFormulasId} value={f.feeFormulasId}>
+                          {f.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </td>
+                  <td className="py-2 pr-3">
+                    <Switch
+                      checked={tenant.achEnabled}
+                      disabled={busyTenantId === tenant.tenantsId}
+                      label={`ACH for ${tenant.name}`}
+                      onCheckedChange={(enabled) => toggleAch(tenant, enabled)}
                     />
                   </td>
                   <td className="py-2">

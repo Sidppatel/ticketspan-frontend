@@ -186,6 +186,10 @@ export interface Tenant {
      * @generated from protobuf field: string brand_highlight = 24;
      */
     brandHighlight: string;
+    /**
+     * @generated from protobuf field: bool ach_enabled = 25;
+     */
+    achEnabled: boolean;
 }
 /**
  * @generated from protobuf message svyne.tenant.UpdateMyTenantBrandingRequest
@@ -400,6 +404,19 @@ export interface UpdateTenantRequest {
      * @generated from protobuf field: string country_code = 4;
      */
     countryCode: string;
+}
+/**
+ * @generated from protobuf message svyne.tenant.SetTenantAchEnabledRequest
+ */
+export interface SetTenantAchEnabledRequest {
+    /**
+     * @generated from protobuf field: string tenants_id = 1;
+     */
+    tenantsId: string;
+    /**
+     * @generated from protobuf field: bool ach_enabled = 2;
+     */
+    achEnabled: boolean;
 }
 /**
  * @generated from protobuf message svyne.tenant.ListTenantsResponse
@@ -708,7 +725,8 @@ class Tenant$Type extends MessageType<Tenant> {
             { no: 21, name: "brand_background", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 22, name: "brand_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 23, name: "brand_button", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 24, name: "brand_highlight", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 24, name: "brand_highlight", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 25, name: "ach_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<Tenant>): Tenant {
@@ -737,6 +755,7 @@ class Tenant$Type extends MessageType<Tenant> {
         message.brandText = "";
         message.brandButton = "";
         message.brandHighlight = "";
+        message.achEnabled = false;
         if (value !== undefined)
             reflectionMergePartial<Tenant>(this, message, value);
         return message;
@@ -817,6 +836,9 @@ class Tenant$Type extends MessageType<Tenant> {
                     break;
                 case /* string brand_highlight */ 24:
                     message.brandHighlight = reader.string();
+                    break;
+                case /* bool ach_enabled */ 25:
+                    message.achEnabled = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -902,6 +924,9 @@ class Tenant$Type extends MessageType<Tenant> {
         /* string brand_highlight = 24; */
         if (message.brandHighlight !== "")
             writer.tag(24, WireType.LengthDelimited).string(message.brandHighlight);
+        /* bool ach_enabled = 25; */
+        if (message.achEnabled !== false)
+            writer.tag(25, WireType.Varint).bool(message.achEnabled);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1538,6 +1563,61 @@ class UpdateTenantRequest$Type extends MessageType<UpdateTenantRequest> {
  */
 export const UpdateTenantRequest = new UpdateTenantRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class SetTenantAchEnabledRequest$Type extends MessageType<SetTenantAchEnabledRequest> {
+    constructor() {
+        super("svyne.tenant.SetTenantAchEnabledRequest", [
+            { no: 1, name: "tenants_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "ach_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SetTenantAchEnabledRequest>): SetTenantAchEnabledRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.tenantsId = "";
+        message.achEnabled = false;
+        if (value !== undefined)
+            reflectionMergePartial<SetTenantAchEnabledRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SetTenantAchEnabledRequest): SetTenantAchEnabledRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string tenants_id */ 1:
+                    message.tenantsId = reader.string();
+                    break;
+                case /* bool ach_enabled */ 2:
+                    message.achEnabled = reader.bool();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SetTenantAchEnabledRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string tenants_id = 1; */
+        if (message.tenantsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.tenantsId);
+        /* bool ach_enabled = 2; */
+        if (message.achEnabled !== false)
+            writer.tag(2, WireType.Varint).bool(message.achEnabled);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.tenant.SetTenantAchEnabledRequest
+ */
+export const SetTenantAchEnabledRequest = new SetTenantAchEnabledRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class ListTenantsResponse$Type extends MessageType<ListTenantsResponse> {
     constructor() {
         super("svyne.tenant.ListTenantsResponse", [
@@ -1907,5 +1987,6 @@ export const TenantService = new ServiceType("svyne.tenant.TenantService", [
     { name: "ListTenantMembers", options: {}, I: UuidValue, O: ListTenantMembersResponse },
     { name: "GetTenantStripeStatus", options: {}, I: UuidValue, O: TenantStripeStatus },
     { name: "GetTenantStripeProfile", options: {}, I: UuidValue, O: TenantStripeProfile },
-    { name: "UpdateTenantStripeProfile", options: {}, I: UpdateTenantStripeProfileRequest, O: AckResponse }
+    { name: "UpdateTenantStripeProfile", options: {}, I: UpdateTenantStripeProfileRequest, O: AckResponse },
+    { name: "SetTenantAchEnabled", options: {}, I: SetTenantAchEnabledRequest, O: AckResponse }
 ]);

@@ -16,6 +16,7 @@ import type { ListEventImagesRequest } from "./event";
 import type { UpdateScheduleItemRequest } from "./event";
 import type { CreateScheduleItemRequest } from "./event";
 import type { ListScheduleItemsResponse } from "./event";
+import type { SetEventAchRequest } from "./event";
 import type { SetEventFeesIncludedRequest } from "./event";
 import type { EventStats } from "./event";
 import type { ChangeEventStatusRequest } from "./event";
@@ -76,6 +77,12 @@ export interface IEventServiceClient {
      * @generated from protobuf rpc: SetEventFeesIncluded(svyne.event.SetEventFeesIncludedRequest) returns (svyne.common.AckResponse);
      */
     setEventFeesIncluded(input: SetEventFeesIncludedRequest, options?: RpcOptions): UnaryCall<SetEventFeesIncludedRequest, AckResponse>;
+    /**
+     * Admin opt-in to offering ACH at checkout (only sticks if the tenant is ACH-enabled).
+     *
+     * @generated from protobuf rpc: SetEventAch(svyne.event.SetEventAchRequest) returns (svyne.common.AckResponse);
+     */
+    setEventAch(input: SetEventAchRequest, options?: RpcOptions): UnaryCall<SetEventAchRequest, AckResponse>;
     /**
      * @generated from protobuf rpc: ListScheduleItems(svyne.common.UuidValue) returns (svyne.event.ListScheduleItemsResponse);
      */
@@ -197,73 +204,82 @@ export class EventServiceClient implements IEventServiceClient, ServiceInfo {
         return stackIntercept<SetEventFeesIncludedRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
+     * Admin opt-in to offering ACH at checkout (only sticks if the tenant is ACH-enabled).
+     *
+     * @generated from protobuf rpc: SetEventAch(svyne.event.SetEventAchRequest) returns (svyne.common.AckResponse);
+     */
+    setEventAch(input: SetEventAchRequest, options?: RpcOptions): UnaryCall<SetEventAchRequest, AckResponse> {
+        const method = this.methods[10], opt = this._transport.mergeOptions(options);
+        return stackIntercept<SetEventAchRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: ListScheduleItems(svyne.common.UuidValue) returns (svyne.event.ListScheduleItemsResponse);
      */
     listScheduleItems(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListScheduleItemsResponse> {
-        const method = this.methods[10], opt = this._transport.mergeOptions(options);
+        const method = this.methods[11], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, ListScheduleItemsResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: CreateScheduleItem(svyne.event.CreateScheduleItemRequest) returns (svyne.common.UuidValue);
      */
     createScheduleItem(input: CreateScheduleItemRequest, options?: RpcOptions): UnaryCall<CreateScheduleItemRequest, UuidValue> {
-        const method = this.methods[11], opt = this._transport.mergeOptions(options);
+        const method = this.methods[12], opt = this._transport.mergeOptions(options);
         return stackIntercept<CreateScheduleItemRequest, UuidValue>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: UpdateScheduleItem(svyne.event.UpdateScheduleItemRequest) returns (svyne.common.AckResponse);
      */
     updateScheduleItem(input: UpdateScheduleItemRequest, options?: RpcOptions): UnaryCall<UpdateScheduleItemRequest, AckResponse> {
-        const method = this.methods[12], opt = this._transport.mergeOptions(options);
+        const method = this.methods[13], opt = this._transport.mergeOptions(options);
         return stackIntercept<UpdateScheduleItemRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: DeleteScheduleItem(svyne.common.UuidValue) returns (svyne.common.AckResponse);
      */
     deleteScheduleItem(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
-        const method = this.methods[13], opt = this._transport.mergeOptions(options);
+        const method = this.methods[14], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ListEventImages(svyne.event.ListEventImagesRequest) returns (svyne.event.ListEventImagesResponse);
      */
     listEventImages(input: ListEventImagesRequest, options?: RpcOptions): UnaryCall<ListEventImagesRequest, ListEventImagesResponse> {
-        const method = this.methods[14], opt = this._transport.mergeOptions(options);
+        const method = this.methods[15], opt = this._transport.mergeOptions(options);
         return stackIntercept<ListEventImagesRequest, ListEventImagesResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: AddEventImage(svyne.event.AddEventImageRequest) returns (svyne.event.EventImage);
      */
     addEventImage(input: AddEventImageRequest, options?: RpcOptions): UnaryCall<AddEventImageRequest, EventImage> {
-        const method = this.methods[15], opt = this._transport.mergeOptions(options);
+        const method = this.methods[16], opt = this._transport.mergeOptions(options);
         return stackIntercept<AddEventImageRequest, EventImage>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: RemoveEventImage(svyne.event.RemoveEventImageRequest) returns (svyne.common.AckResponse);
      */
     removeEventImage(input: RemoveEventImageRequest, options?: RpcOptions): UnaryCall<RemoveEventImageRequest, AckResponse> {
-        const method = this.methods[16], opt = this._transport.mergeOptions(options);
+        const method = this.methods[17], opt = this._transport.mergeOptions(options);
         return stackIntercept<RemoveEventImageRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SetPrimaryEventImage(svyne.event.RemoveEventImageRequest) returns (svyne.common.AckResponse);
      */
     setPrimaryEventImage(input: RemoveEventImageRequest, options?: RpcOptions): UnaryCall<RemoveEventImageRequest, AckResponse> {
-        const method = this.methods[17], opt = this._transport.mergeOptions(options);
+        const method = this.methods[18], opt = this._transport.mergeOptions(options);
         return stackIntercept<RemoveEventImageRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ReorderEventImages(svyne.event.ReorderEventImagesRequest) returns (svyne.common.AckResponse);
      */
     reorderEventImages(input: ReorderEventImagesRequest, options?: RpcOptions): UnaryCall<ReorderEventImagesRequest, AckResponse> {
-        const method = this.methods[18], opt = this._transport.mergeOptions(options);
+        const method = this.methods[19], opt = this._transport.mergeOptions(options);
         return stackIntercept<ReorderEventImagesRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetMediaSettings(svyne.common.Empty) returns (svyne.event.MediaSettings);
      */
     getMediaSettings(input: Empty, options?: RpcOptions): UnaryCall<Empty, MediaSettings> {
-        const method = this.methods[19], opt = this._transport.mergeOptions(options);
+        const method = this.methods[20], opt = this._transport.mergeOptions(options);
         return stackIntercept<Empty, MediaSettings>("unary", this._transport, method, opt, input);
     }
 }

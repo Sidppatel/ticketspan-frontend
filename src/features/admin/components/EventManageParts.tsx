@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useAsync } from '@/shared/hooks/useAsync';
-import { updateEvent, setEventFeesIncluded } from '@/features/admin/services/eventAdminService';
+import { updateEvent, setEventFeesIncluded, setEventAch } from '@/features/admin/services/eventAdminService';
 import { listVenues } from '@/features/admin/services/catalogService';
 import { epochToZonedInput, zonedInputToEpoch } from '@/shared/lib/timezone';
 import { DateTimePicker } from '@/shared/ui/date-time-picker';
@@ -230,6 +230,7 @@ export function EditSection({
   const [eventType, setEventType] = useState(event.eventType || 'Open');
   const [venuesId, setVenuesId] = useState(event.venuesId);
   const [feesIncluded, setFeesIncluded] = useState(event.feesIncluded);
+  const [achEnabled, setAchEnabled] = useState(event.achEnabled);
   const [start, setStart] = useState(epochToZonedInput(event.startDate, timeZone));
   const [end, setEnd] = useState(epochToZonedInput(event.endDate, timeZone));
   const [saving, setSaving] = useState(false);
@@ -241,6 +242,16 @@ export function EditSection({
       await setEventFeesIncluded(event.eventsId, next);
     } catch (caught) {
       setFeesIncluded(!next);
+      setError(rpcErrorMessage(caught));
+    }
+  }
+
+  async function toggleAch(next: boolean) {
+    setAchEnabled(next);
+    try {
+      await setEventAch(event.eventsId, next);
+    } catch (caught) {
+      setAchEnabled(!next);
       setError(rpcErrorMessage(caught));
     }
   }
@@ -339,6 +350,21 @@ export function EditSection({
               <span className="block text-xs text-muted-foreground mt-1 leading-relaxed">
                 On = buyers see one all-in total. Off = price + fee shown separately. The developer fee amount is
                 unchanged either way.
+              </span>
+            </span>
+          </label>
+          <label className="flex items-start gap-3 text-sm cursor-pointer">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={achEnabled}
+              onChange={(e) => toggleAch(e.target.checked)}
+            />
+            <span>
+              <span className="font-bold text-sm block">Offer ACH (bank) payment</span>
+              <span className="block text-xs text-muted-foreground mt-1 leading-relaxed">
+                Buyers may pay by US bank debit at a lower fee. Requires ACH to be enabled for your organization by the
+                developer.
               </span>
             </span>
           </label>

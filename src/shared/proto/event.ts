@@ -226,6 +226,19 @@ export interface SetEventFeesIncludedRequest {
     feesIncluded: boolean;
 }
 /**
+ * @generated from protobuf message svyne.event.SetEventAchRequest
+ */
+export interface SetEventAchRequest {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: bool ach_enabled = 2;
+     */
+    achEnabled: boolean;
+}
+/**
  * @generated from protobuf message svyne.event.Event
  */
 export interface Event {
@@ -309,6 +322,10 @@ export interface Event {
      * @generated from protobuf field: string extra_info_json = 20;
      */
     extraInfoJson: string; // JSON array [{key,value,isPublic,sortOrder}]
+    /**
+     * @generated from protobuf field: bool ach_enabled = 21;
+     */
+    achEnabled: boolean; // admin opted this event in to ACH (tenant-gated)
 }
 /**
  * @generated from protobuf message svyne.event.GetEventBySlugRequest
@@ -1276,6 +1293,61 @@ class SetEventFeesIncludedRequest$Type extends MessageType<SetEventFeesIncludedR
  */
 export const SetEventFeesIncludedRequest = new SetEventFeesIncludedRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class SetEventAchRequest$Type extends MessageType<SetEventAchRequest> {
+    constructor() {
+        super("svyne.event.SetEventAchRequest", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "ach_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SetEventAchRequest>): SetEventAchRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.achEnabled = false;
+        if (value !== undefined)
+            reflectionMergePartial<SetEventAchRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SetEventAchRequest): SetEventAchRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* bool ach_enabled */ 2:
+                    message.achEnabled = reader.bool();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SetEventAchRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* bool ach_enabled = 2; */
+        if (message.achEnabled !== false)
+            writer.tag(2, WireType.Varint).bool(message.achEnabled);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.event.SetEventAchRequest
+ */
+export const SetEventAchRequest = new SetEventAchRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class Event$Type extends MessageType<Event> {
     constructor() {
         super("svyne.event.Event", [
@@ -1298,7 +1370,8 @@ class Event$Type extends MessageType<Event> {
             { no: 17, name: "fees_included", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 18, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 19, name: "primary_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 20, name: "extra_info_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 20, name: "extra_info_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 21, name: "ach_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<Event>): Event {
@@ -1323,6 +1396,7 @@ class Event$Type extends MessageType<Event> {
         message.eventType = "";
         message.primaryImageId = "";
         message.extraInfoJson = "";
+        message.achEnabled = false;
         if (value !== undefined)
             reflectionMergePartial<Event>(this, message, value);
         return message;
@@ -1391,6 +1465,9 @@ class Event$Type extends MessageType<Event> {
                     break;
                 case /* string extra_info_json */ 20:
                     message.extraInfoJson = reader.string();
+                    break;
+                case /* bool ach_enabled */ 21:
+                    message.achEnabled = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1464,6 +1541,9 @@ class Event$Type extends MessageType<Event> {
         /* string extra_info_json = 20; */
         if (message.extraInfoJson !== "")
             writer.tag(20, WireType.LengthDelimited).string(message.extraInfoJson);
+        /* bool ach_enabled = 21; */
+        if (message.achEnabled !== false)
+            writer.tag(21, WireType.Varint).bool(message.achEnabled);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2149,6 +2229,7 @@ export const EventService = new ServiceType("svyne.event.EventService", [
     { name: "ChangeEventStatus", options: {}, I: ChangeEventStatusRequest, O: AckResponse },
     { name: "GetEventStats", options: {}, I: UuidValue, O: EventStats },
     { name: "SetEventFeesIncluded", options: {}, I: SetEventFeesIncludedRequest, O: AckResponse },
+    { name: "SetEventAch", options: {}, I: SetEventAchRequest, O: AckResponse },
     { name: "ListScheduleItems", options: {}, I: UuidValue, O: ListScheduleItemsResponse },
     { name: "CreateScheduleItem", options: {}, I: CreateScheduleItemRequest, O: UuidValue },
     { name: "UpdateScheduleItem", options: {}, I: UpdateScheduleItemRequest, O: AckResponse },

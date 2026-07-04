@@ -90,8 +90,26 @@ export async function quoteCart(eventsId: string, lines: CartLineInput[]): Promi
   );
 }
 
-export async function createPaymentIntent(bookingsId: string): Promise<PaymentIntentResponse> {
-  return callRpc(() => bookingClient.createPaymentIntent({ bookingsId }));
+export async function createPaymentIntent(
+  bookingsId: string,
+  preferredMethod: 'card' | 'ach' = 'card',
+): Promise<PaymentIntentResponse> {
+  return callRpc(() => bookingClient.createPaymentIntent({ bookingsId, preferredMethod }));
+}
+
+export interface MethodRepriceResult {
+  totalCents: number;
+  savingsCents: number;
+}
+
+export async function updatePaymentIntentForMethod(
+  bookingsId: string,
+  method: 'card' | 'ach',
+): Promise<MethodRepriceResult> {
+  const response = await callRpc(() =>
+    bookingClient.updatePaymentIntentForMethod({ bookingsId, method }),
+  );
+  return { totalCents: response.totalCents, savingsCents: response.savingsCents };
 }
 
 export async function getPaymentStatus(bookingsId: string): Promise<PaymentStatusResponse> {

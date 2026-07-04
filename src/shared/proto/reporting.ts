@@ -342,6 +342,14 @@ export interface TenantReportingAccessRow {
      * @generated from protobuf field: bool archived = 7;
      */
     archived: boolean;
+    /**
+     * @generated from protobuf field: bool ach_enabled = 8;
+     */
+    achEnabled: boolean;
+    /**
+     * @generated from protobuf field: string ach_fee_formulas_id = 9;
+     */
+    achFeeFormulasId: string; // empty = none assigned
 }
 /**
  * @generated from protobuf message svyne.reporting.TenantReportingAccessList
@@ -381,6 +389,23 @@ export interface SetTenantAdvancedReportingRequest {
      * @generated from protobuf field: bool enabled = 2;
      */
     enabled: boolean;
+}
+/**
+ * @generated from protobuf message svyne.reporting.SetTenantAchRequest
+ */
+export interface SetTenantAchRequest {
+    /**
+     * @generated from protobuf field: string tenants_id = 1;
+     */
+    tenantsId: string;
+    /**
+     * @generated from protobuf field: bool enabled = 2;
+     */
+    enabled: boolean;
+    /**
+     * @generated from protobuf field: string fee_formulas_id = 3;
+     */
+    feeFormulasId: string; // required when enabling
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class ReportingAccess$Type extends MessageType<ReportingAccess> {
@@ -1316,7 +1341,9 @@ class TenantReportingAccessRow$Type extends MessageType<TenantReportingAccessRow
             { no: 4, name: "tier", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "advanced_reporting_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 6, name: "has_advanced_reporting", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 7, name: "archived", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 7, name: "archived", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 8, name: "ach_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 9, name: "ach_fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<TenantReportingAccessRow>): TenantReportingAccessRow {
@@ -1328,6 +1355,8 @@ class TenantReportingAccessRow$Type extends MessageType<TenantReportingAccessRow
         message.advancedReportingEnabled = false;
         message.hasAdvancedReporting = false;
         message.archived = false;
+        message.achEnabled = false;
+        message.achFeeFormulasId = "";
         if (value !== undefined)
             reflectionMergePartial<TenantReportingAccessRow>(this, message, value);
         return message;
@@ -1357,6 +1386,12 @@ class TenantReportingAccessRow$Type extends MessageType<TenantReportingAccessRow
                     break;
                 case /* bool archived */ 7:
                     message.archived = reader.bool();
+                    break;
+                case /* bool ach_enabled */ 8:
+                    message.achEnabled = reader.bool();
+                    break;
+                case /* string ach_fee_formulas_id */ 9:
+                    message.achFeeFormulasId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1391,6 +1426,12 @@ class TenantReportingAccessRow$Type extends MessageType<TenantReportingAccessRow
         /* bool archived = 7; */
         if (message.archived !== false)
             writer.tag(7, WireType.Varint).bool(message.archived);
+        /* bool ach_enabled = 8; */
+        if (message.achEnabled !== false)
+            writer.tag(8, WireType.Varint).bool(message.achEnabled);
+        /* string ach_fee_formulas_id = 9; */
+        if (message.achFeeFormulasId !== "")
+            writer.tag(9, WireType.LengthDelimited).string(message.achFeeFormulasId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1565,6 +1606,69 @@ class SetTenantAdvancedReportingRequest$Type extends MessageType<SetTenantAdvanc
  * @generated MessageType for protobuf message svyne.reporting.SetTenantAdvancedReportingRequest
  */
 export const SetTenantAdvancedReportingRequest = new SetTenantAdvancedReportingRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class SetTenantAchRequest$Type extends MessageType<SetTenantAchRequest> {
+    constructor() {
+        super("svyne.reporting.SetTenantAchRequest", [
+            { no: 1, name: "tenants_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 3, name: "fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SetTenantAchRequest>): SetTenantAchRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.tenantsId = "";
+        message.enabled = false;
+        message.feeFormulasId = "";
+        if (value !== undefined)
+            reflectionMergePartial<SetTenantAchRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SetTenantAchRequest): SetTenantAchRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string tenants_id */ 1:
+                    message.tenantsId = reader.string();
+                    break;
+                case /* bool enabled */ 2:
+                    message.enabled = reader.bool();
+                    break;
+                case /* string fee_formulas_id */ 3:
+                    message.feeFormulasId = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SetTenantAchRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string tenants_id = 1; */
+        if (message.tenantsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.tenantsId);
+        /* bool enabled = 2; */
+        if (message.enabled !== false)
+            writer.tag(2, WireType.Varint).bool(message.enabled);
+        /* string fee_formulas_id = 3; */
+        if (message.feeFormulasId !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.feeFormulasId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.reporting.SetTenantAchRequest
+ */
+export const SetTenantAchRequest = new SetTenantAchRequest$Type();
 /**
  * @generated ServiceType for protobuf service svyne.reporting.ReportingService
  */
@@ -1582,5 +1686,6 @@ export const ReportingService = new ServiceType("svyne.reporting.ReportingServic
 export const TenantTierService = new ServiceType("svyne.reporting.TenantTierService", [
     { name: "ListTenantReportingAccess", options: {}, I: PageRequest, O: TenantReportingAccessList },
     { name: "SetTenantTier", options: {}, I: SetTenantTierRequest, O: AckResponse },
-    { name: "SetTenantAdvancedReporting", options: {}, I: SetTenantAdvancedReportingRequest, O: AckResponse }
+    { name: "SetTenantAdvancedReporting", options: {}, I: SetTenantAdvancedReportingRequest, O: AckResponse },
+    { name: "SetTenantAch", options: {}, I: SetTenantAchRequest, O: AckResponse }
 ]);

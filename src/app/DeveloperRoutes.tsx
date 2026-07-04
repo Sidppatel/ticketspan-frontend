@@ -26,8 +26,8 @@ export default function DeveloperRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<DeveloperTenantsPage />} />
-        <Route path="dashboard" element={<DeveloperDashboardPage />} />
+        <Route index element={<DeveloperDashboardPage />} />
+        <Route path="tenants" element={<DeveloperTenantsPage />} />
         <Route path="tenants/:tenantsId" element={<DeveloperTenantMembersPage />} />
         <Route path="fees" element={<DeveloperFeesPage />} />
         <Route path="billing" element={<DeveloperBillingPage />} />

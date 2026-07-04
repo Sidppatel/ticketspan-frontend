@@ -76,6 +76,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
   // Checkout Drawer States
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [checkoutBookingsId, setCheckoutBookingsId] = useState('');
+  const [checkoutMethod, setCheckoutMethod] = useState<'card' | 'ach'>('card');
 
   // Cart & Booking States: Initialize cart synchronously from pending cart on mount
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -127,8 +128,11 @@ function EventDetailPageContent({ event }: { event: Event }) {
   const fee = quote?.feeCents ?? 0;
   const total = quote?.totalCents ?? 0;
   const discount = quote?.discountCents ?? 0;
+  const achAvailable = quote?.achAvailable ?? false;
+  const achTotal = quote?.achTotalCents ?? 0;
+  const achSavings = quote?.achSavingsCents ?? 0;
 
-  async function handleCheckout() {
+  async function handleCheckout(method: 'card' | 'ach' = 'card') {
     if (!isAuthenticated) {
       savePendingCart(event.eventsId, cart, holdSeconds);
       setReturnTo(location.pathname + location.search);
@@ -143,6 +147,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
         event.eventsId,
         cart.map((i) => ({ kind: i.kind, refId: i.refId, seats: i.kind === 'Ticket' ? i.seats : 0 })),
       );
+      setCheckoutMethod(method);
       setCheckoutBookingsId(bookingsId);
       setIsCheckoutOpen(true);
     } catch (caught) {
@@ -217,6 +222,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
                           priceCents={tt.priceCents}
                           platformFeeCents={tt.platformFeeCents}
                           feesIncluded={event.feesIncluded}
+                          achAvailable={achAvailable}
                           quantity={qty}
                           maxQuantity={tt.maxQuantity || undefined}
                           availableQuantity={availableQuantity}
@@ -390,6 +396,14 @@ function EventDetailPageContent({ event }: { event: Event }) {
                           <span>{event.feesIncluded ? 'Total (incl. fees)' : 'Total'}</span>
                           <span className="font-mono">{centsToUSD(total)}</span>
                         </div>
+                        {achAvailable && achSavings > 0 && (
+                          <div className="flex items-center justify-between rounded-lg bg-success/10 border border-success/20 px-2.5 py-1.5 text-success">
+                            <span className="font-semibold">Pay by bank (ACH)</span>
+                            <span className="font-mono font-semibold">
+                              {centsToUSD(achTotal)} · save {centsToUSD(achSavings)}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -403,12 +417,23 @@ function EventDetailPageContent({ event }: { event: Event }) {
 
                 <Button
                   disabled={busy || cart.length === 0 || total <= 0}
-                  onClick={handleCheckout}
+                  onClick={() => handleCheckout('card')}
                   size="lg"
                   className="w-full"
                 >
                   {busy ? 'Reserving…' : 'Continue to checkout'}
                 </Button>
+                {achAvailable && achSavings > 0 && (
+                  <Button
+                    disabled={busy || cart.length === 0 || total <= 0}
+                    onClick={() => handleCheckout('ach')}
+                    size="lg"
+                    variant="outline"
+                    className="w-full border-success/30 text-success hover:bg-success/10 hover:text-success"
+                  >
+                    {busy ? 'Reserving…' : `Pay by bank — save ${centsToUSD(achSavings)}`}
+                  </Button>
+                )}
               </CardContent>
             </Card>
 
@@ -437,7 +462,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
             <span className="text-xs text-on-stage-soft">Total</span>
             <span className="font-mono text-base font-medium text-on-stage">{centsToUSD(total)}</span>
           </div>
-          <Button onClick={handleCheckout} disabled={busy} size="lg" className="px-8">
+          <Button onClick={() => handleCheckout('card')} disabled={busy} size="lg" className="px-8">
             {busy ? 'Reserving…' : 'Checkout'}
           </Button>
         </div>
@@ -448,7 +473,8 @@ function EventDetailPageContent({ event }: { event: Event }) {
         isOpen={isCheckoutOpen}
         onClose={handleClose}
         bookingsId={checkoutBookingsId}
-        cartTotalCents={total}
+        cartTotalCents={checkoutMethod === 'ach' ? achTotal : total}
+        preferredMethod={checkoutMethod}
       />
 
       {/* Visual Footer */}

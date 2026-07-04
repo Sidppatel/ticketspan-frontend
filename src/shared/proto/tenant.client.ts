@@ -5,6 +5,7 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { TenantService } from "./tenant";
+import type { SetTenantAchEnabledRequest } from "./tenant";
 import type { UpdateTenantStripeProfileRequest } from "./tenant";
 import type { TenantStripeProfile } from "./tenant";
 import type { TenantStripeStatus } from "./tenant";
@@ -86,6 +87,10 @@ export interface ITenantServiceClient {
      * @generated from protobuf rpc: UpdateTenantStripeProfile(svyne.tenant.UpdateTenantStripeProfileRequest) returns (svyne.common.AckResponse);
      */
     updateTenantStripeProfile(input: UpdateTenantStripeProfileRequest, options?: RpcOptions): UnaryCall<UpdateTenantStripeProfileRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: SetTenantAchEnabled(svyne.tenant.SetTenantAchEnabledRequest) returns (svyne.common.AckResponse);
+     */
+    setTenantAchEnabled(input: SetTenantAchEnabledRequest, options?: RpcOptions): UnaryCall<SetTenantAchEnabledRequest, AckResponse>;
 }
 /**
  * @generated from protobuf service svyne.tenant.TenantService
@@ -193,5 +198,12 @@ export class TenantServiceClient implements ITenantServiceClient, ServiceInfo {
     updateTenantStripeProfile(input: UpdateTenantStripeProfileRequest, options?: RpcOptions): UnaryCall<UpdateTenantStripeProfileRequest, AckResponse> {
         const method = this.methods[13], opt = this._transport.mergeOptions(options);
         return stackIntercept<UpdateTenantStripeProfileRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: SetTenantAchEnabled(svyne.tenant.SetTenantAchEnabledRequest) returns (svyne.common.AckResponse);
+     */
+    setTenantAchEnabled(input: SetTenantAchEnabledRequest, options?: RpcOptions): UnaryCall<SetTenantAchEnabledRequest, AckResponse> {
+        const method = this.methods[14], opt = this._transport.mergeOptions(options);
+        return stackIntercept<SetTenantAchEnabledRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

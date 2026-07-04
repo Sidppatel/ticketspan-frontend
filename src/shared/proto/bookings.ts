@@ -94,6 +94,22 @@ export interface Booking {
      * @generated from protobuf field: string payment_transaction_id = 17;
      */
     paymentTransactionId: string;
+    /**
+     * @generated from protobuf field: bool fees_included = 18;
+     */
+    feesIncluded: boolean;
+    /**
+     * @generated from protobuf field: string venue_name = 19;
+     */
+    venueName: string;
+    /**
+     * @generated from protobuf field: string venue_address = 20;
+     */
+    venueAddress: string;
+    /**
+     * @generated from protobuf field: int64 paid_at = 21;
+     */
+    paidAt: string;
 }
 /**
  * One line of a booking, for display on checkout / booking detail. Carries the
@@ -272,6 +288,21 @@ export interface CartQuote {
      * @generated from protobuf field: int32 hold_seconds = 12;
      */
     holdSeconds: number;
+    /**
+     * ACH (bank) checkout: offered for this event, the discounted bank total, and
+     * what the buyer saves vs the card total. ach_available=false → the other two are 0.
+     *
+     * @generated from protobuf field: bool ach_available = 13;
+     */
+    achAvailable: boolean;
+    /**
+     * @generated from protobuf field: int32 ach_total_cents = 14;
+     */
+    achTotalCents: number;
+    /**
+     * @generated from protobuf field: int32 ach_savings_cents = 15;
+     */
+    achSavingsCents: number;
 }
 /**
  * @generated from protobuf message svyne.booking.BookingLineInput
@@ -430,6 +461,13 @@ export interface PaymentIntentRequest {
      * @generated from protobuf field: string bookings_id = 1;
      */
     bookingsId: string;
+    /**
+     * "ach" opens a bank-only intent priced at the ACH fee; anything else (default)
+     * = the normal card/wallets intent. Ignored when the event isn't ACH-enabled.
+     *
+     * @generated from protobuf field: string preferred_method = 2;
+     */
+    preferredMethod: string;
 }
 /**
  * @generated from protobuf message svyne.booking.PaymentIntentResponse
@@ -461,6 +499,39 @@ export interface PaymentIntentResponse {
      * @generated from protobuf field: int64 hold_expires_at = 6;
      */
     holdExpiresAt: string;
+    /**
+     * True when this booking's event offers ACH — the UI may show the bank option
+     * and re-price via UpdatePaymentIntentForMethod when the buyer picks it.
+     *
+     * @generated from protobuf field: bool ach_allowed = 7;
+     */
+    achAllowed: boolean;
+}
+/**
+ * @generated from protobuf message svyne.booking.UpdatePaymentMethodRequest
+ */
+export interface UpdatePaymentMethodRequest {
+    /**
+     * @generated from protobuf field: string bookings_id = 1;
+     */
+    bookingsId: string;
+    /**
+     * @generated from protobuf field: string method = 2;
+     */
+    method: string; // "card" | "ach"
+}
+/**
+ * @generated from protobuf message svyne.booking.UpdatePaymentMethodResponse
+ */
+export interface UpdatePaymentMethodResponse {
+    /**
+     * @generated from protobuf field: int32 total_cents = 1;
+     */
+    totalCents: number; // new amount the buyer will be charged
+    /**
+     * @generated from protobuf field: int32 savings_cents = 2;
+     */
+    savingsCents: number; // card total - this total (0 for card)
 }
 /**
  * @generated from protobuf message svyne.booking.PaymentStatusResponse
@@ -907,7 +978,11 @@ class Booking$Type extends MessageType<Booking> {
             { no: 14, name: "event_start_date", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 15, name: "tickets_total", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 16, name: "tickets_claimed", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 17, name: "payment_transaction_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 17, name: "payment_transaction_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 18, name: "fees_included", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 19, name: "venue_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 20, name: "venue_address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 21, name: "paid_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
         ]);
     }
     create(value?: PartialMessage<Booking>): Booking {
@@ -929,6 +1004,10 @@ class Booking$Type extends MessageType<Booking> {
         message.ticketsTotal = 0;
         message.ticketsClaimed = 0;
         message.paymentTransactionId = "";
+        message.feesIncluded = false;
+        message.venueName = "";
+        message.venueAddress = "";
+        message.paidAt = "0";
         if (value !== undefined)
             reflectionMergePartial<Booking>(this, message, value);
         return message;
@@ -988,6 +1067,18 @@ class Booking$Type extends MessageType<Booking> {
                     break;
                 case /* string payment_transaction_id */ 17:
                     message.paymentTransactionId = reader.string();
+                    break;
+                case /* bool fees_included */ 18:
+                    message.feesIncluded = reader.bool();
+                    break;
+                case /* string venue_name */ 19:
+                    message.venueName = reader.string();
+                    break;
+                case /* string venue_address */ 20:
+                    message.venueAddress = reader.string();
+                    break;
+                case /* int64 paid_at */ 21:
+                    message.paidAt = reader.int64().toString();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1052,6 +1143,18 @@ class Booking$Type extends MessageType<Booking> {
         /* string payment_transaction_id = 17; */
         if (message.paymentTransactionId !== "")
             writer.tag(17, WireType.LengthDelimited).string(message.paymentTransactionId);
+        /* bool fees_included = 18; */
+        if (message.feesIncluded !== false)
+            writer.tag(18, WireType.Varint).bool(message.feesIncluded);
+        /* string venue_name = 19; */
+        if (message.venueName !== "")
+            writer.tag(19, WireType.LengthDelimited).string(message.venueName);
+        /* string venue_address = 20; */
+        if (message.venueAddress !== "")
+            writer.tag(20, WireType.LengthDelimited).string(message.venueAddress);
+        /* int64 paid_at = 21; */
+        if (message.paidAt !== "0")
+            writer.tag(21, WireType.Varint).int64(message.paidAt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1393,7 +1496,10 @@ class CartQuote$Type extends MessageType<CartQuote> {
             { no: 9, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 10, name: "organizer_net_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 11, name: "currency", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 12, name: "hold_seconds", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 12, name: "hold_seconds", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 13, name: "ach_available", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 14, name: "ach_total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 15, name: "ach_savings_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
     create(value?: PartialMessage<CartQuote>): CartQuote {
@@ -1410,6 +1516,9 @@ class CartQuote$Type extends MessageType<CartQuote> {
         message.organizerNetCents = 0;
         message.currency = "";
         message.holdSeconds = 0;
+        message.achAvailable = false;
+        message.achTotalCents = 0;
+        message.achSavingsCents = 0;
         if (value !== undefined)
             reflectionMergePartial<CartQuote>(this, message, value);
         return message;
@@ -1454,6 +1563,15 @@ class CartQuote$Type extends MessageType<CartQuote> {
                     break;
                 case /* int32 hold_seconds */ 12:
                     message.holdSeconds = reader.int32();
+                    break;
+                case /* bool ach_available */ 13:
+                    message.achAvailable = reader.bool();
+                    break;
+                case /* int32 ach_total_cents */ 14:
+                    message.achTotalCents = reader.int32();
+                    break;
+                case /* int32 ach_savings_cents */ 15:
+                    message.achSavingsCents = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1503,6 +1621,15 @@ class CartQuote$Type extends MessageType<CartQuote> {
         /* int32 hold_seconds = 12; */
         if (message.holdSeconds !== 0)
             writer.tag(12, WireType.Varint).int32(message.holdSeconds);
+        /* bool ach_available = 13; */
+        if (message.achAvailable !== false)
+            writer.tag(13, WireType.Varint).bool(message.achAvailable);
+        /* int32 ach_total_cents = 14; */
+        if (message.achTotalCents !== 0)
+            writer.tag(14, WireType.Varint).int32(message.achTotalCents);
+        /* int32 ach_savings_cents = 15; */
+        if (message.achSavingsCents !== 0)
+            writer.tag(15, WireType.Varint).int32(message.achSavingsCents);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1983,12 +2110,14 @@ export const ListEventTicketTypesResponse = new ListEventTicketTypesResponse$Typ
 class PaymentIntentRequest$Type extends MessageType<PaymentIntentRequest> {
     constructor() {
         super("svyne.booking.PaymentIntentRequest", [
-            { no: 1, name: "bookings_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "bookings_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "preferred_method", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<PaymentIntentRequest>): PaymentIntentRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.bookingsId = "";
+        message.preferredMethod = "";
         if (value !== undefined)
             reflectionMergePartial<PaymentIntentRequest>(this, message, value);
         return message;
@@ -2000,6 +2129,9 @@ class PaymentIntentRequest$Type extends MessageType<PaymentIntentRequest> {
             switch (fieldNo) {
                 case /* string bookings_id */ 1:
                     message.bookingsId = reader.string();
+                    break;
+                case /* string preferred_method */ 2:
+                    message.preferredMethod = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2016,6 +2148,9 @@ class PaymentIntentRequest$Type extends MessageType<PaymentIntentRequest> {
         /* string bookings_id = 1; */
         if (message.bookingsId !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.bookingsId);
+        /* string preferred_method = 2; */
+        if (message.preferredMethod !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.preferredMethod);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2035,7 +2170,8 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
             { no: 3, name: "payment_intent_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 4, name: "status", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "amount_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
-            { no: 6, name: "hold_expires_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+            { no: 6, name: "hold_expires_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 7, name: "ach_allowed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<PaymentIntentResponse>): PaymentIntentResponse {
@@ -2046,6 +2182,7 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
         message.status = "";
         message.amountCents = "0";
         message.holdExpiresAt = "0";
+        message.achAllowed = false;
         if (value !== undefined)
             reflectionMergePartial<PaymentIntentResponse>(this, message, value);
         return message;
@@ -2072,6 +2209,9 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
                     break;
                 case /* int64 hold_expires_at */ 6:
                     message.holdExpiresAt = reader.int64().toString();
+                    break;
+                case /* bool ach_allowed */ 7:
+                    message.achAllowed = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2103,6 +2243,9 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
         /* int64 hold_expires_at = 6; */
         if (message.holdExpiresAt !== "0")
             writer.tag(6, WireType.Varint).int64(message.holdExpiresAt);
+        /* bool ach_allowed = 7; */
+        if (message.achAllowed !== false)
+            writer.tag(7, WireType.Varint).bool(message.achAllowed);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2113,6 +2256,116 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
  * @generated MessageType for protobuf message svyne.booking.PaymentIntentResponse
  */
 export const PaymentIntentResponse = new PaymentIntentResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class UpdatePaymentMethodRequest$Type extends MessageType<UpdatePaymentMethodRequest> {
+    constructor() {
+        super("svyne.booking.UpdatePaymentMethodRequest", [
+            { no: 1, name: "bookings_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "method", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<UpdatePaymentMethodRequest>): UpdatePaymentMethodRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.bookingsId = "";
+        message.method = "";
+        if (value !== undefined)
+            reflectionMergePartial<UpdatePaymentMethodRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdatePaymentMethodRequest): UpdatePaymentMethodRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string bookings_id */ 1:
+                    message.bookingsId = reader.string();
+                    break;
+                case /* string method */ 2:
+                    message.method = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: UpdatePaymentMethodRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string bookings_id = 1; */
+        if (message.bookingsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.bookingsId);
+        /* string method = 2; */
+        if (message.method !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.method);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.booking.UpdatePaymentMethodRequest
+ */
+export const UpdatePaymentMethodRequest = new UpdatePaymentMethodRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class UpdatePaymentMethodResponse$Type extends MessageType<UpdatePaymentMethodResponse> {
+    constructor() {
+        super("svyne.booking.UpdatePaymentMethodResponse", [
+            { no: 1, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "savings_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<UpdatePaymentMethodResponse>): UpdatePaymentMethodResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.totalCents = 0;
+        message.savingsCents = 0;
+        if (value !== undefined)
+            reflectionMergePartial<UpdatePaymentMethodResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdatePaymentMethodResponse): UpdatePaymentMethodResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 total_cents */ 1:
+                    message.totalCents = reader.int32();
+                    break;
+                case /* int32 savings_cents */ 2:
+                    message.savingsCents = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: UpdatePaymentMethodResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 total_cents = 1; */
+        if (message.totalCents !== 0)
+            writer.tag(1, WireType.Varint).int32(message.totalCents);
+        /* int32 savings_cents = 2; */
+        if (message.savingsCents !== 0)
+            writer.tag(2, WireType.Varint).int32(message.savingsCents);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.booking.UpdatePaymentMethodResponse
+ */
+export const UpdatePaymentMethodResponse = new UpdatePaymentMethodResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class PaymentStatusResponse$Type extends MessageType<PaymentStatusResponse> {
     constructor() {
@@ -3572,6 +3825,7 @@ export const BookingService = new ServiceType("svyne.booking.BookingService", [
     { name: "CreateMultiBooking", options: {}, I: CreateMultiBookingRequest, O: CreateBookingResponse },
     { name: "QuoteCart", options: {}, I: CreateMultiBookingRequest, O: CartQuote },
     { name: "CreatePaymentIntent", options: {}, I: PaymentIntentRequest, O: PaymentIntentResponse },
+    { name: "UpdatePaymentIntentForMethod", options: {}, I: UpdatePaymentMethodRequest, O: UpdatePaymentMethodResponse },
     { name: "GetPaymentStatus", options: {}, I: UuidValue, O: PaymentStatusResponse },
     { name: "ConfirmBooking", options: {}, I: ConfirmBookingRequest, O: AckResponse },
     { name: "CancelBooking", options: {}, I: UuidValue, O: AckResponse },

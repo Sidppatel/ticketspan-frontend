@@ -18,6 +18,7 @@ interface TicketCardProps {
   isPopular?: boolean;
   onQuantityChange: (qty: number) => void;
   discountedPriceCents?: number;
+  achAvailable?: boolean;
 }
 
 export function TicketCard({
@@ -32,6 +33,7 @@ export function TicketCard({
   isPopular = false,
   onQuantityChange,
   discountedPriceCents,
+  achAvailable = false,
 }: TicketCardProps) {
   const isSoldOut = availableQuantity === 0;
   
@@ -95,6 +97,11 @@ export function TicketCard({
           {!feesIncluded && platformFeeCents > 0 && (
             <span className="block font-sans text-xs text-ink-soft sm:inline">
               {' '}(+ <PriceBadge priceCents={platformFeeCents} /> service fee)
+            </span>
+          )}
+          {achAvailable && (
+            <span className="block font-sans text-xs font-semibold text-success">
+              Lower fee when you pay by bank (ACH)
             </span>
           )}
         </span>

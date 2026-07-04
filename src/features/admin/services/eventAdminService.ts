@@ -245,6 +245,10 @@ export async function setEventFeesIncluded(eventsId: string, feesIncluded: boole
   await callRpc(() => eventClient.setEventFeesIncluded({ eventsId, feesIncluded }));
 }
 
+export async function setEventAch(eventsId: string, achEnabled: boolean): Promise<void> {
+  await callRpc(() => eventClient.setEventAch({ eventsId, achEnabled }));
+}
+
 export async function listEventTableTypes(eventsId: string) {
   const response = await callRpc(() => tableBookingClient.listEventTableTypes({ value: eventsId }));
   return response.tableTypes;
