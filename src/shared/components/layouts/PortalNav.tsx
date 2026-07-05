@@ -3,7 +3,7 @@ import { NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
 import { Menu, ChevronDown, LayoutDashboard, Calendar, Ticket, User, Settings, ShieldAlert, HeartHandshake, LogOut, Landmark, Users2, MapPin, Palette, Brush } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/shared/ui/sheet';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { useAuth } from '@/shared/auth/useAuth';
 import { useTenantBranding } from '@/shared/theme/ThemeContext';
 import { roleLabel } from '@/shared/roles';
@@ -281,17 +281,18 @@ export function PortalNav({ section, links, transparent }: { section?: string; l
                   </PopoverTrigger>
                   <PopoverContent className="flex flex-col gap-1 w-44 p-1 shadow-xl border border-border bg-card text-foreground">
                     {links.slice(4).map((link) => (
-                      <RouterNavLink 
-                        key={link.to} 
-                        to={link.to} 
-                        end={link.to === '/'} 
-                        className={({ isActive }) => cn(
-                          'block w-full text-left rounded-md px-2.5 py-1.5 text-xs font-medium transition-all',
-                          isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                        )}
-                      >
-                        {link.label}
-                      </RouterNavLink>
+                      <PopoverClose asChild key={link.to}>
+                        <RouterNavLink
+                          to={link.to}
+                          end={link.to === '/'}
+                          className={({ isActive }) => cn(
+                            'block w-full text-left rounded-md px-2.5 py-1.5 text-xs font-medium transition-all',
+                            isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                          )}
+                        >
+                          {link.label}
+                        </RouterNavLink>
+                      </PopoverClose>
                     ))}
                   </PopoverContent>
                 </Popover>

@@ -105,8 +105,10 @@ export function DeveloperTenantsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Tenants</h1>
-        <p className="text-sm text-muted-foreground">Dashboard → Tenants</p>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">Every team on your platform</h1>
+        <p className="text-sm text-muted-foreground">
+          Each one is an organizer trusting your infrastructure to run their events.
+        </p>
       </header>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -138,7 +140,7 @@ export function DeveloperTenantsPage() {
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Showing {visible.length} tenants · {enabledCount} with ACH enabled
+        {visible.length} {visible.length === 1 ? 'team' : 'teams'} shown · {enabledCount} can take bank transfers
       </p>
 
       {formError ? <p className="text-sm text-destructive">{formError}</p> : null}
@@ -281,7 +283,9 @@ export function DeveloperTenantsPage() {
           </Card>
         ))}
         {!loading && visible.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No tenants match.</p>
+          <p className="text-sm text-muted-foreground">
+            No teams match that filter. Clear the search or invite a new tenant — the platform has room.
+          </p>
         ) : null}
       </div>
     </div>

@@ -6,7 +6,7 @@ export function DeveloperLayout() {
   const { pathname } = useLocation();
   const page = usePageEntrance<HTMLElement>();
   return (
-    <div className="min-h-screen bg-background">
+    <div data-portal="developer" className="min-h-screen bg-background">
       <PortalNav
         section="developer"
         links={[

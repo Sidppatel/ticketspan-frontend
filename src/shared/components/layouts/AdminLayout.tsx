@@ -1,45 +1,17 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { PortalNav } from '@/shared/components/layouts/PortalNav';
-import { useAuth } from '@/shared/auth/useAuth';
-import { canManageTenantSettings, isEventManager } from '@/shared/roles';
+import { AdminTopNav } from '@/shared/components/layouts/AdminTopNav';
 import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 
 export function AdminLayout() {
-  const { role } = useAuth();
   const { pathname } = useLocation();
   const page = usePageEntrance<HTMLElement>();
-  const links = isEventManager(role)
-    ? [
-        { to: '/events', label: 'Events' },
-        { to: '/profile', label: 'Profile' },
-      ]
-    : [
-        { to: '/', label: 'Dashboard' },
-        { to: '/events', label: 'Events' },
-        { to: '/bookings', label: 'Bookings' },
-        { to: '/venues', label: 'Venues' },
-        { to: '/table-types', label: 'Table Types' },
-        { to: '/performers', label: 'Performers' },
-        { to: '/sponsors', label: 'Sponsors' },
-        { to: '/feedback', label: 'Feedback' },
-        { to: '/logs', label: 'Logs' },
-        { to: '/profile', label: 'Profile' },
-      ];
-  if (canManageTenantSettings(role)) {
-    links.push({ to: '/invitations', label: 'Invitations' });
-    links.push({ to: '/financial', label: 'Financial' });
-    links.push({ to: '/branding', label: 'Branding' });
-    links.push({ to: '/settings', label: 'Settings' });
-  }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
-      <PortalNav section="admin" links={links} />
-      <div className="flex-1 md:pl-64">
-        <main ref={page} key={pathname} className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-8">
-          <Outlet />
-        </main>
-      </div>
+    <div data-portal="admin" className="min-h-screen bg-background text-foreground">
+      <AdminTopNav />
+      <main ref={page} key={pathname} className="mx-auto max-w-6xl px-4 py-6 pb-24 md:px-6 md:py-8 md:pb-10">
+        <Outlet />
+      </main>
     </div>
   );
 }

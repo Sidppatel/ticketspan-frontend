@@ -91,6 +91,29 @@
   --gradient-bg: none;
 }
 
+[data-portal='developer'] {
+  --brand: #4a148c;
+  --brand-hover: #3b1072;
+  --voltage-accent: #d99b00;
+  --voltage-accent-ink: #201400;
+  --status-success: #00695c;
+  --stage: #190b2b;
+  --stage-elevated: #241239;
+  --on-stage: #f6f2fb;
+  --on-stage-soft: #cbbfdd;
+}
+
+[data-portal='admin'] {
+  --brand: #2e7d32;
+  --brand-hover: #27682a;
+  --voltage-accent: #f9a825;
+  --voltage-accent-ink: #201400;
+  --stage: #0f2211;
+  --stage-elevated: #1a3220;
+  --on-stage: #f3f8f2;
+  --on-stage-soft: #c4d6c4;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
