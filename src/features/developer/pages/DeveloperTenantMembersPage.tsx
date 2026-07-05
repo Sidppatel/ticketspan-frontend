@@ -141,7 +141,6 @@ function TenantDefaultFeeForm({ tenantsId }: { tenantsId: string }) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    // Load the formula catalog and the tenant's current default in parallel.
     Promise.all([listFeeFormulas(), getTenant(tenantsId)])
       .then(([list, tenant]) => {
         setFormulas(list);
@@ -235,8 +234,6 @@ function StripeProfileForm({ tenantsId }: { tenantsId: string }) {
     getTenantStripeProfile(tenantsId)
       .then((p) => {
         setHasAccount(p.hasAccount);
-        // Always pre-fill from the saved profile — the data is captured at
-        // onboarding before any Stripe account exists, so don't gate on hasAccount.
         setForm({
           businessType: p.businessType || 'individual',
           businessName: p.businessName,

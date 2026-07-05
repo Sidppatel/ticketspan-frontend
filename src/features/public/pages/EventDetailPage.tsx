@@ -73,12 +73,10 @@ function EventDetailPageContent({ event }: { event: Event }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Checkout Drawer States
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [checkoutBookingsId, setCheckoutBookingsId] = useState('');
   const [checkoutMethod, setCheckoutMethod] = useState<'card' | 'ach'>('card');
 
-  // Cart & Booking States: Initialize cart synchronously from pending cart on mount
   const [cart, setCart] = useState<CartItem[]>(() => {
     clearOtherPendingCarts(event.eventsId);
     return takePendingCart(event.eventsId);

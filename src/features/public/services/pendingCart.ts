@@ -1,9 +1,5 @@
-// A guest's in-progress event order, stashed when we bounce them through
-// sign in / sign up so their table/ticket selection survives the round trip
-// and is pre-restored on the event page when they come back authenticated.
-// Entries expire after the booking hold window (app_settings.booking_hold_seconds).
 export interface CartItem {
-  key: string; // unique per sellable: `${kind}:${refId}`
+  key: string;
   kind: 'Ticket' | 'Table';
   refId: string;
   label: string;
@@ -32,11 +28,10 @@ export function savePendingCart(
     const stored: StoredCart = { items: cart, expiresAt: Date.now() + holdSeconds * 1000 };
     localStorage.setItem(keyFor(eventsId), JSON.stringify(stored));
   } catch {
-    // non-fatal
+    return;
   }
 }
 
-// Reads the stashed cart for an event. Returns [] if none/invalid/expired.
 export function takePendingCart(eventsId: string): CartItem[] {
   try {
     const raw = localStorage.getItem(keyFor(eventsId));
@@ -60,11 +55,10 @@ export function clearPendingCart(eventsId: string): void {
   try {
     localStorage.removeItem(keyFor(eventsId));
   } catch {
-    // non-fatal
+    return;
   }
 }
 
-// Visiting one event abandons any cart started on another event.
 export function clearOtherPendingCarts(eventsId: string): void {
   clearMatchingCarts((key) => key !== keyFor(eventsId));
 }
@@ -84,6 +78,6 @@ function clearMatchingCarts(shouldClear: (key: string) => boolean): void {
     }
     keysToRemove.forEach((k) => localStorage.removeItem(k));
   } catch {
-    // non-fatal
+    return;
   }
 }

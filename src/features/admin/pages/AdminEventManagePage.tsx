@@ -96,7 +96,6 @@ export function AdminEventManagePage() {
   const usedTemplateNames = new Set(typeList.map((t) => t.label));
   const templateList = (templates.data ?? []).filter((t) => !usedTemplateNames.has(t.name));
 
-  // Admin picks a catalog table type; values below override the template defaults.
   const [tableTemplateId, setTableTemplateId] = useState('');
   const [tableLabel, setTableLabel] = useState('');
   const [tableCapacity, setTableCapacity] = useState(8);
@@ -120,9 +119,7 @@ export function AdminEventManagePage() {
     }
   }
   const [notice, setNotice] = useState<string | null>(null);
-  // Bumped when a table type is added so the floor-plan palette reloads.
   const [floorKey, setFloorKey] = useState(0);
-  // Bumped when table types change so the Pricing panel reloads (each type owns a price).
   const [pricingKey, setPricingKey] = useState(0);
 
   async function guard(action: () => Promise<void>, reload?: () => void) {
@@ -367,7 +364,6 @@ export function AdminEventManagePage() {
                           eventsId,
                           label: tableLabel,
                           capacity: tableCapacity,
-                          // Empty = inherit the catalog template's default shape.
                           shape: '',
                           color: tableColor,
                           priceCents: tablePriceCents,
