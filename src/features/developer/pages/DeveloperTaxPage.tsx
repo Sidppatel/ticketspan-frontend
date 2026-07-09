@@ -26,7 +26,12 @@ export interface VenueTaxSummary {
   city: string;
   state: string;
   zipCode: string;
-  taxRate: number;
+  combinedRate: number;
+  stateRate: number;
+  countyRate: number;
+  cityRate: number;
+  localRate: number;
+  fetchedAt: string | null;
 }
 
 export interface CachedTaxRate {
@@ -50,7 +55,6 @@ export function DeveloperTaxPage() {
   const reportLoader = useCallback(() => getTaxReport('0', '0'), []);
   const report = useAsync(reportLoader);
   const data = report.data;
-  const shares = data ? taxTenantSharePercents(data) : {};
 
   const summaryLoader = useCallback(async () => {
     const response = await fetch(`${BACKEND_URL}/developer/tax/summary`);
@@ -73,6 +77,8 @@ export function DeveloperTaxPage() {
   
   const [refreshing, setRefreshing] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [collapsedTenants, setCollapsedTenants] = useState<Record<string, boolean>>({});
 
   async function onRefreshRates() {
     setRefreshing(true);
@@ -91,6 +97,23 @@ export function DeveloperTaxPage() {
     } catch (caught: unknown) {
       const err = caught instanceof Error ? caught.message : String(caught);
       setRefreshMessage(`Error: ${err}`);
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
+  async function onRefreshVenueRate(zip: string) {
+    if (!zip) return;
+    setRefreshing(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/developer/tax/lookup?zip=${encodeURIComponent(zip)}`);
+      if (!response.ok) {
+        throw new Error(`Failed lookup: ${response.statusText}`);
+      }
+      summary.reload();
+      setRefreshMessage(`Refreshed rate for ZIP ${zip}`);
+    } catch (caught: any) {
+      setRefreshMessage(`Error: ${caught.message}`);
     } finally {
       setRefreshing(false);
     }
@@ -123,45 +146,54 @@ export function DeveloperTaxPage() {
     void runAction(() => clearEventTaxOverride(row.eventsId, clearReason));
   }
 
-  function onExport() {
-    if (!data) return;
-    downloadCsv(
-      'tax-by-jurisdiction.csv',
-      ['state', 'county', 'city', 'combined_rate', 'state_rate', 'county_rate', 'city_rate',
-       'state_tax', 'county_tax', 'city_tax', 'tax_collected', 'orders'],
-      data.byJurisdiction.map((row) => [
-        row.state,
-        row.county,
-        row.city,
-        formatRatePercent(row.combinedRate),
-        formatRatePercent(row.stateRate),
-        formatRatePercent(row.countyRate),
-        formatRatePercent(row.cityRate),
-        centsToUSD(row.stateTaxCents),
-        centsToUSD(row.countyTaxCents),
-        centsToUSD(row.cityTaxCents),
-        centsToUSD(row.taxCollectedCents),
-        row.orders,
-      ]),
+  const toggleTenant = (tenantName: string) => {
+    setCollapsedTenants((prev) => ({ ...prev, [tenantName]: !prev[tenantName] }));
+  };
+
+  // Group and filter venues by tenant and search query
+  const groupedVenues = summary.data ? summary.data.venues.reduce((acc, v) => {
+    if (!acc[v.tenantName]) {
+      acc[v.tenantName] = [];
+    }
+    acc[v.tenantName].push(v);
+    return acc;
+  }, {} as Record<string, VenueTaxSummary[]>) : {};
+
+  const filteredTenants = Object.entries(groupedVenues).reduce((acc, [tenantName, venues]) => {
+    const matchesTenant = tenantName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchedVenues = venues.filter((v) =>
+      matchesTenant ||
+      v.venueName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      v.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      v.state.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      v.zipCode.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }
+
+    if (matchedVenues.length > 0) {
+      acc[tenantName] = matchedVenues;
+    }
+    return acc;
+  }, {} as Record<string, VenueTaxSummary[]>);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-foreground">Tax Report</h1>
-          <p className="text-sm text-ink-soft">Sales tax collected across all tenants.</p>
+          <h1 className="font-display text-2xl font-semibold text-foreground">Tax Management</h1>
+          <p className="text-sm text-ink-soft">Review and update tax rate breakdowns by tenant and venue.</p>
           {refreshMessage ? (
             <p className="mt-1 text-xs font-medium text-emerald-600">{refreshMessage}</p>
           ) : null}
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={onRefreshRates} disabled={refreshing}>
-            {refreshing ? 'Refreshing…' : 'Verify & Refresh Rates'}
-          </Button>
-          <Button variant="outline" onClick={onExport} disabled={!data}>
-            Export Report
+        <div className="flex items-center gap-2">
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search tenants, venues, cities, zip codes..."
+            className="w-72"
+          />
+          <Button variant="default" onClick={onRefreshRates} disabled={refreshing}>
+            {refreshing ? 'Refreshing…' : 'Refresh All Tax Rates'}
           </Button>
         </div>
       </div>
@@ -259,251 +291,95 @@ export function DeveloperTaxPage() {
         </CardContent>
       </Card>
 
-      {report.loading ? (
-        <div className="animate-pulse text-sm text-ink-soft">Loading tax report…</div>
-      ) : report.error ? (
-        <div className="text-sm text-danger">{rpcErrorMessage(report.error)}</div>
-      ) : data ? (
-        <>
-          <Card>
-            <CardHeader>
-              <CardTitle>Total Tax Collected</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="font-mono text-3xl font-bold text-accent-gold">
-                {centsToUSD(data.totalTaxCents)}
-              </span>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>By Tenant</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-ink-soft">
-                    <th className="pb-2">Tenant</th>
-                    <th className="pb-2 text-right">Tax Collected</th>
-                    <th className="pb-2 text-right">% of Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.byTenant.map((row) => (
-                    <tr key={row.tenantsId} className="border-t border-hairline">
-                      <td className="py-1.5">{row.name}</td>
-                      <td className="py-1.5 text-right font-mono">{centsToUSD(row.taxCollectedCents)}</td>
-                      <td className="py-1.5 text-right font-mono">{shares[row.tenantsId]}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>By Jurisdiction</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-ink-soft">
-                    <th className="pb-2">State</th>
-                    <th className="pb-2">County</th>
-                    <th className="pb-2">City</th>
-                    <th className="pb-2 text-right">Combined</th>
-                    <th className="pb-2 text-right">State Tax</th>
-                    <th className="pb-2 text-right">County Tax</th>
-                    <th className="pb-2 text-right">City Tax</th>
-                    <th className="pb-2 text-right">Tax Collected</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.byJurisdiction.map((row, i) => (
-                    <tr key={`${row.state}-${row.county}-${row.city}-${i}`} className="border-t border-hairline">
-                      <td className="py-1.5">{row.state || '—'}</td>
-                      <td className="py-1.5">{row.county || '—'}</td>
-                      <td className="py-1.5">{row.city || '—'}</td>
-                      <td className="py-1.5 text-right font-mono">{formatRatePercent(row.combinedRate)}</td>
-                      <td className="py-1.5 text-right font-mono">
-                        {centsToUSD(row.stateTaxCents)}
-                        <span className="block text-[10px] text-ink-faint">{formatRatePercent(row.stateRate)}</span>
-                      </td>
-                      <td className="py-1.5 text-right font-mono">
-                        {centsToUSD(row.countyTaxCents)}
-                        <span className="block text-[10px] text-ink-faint">{formatRatePercent(row.countyRate)}</span>
-                      </td>
-                      <td className="py-1.5 text-right font-mono">
-                        {centsToUSD(row.cityTaxCents)}
-                        <span className="block text-[10px] text-ink-faint">{formatRatePercent(row.cityRate)}</span>
-                      </td>
-                      <td className="py-1.5 text-right font-mono">{centsToUSD(row.taxCollectedCents)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-
-          <div className="grid gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>By Event</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <table className="w-full text-sm">
-                  <tbody>
-                    {data.byEvent.map((row) => (
-                      <tr key={row.eventsId} className="border-t border-hairline">
-                        <td className="py-1.5">{row.eventTitle}</td>
-                        <td className="py-1.5 text-right font-mono">{centsToUSD(row.taxCollectedCents)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>By Month</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <table className="w-full text-sm">
-                  <tbody>
-                    {data.byMonth.map((row) => (
-                      <tr key={row.bucketStartEpochSeconds} className="border-t border-hairline">
-                        <td className="py-1.5">{formatEpoch(row.bucketStartEpochSeconds)}</td>
-                        <td className="py-1.5 text-right font-mono">{centsToUSD(row.taxCollectedCents)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Tax Rate Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-ink-soft">
-                    <th className="pb-2">Rate</th>
-                    <th className="pb-2">State</th>
-                    <th className="pb-2 text-right">Tax Collected</th>
-                    <th className="pb-2 text-right">Orders</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.rateSummary.map((row, i) => (
-                    <tr key={`${row.combinedRate}-${row.state}-${i}`} className="border-t border-hairline">
-                      <td className="py-1.5 font-mono">{formatRatePercent(row.combinedRate)}</td>
-                      <td className="py-1.5">{row.state || '—'}</td>
-                      <td className="py-1.5 text-right font-mono">{centsToUSD(row.taxCollectedCents)}</td>
-                      <td className="py-1.5 text-right font-mono">{row.orders}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-
-          {summary.loading ? (
-            <div className="animate-pulse text-sm text-ink-soft">Loading tax summary…</div>
-          ) : summary.error ? (
-            <div className="text-sm text-danger">Failed to load zip & venue rates: {summary.error.message}</div>
-          ) : summary.data ? (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Venues & Assigned Tax Rates</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-ink-soft">
-                        <th className="pb-2">Venue</th>
-                        <th className="pb-2">Tenant</th>
-                        <th className="pb-2">Location</th>
-                        <th className="pb-2">ZIP Code</th>
-                        <th className="pb-2 text-right">Active Tax Rate</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {summary.data.venues.map((v) => (
-                        <tr key={v.venuesId} className="border-t border-hairline">
-                          <td className="py-1.5 font-medium">{v.venueName}</td>
-                          <td className="py-1.5">{v.tenantName}</td>
-                          <td className="py-1.5">{v.city ? `${v.city}, ${v.state}` : '—'}</td>
-                          <td className="py-1.5 font-mono">{v.zipCode || '—'}</td>
-                          <td className="py-1.5 text-right font-mono">
-                            {formatRatePercent(v.taxRate)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {summary.data.venues.length === 0 ? (
-                    <p className="py-2 text-center text-xs text-ink-soft">No venues created yet.</p>
-                  ) : null}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Cached ZIP Code Tax Rates</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-ink-soft">
-                        <th className="pb-2">ZIP Code</th>
-                        <th className="pb-2">State</th>
-                        <th className="pb-2">County</th>
-                        <th className="pb-2">City</th>
-                        <th className="pb-2 text-right">Combined</th>
-                        <th className="pb-2 text-right">State</th>
-                        <th className="pb-2 text-right">County/Local</th>
-                        <th className="pb-2 text-right">Fetched At</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {summary.data.rates.map((r) => (
-                        <tr key={r.zipCode} className="border-t border-hairline">
-                          <td className="py-1.5 font-mono font-medium">{r.zipCode}</td>
-                          <td className="py-1.5">{r.state || '—'}</td>
-                          <td className="py-1.5">{r.county || '—'}</td>
-                          <td className="py-1.5">{r.city || '—'}</td>
-                          <td className="py-1.5 text-right font-mono font-bold">
-                            {formatRatePercent(r.combinedRate)}
-                          </td>
-                          <td className="py-1.5 text-right font-mono text-xs text-ink-soft">
-                            {formatRatePercent(r.stateRate)}
-                          </td>
-                          <td className="py-1.5 text-right font-mono text-xs text-ink-soft">
-                            {formatRatePercent(r.countyRate + r.cityRate + r.localRate)}
-                          </td>
-                          <td className="py-1.5 text-right text-xs text-ink-soft">
-                            {new Date(r.fetchedAt).toLocaleDateString()}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {summary.data.rates.length === 0 ? (
-                    <p className="py-2 text-center text-xs text-ink-soft">No tax rates cached yet.</p>
-                  ) : null}
-                </CardContent>
-              </Card>
-            </>
-          ) : null}
-        </>
-      ) : null}
+      {summary.loading ? (
+        <div className="animate-pulse text-sm text-ink-soft">Loading tenants and venue tax rates…</div>
+      ) : summary.error ? (
+        <div className="text-sm text-destructive">Failed to load tax data: {summary.error.message}</div>
+      ) : (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Tenants & Venues breakdown</h2>
+          {Object.keys(filteredTenants).length === 0 ? (
+            <p className="text-sm text-ink-soft">No tenants or venues match your search query.</p>
+          ) : (
+            Object.entries(filteredTenants).map(([tenantName, venues]) => {
+              const isCollapsed = collapsedTenants[tenantName] ?? false;
+              return (
+                <Card key={tenantName} className="overflow-hidden">
+                  <CardHeader
+                    className="flex flex-row items-center justify-between bg-muted/30 py-3 px-4 cursor-pointer hover:bg-muted/50 select-none"
+                    onClick={() => toggleTenant(tenantName)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-ink-soft font-mono">
+                        {isCollapsed ? '▶' : '▼'}
+                      </span>
+                      <CardTitle className="text-sm font-semibold">{tenantName}</CardTitle>
+                    </div>
+                    <span className="text-xs text-ink-soft">{venues.length} venue(s)</span>
+                  </CardHeader>
+                  {!isCollapsed && (
+                    <CardContent className="p-0 border-t border-hairline">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-muted/10 text-left text-xs font-semibold text-ink-soft uppercase tracking-wider">
+                            <th className="py-2.5 px-4">Venue & Address</th>
+                            <th className="py-2.5 px-2 text-right">Combined</th>
+                            <th className="py-2.5 px-2 text-right">State</th>
+                            <th className="py-2.5 px-2 text-right">County</th>
+                            <th className="py-2.5 px-2 text-right">City/Local</th>
+                            <th className="py-2.5 px-2 text-center">Last Fetched</th>
+                            <th className="py-2.5 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-hairline">
+                          {venues.map((v) => (
+                            <tr key={v.venuesId} className="hover:bg-muted/5">
+                              <td className="py-3 px-4">
+                                <div className="font-semibold text-foreground">{v.venueName}</div>
+                                <div className="text-xs text-ink-soft">
+                                  {v.city ? `${v.city}, ${v.state} ${v.zipCode}` : 'No address provided'}
+                                </div>
+                              </td>
+                              <td className="py-3 px-2 text-right font-mono font-bold text-accent-gold">
+                                {formatRatePercent(v.combinedRate)}
+                              </td>
+                              <td className="py-3 px-2 text-right font-mono text-xs text-ink-soft">
+                                {formatRatePercent(v.stateRate)}
+                              </td>
+                              <td className="py-3 px-2 text-right font-mono text-xs text-ink-soft">
+                                {formatRatePercent(v.countyRate)}
+                              </td>
+                              <td className="py-3 px-2 text-right font-mono text-xs text-ink-soft">
+                                {formatRatePercent(v.cityRate + v.localRate)}
+                              </td>
+                              <td className="py-3 px-2 text-center text-xs text-ink-soft">
+                                {v.fetchedAt ? new Date(v.fetchedAt).toLocaleDateString() : 'Never'}
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    void onRefreshVenueRate(v.zipCode);
+                                  }}
+                                  disabled={!v.zipCode || refreshing}
+                                >
+                                  Update Rate
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </CardContent>
+                  )}
+                </Card>
+              );
+            })
+          )}
+        </div>
+      )}
     </div>
   );
 }
