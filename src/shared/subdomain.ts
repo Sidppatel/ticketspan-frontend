@@ -44,7 +44,11 @@ export function resolvePortalContext(): PortalContext {
   const path = typeof window !== 'undefined' ? window.location.pathname : '/';
   const labels = host.split('.');
   const first = labels[0];
-  const hasSubdomain = host.endsWith('.localhost') ? labels.length > 1 : labels.length > 2;
+  const hasSubdomain = host.endsWith('.localhost')
+    ? labels.length > 1
+    : host.endsWith('.pages.dev')
+      ? labels.length > 3
+      : labels.length > 2;
   const subLabel = hasSubdomain ? first : '';
 
   if (subLabel === 'admin' || subLabel === 'staff' || subLabel === 'developer') {
