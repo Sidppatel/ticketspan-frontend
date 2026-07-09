@@ -710,27 +710,6 @@ export function FloorPlanBuilder({
                     className="h-8 text-sm"
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Shape</Label>
-                  <select
-                    value={selTable.shapeOverride || typeById.get(selTable.eventTablesId)?.shape || 'Rectangle'}
-                    disabled={isTableLocked(selTable)}
-                    onChange={(e) => updateSelectedTable({ shapeOverride: e.target.value })}
-                    className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm"
-                  >
-                    {SHAPES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Color</Label>
-                  <input
-                    type="color"
-                    value={selTable.colorOverride || typeById.get(selTable.eventTablesId)?.color || '#4f46e5'}
-                    disabled={isTableLocked(selTable)}
-                    onChange={(e) => updateSelectedTable({ colorOverride: e.target.value })}
-                    className="h-8 w-full cursor-pointer rounded-md border border-input"
-                  />
-                </div>
                 <p className="text-xs text-muted-foreground">
                   {selTable.width}×{selTable.height} at ({selTable.posX}, {selTable.posY})
                 </p>
