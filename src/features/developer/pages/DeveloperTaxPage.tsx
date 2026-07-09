@@ -5,6 +5,7 @@ import { centsToUSD, formatEpoch } from '@/shared/lib/format';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { BACKEND_URL } from '@/shared/apiClient';
 import {
   getTaxReport,
   formatRatePercent,
@@ -33,6 +34,29 @@ export function DeveloperTaxPage() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState<string | null>(null);
+
+  async function onRefreshRates() {
+    setRefreshing(true);
+    setRefreshMessage(null);
+    try {
+      const response = await fetch(`${BACKEND_URL}/developer/tax/refresh`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to refresh: ${response.statusText}`);
+      }
+      const json = await response.json();
+      setRefreshMessage(json.message);
+      report.reload();
+    } catch (caught: any) {
+      setRefreshMessage(`Error: ${caught.message}`);
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   async function runAction(action: () => Promise<string>) {
     setBusy(true);
@@ -90,10 +114,18 @@ export function DeveloperTaxPage() {
         <div>
           <h1 className="font-display text-2xl font-semibold text-foreground">Tax Report</h1>
           <p className="text-sm text-ink-soft">Sales tax collected across all tenants.</p>
+          {refreshMessage ? (
+            <p className="mt-1 text-xs font-medium text-emerald-600">{refreshMessage}</p>
+          ) : null}
         </div>
-        <Button variant="outline" onClick={onExport} disabled={!data}>
-          Export Report
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={onRefreshRates} disabled={refreshing}>
+            {refreshing ? 'Refreshing…' : 'Verify & Refresh Rates'}
+          </Button>
+          <Button variant="outline" onClick={onExport} disabled={!data}>
+            Export Report
+          </Button>
+        </div>
       </div>
 
       <Card>
