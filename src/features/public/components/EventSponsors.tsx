@@ -3,13 +3,18 @@ import { CatalogLinkSection } from './CatalogLinkSection';
 import { parseCatalogLinks } from './catalogJson';
 
 export function EventSponsors({ sponsorsJson }: { sponsorsJson: string }) {
+  const links = parseCatalogLinks(sponsorsJson, 'sponsorId');
+  if (links.length === 0) return null;
+  
   return (
-    <CatalogLinkSection
-      title="Sponsors"
-      icon={Award}
-      links={parseCatalogLinks(sponsorsJson, 'sponsorId')}
-      hrefBase="/sponsors"
-      subtitleKeys={['tier', 'category']}
-    />
+    <div className="pt-6">
+      <CatalogLinkSection
+        title="Sponsors"
+        icon={Award}
+        links={links}
+        hrefBase="/sponsors"
+        subtitleKeys={['tier', 'category']}
+      />
+    </div>
   );
 }

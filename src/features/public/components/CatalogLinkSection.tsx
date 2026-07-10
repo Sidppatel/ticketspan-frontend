@@ -3,9 +3,12 @@ import { metaValue, type CatalogLink } from './catalogJson';
 import type { LucideIcon } from 'lucide-react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArtistCard } from './ArtistCard';
 import { SponsorLogo } from './SponsorLogo';
 import { SectionTitle } from './SectionTitle';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function CatalogLinkSection({
   title,
@@ -57,21 +60,22 @@ export function CatalogLinkSection({
         }
       }
 
-      
+
       if (!showHorizontalScroll) {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         const cards = container.querySelectorAll('[data-item-card]');
-        gsap.from(cards, {
-          opacity: 0,
-          y: 20,
-          duration: 0.5,
-          stagger: 0.08,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: container,
-            start: 'top 85%',
-          }
-        });
+        gsap.fromTo(
+          cards,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.08,
+            ease: 'power2.out',
+            clearProps: 'opacity,transform',
+          },
+        );
       }
     },
     { scope: containerRef, dependencies: [links, showHorizontalScroll] }

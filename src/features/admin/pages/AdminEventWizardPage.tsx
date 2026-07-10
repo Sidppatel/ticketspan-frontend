@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createEvent, type EventDraft } from '@/features/admin/services/eventAdminService';
-import { listVenues } from '@/features/admin/services/catalogService';
+import { listVenues, createVenue, type VenueDraft } from '@/features/admin/services/catalogService';
 import type { Venue } from '@/shared/proto/catalog';
 import { listEnums, type EnumOption } from '@/shared/enums';
 import { tzForState, zonedInputToEpoch } from '@/shared/lib/timezone';
@@ -15,7 +15,9 @@ import { Field, FieldLabel, FieldGroup } from '@/shared/ui/field';
 import { CardContent } from '@/shared/ui/card';
 import { DateTimePicker } from '@/shared/ui/date-time-picker';
 import { cn } from '@/shared/lib/cn';
-import { CalendarCheck2, LayoutGrid, MapPin, Rocket, Ticket, Users } from 'lucide-react';
+import { CalendarCheck2, LayoutGrid, MapPin, Rocket, Ticket, Users, Plus } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
+import { VenueFields, venueError, normalizeVenue, emptyDraft } from '@/features/admin/pages/AdminVenuesPage';
 
 
 export function AdminEventWizardPage() {
@@ -32,6 +34,33 @@ export function AdminEventWizardPage() {
   const [venuesId, setVenuesId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCreateVenueOpen, setIsCreateVenueOpen] = useState(false);
+  const [venueDraft, setVenueDraft] = useState<VenueDraft>(emptyDraft());
+  const [venueErrorMsg, setVenueErrorMsg] = useState<string | null>(null);
+  const [venueSubmitting, setVenueSubmitting] = useState(false);
+
+  async function handleCreateVenue() {
+    const err = venueError(venueDraft);
+    if (err) {
+      setVenueErrorMsg(err);
+      return;
+    }
+    setVenueErrorMsg(null);
+    setVenueSubmitting(true);
+    try {
+      const newVenueId = await createVenue(normalizeVenue(venueDraft));
+      const updatedVenues = await listVenues();
+      setVenues(updatedVenues);
+      setVenuesId(newVenueId);
+      setVenueDraft(emptyDraft());
+      setIsCreateVenueOpen(false);
+    } catch (caught) {
+      setVenueErrorMsg(rpcErrorMessage(caught));
+    } finally {
+      setVenueSubmitting(false);
+    }
+  }
+
   const venueTz = tzForState(venues.find((v) => v.venuesId === venuesId)?.state);
 
   const STEPS = [
@@ -200,7 +229,17 @@ export function AdminEventWizardPage() {
             <SectionLabel>Venue &amp; schedule</SectionLabel>
             <div className="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2">
               <Field className="md:col-span-2">
-                <FieldLabel htmlFor="venue" className="text-[10px]">Venue</FieldLabel>
+                <div className="flex items-center justify-between">
+                  <FieldLabel htmlFor="venue" className="text-[10px]">Venue</FieldLabel>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setIsCreateVenueOpen(true)}
+                    className="h-auto px-2 py-1 text-xs font-bold text-primary flex items-center gap-1 hover:bg-primary/5 hover:text-primary"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Create New Venue
+                  </Button>
+                </div>
                 <Select id="venue" value={venuesId} onChange={(e) => setVenuesId(e.target.value)} className="h-10 bg-background border-border text-sm">
                   {venues.length === 0 ? (
                     <option value="">No venues — create one first</option>
@@ -241,6 +280,59 @@ export function AdminEventWizardPage() {
           </FieldGroup>
         </CardContent>
       </div>
+
+      <Dialog open={isCreateVenueOpen} onOpenChange={setIsCreateVenueOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogTitle className="text-lg font-bold font-display text-foreground flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-primary" /> Create New Venue
+          </DialogTitle>
+          <div className="space-y-4 py-4">
+            {venueErrorMsg ? (
+              <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-xs font-bold text-destructive animate-shake">
+                {venueErrorMsg}
+              </div>
+            ) : null}
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Name</label>
+              <div className="svyne-spring-input">
+                <Input
+                  value={venueDraft.name}
+                  onChange={(e) => setVenueDraft({ ...venueDraft, name: e.target.value })}
+                  placeholder="Venue Name"
+                  className="h-10 bg-background border-border text-sm"
+                />
+              </div>
+            </div>
+
+            <VenueFields draft={venueDraft} onChange={setVenueDraft} />
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-border/20">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setIsCreateVenueOpen(false);
+                  setVenueDraft(emptyDraft());
+                  setVenueErrorMsg(null);
+                }}
+                disabled={venueSubmitting}
+                className="h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCreateVenue}
+                disabled={venueSubmitting || !venueDraft.name.trim()}
+                className="svyne-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
+              >
+                {venueSubmitting ? 'Creating...' : 'Create Venue'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

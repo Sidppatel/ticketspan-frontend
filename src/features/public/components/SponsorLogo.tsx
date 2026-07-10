@@ -98,27 +98,27 @@ export function SponsorLogo({ name, slug, primaryImagePath, subtitle, hrefBase, 
       to={`${hrefBase}/${slug}`}
       data-item-card
       className={cn(
-        'group relative flex flex-col justify-center items-center rounded-2xl border border-border-strong bg-surface-card p-6 h-28 overflow-hidden shadow-sm transition-all duration-300 hover:border-accent-burgundy/25 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        'group relative flex flex-col justify-center items-center rounded-2xl border border-black/10 bg-white p-6 h-28 overflow-hidden shadow-sm transition-all duration-300 hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
         className
       )}
       style={{ transformStyle: 'preserve-3d' }}
     >
-      <div ref={glintRef} className="absolute size-20 rounded-full bg-accent-burgundy pointer-events-none opacity-0 blur-xl mix-blend-screen" />
+      <div ref={glintRef} className="absolute size-20 rounded-full bg-primary pointer-events-none opacity-0 blur-xl mix-blend-screen" />
       {primaryImagePath ? (
         <img
           ref={imageRef}
           src={imageUrl(primaryImagePath)}
           alt={name}
-          className="h-10 w-auto max-w-[80%] object-contain opacity-50 grayscale transition-all duration-500 group-hover:opacity-100 group-hover:grayscale-0"
+          className="h-10 w-auto max-w-[80%] object-contain opacity-70 grayscale transition-all duration-500 group-hover:opacity-100 group-hover:grayscale-0"
           loading="lazy"
         />
       ) : (
-        <span className="font-extrabold text-muted-foreground/40 tracking-wider text-xs uppercase text-center truncate w-full">
+        <span className="font-extrabold text-foreground tracking-wider text-sm uppercase text-center truncate w-full">
           {name}
         </span>
       )}
       {subtitle && (
-        <span className="absolute bottom-2 text-[9px] font-bold uppercase tracking-wider text-accent-burgundy opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+        <span className="absolute bottom-2 text-[10px] font-bold uppercase tracking-wider text-primary opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
           {subtitle}
         </span>
       )}

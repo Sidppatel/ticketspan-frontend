@@ -11,13 +11,15 @@ import {
   deleteEventTable,
   listTicketTypes,
 } from '@/features/admin/services/eventAdminService';
-import { listTableTemplates } from '@/features/admin/services/tableTemplateService';
+import { listTableTemplates, createTableTemplate } from '@/features/admin/services/tableTemplateService';
 import { getVenue } from '@/features/admin/services/catalogService';
 import { EventCatalogLinks } from '@/features/admin/components/EventCatalogLinks';
 import { EventExtraInfoEditor } from '@/features/admin/components/EventExtraInfoEditor';
 import { getEventLayout } from '@/features/admin/services/layoutService';
 import { tzForState } from '@/shared/lib/timezone';
 import type { TableTemplate } from '@/shared/proto/booking';
+import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
+import { Switch } from '@/shared/ui/switch';
 import { PricingManager } from '@/features/admin/components/PricingManager';
 import { ScheduleTimeline } from '@/features/admin/components/ScheduleTimeline';
 import { TicketTypesManager } from '@/features/admin/components/TicketTypesManager';
@@ -50,6 +52,7 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
+  Plus,
   type LucideIcon,
 } from 'lucide-react';
 import { EventBrandingPreview } from '@/features/admin/components/branding/EventBrandingPreview';
@@ -120,6 +123,64 @@ export function AdminEventManagePage() {
   }
   const [notice, setNotice] = useState<string | null>(null);
   const [floorKey, setFloorKey] = useState(0);
+
+  // Inline Table Template creation state
+  const [isCreateTableTemplateOpen, setIsCreateTableTemplateOpen] = useState(false);
+  const [newTemplateName, setNewTemplateName] = useState('');
+  const [newTemplateColor, setNewTemplateColor] = useState('#3b82f6');
+  const [newTemplateShape, setNewTemplateShape] = useState('Round');
+  const [newTemplateCapacity, setNewTemplateCapacity] = useState(8);
+  const [newTemplatePriceUsd, setNewTemplatePriceUsd] = useState('0.00');
+  const [newTemplateWidth, setNewTemplateWidth] = useState(80);
+  const [newTemplateHeight, setNewTemplateHeight] = useState(80);
+  const [newTemplateAllInclusive, setNewTemplateAllInclusive] = useState(true);
+  const [newTemplateError, setNewTemplateError] = useState<string | null>(null);
+  const [newTemplateSubmitting, setNewTemplateSubmitting] = useState(false);
+
+  async function handleCreateTableTemplate() {
+    if (!newTemplateName.trim()) {
+      setNewTemplateError('Name is required');
+      return;
+    }
+    setNewTemplateError(null);
+    setNewTemplateSubmitting(true);
+    try {
+      const templateId = await createTableTemplate({
+        name: newTemplateName,
+        defaultColor: newTemplateColor,
+        defaultCapacity: newTemplateCapacity,
+        defaultPriceCents: usdToCents(newTemplatePriceUsd),
+        defaultWidth: newTemplateWidth,
+        defaultHeight: newTemplateHeight,
+        defaultShape: newTemplateShape,
+        defaultIsAllInclusive: newTemplateAllInclusive,
+      });
+      await templates.reload();
+      
+      // Auto select the new template
+      setTableTemplateId(templateId);
+      setTableLabel(newTemplateName);
+      setTableCapacity(newTemplateCapacity);
+      setTablePriceCents(usdToCents(newTemplatePriceUsd));
+      setTableColor(newTemplateColor);
+      setTableWidth(newTemplateWidth);
+      setTableHeight(newTemplateHeight);
+
+      setIsCreateTableTemplateOpen(false);
+      setNewTemplateName('');
+      setNewTemplatePriceUsd('0.00');
+      setNewTemplateColor('#3b82f6');
+      setNewTemplateShape('Round');
+      setNewTemplateCapacity(8);
+      setNewTemplateWidth(80);
+      setNewTemplateHeight(80);
+      setNewTemplateAllInclusive(true);
+    } catch (caught) {
+      setNewTemplateError(rpcErrorMessage(caught));
+    } finally {
+      setNewTemplateSubmitting(false);
+    }
+  }
   const [pricingKey, setPricingKey] = useState(0);
 
   async function guard(action: () => Promise<void>, reload?: () => void) {
@@ -291,8 +352,18 @@ export function AdminEventManagePage() {
             <CardContent className="p-6 space-y-6">
               {/* Admin reuses a catalog table type and overrides values; cannot create new types. */}
               <div className="flex flex-wrap items-end gap-3 p-4 border border-border/50 bg-muted/20 rounded-xl">
-                <div className="space-y-1.5">
-                  <Label className="text-[10px]">Table Type</Label>
+                <div className="space-y-1.5 flex flex-col">
+                  <div className="flex items-center justify-between gap-2 min-w-[12rem]">
+                    <Label className="text-[10px]">Table Type</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setIsCreateTableTemplateOpen(true)}
+                      className="h-auto p-0 text-[10px] font-bold text-primary flex items-center gap-0.5 hover:bg-transparent hover:text-primary"
+                    >
+                      <Plus className="h-3 w-3" /> Create New
+                    </Button>
+                  </div>
                   <Select
                     className="h-9 w-48 text-xs bg-background"
                     value={tableTemplateId}
@@ -516,6 +587,140 @@ export function AdminEventManagePage() {
           onPublish={() => guard(() => changeEventStatus(eventsId, 'Published'), event.reload)}
         />
       ) : null}
+
+      <Dialog open={isCreateTableTemplateOpen} onOpenChange={setIsCreateTableTemplateOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogTitle className="text-lg font-bold font-display text-foreground flex items-center gap-2">
+            <LayoutGrid className="h-5 w-5 text-primary" /> Create Table Template
+          </DialogTitle>
+          <div className="space-y-4 py-4">
+            {newTemplateError ? (
+              <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-xs font-bold text-destructive animate-shake">
+                {newTemplateError}
+              </div>
+            ) : null}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5 md:col-span-2">
+                <Label>Name</Label>
+                <div className="svyne-spring-input">
+                  <Input
+                    value={newTemplateName}
+                    onChange={(e) => setNewTemplateName(e.target.value)}
+                    placeholder="e.g. VIP Center Lounge"
+                    className="h-10 bg-background border-border text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Color Swatch</Label>
+                <div className="flex items-center gap-2 h-10 border border-border bg-background rounded-lg px-2.5">
+                  <Input
+                    type="color"
+                    value={newTemplateColor}
+                    onChange={(e) => setNewTemplateColor(e.target.value)}
+                    className="h-6 w-9 p-0 border-0 cursor-pointer rounded"
+                  />
+                  <span className="text-[11px] font-mono text-muted-foreground uppercase">{newTemplateColor}</span>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Shape</Label>
+                <Select
+                  value={newTemplateShape}
+                  onChange={(e) => setNewTemplateShape(e.target.value)}
+                >
+                  {['Round', 'Rectangle', 'Square', 'Cocktail'].map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Capacity (Seats)</Label>
+                <div className="svyne-spring-input">
+                  <Input
+                    type="number"
+                    value={newTemplateCapacity}
+                    onChange={(e) => setNewTemplateCapacity(Number(e.target.value))}
+                    className="h-10 bg-background border-border text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Base Price (USD)</Label>
+                <div className="svyne-spring-input">
+                  <Input
+                    value={newTemplatePriceUsd}
+                    onChange={(e) => setNewTemplatePriceUsd(e.target.value)}
+                    className="h-10 bg-background border-border text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Width (px)</Label>
+                <div className="svyne-spring-input">
+                  <Input
+                    type="number"
+                    value={newTemplateWidth}
+                    onChange={(e) => setNewTemplateWidth(Number(e.target.value))}
+                    className="h-10 bg-background border-border text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Height (px)</Label>
+                <div className="svyne-spring-input">
+                  <Input
+                    type="number"
+                    value={newTemplateHeight}
+                    onChange={(e) => setNewTemplateHeight(Number(e.target.value))}
+                    className="h-10 bg-background border-border text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center md:col-span-2 py-2 gap-2 text-sm font-semibold">
+                <Switch
+                  checked={newTemplateAllInclusive}
+                  onCheckedChange={setNewTemplateAllInclusive}
+                  label="All-inclusive"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-border/20">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setIsCreateTableTemplateOpen(false);
+                  setNewTemplateError(null);
+                }}
+                disabled={newTemplateSubmitting}
+                className="h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCreateTableTemplate}
+                disabled={newTemplateSubmitting || !newTemplateName.trim()}
+                className="svyne-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
+              >
+                {newTemplateSubmitting ? 'Creating...' : 'Create Template'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

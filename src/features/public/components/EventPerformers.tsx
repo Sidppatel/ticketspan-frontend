@@ -3,13 +3,18 @@ import { CatalogLinkSection } from './CatalogLinkSection';
 import { parseCatalogLinks } from './catalogJson';
 
 export function EventPerformers({ performersJson }: { performersJson: string }) {
+  const links = parseCatalogLinks(performersJson, 'performerId');
+  if (links.length === 0) return null;
+
   return (
-    <CatalogLinkSection
-      title="Performers"
-      icon={Mic2}
-      links={parseCatalogLinks(performersJson, 'performerId')}
-      hrefBase="/performers"
-      subtitleKeys={['role', 'genre']}
-    />
+    <div className="pt-6">
+      <CatalogLinkSection
+        title="Performers"
+        icon={Mic2}
+        links={links}
+        hrefBase="/performers"
+        subtitleKeys={['role', 'genre']}
+      />
+    </div>
   );
 }

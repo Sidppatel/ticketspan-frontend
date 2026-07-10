@@ -30,7 +30,7 @@ import {
 } from '@/shared/lib/validation';
 import type { Venue } from '@/shared/proto/catalog';
 
-function venueError(draft: VenueDraft): string | null {
+export function venueError(draft: VenueDraft): string | null {
   if (!draft.name.trim()) {
     return 'Name is required';
   }
@@ -46,12 +46,12 @@ function venueError(draft: VenueDraft): string | null {
   return null;
 }
 
-function normalizeVenue(draft: VenueDraft): VenueDraft {
+export function normalizeVenue(draft: VenueDraft): VenueDraft {
   return { ...draft, phone: draft.phone ? toPhoneE164(draft.phone) : '' };
 }
 
 
-function emptyDraft(): VenueDraft {
+export function emptyDraft(): VenueDraft {
   return {
     name: '',
     description: '',
@@ -81,7 +81,7 @@ function toDraft(venue: Venue): VenueDraft {
   };
 }
 
-function withDisplayPhone(draft: VenueDraft): VenueDraft {
+export function withDisplayPhone(draft: VenueDraft): VenueDraft {
   return { ...draft, phone: formatUsPhone(draft.phone) };
 }
 
@@ -160,7 +160,7 @@ export function AdminVenuesPage() {
   );
 }
 
-function VenueFields({ draft, onChange }: { draft: VenueDraft; onChange: (d: VenueDraft) => void }) {
+export function VenueFields({ draft, onChange }: { draft: VenueDraft; onChange: (d: VenueDraft) => void }) {
   return (
     <div className="grid gap-3 md:grid-cols-2 pt-2">
       <div className="space-y-1.5 md:col-span-2">

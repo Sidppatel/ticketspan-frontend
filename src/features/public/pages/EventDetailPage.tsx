@@ -253,6 +253,11 @@ function EventDetailPageContent({ event }: { event: Event }) {
               </div>
             )}
 
+            {/* Sponsors logo cloud */}
+            {event.sponsorsJson && (
+              <EventSponsors sponsorsJson={event.sponsorsJson} />
+            )}
+
             {/* Interactive VIP Seating Map */}
             {showTables && (
               <div className="space-y-4">
@@ -271,6 +276,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
               </div>
             )}
 
+
             {/* Event Description */}
             {event.description && (
               <div className="py-8 border-t border-border-soft space-y-3">
@@ -283,9 +289,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
 
             {/* Lineup / Performers */}
             {event.performersJson && (
-              <div className="pt-6">
-                <EventPerformers performersJson={event.performersJson} />
-              </div>
+              <EventPerformers performersJson={event.performersJson} />
             )}
 
             {/* Event Timeline */}
@@ -305,12 +309,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
               </div>
             )}
 
-            {/* Sponsors logo cloud */}
-            {event.sponsorsJson && (
-              <div className="pt-6">
-                <EventSponsors sponsorsJson={event.sponsorsJson} />
-              </div>
-            )}
+
 
           </div>
 
