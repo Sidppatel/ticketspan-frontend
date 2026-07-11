@@ -258,6 +258,7 @@ export function AdminEventManagePage() {
           onPublish={() => guard(() => changeEventStatus(eventsId, 'Published'), event.reload)}
           onRevert={() => guard(() => changeEventStatus(eventsId, 'Draft'), event.reload)}
           onCopyLink={copyShareLink}
+          hasTicketsSold={stats.data ? stats.data.ticketsSold > 0 : false}
         />
       ) : null}
 

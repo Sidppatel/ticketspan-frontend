@@ -71,6 +71,7 @@ export function VoiceZone({
   onPublish,
   onRevert,
   onCopyLink,
+  hasTicketsSold = false,
 }: {
   event: Event;
   voice: EventVoice;
@@ -81,6 +82,7 @@ export function VoiceZone({
   onPublish: () => void;
   onRevert: () => void;
   onCopyLink: () => void;
+  hasTicketsSold?: boolean;
 }) {
   const published = event.status === 'Published';
   return (
@@ -111,7 +113,14 @@ export function VoiceZone({
                 <Rocket className="mr-1 h-4 w-4" /> Publish
               </Button>
             ) : (
-              <Button size="sm" variant="outline" className="h-9 rounded-lg border-border bg-background px-4 text-xs font-bold" onClick={onRevert}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-9 rounded-lg border-border bg-background px-4 text-xs font-bold"
+                disabled={hasTicketsSold}
+                title={hasTicketsSold ? 'This event has tickets sold and cannot be reverted to draft' : 'Revert to draft'}
+                onClick={onRevert}
+              >
                 <Undo2 className="mr-1 h-4 w-4" /> Revert to draft
               </Button>
             )}
