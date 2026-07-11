@@ -17,6 +17,11 @@ import { CheckoutPage } from '@/features/public/pages/CheckoutPage';
 import { ClaimTicketPage } from '@/features/public/pages/ClaimTicketPage';
 import { FeedbackPage } from '@/features/public/pages/FeedbackPage';
 import { OrganizerPage } from '@/features/public/pages/OrganizerPage';
+import { TermsPage } from '@/features/public/pages/TermsPage';
+import { PrivacyPage } from '@/features/public/pages/PrivacyPage';
+import { RefundPolicyPage } from '@/features/public/pages/RefundPolicyPage';
+import { HelpCenterPage } from '@/features/public/pages/HelpCenterPage';
+import { ContactSupportPage } from '@/features/public/pages/ContactSupportPage';
 
 export default function PublicRoutes() {
   return (
@@ -30,6 +35,11 @@ export default function PublicRoutes() {
         <Route path="claim" element={<ClaimTicketPage />} />
         <Route path="organizer/:slug" element={<OrganizerPage />} />
         <Route path="organizer/:slug/admin" element={<OrganizerPage admin />} />
+        <Route path="terms" element={<TermsPage />} />
+        <Route path="privacy" element={<PrivacyPage />} />
+        <Route path="refund-policy" element={<RefundPolicyPage />} />
+        <Route path="help" element={<HelpCenterPage />} />
+        <Route path="contact" element={<ContactSupportPage />} />
         <Route
           path="tickets"
           element={

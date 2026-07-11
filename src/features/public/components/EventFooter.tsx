@@ -1,5 +1,6 @@
 import { cn } from '@/shared/lib/cn';
 import { Compass } from 'lucide-react';
+import { useTenantBranding } from '@/shared/theme/ThemeContext';
 
 interface EventFooterProps {
   organizerName?: string;
@@ -7,7 +8,9 @@ interface EventFooterProps {
   light?: boolean;
 }
 
-export function EventFooter({ organizerName = 'Organizer', className, light = false }: EventFooterProps) {
+export function EventFooter({ organizerName, className, light = false }: EventFooterProps) {
+  const { branding, tenantSlug } = useTenantBranding();
+  const presentedBy = organizerName || branding.tenantName || tenantSlug || 'Organizer';
   const currentYear = new Date().getFullYear();
 
   return (
@@ -41,7 +44,7 @@ export function EventFooter({ organizerName = 'Organizer', className, light = fa
             <ul className="space-y-2">
               <li><a href="/terms" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Terms of Service</a></li>
               <li><a href="/privacy" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Privacy Policy</a></li>
-              <li className={light ? 'text-white/70' : 'text-muted-foreground'}>All Sales Final — No Refunds</li>
+              <li><a href="/refund-policy" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">All Sales Final — No Refunds</a></li>
             </ul>
           </div>
           <div className="space-y-3 text-xs">
@@ -49,7 +52,7 @@ export function EventFooter({ organizerName = 'Organizer', className, light = fa
             <ul className="space-y-2">
               <li><a href="/help" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Help Center</a></li>
               <li><a href="/feedback" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Give Feedback</a></li>
-              <li><a href="mailto:support@svyne.com" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Contact Support</a></li>
+              <li><a href="/contact" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Contact Support</a></li>
             </ul>
           </div>
         </div>
@@ -57,7 +60,7 @@ export function EventFooter({ organizerName = 'Organizer', className, light = fa
         {}
         <div className="md:col-span-4 space-y-3 text-xs md:text-right">
           <h4 className={cn('font-bold uppercase tracking-wider', light ? 'text-white' : 'text-foreground')}>Presented By</h4>
-          <p className="font-bold text-sm text-accent-gold font-display uppercase tracking-wider">{organizerName}</p>
+          <p className="font-bold text-sm text-accent-gold font-display uppercase tracking-wider">{presentedBy}</p>
           <div className="flex md:justify-end gap-3 pt-1">
             <a href="#" className="hover:text-accent-burgundy" aria-label="Twitter">𝕏</a>
             <a href="#" className="hover:text-accent-burgundy" aria-label="Instagram">📸</a>

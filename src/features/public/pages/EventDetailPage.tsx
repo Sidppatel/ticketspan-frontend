@@ -495,7 +495,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
       />
 
       {/* Visual Footer */}
-      <EventFooter organizerName={event.category || 'Special Events'} />
+      <EventFooter />
     </div>
   );
 }
