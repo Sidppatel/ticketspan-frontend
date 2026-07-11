@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import { useAsync } from '@/shared/hooks/useAsync';
 import {
   listTenantMembers,
@@ -34,12 +35,37 @@ export function TenantSettingsPanel({ tenantsId }: { tenantsId: string }) {
           <CardHeader>
             <CardTitle>Stripe status</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            <p>Account: {stripe.data.stripeConnectedAccountId || '—'}</p>
-            <p>
-              charges: {String(stripe.data.chargesEnabled)} · payouts: {String(stripe.data.payoutsEnabled)} ·
-              details submitted: {String(stripe.data.detailsSubmitted)}
-            </p>
+          <CardContent className="space-y-4 text-sm text-muted-foreground">
+            <div>
+              <span className="font-medium text-foreground">Connected Account: </span>
+              {stripe.data.stripeConnectedAccountId || '—'}
+            </div>
+            
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div className="space-y-1 rounded-md border p-3">
+                <div className="flex items-center gap-2">
+                  <StatusIcon enabled={stripe.data.chargesEnabled} />
+                  <span className="font-medium text-foreground">Charges enabled</span>
+                </div>
+                <p className="text-xs">Tenant can accept payments from attendees.</p>
+              </div>
+
+              <div className="space-y-1 rounded-md border p-3">
+                <div className="flex items-center gap-2">
+                  <StatusIcon enabled={stripe.data.payoutsEnabled} />
+                  <span className="font-medium text-foreground">Payouts enabled</span>
+                </div>
+                <p className="text-xs">Funds can be routed to the tenant's bank account.</p>
+              </div>
+
+              <div className="space-y-1 rounded-md border p-3">
+                <div className="flex items-center gap-2">
+                  <StatusIcon enabled={stripe.data.detailsSubmitted} />
+                  <span className="font-medium text-foreground">Details submitted</span>
+                </div>
+                <p className="text-xs">All required identity and business details provided to Stripe.</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       ) : null}
@@ -316,4 +342,11 @@ function StripeProfileForm({ tenantsId }: { tenantsId: string }) {
       </CardContent>
     </Card>
   );
+}
+
+function StatusIcon({ enabled }: { enabled: boolean }) {
+  if (enabled) {
+    return <CheckCircle2 className="h-4 w-4 text-success" />;
+  }
+  return <XCircle className="h-4 w-4 text-destructive" />;
 }
