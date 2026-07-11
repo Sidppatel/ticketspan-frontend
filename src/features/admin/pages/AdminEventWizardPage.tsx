@@ -20,12 +20,13 @@ import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
 import { VenueFields, venueError, normalizeVenue, emptyDraft } from '@/features/admin/pages/AdminVenuesPage';
 
 
+const CATEGORIES = ['Music', 'Business', 'Social', 'Dining', 'Tech', 'Arts', 'Family', 'Sports'];
+
 export function AdminEventWizardPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [categories, setCategories] = useState<EnumOption[]>([]);
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState('Music');
   const [eventTypes, setEventTypes] = useState<EnumOption[]>([]);
   const [eventType, setEventType] = useState('Open');
   const [start, setStart] = useState('');
@@ -82,14 +83,7 @@ export function AdminEventWizardPage() {
         }
       })
       .catch((caught) => setError(rpcErrorMessage(caught)));
-    listEnums('EventCategory')
-      .then((loaded) => {
-        setCategories(loaded);
-        if (loaded.length > 0) {
-          setCategory(loaded[0].value);
-        }
-      })
-      .catch((caught) => setError(rpcErrorMessage(caught)));
+
     listEnums('EventType')
       .then((loaded) => {
         setEventTypes(loaded);
@@ -179,18 +173,21 @@ export function AdminEventWizardPage() {
               </Field>
               <Field>
                 <FieldLabel htmlFor="category" className="text-[10px]">Category</FieldLabel>
-                <Select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="h-10 bg-background border-border text-sm"
-                >
-                  {categories.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.value}
-                    </option>
-                  ))}
-                </Select>
+                <div className="svyne-spring-input">
+                  <Input
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    list="wizard-category-suggestions"
+                    placeholder="e.g. Music"
+                    className="h-10 bg-background border-border text-sm"
+                  />
+                  <datalist id="wizard-category-suggestions">
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
+                </div>
               </Field>
               <Field className="md:col-span-2">
                 <FieldLabel htmlFor="eventType" className="text-[10px]">Event type</FieldLabel>

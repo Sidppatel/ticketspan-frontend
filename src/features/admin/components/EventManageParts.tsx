@@ -301,7 +301,17 @@ export function EditSection({
         <div className="space-y-1.5">
           <Label className="text-[10px]">Category</Label>
           <div className="svyne-spring-input">
-            <Input value={category} onChange={(e) => setCategory(e.target.value)} className="h-10 bg-background border-border text-sm" />
+            <Input
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              list="category-suggestions"
+              className="h-10 bg-background border-border text-sm"
+            />
+            <datalist id="category-suggestions">
+              {['Music', 'Business', 'Social', 'Dining', 'Tech', 'Arts', 'Family', 'Sports'].map(c => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
           </div>
         </div>
         <div className="space-y-1.5">
