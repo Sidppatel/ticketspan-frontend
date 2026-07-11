@@ -39,17 +39,17 @@ export function EventFooter({ organizerName = 'Organizer', className, light = fa
           <div className="space-y-3 text-xs">
             <h4 className={cn('font-bold uppercase tracking-wider', light ? 'text-white' : 'text-foreground')}>Legals</h4>
             <ul className="space-y-2">
-              <li><a href="/terms" className="hover:underline hover:text-accent-burgundy transition-colors">Terms of Service</a></li>
-              <li><a href="/privacy" className="hover:underline hover:text-accent-burgundy transition-colors">Privacy Policy</a></li>
+              <li><a href="/terms" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Terms of Service</a></li>
+              <li><a href="/privacy" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Privacy Policy</a></li>
               <li className={light ? 'text-white/70' : 'text-muted-foreground'}>All Sales Final — No Refunds</li>
             </ul>
           </div>
           <div className="space-y-3 text-xs">
             <h4 className={cn('font-bold uppercase tracking-wider', light ? 'text-white' : 'text-foreground')}>Support</h4>
             <ul className="space-y-2">
-              <li><a href="/help" className="hover:underline hover:text-accent-burgundy transition-colors">Help Center</a></li>
-              <li><a href="/feedback" className="hover:underline hover:text-accent-burgundy transition-colors">Give Feedback</a></li>
-              <li><a href="mailto:support@svyne.com" className="hover:underline hover:text-accent-burgundy transition-colors">Contact Support</a></li>
+              <li><a href="/help" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Help Center</a></li>
+              <li><a href="/feedback" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Give Feedback</a></li>
+              <li><a href="mailto:support@svyne.com" className="inline-block py-1.5 hover:underline hover:text-accent-burgundy transition-colors">Contact Support</a></li>
             </ul>
           </div>
         </div>

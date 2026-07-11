@@ -38,6 +38,19 @@ export function relativeLuminance(hex: string): number {
   );
 }
 
+export function mixHex(hexA: string, hexB: string, weightA: number): string {
+  const a = hexToRgb(hexA);
+  const b = hexToRgb(hexB);
+  if (!a || !b) {
+    return hexA;
+  }
+  const channel = (i: number) =>
+    Math.round(a[i] * weightA + b[i] * (1 - weightA))
+      .toString(16)
+      .padStart(2, '0');
+  return `#${channel(0)}${channel(1)}${channel(2)}`;
+}
+
 export function contrastRatio(hexA: string, hexB: string): number {
   const lumA = relativeLuminance(hexA);
   const lumB = relativeLuminance(hexB);
@@ -265,10 +278,29 @@ export function brandingCssVars(branding: TenantBranding): Record<string, string
     set('--marigold', branding.highlight);
     set('--marigold-foreground', readableTextOn(branding.highlight));
   }
-  for (const [token, value] of Object.entries(branding.tokens ?? {})) {
-    if (ADVANCED_TOKEN_SET.has(token) && isHexColor(value)) {
-      set(`--${token}`, value);
+  const customTokens = branding.tokens ?? {};
+  const tokenHex = (token: string) =>
+    isHexColor(customTokens[token] ?? '') ? customTokens[token] : null;
+  const backgroundHex = isHexColor(branding.background) ? branding.background : '#f7f8f8';
+  const textHex = isHexColor(branding.text) ? branding.text : '#1c1917';
+  const onStageSoftHex = tokenHex('on-stage-soft') ?? mixHex(backgroundHex, textHex, 0.7);
+  const inkSoftHex = tokenHex('ink-soft') ?? mixHex(textHex, backgroundHex, 0.72);
+  const MIN_SURFACE_CONTRAST = 3;
+  const SURFACE_TOKEN_TEXT: Record<string, string> = {
+    stage: onStageSoftHex,
+    'stage-elevated': onStageSoftHex,
+    surface: inkSoftHex,
+    'surface-sunken': inkSoftHex,
+  };
+  for (const [token, value] of Object.entries(customTokens)) {
+    if (!ADVANCED_TOKEN_SET.has(token) || !isHexColor(value)) {
+      continue;
     }
+    const pairedText = SURFACE_TOKEN_TEXT[token];
+    if (pairedText && contrastRatio(value, pairedText) < MIN_SURFACE_CONTRAST) {
+      continue;
+    }
+    set(`--${token}`, value);
   }
   return vars;
 }

@@ -115,7 +115,7 @@ export function TicketCard({
           aria-label={`Remove one ${label} ticket`}
           disabled={qty <= 0 || isSoldOut}
           onClick={() => onQuantityChange(qty - 1)}
-          className="size-9 cursor-pointer"
+          className="size-11 cursor-pointer"
         >
           <Minus className="size-3.5" />
         </Button>
@@ -127,7 +127,7 @@ export function TicketCard({
           aria-label={`Add one ${label} ticket`}
           disabled={isSoldOut || (maxQuantity !== undefined && qty >= maxQuantity) || (availableQuantity !== undefined && qty >= availableQuantity)}
           onClick={() => onQuantityChange(qty + 1)}
-          className="size-9 cursor-pointer"
+          className="size-11 cursor-pointer"
         >
           <Plus className="size-3.5" />
         </Button>

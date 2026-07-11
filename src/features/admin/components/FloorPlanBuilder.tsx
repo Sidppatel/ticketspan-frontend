@@ -43,6 +43,7 @@ const MIN_SIZE = 24;
 const DEFAULT_SIZE = 80;
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 2.5;
+const GUIDE_TOL = 6;
 
 const snap = (n: number) => Math.round(n / SNAP) * SNAP;
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
@@ -95,6 +96,7 @@ export function FloorPlanBuilder({
   const [saving, setSaving] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [dragBox, setDragBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
 
   const historyRef = useRef<Scene[]>([]);
   const futureRef = useRef<Scene[]>([]);
@@ -242,6 +244,35 @@ export function FloorPlanBuilder({
     return hitTable || hitObject;
   }
 
+  function alignToGuides(
+    x: number, y: number, w: number, h: number,
+    kind: 'table' | 'object', ignoreIdx: number,
+  ): { x: number; y: number } {
+    const vCands = [CANVAS_W / 2];
+    const hCands = [CANVAS_H / 2];
+    const addCands = (px: number, py: number, pw: number, ph: number) => {
+      vCands.push(px, px + pw / 2, px + pw);
+      hCands.push(py, py + ph / 2, py + ph);
+    };
+    tables.forEach((t, i) => { if (!(kind === 'table' && i === ignoreIdx)) addCands(t.posX, t.posY, t.width, t.height); });
+    objects.forEach((o, i) => { if (!(kind === 'object' && i === ignoreIdx)) addCands(o.posX, o.posY, o.width, o.height); });
+    let nx = snap(x), ny = snap(y);
+    let bestV = GUIDE_TOL + 1, bestH = GUIDE_TOL + 1;
+    for (const c of vCands) {
+      for (const edge of [0, w / 2, w]) {
+        const d = Math.abs(x + edge - c);
+        if (d < bestV) { bestV = d; nx = c - edge; }
+      }
+    }
+    for (const c of hCands) {
+      for (const edge of [0, h / 2, h]) {
+        const d = Math.abs(y + edge - c);
+        if (d < bestH) { bestH = d; ny = c - edge; }
+      }
+    }
+    return { x: nx, y: ny };
+  }
+
   function placeTable(typeId: string, cx: number, cy: number) {
     const t = typeById.get(typeId);
     const w = Math.max(MIN_SIZE, t?.defaultWidth || DEFAULT_SIZE);
@@ -344,8 +375,10 @@ export function FloorPlanBuilder({
     if (!base) return;
     let nx = base.posX, ny = base.posY, nw = base.width, nh = base.height;
     if (d.mode === 'move') {
-      nx = clamp(snap(d.origX + dx), 0, CANVAS_W - base.width);
-      ny = clamp(snap(d.origY + dy), 0, CANVAS_H - base.height);
+      const aligned = alignToGuides(d.origX + dx, d.origY + dy, base.width, base.height, d.kind, d.idx);
+      nx = clamp(aligned.x, 0, CANVAS_W - base.width);
+      ny = clamp(aligned.y, 0, CANVAS_H - base.height);
+      setDragBox({ x: nx, y: ny, w: base.width, h: base.height });
     } else {
       nw = clamp(snap(d.origW + dx), MIN_SIZE, CANVAS_W - base.posX);
       nh = clamp(snap(d.origH + dy), MIN_SIZE, CANVAS_H - base.posY);
@@ -365,6 +398,7 @@ export function FloorPlanBuilder({
   function onItemPointerUp(e: ReactPointerEvent, kind: 'table' | 'object', idx: number) {
     const d = dragRef.current;
     dragRef.current = null;
+    setDragBox(null);
     if (!d) return;
     if (!d.moved) {
       historyRef.current.pop();
@@ -629,6 +663,26 @@ export function FloorPlanBuilder({
               backgroundSize: `${SNAP * 4}px ${SNAP * 4}px`,
             }}
           >
+            {dragBox ? (
+              <>
+                {[
+                  { pos: dragBox.x, center: false },
+                  { pos: dragBox.x + dragBox.w / 2, center: true },
+                  { pos: dragBox.x + dragBox.w, center: false },
+                ].map((g, i) => (
+                  <div key={`gv${i}`} className="pointer-events-none absolute top-0 z-10 h-full w-px"
+                    style={{ left: g.pos, backgroundColor: g.center ? '#f87171' : '#93c5fd' }} />
+                ))}
+                {[
+                  { pos: dragBox.y, center: false },
+                  { pos: dragBox.y + dragBox.h / 2, center: true },
+                  { pos: dragBox.y + dragBox.h, center: false },
+                ].map((g, i) => (
+                  <div key={`gh${i}`} className="pointer-events-none absolute left-0 z-10 h-px w-full"
+                    style={{ top: g.pos, backgroundColor: g.center ? '#f87171' : '#93c5fd' }} />
+                ))}
+              </>
+            ) : null}
             {tables.map((t, i) => {
               const type = typeById.get(t.eventTablesId);
               const fill = t.colorOverride || type?.color || '#4f46e5';
@@ -654,14 +708,6 @@ export function FloorPlanBuilder({
                     {locked ? <span aria-hidden>🔒 </span> : null}
                     {t.label}
                   </span>
-                  {locked ? null : (
-                    <span
-                      onPointerDown={(e) => onItemPointerDown(e, 'table', 'resize', i)}
-                      onPointerMove={onItemPointerMove}
-                      onPointerUp={(e) => onItemPointerUp(e, 'table', i)}
-                      className="absolute bottom-0 right-0 h-3 w-3 cursor-se-resize rounded-sm border border-white bg-black/40"
-                    />
-                  )}
                 </div>
               );
             })}

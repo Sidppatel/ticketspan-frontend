@@ -3,7 +3,7 @@ import { useAsync } from '@/shared/hooks/useAsync';
 import { listBookings } from '@/features/admin/services/bookingAdminService';
 import { downloadCsv, getReportingAccess } from '@/features/admin/services/reportingService';
 import { Badge } from '@/shared/ui/badge';
-import { centsToUSD } from '@/shared/lib/format';
+import { centsToUSD, formatEventDate } from '@/shared/lib/format';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Button } from '@/shared/ui/button';
@@ -180,6 +180,11 @@ function BookingRow({ booking, isExpanded, onToggle }: { booking: Booking; isExp
                   <p className="text-sm font-medium text-foreground">
                     Tx: {booking.paymentTransactionId || 'N/A'}
                   </p>
+                  {Number(booking.paidAt) > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      Purchased: {formatEventDate(booking.paidAt)}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

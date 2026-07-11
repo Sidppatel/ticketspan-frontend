@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useState, useRef } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useState, useRef } from 'react';
 import { Users, ZoomIn, ZoomOut, RotateCcw, Check } from 'lucide-react';
 import { useAsync } from '@/shared/hooks/useAsync';
-import { getEventLayout, listEventTableTypes, calculatePrice } from '@/features/public/services/publicEventService';
+import { getEventLayout, listEventTableTypes } from '@/features/public/services/publicEventService';
+import { quoteCart } from '@/features/public/services/paymentService';
 import type { Table } from '@/shared/proto/booking';
 import type { CartItem } from '@/features/public/services/pendingCart';
 import { rpcErrorMessage } from '@/shared/session';
@@ -52,20 +53,28 @@ export function EventSeatingMap({
   const typeById = useMemo(() => new Map((types ?? []).map((t) => [t.eventTablesId, t])), [types]);
 
   const pricingLoader = useCallback(async () => {
-    if (!types) return null;
+    if (!types || !layout) return null;
+    const sampleTableByType = new Map<string, string>();
+    for (const t of layout.tables) {
+      if (!sampleTableByType.has(t.eventTablesId)) {
+        sampleTableByType.set(t.eventTablesId, t.tablesId);
+      }
+    }
+    const lines = types
+      .filter((t) => t.pricesId && sampleTableByType.has(t.eventTablesId))
+      .map((t) => ({ kind: 'Table' as const, refId: sampleTableByType.get(t.eventTablesId)!, seats: 0 }));
+    if (lines.length === 0) return null;
     try {
-      const entries = await Promise.all(
-        types.map(async (t) => {
-          if (!t.pricesId) return null;
-          const bd = await calculatePrice(t.pricesId, t.capacity);
-          return [t.eventTablesId, bd] as const;
-        })
-      );
-      return new Map(entries.filter((e): e is Exclude<typeof e, null> => e !== null));
+      const quote = await quoteCart(eventsId, lines);
+      const tableToType = new Map(layout.tables.map((t) => [t.tablesId, t.eventTablesId]));
+      const entries = quote.lines
+        .filter((l) => l.breakdown && tableToType.has(l.refId))
+        .map((l) => [tableToType.get(l.refId)!, l.breakdown!] as const);
+      return new Map(entries);
     } catch {
       return null;
     }
-  }, [types]);
+  }, [types, layout, eventsId]);
   const { data: tablePricing } = useAsync(pricingLoader);
 
   const [pending, setPending] = useState<string | null>(null);
@@ -77,6 +86,10 @@ export function EventSeatingMap({
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const userAdjusted = useRef(false);
+  const armedTouchTable = useRef<string | null>(null);
+  const isFirstTouchTap = useRef(false);
 
   const inCart = useCallback((key: string) => cart.some((i) => i.key === key), [cart]);
 
@@ -98,10 +111,28 @@ export function EventSeatingMap({
     return table.capacityOverride || typeById.get(table.eventTablesId)?.capacity || 1;
   }
 
+  function inspectTable(table: Table) {
+    const type = typeById.get(table.eventTablesId);
+    setHoveredTable({ ...table, capacity: capacityOf(table), type, priceCents: type?.priceCents || 0 });
+  }
+
+  function tableAriaLabel(table: Table, isSelected: boolean, isAvailable: boolean): string {
+    const capacity = capacityOf(table);
+    const bd = tablePricing?.get(table.eventTablesId);
+    const price = bd ? centsToUSD(feesIncluded ? bd.finalPriceCents : bd.sellingPriceCents) : '';
+    const status = isSelected ? 'in your order' : isAvailable ? 'available' : 'reserved';
+    return [table.label, `${capacity} seats`, price, status].filter(Boolean).join(', ');
+  }
+
   async function toggleTable(table: Table) {
     const key = `Table:${table.tablesId}`;
     if (inCart(key)) {
       removeKey(key);
+      return;
+    }
+    if (isFirstTouchTap.current || hoveredTable?.tablesId !== table.tablesId) {
+      isFirstTouchTap.current = false;
+      inspectTable(table);
       return;
     }
     const cap = capacityOf(table);
@@ -117,16 +148,42 @@ export function EventSeatingMap({
   }
 
   
-  const handleZoomIn = () => setZoom((z) => Math.min(2.5, z + 0.15));
-  const handleZoomOut = () => setZoom((z) => Math.max(0.6, z - 0.15));
+  const fitView = useCallback(() => {
+    const el = containerRef.current;
+    if (!el || !canvas.w || !canvas.h) return;
+    const z = Math.min(el.clientWidth / canvas.w, el.clientHeight / canvas.h, 1.5);
+    setZoom(z);
+    setPan({ x: (el.clientWidth - canvas.w * z) / 2, y: (el.clientHeight - canvas.h * z) / 2 });
+  }, [canvas]);
+
+  useLayoutEffect(() => {
+    fitView();
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => {
+      if (!userAdjusted.current) fitView();
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fitView]);
+
+  const handleZoomIn = () => {
+    userAdjusted.current = true;
+    setZoom((z) => Math.min(2.5, z + 0.15));
+  };
+  const handleZoomOut = () => {
+    userAdjusted.current = true;
+    setZoom((z) => Math.max(0.2, z - 0.15));
+  };
   const handleReset = () => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
+    userAdjusted.current = false;
+    fitView();
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    
+
     if ((e.target as HTMLElement).closest('button')) return;
+    userAdjusted.current = true;
     setIsDragging(true);
     dragStart.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
   };
@@ -156,48 +213,47 @@ export function EventSeatingMap({
   return (
     <div className="space-y-4">
       {error && (
-        <div className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-xl text-xs font-bold leading-normal">
+        <div role="alert" className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-xl text-sm font-medium leading-normal">
           {error}
         </div>
       )}
 
+      <div className="flex items-center justify-end gap-1.5">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleZoomIn}
+          className="size-11 rounded-lg border border-border-soft cursor-pointer"
+          aria-label="Zoom In"
+        >
+          <ZoomIn className="size-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleZoomOut}
+          className="size-11 rounded-lg border border-border-soft cursor-pointer"
+          aria-label="Zoom Out"
+        >
+          <ZoomOut className="size-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleReset}
+          className="size-11 rounded-lg border border-border-soft cursor-pointer"
+          aria-label="Fit to Screen"
+        >
+          <RotateCcw className="size-4" />
+        </Button>
+      </div>
+
       <div className="relative overflow-hidden rounded-3xl border border-border-soft bg-stage shadow-2xl min-h-[500px]">
         {}
-        <div className="absolute top-4 left-4 z-30 flex items-center gap-1.5 bg-stage-elevated/90 backdrop-blur-md p-1.5 rounded-xl border border-white/5 shadow-lg">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={handleZoomIn}
-            className="size-8 rounded-lg hover:bg-white/10 text-white cursor-pointer"
-            aria-label="Zoom In"
-          >
-            <ZoomIn className="size-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={handleZoomOut}
-            className="size-8 rounded-lg hover:bg-white/10 text-white cursor-pointer"
-            aria-label="Zoom Out"
-          >
-            <ZoomOut className="size-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={handleReset}
-            className="size-8 rounded-lg hover:bg-white/10 text-white cursor-pointer"
-            aria-label="Reset View"
-          >
-            <RotateCcw className="size-4" />
-          </Button>
-        </div>
-
-        {}
-        <div className="absolute bottom-4 left-4 z-30 hidden sm:flex items-center gap-4 bg-stage-elevated/90 backdrop-blur-md px-3 py-2 rounded-xl border border-white/5 text-[10px] uppercase font-bold tracking-wider text-on-stage-soft">
+        <div className="absolute bottom-4 left-4 z-30 flex items-center gap-3 sm:gap-4 bg-stage-elevated/90 backdrop-blur-md px-3 py-2 rounded-xl border border-white/5 text-[10px] uppercase font-bold tracking-wider text-on-stage-soft">
           <div className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-full bg-white border border-accent-gold" />
             <span>Available</span>
@@ -262,12 +318,18 @@ export function EventSeatingMap({
                   </>
                 );
               })()}
+              {!inCart(`Table:${hoveredTable.tablesId}`) && (
+                <p className="pt-1 text-[10px] font-semibold uppercase tracking-wider text-accent-gold">
+                  Tap again to add to your order
+                </p>
+              )}
             </div>
           </div>
         )}
 
         {}
         <div
+          ref={containerRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -353,11 +415,20 @@ export function EventSeatingMap({
                   key={table.tablesId}
                   type="button"
                   disabled={!isAvailable || pending === table.tablesId}
-                  onMouseEnter={() =>
-                    isAvailable &&
-                    setHoveredTable({ ...table, capacity, type, priceCents: type?.priceCents || 0 })
-                  }
+                  aria-pressed={isSelected}
+                  aria-label={tableAriaLabel(table, isSelected, isAvailable)}
+                  onMouseEnter={() => isAvailable && inspectTable(table)}
                   onMouseLeave={() => setHoveredTable(null)}
+                  onFocus={() => isAvailable && inspectTable(table)}
+                  onBlur={() => setHoveredTable(null)}
+                  onPointerDown={(e) => {
+                    if (e.pointerType === 'touch') {
+                      isFirstTouchTap.current = armedTouchTable.current !== table.tablesId;
+                      armedTouchTable.current = table.tablesId;
+                    } else {
+                      isFirstTouchTap.current = false;
+                    }
+                  }}
                   onClick={() => toggleTable(table)}
                   style={{
                     position: 'absolute',
@@ -384,7 +455,7 @@ export function EventSeatingMap({
                     </span>
                   ) : (
                     <>
-                      <span className="font-display font-black text-sm uppercase tracking-tight">{table.label}</span>
+                      <span className="max-w-full truncate px-1 font-display font-black text-sm uppercase tracking-tight">{table.label}</span>
                       <span className="text-[8px] opacity-60 font-mono mt-0.5">{capacity} PAX</span>
                     </>
                   )}

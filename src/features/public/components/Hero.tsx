@@ -70,6 +70,8 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
             ref={imageRef}
             src={imageUrl(event.primaryImageId)}
             alt=""
+            fetchPriority="high"
+            decoding="async"
             className="h-[115%] w-full scale-105 object-cover opacity-45"
           />
         ) : (

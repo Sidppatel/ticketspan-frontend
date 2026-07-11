@@ -414,13 +414,13 @@ function EventDetailPageContent({ event }: { event: Event }) {
                 )}
 
                 {bookingError && (
-                  <div className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-xl text-[10px] font-bold leading-normal">
+                  <div role="alert" className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-xl text-sm font-medium leading-normal">
                     {bookingError}
                   </div>
                 )}
 
                 <Button
-                  disabled={busy || cart.length === 0 || total <= 0}
+                  disabled={busy || cart.length === 0 || !quote}
                   onClick={() => handleCheckout('card')}
                   size="lg"
                   className="w-full"
@@ -429,7 +429,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
                 </Button>
                 {achAvailable && achSavings > 0 && (
                   <Button
-                    disabled={busy || cart.length === 0 || total <= 0}
+                    disabled={busy || cart.length === 0 || !quote}
                     onClick={() => handleCheckout('ach')}
                     size="lg"
                     variant="outline"
@@ -461,14 +461,27 @@ function EventDetailPageContent({ event }: { event: Event }) {
 
       {/* Floating Bottom Action Bar for Mobile */}
       {cart.length > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-between gap-4 border-t border-stage-elevated bg-stage/95 px-6 py-4 shadow-[var(--shadow-e2)] backdrop-blur-md md:hidden">
-          <div className="flex flex-col">
-            <span className="text-xs text-on-stage-soft">Total</span>
-            <span className="font-mono text-base font-medium text-on-stage">{centsToUSD(total)}</span>
+        <div className="fixed inset-x-0 bottom-0 z-50 space-y-3 border-t border-stage-elevated bg-stage/95 px-6 py-4 shadow-[var(--shadow-e2)] backdrop-blur-md md:hidden">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col">
+              <span className="text-xs text-on-stage-soft">Total</span>
+              <span className="font-mono text-base font-medium text-on-stage">{centsToUSD(total)}</span>
+            </div>
+            <Button onClick={() => handleCheckout('card')} disabled={busy || !quote} size="lg" className="px-8">
+              {busy ? 'Reserving…' : 'Checkout'}
+            </Button>
           </div>
-          <Button onClick={() => handleCheckout('card')} disabled={busy} size="lg" className="px-8">
-            {busy ? 'Reserving…' : 'Checkout'}
-          </Button>
+          {achAvailable && achSavings > 0 && (
+            <Button
+              onClick={() => handleCheckout('ach')}
+              disabled={busy || !quote}
+              size="lg"
+              variant="outline"
+              className="w-full border-success/40 text-success hover:bg-success/10 hover:text-success"
+            >
+              {busy ? 'Reserving…' : `Pay by bank — save ${centsToUSD(achSavings)}`}
+            </Button>
+          )}
         </div>
       )}
 
