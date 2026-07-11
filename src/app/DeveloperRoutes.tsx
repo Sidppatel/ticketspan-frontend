@@ -17,6 +17,7 @@ import { DeveloperRevenuePage } from '@/features/developer/pages/DeveloperRevenu
 import { DeveloperTaxPage } from '@/features/developer/pages/DeveloperTaxPage';
 import { DeveloperTaxLookupPage } from '@/features/developer/pages/DeveloperTaxLookupPage';
 import { DeveloperTaxRemittancePage } from '@/features/developer/pages/DeveloperTaxRemittancePage';
+import { DeveloperLeadsPage } from '@/features/developer/pages/DeveloperLeadsPage';
 
 export default function DeveloperRoutes() {
   return (
@@ -31,6 +32,7 @@ export default function DeveloperRoutes() {
       >
         <Route index element={<DeveloperDashboardPage />} />
         <Route path="tenants" element={<DeveloperTenantsPage />} />
+        <Route path="leads" element={<DeveloperLeadsPage />} />
         <Route path="tenants/:tenantsId" element={<DeveloperTenantDashboardPage />} />
         <Route path="fees" element={<DeveloperFeesPage />} />
         <Route path="billing" element={<DeveloperBillingPage />} />

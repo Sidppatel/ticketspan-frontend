@@ -697,6 +697,77 @@ export interface ListFeedbackResponse {
     meta?: PageMeta;
 }
 /**
+ * @generated from protobuf message svyne.admin.CreatePlatformLeadRequest
+ */
+export interface CreatePlatformLeadRequest {
+    /**
+     * @generated from protobuf field: string name = 1;
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: string company_name = 2;
+     */
+    companyName: string;
+    /**
+     * @generated from protobuf field: string phone = 3;
+     */
+    phone: string;
+    /**
+     * @generated from protobuf field: string website = 4;
+     */
+    website: string;
+    /**
+     * @generated from protobuf field: string description = 5;
+     */
+    description: string;
+}
+/**
+ * @generated from protobuf message svyne.admin.PlatformLead
+ */
+export interface PlatformLead {
+    /**
+     * @generated from protobuf field: string platform_leads_id = 1;
+     */
+    platformLeadsId: string;
+    /**
+     * @generated from protobuf field: string name = 2;
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: string company_name = 3;
+     */
+    companyName: string;
+    /**
+     * @generated from protobuf field: string phone = 4;
+     */
+    phone: string;
+    /**
+     * @generated from protobuf field: string website = 5;
+     */
+    website: string;
+    /**
+     * @generated from protobuf field: string description = 6;
+     */
+    description: string;
+    /**
+     * @generated from protobuf field: int64 created_at = 7;
+     */
+    createdAt: string;
+}
+/**
+ * @generated from protobuf message svyne.admin.ListPlatformLeadsResponse
+ */
+export interface ListPlatformLeadsResponse {
+    /**
+     * @generated from protobuf field: repeated svyne.admin.PlatformLead leads = 1;
+     */
+    leads: PlatformLead[];
+    /**
+     * @generated from protobuf field: svyne.common.PageMeta meta = 2;
+     */
+    meta?: PageMeta;
+}
+/**
  * @generated from protobuf message svyne.admin.HealthStatus
  */
 export interface HealthStatus {
@@ -2965,6 +3036,234 @@ class ListFeedbackResponse$Type extends MessageType<ListFeedbackResponse> {
  */
 export const ListFeedbackResponse = new ListFeedbackResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class CreatePlatformLeadRequest$Type extends MessageType<CreatePlatformLeadRequest> {
+    constructor() {
+        super("svyne.admin.CreatePlatformLeadRequest", [
+            { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "company_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "phone", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "website", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<CreatePlatformLeadRequest>): CreatePlatformLeadRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.name = "";
+        message.companyName = "";
+        message.phone = "";
+        message.website = "";
+        message.description = "";
+        if (value !== undefined)
+            reflectionMergePartial<CreatePlatformLeadRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreatePlatformLeadRequest): CreatePlatformLeadRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string name */ 1:
+                    message.name = reader.string();
+                    break;
+                case /* string company_name */ 2:
+                    message.companyName = reader.string();
+                    break;
+                case /* string phone */ 3:
+                    message.phone = reader.string();
+                    break;
+                case /* string website */ 4:
+                    message.website = reader.string();
+                    break;
+                case /* string description */ 5:
+                    message.description = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: CreatePlatformLeadRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string name = 1; */
+        if (message.name !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.name);
+        /* string company_name = 2; */
+        if (message.companyName !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.companyName);
+        /* string phone = 3; */
+        if (message.phone !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.phone);
+        /* string website = 4; */
+        if (message.website !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.website);
+        /* string description = 5; */
+        if (message.description !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.description);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.admin.CreatePlatformLeadRequest
+ */
+export const CreatePlatformLeadRequest = new CreatePlatformLeadRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class PlatformLead$Type extends MessageType<PlatformLead> {
+    constructor() {
+        super("svyne.admin.PlatformLead", [
+            { no: 1, name: "platform_leads_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "company_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "phone", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "website", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "created_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+        ]);
+    }
+    create(value?: PartialMessage<PlatformLead>): PlatformLead {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.platformLeadsId = "";
+        message.name = "";
+        message.companyName = "";
+        message.phone = "";
+        message.website = "";
+        message.description = "";
+        message.createdAt = "0";
+        if (value !== undefined)
+            reflectionMergePartial<PlatformLead>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PlatformLead): PlatformLead {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string platform_leads_id */ 1:
+                    message.platformLeadsId = reader.string();
+                    break;
+                case /* string name */ 2:
+                    message.name = reader.string();
+                    break;
+                case /* string company_name */ 3:
+                    message.companyName = reader.string();
+                    break;
+                case /* string phone */ 4:
+                    message.phone = reader.string();
+                    break;
+                case /* string website */ 5:
+                    message.website = reader.string();
+                    break;
+                case /* string description */ 6:
+                    message.description = reader.string();
+                    break;
+                case /* int64 created_at */ 7:
+                    message.createdAt = reader.int64().toString();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: PlatformLead, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string platform_leads_id = 1; */
+        if (message.platformLeadsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.platformLeadsId);
+        /* string name = 2; */
+        if (message.name !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.name);
+        /* string company_name = 3; */
+        if (message.companyName !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.companyName);
+        /* string phone = 4; */
+        if (message.phone !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.phone);
+        /* string website = 5; */
+        if (message.website !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.website);
+        /* string description = 6; */
+        if (message.description !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.description);
+        /* int64 created_at = 7; */
+        if (message.createdAt !== "0")
+            writer.tag(7, WireType.Varint).int64(message.createdAt);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.admin.PlatformLead
+ */
+export const PlatformLead = new PlatformLead$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ListPlatformLeadsResponse$Type extends MessageType<ListPlatformLeadsResponse> {
+    constructor() {
+        super("svyne.admin.ListPlatformLeadsResponse", [
+            { no: 1, name: "leads", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => PlatformLead },
+            { no: 2, name: "meta", kind: "message", T: () => PageMeta }
+        ]);
+    }
+    create(value?: PartialMessage<ListPlatformLeadsResponse>): ListPlatformLeadsResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.leads = [];
+        if (value !== undefined)
+            reflectionMergePartial<ListPlatformLeadsResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ListPlatformLeadsResponse): ListPlatformLeadsResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* repeated svyne.admin.PlatformLead leads */ 1:
+                    message.leads.push(PlatformLead.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                case /* svyne.common.PageMeta meta */ 2:
+                    message.meta = PageMeta.internalBinaryRead(reader, reader.uint32(), options, message.meta);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ListPlatformLeadsResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* repeated svyne.admin.PlatformLead leads = 1; */
+        for (let i = 0; i < message.leads.length; i++)
+            PlatformLead.internalBinaryWrite(message.leads[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* svyne.common.PageMeta meta = 2; */
+        if (message.meta)
+            PageMeta.internalBinaryWrite(message.meta, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message svyne.admin.ListPlatformLeadsResponse
+ */
+export const ListPlatformLeadsResponse = new ListPlatformLeadsResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class HealthStatus$Type extends MessageType<HealthStatus> {
     constructor() {
         super("svyne.admin.HealthStatus", [
@@ -3082,6 +3381,13 @@ export const FeedbackService = new ServiceType("svyne.admin.FeedbackService", [
     { name: "CreateFeedback", options: {}, I: CreateFeedbackRequest, O: UuidValue },
     { name: "ListFeedback", options: {}, I: PageRequest, O: ListFeedbackResponse },
     { name: "DeleteFeedback", options: {}, I: UuidValue, O: AckResponse }
+]);
+/**
+ * @generated ServiceType for protobuf service svyne.admin.PlatformLeadService
+ */
+export const PlatformLeadService = new ServiceType("svyne.admin.PlatformLeadService", [
+    { name: "CreatePlatformLead", options: {}, I: CreatePlatformLeadRequest, O: UuidValue },
+    { name: "ListPlatformLeads", options: {}, I: PageRequest, O: ListPlatformLeadsResponse }
 ]);
 /**
  * @generated ServiceType for protobuf service svyne.admin.HealthService

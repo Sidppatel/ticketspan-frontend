@@ -3,26 +3,32 @@ import { useAsync } from '@/shared/hooks/useAsync';
 import { listPublicTenants, tenantUrl } from '@/features/public/services/tenantDirectoryService';
 import { Card, CardContent, CardTitle } from '@/shared/ui/card';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { LandingHero } from '@/features/public/components/landing/LandingHero';
+import {
+  AdminShowcase,
+  ClosingCta,
+  EventNightShowcase,
+  FeatureLedger,
+  FloorPlanShowcase,
+  HowItWorks,
+  PricingTeaser,
+} from '@/features/public/components/landing/LandingSections';
 
-export function TenantLandingPage() {
+function OrganizerDirectory() {
   const loader = useCallback(() => listPublicTenants(), []);
   const { data, loading, error } = useAsync(loader);
 
   return (
-    <div className="mx-auto mt-10 max-w-3xl space-y-8 px-4 md:mt-16">
-      <div className="space-y-3 text-center">
-        <span className="inline-block rounded-full bg-marigold/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-amber">
-          The box office
-        </span>
-        <h1 className="font-display text-4xl font-extrabold tracking-tight md:text-5xl">
-          Tonight starts here
-        </h1>
-        <p className="text-muted-foreground">Choose an organizer to browse their events and grab tickets.</p>
+    <section id="organizers" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 md:px-6 md:py-24">
+      <div className="max-w-md space-y-3">
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-voltage-ink">Tonight</p>
+        <h2 className="font-display text-3xl text-ink md:text-4xl">Find your organizer</h2>
+        <p className="text-ink-soft">Pick a box office to browse their events and grab tickets.</p>
       </div>
 
-      {error ? <p className="text-center text-destructive">{error}</p> : null}
+      {error ? <p className="mt-8 text-destructive">{error}</p> : null}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {loading
           ? [0, 1, 2].map((i) => <Skeleton key={i} className="h-24 w-full rounded-lg" />)
           : (data ?? []).map((tenant) => (
@@ -41,9 +47,25 @@ export function TenantLandingPage() {
             ))}
       </div>
 
-      {!loading && (data ?? []).length === 0 ? (
-        <p className="text-center text-muted-foreground">No organizers available yet.</p>
+      {!loading && !error && (data ?? []).length === 0 ? (
+        <p className="mt-8 text-ink-soft">No organizers live yet. Yours could be first.</p>
       ) : null}
+    </section>
+  );
+}
+
+export function TenantLandingPage() {
+  return (
+    <div className="bg-background">
+      <LandingHero />
+      <HowItWorks />
+      <FloorPlanShowcase />
+      <AdminShowcase />
+      <EventNightShowcase />
+      <FeatureLedger />
+      <PricingTeaser />
+      <OrganizerDirectory />
+      <ClosingCta />
     </div>
   );
 }

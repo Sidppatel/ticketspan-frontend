@@ -23,6 +23,7 @@ import {
   InvitationServiceClient,
   LogServiceClient,
   FeedbackServiceClient,
+  PlatformLeadServiceClient,
   HealthServiceClient,
 } from '@/shared/proto/admin.client';
 import { EnumServiceClient } from '@/shared/proto/enums.client';
@@ -76,6 +77,7 @@ export const staffClient = new StaffServiceClient(transport);
 export const invitationClient = new InvitationServiceClient(transport);
 export const logClient = new LogServiceClient(transport);
 export const feedbackClient = new FeedbackServiceClient(transport);
+export const platformLeadClient = new PlatformLeadServiceClient(transport);
 export const healthClient = new HealthServiceClient(transport);
 export const enumClient = new EnumServiceClient(transport);
 export const feeClient = new FeeServiceClient(transport);

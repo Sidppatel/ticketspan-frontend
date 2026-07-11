@@ -4,6 +4,9 @@
 // tslint:disable
 import { HealthService } from "./admin";
 import type { HealthStatus } from "./admin";
+import { PlatformLeadService } from "./admin";
+import type { ListPlatformLeadsResponse } from "./admin";
+import type { CreatePlatformLeadRequest } from "./admin";
 import { FeedbackService } from "./admin";
 import type { ListFeedbackResponse } from "./admin";
 import type { CreateFeedbackRequest } from "./admin";
@@ -417,6 +420,43 @@ export class FeedbackServiceClient implements IFeedbackServiceClient, ServiceInf
     deleteFeedback(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
         const method = this.methods[2], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
+    }
+}
+/**
+ * @generated from protobuf service svyne.admin.PlatformLeadService
+ */
+export interface IPlatformLeadServiceClient {
+    /**
+     * @generated from protobuf rpc: CreatePlatformLead(svyne.admin.CreatePlatformLeadRequest) returns (svyne.common.UuidValue);
+     */
+    createPlatformLead(input: CreatePlatformLeadRequest, options?: RpcOptions): UnaryCall<CreatePlatformLeadRequest, UuidValue>;
+    /**
+     * @generated from protobuf rpc: ListPlatformLeads(svyne.common.PageRequest) returns (svyne.admin.ListPlatformLeadsResponse);
+     */
+    listPlatformLeads(input: PageRequest, options?: RpcOptions): UnaryCall<PageRequest, ListPlatformLeadsResponse>;
+}
+/**
+ * @generated from protobuf service svyne.admin.PlatformLeadService
+ */
+export class PlatformLeadServiceClient implements IPlatformLeadServiceClient, ServiceInfo {
+    typeName = PlatformLeadService.typeName;
+    methods = PlatformLeadService.methods;
+    options = PlatformLeadService.options;
+    constructor(private readonly _transport: RpcTransport) {
+    }
+    /**
+     * @generated from protobuf rpc: CreatePlatformLead(svyne.admin.CreatePlatformLeadRequest) returns (svyne.common.UuidValue);
+     */
+    createPlatformLead(input: CreatePlatformLeadRequest, options?: RpcOptions): UnaryCall<CreatePlatformLeadRequest, UuidValue> {
+        const method = this.methods[0], opt = this._transport.mergeOptions(options);
+        return stackIntercept<CreatePlatformLeadRequest, UuidValue>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ListPlatformLeads(svyne.common.PageRequest) returns (svyne.admin.ListPlatformLeadsResponse);
+     */
+    listPlatformLeads(input: PageRequest, options?: RpcOptions): UnaryCall<PageRequest, ListPlatformLeadsResponse> {
+        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        return stackIntercept<PageRequest, ListPlatformLeadsResponse>("unary", this._transport, method, opt, input);
     }
 }
 /**

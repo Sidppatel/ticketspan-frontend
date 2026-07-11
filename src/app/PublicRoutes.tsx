@@ -22,11 +22,13 @@ import { PrivacyPage } from '@/features/public/pages/PrivacyPage';
 import { RefundPolicyPage } from '@/features/public/pages/RefundPolicyPage';
 import { HelpCenterPage } from '@/features/public/pages/HelpCenterPage';
 import { ContactSupportPage } from '@/features/public/pages/ContactSupportPage';
+import { GetStartedPage } from '@/features/public/pages/GetStartedPage';
 
 export default function PublicRoutes() {
   return (
     <Routes>
       {authRoutes({ allowRegister: true })}
+      <Route path="get-started" element={<GetStartedPage />} />
       <Route element={<PublicLayout />}>
         <Route index element={currentTenantSlug() ? <EventListPage /> : <TenantLandingPage />} />
         <Route path="events/:slug" element={<EventDetailPage />} />

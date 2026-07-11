@@ -6,6 +6,7 @@ import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 import { useAuth } from '@/shared/auth/useAuth';
 import { cn } from '@/shared/lib/cn';
 import { acquireLenis } from '@/shared/motion/lenis';
+import { currentTenantSlug } from '@/shared/subdomain';
 
 export function PublicLayout() {
   const { role, isAuthenticated } = useAuth();
@@ -25,11 +26,12 @@ export function PublicLayout() {
     links.push({ to: '/staff', label: 'Check-In' });
   }
 
-  const isFullBleedPage = pathname.startsWith('/events/');
+  const isPlatformLanding = pathname === '/' && !currentTenantSlug();
+  const isFullBleedPage = pathname.startsWith('/events/') || isPlatformLanding;
 
   return (
     <div className="min-h-screen bg-background">
-      <PortalNav links={links} transparent={isFullBleedPage} />
+      {!isPlatformLanding && <PortalNav links={links} transparent={isFullBleedPage} />}
       <main
         ref={page}
         key={pathname}
