@@ -22,7 +22,7 @@ export function LandingHero() {
           >
             <span className="h-1.5 w-1.5 rounded-full bg-voltage" /> Built in Chickasaw, Alabama
           </p>
-          <h1 data-split className="font-display text-4xl font-medium leading-[1.05] text-on-stage md:text-5xl lg:text-6xl">
+          <h1 data-split className="font-display text-4xl font-medium leading-[1.15] text-on-stage md:text-5xl lg:text-6xl">
             The box office <em className="italic text-voltage">you&rsquo;d want</em> &mdash; for the person who sweeps the floor at 3 AM.
           </h1>
           <p data-reveal className="max-w-md text-base leading-relaxed text-on-stage-soft md:text-lg">

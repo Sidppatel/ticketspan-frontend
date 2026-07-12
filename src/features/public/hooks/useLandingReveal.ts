@@ -34,7 +34,6 @@ export function useLandingReveal(scope: RefObject<HTMLDivElement | null>) {
         gsap.utils.toArray<HTMLElement>('[data-split]').forEach((heading) => {
           SplitText.create(heading, {
             type: 'lines',
-            mask: 'lines',
             autoSplit: true,
             onSplit: (self) =>
               gsap.from(self.lines, {
