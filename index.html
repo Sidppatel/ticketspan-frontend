@@ -4,9 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Svyne Events</title>
+    <meta
+      name="description"
+      content="Tickets and VIP tables for premium events, sold under your own brand. Attendees pick their exact table; organizers keep every dollar."
+    />
+    <meta name="theme-color" content="#8a2d3b" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:site_name" content="Svyne Events" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Svyne Events" />
+    <meta
+      property="og:description"
+      content="Tickets and VIP tables for premium events, sold under your own brand."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Svyne",
+            "url": "https://svyne.com",
+            "description": "Multi-tenant box office platform for premium events: branded ticketing, VIP table selection, card and ACH payments."
+          },
+          {
+            "@type": "WebSite",
+            "name": "Svyne Events",
+            "url": "https://svyne.com"
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>Svyne Events requires JavaScript to browse and book events.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

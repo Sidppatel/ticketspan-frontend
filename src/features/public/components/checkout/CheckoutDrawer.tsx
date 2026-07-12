@@ -6,7 +6,7 @@ import { PriceBadge } from '../PriceBadge';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { listTickets, getBooking } from '@/features/public/services/ticketService';
 import { QrImage } from '@/features/public/components/wallet/QrImage';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Share2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/cn';
 
@@ -111,6 +111,38 @@ export function CheckoutDrawer({
   );
 }
 
+function ShareEventButton({ eventLabel }: { eventLabel?: string }) {
+  const [copied, setCopied] = useState(false);
+  const share = async () => {
+    const url = window.location.origin + window.location.pathname;
+    const text = eventLabel ? `I'm going to ${eventLabel}!` : "I'm going!";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: text, text, url });
+        return;
+      } catch {
+        return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      return;
+    }
+  };
+  return (
+    <Button
+      onClick={share}
+      className="bg-accent-gold/10 hover:bg-accent-gold/20 text-accent-gold border border-accent-gold/20 py-4 w-full"
+    >
+      <Share2 className="size-4 mr-2" />
+      {copied ? 'Link copied!' : "Share — I'm going"}
+    </Button>
+  );
+}
+
 function ConfirmationReceipt({
   bookingsId,
   grandTotalCents,
@@ -189,6 +221,7 @@ function ConfirmationReceipt({
       </div>
 
       <div className="flex flex-col gap-2 pt-4 mt-auto border-t border-white/5 shrink-0 bg-stage sticky bottom-0 z-10 pb-2">
+        <ShareEventButton eventLabel={booking.data?.lines?.[0]?.label} />
         <Button onClick={() => window.print()} className="bg-white/5 hover:bg-white/10 text-white border border-white/10 py-4 w-full hover:text-white">
           Print Entry Passes
         </Button>

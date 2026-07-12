@@ -3,7 +3,7 @@ interface Env {
   VITE_BACKEND_URL?: string;
 }
 
-const BOT = /bot|crawler|spider|facebookexternalhit|twitterbot|slackbot|linkedinbot|whatsapp|telegrambot|discordbot|embedly|pinterest|googlebot|bingbot/i;
+const BOT = /bot|crawler|spider|facebookexternalhit|twitterbot|slackbot|linkedinbot|whatsapp|telegrambot|discordbot|embedly|pinterest|googlebot|bingbot|gptbot|oai-searchbot|chatgpt-user|claudebot|claude-web|anthropic-ai|perplexity|google-extended|duckassistbot|cohere-ai|ccbot|meta-externalagent|applebot|amazonbot|youbot|bytespider/i;
 
 const ROUTES: Record<string, { service: string; method: string }> = {
   events: { service: 'svyne.event.EventService', method: 'GetEventBySlug' },
@@ -133,6 +133,7 @@ export const onRequest = async (context: { request: Request; env: Env }): Promis
       return env.ASSETS.fetch(request);
     }
 
+    const canonical = `${url.origin}${url.pathname}`;
     const image = imageId ? `${env.VITE_BACKEND_URL}/images/${imageId}` : '';
     const ld = {
       '@context': 'https://schema.org',
@@ -140,10 +141,12 @@ export const onRequest = async (context: { request: Request; env: Env }): Promis
       name: title,
       description: description || undefined,
       image: image || undefined,
-      url: request.url,
+      url: canonical,
     };
     const tags =
       `<title>${escapeHtml(title)}</title>` +
+      `<link rel="canonical" href="${escapeHtml(canonical)}"/>` +
+      `<meta property="og:url" content="${escapeHtml(canonical)}"/>` +
       `<meta property="og:title" content="${escapeHtml(title)}"/>` +
       (description ? `<meta name="description" content="${escapeHtml(description)}"/>` : '') +
       (description ? `<meta property="og:description" content="${escapeHtml(description)}"/>` : '') +

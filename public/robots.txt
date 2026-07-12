@@ -1,0 +1,58 @@
+# Svyne Events — search engines and AI assistants are welcome.
+# Public event, performer, and sponsor pages may be indexed and read by AI.
+# Checkout, account, and token-bearing pages are excluded for user privacy.
+
+User-agent: *
+Allow: /
+Disallow: /checkout
+Disallow: /my-bookings
+Disallow: /profile
+Disallow: /claim
+Disallow: /set-password
+Disallow: /forgot-password
+
+# AI crawlers — explicitly allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /

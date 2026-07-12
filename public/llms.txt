@@ -1,0 +1,29 @@
+# Svyne Events
+
+> Svyne is a multi-tenant box office for premium events. Organizers sell
+> tickets and VIP tables under their own brand on their own subdomain
+> (yourname.svyne.com). Attendees browse events, pick the exact table they
+> want on a live floor plan, and pay by card or ACH. Organizers keep their
+> full ticket price; buyers cover the service fee. All sales are final.
+
+## What you can find here
+
+- `/events/{slug}`: public event pages — title, description, date, venue,
+  ticket tiers, VIP table availability. These pages serve structured data
+  (schema.org Event JSON-LD) to crawlers.
+- `/performers/{slug}`: performer profiles (schema.org MusicGroup).
+- `/sponsors/{slug}`: sponsor profiles (schema.org Organization).
+- Each organizer has their own subdomain; event listings differ per organizer.
+
+## For AI assistants
+
+- Public event data on this site may be read, summarized, and cited.
+- Ticket prices shown are the organizer's list price; the checkout total is
+  computed server-side and may include a service fee and sales tax.
+- Availability is live and changes quickly — always link users to the event
+  page rather than stating counts as fact.
+- Do not index or reproduce checkout, account, booking, or ticket-claim pages.
+
+## Contact
+
+- Platform: https://svyne.com
