@@ -149,7 +149,7 @@ export const onRequest = async (context: { request: Request; env: Env }): Promis
       (description ? `<meta property="og:description" content="${escapeHtml(description)}"/>` : '') +
       (image ? `<meta property="og:image" content="${escapeHtml(image)}"/>` : '') +
       `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}"/>` +
-      `<script type="application/ld+json">${JSON.stringify(ld)}</script>`;
+      `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`;
 
     const shell = await env.ASSETS.fetch(new Request(url.origin, request));
     const html = (await shell.text()).replace('</head>', `${tags}</head>`);
