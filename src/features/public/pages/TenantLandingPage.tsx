@@ -1,15 +1,19 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useAsync } from '@/shared/hooks/useAsync';
+import { useLandingReveal } from '@/features/public/hooks/useLandingReveal';
 import { listPublicTenants, tenantUrl } from '@/features/public/services/tenantDirectoryService';
 import { Card, CardContent, CardTitle } from '@/shared/ui/card';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { LandingHero } from '@/features/public/components/landing/LandingHero';
+import { LandingNav } from '@/features/public/components/landing/LandingNav';
+import { VenueMarquee } from '@/features/public/components/landing/LandingSections';
 import {
   AdminShowcase,
   ClosingCta,
   EventNightShowcase,
   FeatureLedger,
   FloorPlanShowcase,
+  FounderNote,
   HowItWorks,
   PricingTeaser,
 } from '@/features/public/components/landing/LandingSections';
@@ -37,7 +41,10 @@ function OrganizerDirectory() {
                 href={tenantUrl(tenant.slug)}
                 className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <Card interactive className="h-full">
+                <Card
+                  interactive
+                  className="h-full transition-[transform,box-shadow] duration-[280ms] ease-[var(--ease-spring)] hover:-translate-y-1 hover:shadow-[var(--shadow-e2)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
                   <CardContent className="space-y-1">
                     <CardTitle>{tenant.name}</CardTitle>
                     <p className="font-mono text-sm text-muted-foreground">{tenant.slug}</p>
@@ -55,14 +62,19 @@ function OrganizerDirectory() {
 }
 
 export function TenantLandingPage() {
+  const scopeRef = useRef<HTMLDivElement>(null);
+  useLandingReveal(scopeRef);
   return (
-    <div className="bg-background">
+    <div ref={scopeRef} className="bg-background">
+      <LandingNav />
       <LandingHero />
+      <VenueMarquee />
       <HowItWorks />
       <FloorPlanShowcase />
       <AdminShowcase />
       <EventNightShowcase />
       <FeatureLedger />
+      <FounderNote />
       <PricingTeaser />
       <OrganizerDirectory />
       <ClosingCta />

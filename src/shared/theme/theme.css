@@ -11,10 +11,15 @@
   --color-burgundy-100: #8a2d3b;
   --color-burgundy-200: #7b2432;
   --color-gold-100: #eeac4d;
-  --color-gold-200: #e8940d;
+  --color-gold-200: #d4a574;
   --color-gold-300: #e89309;
   --color-gold-400: #b45308;
   --color-gold-500: #20130b;
+  --color-coral-100: #e07a5f;
+  --color-coral-200: #c96248;
+  --color-cream-100: #f2e8d5;
+  --color-sage-100: #84a98c;
+  --color-rust-100: #bc4749;
   --color-green-100: #f4f7f5;
   --color-green-200: #c6d4c7;
   --color-green-300: #357a40;
@@ -49,9 +54,13 @@
   --voltage-accent: var(--color-gold-200);
   --voltage-accent-ink: var(--color-gold-500);
 
+  --highlight: var(--color-cream-100);
+  --accent-coral: var(--color-coral-100);
+  --accent-coral-hover: var(--color-coral-200);
+
   --status-success: var(--color-green-300);
   --status-warn: var(--color-gold-400);
-  --status-danger: var(--color-red-200);
+  --status-danger: var(--color-rust-100);
   --status-danger-on-dark: var(--color-red-100);
 
   --stage: var(--color-sand-900);
@@ -61,6 +70,7 @@
 
   --font-body-stack: 'Inter', -apple-system, system-ui, sans-serif;
   --font-display-stack: 'Fraunces', 'Georgia', serif;
+  --font-accent-stack: 'Fraunces', 'Georgia', serif;
   --font-mono-stack: 'JetBrains Mono', ui-monospace, monospace;
 
   --radius-input: 4px;
@@ -207,6 +217,9 @@
   --color-brand-ink: var(--brand-ink);
   --color-voltage: var(--voltage-accent);
   --color-voltage-ink: var(--voltage-accent-ink);
+  --color-highlight: var(--highlight);
+  --color-coral: var(--accent-coral);
+  --color-coral-hover: var(--accent-coral-hover);
 
   --color-surface-900: var(--surface-900);
   --color-surface-800: var(--surface-800);
@@ -228,6 +241,7 @@
 
   --font-sans: var(--font-body-stack);
   --font-display: var(--font-display-stack);
+  --font-accent: var(--font-accent-stack);
   --font-mono: var(--font-mono-stack);
 
   --ease-out: var(--ease-out);

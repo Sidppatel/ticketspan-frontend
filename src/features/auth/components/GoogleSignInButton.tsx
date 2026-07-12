@@ -58,7 +58,11 @@ export function GoogleSignInButton({ onToken }: { onToken: (idToken: string) => 
             }
           },
         });
-        window.google.accounts.id.renderButton(containerRef.current, { theme: 'outline', size: 'large' });
+        window.google.accounts.id.renderButton(containerRef.current, {
+          theme: 'outline',
+          size: 'large',
+          width: containerRef.current.clientWidth,
+        });
       })
       .catch(() => undefined);
     return () => {
@@ -69,5 +73,5 @@ export function GoogleSignInButton({ onToken }: { onToken: (idToken: string) => 
   if (!clientId) {
     return null;
   }
-  return <div ref={containerRef} />;
+  return <div ref={containerRef} className="w-full [&>div]:w-full [&_iframe]:!w-full" />;
 }

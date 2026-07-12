@@ -1,4 +1,61 @@
+import { useMemo, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { Draggable } from 'gsap/Draggable';
 import { cn } from '@/shared/lib/cn';
+
+gsap.registerPlugin(useGSAP, Draggable);
+
+function LiveNumber({
+  initial,
+  min,
+  max,
+  step,
+  prefix = '',
+}: {
+  initial: number;
+  min: number;
+  max: number;
+  step: number;
+  prefix?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el) {
+        return;
+      }
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+      let current = initial;
+      let timer = 0;
+      let tween: gsap.core.Tween | undefined;
+      const tick = () => {
+        const next = gsap.utils.clamp(min, max, current + gsap.utils.random(-step, step, 1));
+        const obj = { n: current };
+        tween = gsap.to(obj, {
+          n: next,
+          duration: 0.8,
+          ease: 'power2.out',
+          onUpdate: () => {
+            el.textContent = prefix + Math.round(obj.n).toLocaleString();
+          },
+        });
+        current = next;
+        timer = window.setTimeout(tick, gsap.utils.random(2000, 3000));
+      };
+      timer = window.setTimeout(tick, gsap.utils.random(2000, 3000));
+      return () => {
+        window.clearTimeout(timer);
+        tween?.kill();
+      };
+    },
+    { dependencies: [] },
+  );
+  return <span ref={ref}>{prefix + initial.toLocaleString()}</span>;
+}
 
 function QrGlyph({ className }: { className?: string }) {
   return (
@@ -26,8 +83,56 @@ function QrGlyph({ className }: { className?: string }) {
 }
 
 export function HeroTicket() {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const wrap = wrapRef.current;
+      const card = cardRef.current;
+      if (!wrap || !card) {
+        return;
+      }
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference) and (pointer: fine)', () => {
+        const rxTo = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power3.out' });
+        const ryTo = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power3.out' });
+        const onMove = (e: MouseEvent) => {
+          const rect = wrap.getBoundingClientRect();
+          const px = (e.clientX - rect.left) / rect.width - 0.5;
+          const py = (e.clientY - rect.top) / rect.height - 0.5;
+          rxTo(py * -10);
+          ryTo(px * 12);
+        };
+        const onLeave = () => {
+          rxTo(0);
+          ryTo(0);
+        };
+        wrap.addEventListener('mousemove', onMove);
+        wrap.addEventListener('mouseleave', onLeave);
+        return () => {
+          wrap.removeEventListener('mousemove', onMove);
+          wrap.removeEventListener('mouseleave', onLeave);
+        };
+      });
+      return () => mm.revert();
+    },
+    { scope: wrapRef },
+  );
+
   return (
-    <div className="w-full max-w-sm rotate-2 overflow-hidden rounded-xl bg-surface shadow-[var(--shadow-e2)] transition-transform duration-[280ms] ease-[var(--ease-out)] hover:rotate-0 motion-reduce:rotate-0 motion-reduce:transition-none">
+    <div ref={wrapRef} className="w-full max-w-sm [perspective:900px]">
+      <TicketCard cardRef={cardRef} />
+    </div>
+  );
+}
+
+function TicketCard({ cardRef }: { cardRef: React.Ref<HTMLDivElement> }) {
+  return (
+    <div
+      ref={cardRef}
+      className="svyne-tilt w-full rotate-2 overflow-hidden rounded-xl bg-surface shadow-[var(--shadow-e2)] motion-reduce:rotate-0"
+    >
       <div className="space-y-4 p-6">
         <div className="flex items-baseline justify-between gap-4">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-faint">Admit six</p>
@@ -56,18 +161,74 @@ export function HeroTicket() {
   );
 }
 
-const floorTables = [
-  { label: 'T-1', shape: 'round', col: 'col-start-1', row: 'row-start-1', state: 'open' },
-  { label: 'T-2', shape: 'round', col: 'col-start-3', row: 'row-start-1', state: 'sold' },
-  { label: 'T-3', shape: 'square', col: 'col-start-5', row: 'row-start-1', state: 'open' },
-  { label: 'T-4', shape: 'round', col: 'col-start-2', row: 'row-start-2', state: 'held' },
-  { label: 'T-5', shape: 'square', col: 'col-start-4', row: 'row-start-2', state: 'open' },
-  { label: 'T-6', shape: 'round', col: 'col-start-1', row: 'row-start-3', state: 'sold' },
-  { label: 'T-7', shape: 'round', col: 'col-start-3', row: 'row-start-3', state: 'open' },
-  { label: 'T-8', shape: 'square', col: 'col-start-5', row: 'row-start-3', state: 'open' },
+const TABLE_LAYOUT = [
+  { label: 'T-1', shape: 'round', x: 12, y: 14 },
+  { label: 'T-2', shape: 'round', x: 210, y: 14 },
+  { label: 'T-3', shape: 'square', x: 372, y: 14 },
+  { label: 'T-4', shape: 'round', x: 116, y: 98 },
+  { label: 'T-5', shape: 'square', x: 288, y: 98 },
+  { label: 'T-6', shape: 'round', x: 12, y: 182 },
+  { label: 'T-7', shape: 'round', x: 210, y: 182 },
+  { label: 'T-8', shape: 'square', x: 372, y: 182 },
 ] as const;
 
+const HELD_INDEX = 3;
+
+function pickSoldIndices(): Set<number> {
+  const pool = TABLE_LAYOUT.map((_, i) => i).filter((i) => i !== HELD_INDEX);
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return new Set(pool.slice(0, 2));
+}
+
 export function FloorPlanMock() {
+  const boardRef = useRef<HTMLDivElement>(null);
+  const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const sold = useMemo(() => pickSoldIndices(), []);
+
+  useGSAP(
+    () => {
+      const board = boardRef.current;
+      if (!board) {
+        return;
+      }
+      const tiles = tileRefs.current.filter((t): t is HTMLDivElement => t !== null);
+      const draggers = TABLE_LAYOUT.map((_, i) => {
+        if (i === HELD_INDEX || sold.has(i)) {
+          return null;
+        }
+        const el = tileRefs.current[i];
+        if (!el) {
+          return null;
+        }
+        const good = { x: 0, y: 0 };
+        return Draggable.create(el, {
+          type: 'x,y',
+          bounds: board,
+          onPress() {
+            good.x = this.x;
+            good.y = this.y;
+          },
+          onDrag() {
+            const hit = tiles.some((other) => other !== el && this.hitTest(other, 0));
+            if (hit) {
+              gsap.set(el, { x: good.x, y: good.y });
+              this.x = good.x;
+              this.y = good.y;
+            } else {
+              good.x = this.x;
+              good.y = this.y;
+            }
+          },
+        })[0];
+      });
+      return () => draggers.forEach((d) => d?.kill());
+    },
+    { scope: boardRef, dependencies: [sold] },
+  );
+
   return (
     <div className="rounded-xl bg-stage-elevated p-5 shadow-[var(--shadow-e2)]">
       <div className="mb-4 flex items-center justify-between">
@@ -79,27 +240,34 @@ export function FloorPlanMock() {
       <div className="mb-3 rounded-md border border-on-stage-soft/30 py-1.5 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-on-stage-soft">
         Stage
       </div>
-      <div className="grid grid-cols-5 grid-rows-3 gap-3">
-        {floorTables.map((table) => (
-          <div
-            key={table.label}
-            className={cn(
-              'flex aspect-square items-center justify-center font-mono text-[11px]',
-              table.col,
-              table.row,
-              table.shape === 'round' ? 'rounded-full' : 'rounded-md',
-              table.state === 'open' && 'border border-on-stage-soft/40 text-on-stage',
-              table.state === 'sold' && 'bg-on-stage-soft/15 text-on-stage-soft line-through',
-              table.state === 'held' && 'bg-voltage text-voltage-ink shadow-[var(--shadow-e1)]',
-            )}
-          >
-            {table.label}
-          </div>
-        ))}
+      <div ref={boardRef} className="relative mx-auto h-[248px] w-full max-w-[440px] touch-none">
+        {TABLE_LAYOUT.map((table, i) => {
+          const isSold = sold.has(i);
+          const isHeld = i === HELD_INDEX;
+          const isOpen = !isSold && !isHeld;
+          return (
+            <div
+              key={table.label}
+              ref={(el) => {
+                tileRefs.current[i] = el;
+              }}
+              style={{ left: table.x, top: table.y }}
+              className={cn(
+                'absolute flex h-[52px] w-[52px] select-none items-center justify-center font-mono text-[11px]',
+                table.shape === 'round' ? 'rounded-full' : 'rounded-md',
+                isOpen && 'cursor-grab border border-on-stage-soft/40 text-on-stage transition-shadow hover:shadow-[0_0_14px_color-mix(in_srgb,var(--voltage-accent)_35%,transparent)] active:cursor-grabbing',
+                isSold && 'bg-on-stage-soft/15 text-on-stage-soft line-through',
+                isHeld && 'svyne-hold-pulse bg-voltage text-voltage-ink shadow-[var(--shadow-e1)]',
+              )}
+            >
+              {table.label}
+            </div>
+          );
+        })}
       </div>
-      <div className="mt-4 flex gap-5 font-mono text-[10px] uppercase tracking-widest text-on-stage-soft">
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[10px] uppercase tracking-widest text-on-stage-soft">
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full border border-on-stage-soft/60" /> Open
+          <span className="h-2 w-2 rounded-full border border-on-stage-soft/60" /> Drag to arrange
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-voltage" /> Yours for 10 min
@@ -126,15 +294,15 @@ export function DashboardMock() {
       <div className="grid grid-cols-3 divide-x divide-hairline border-b border-hairline">
         <div className="px-5 py-4">
           <p className="text-[11px] text-ink-faint">Tickets sold</p>
-          <p className="font-mono text-xl text-ink">184<span className="text-ink-faint">/220</span></p>
+          <p className="font-mono text-xl text-ink"><LiveNumber initial={184} min={180} max={220} step={3} /><span className="text-ink-faint">/220</span></p>
         </div>
         <div className="px-5 py-4">
           <p className="text-[11px] text-ink-faint">Your revenue</p>
-          <p className="font-mono text-xl text-voltage-ink">$11,040</p>
+          <p className="font-mono text-xl text-voltage-ink"><LiveNumber initial={11040} min={10800} max={13200} step={120} prefix="$" /></p>
         </div>
         <div className="px-5 py-4">
           <p className="text-[11px] text-ink-faint">At the door</p>
-          <p className="font-mono text-xl text-ink">96<span className="text-ink-faint"> in</span></p>
+          <p className="font-mono text-xl text-ink"><LiveNumber initial={96} min={90} max={130} step={2} /><span className="text-ink-faint"> in</span></p>
         </div>
       </div>
       <div className="flex items-end gap-2 px-5 pb-4 pt-5">
@@ -157,7 +325,7 @@ export function ScannerMock() {
       <div className="px-4 pb-3 pt-4">
         <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-on-stage-soft">Door scan</p>
       </div>
-      <div className="mx-4 rounded-lg bg-success px-4 py-6 text-center text-[var(--color-sand-100)]">
+      <div className="svyne-scanline mx-4 rounded-lg bg-success px-4 py-6 text-center text-[var(--color-sand-100)]">
         <p className="font-display text-4xl">VIP-3</p>
         <p className="mt-1 text-sm">Amara O. · party of 6</p>
         <p className="mt-2 font-mono text-[11px] uppercase tracking-widest opacity-80">Checked in</p>

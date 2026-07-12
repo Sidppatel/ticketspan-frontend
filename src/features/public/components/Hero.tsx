@@ -19,8 +19,8 @@ interface HeroProps {
 
 const EVENT_TYPE_LABEL: Record<string, string> = {
   Open: 'General admission',
-  Table: 'VIP table seating',
-  Both: 'Tickets & VIP tables',
+  Table: 'table seating',
+  Both: 'Tickets & tables',
 };
 
 export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {

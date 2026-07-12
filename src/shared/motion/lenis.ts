@@ -19,8 +19,9 @@ export function acquireLenis(): () => void {
   refCount += 1;
   if (!instance) {
     instance = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: 0.14,
+      wheelMultiplier: 1.1,
+      touchMultiplier: 1.5,
     });
     instance.on('scroll', ScrollTrigger.update);
     const loop = (time: number) => {

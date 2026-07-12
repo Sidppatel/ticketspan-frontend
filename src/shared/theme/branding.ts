@@ -152,11 +152,11 @@ export function serializeBrandTokens(tokens: Record<string, string>): string {
 export const DEFAULT_BRANDING: TenantBranding = {
   primary: '#8a2d3b',
   secondary: '#f3f0eb',
-  accent: '#e8940a',
+  accent: '#d4a574',
   background: '#faf8f5',
   text: '#1c1917',
   button: '#8a2d3b',
-  highlight: '#e8940a',
+  highlight: '#d4a574',
   tokens: {},
   logoUrl: null,
   tenantName: '',
@@ -176,7 +176,7 @@ export const BRANDING_PRESETS: BrandingPreset[] = [
     colors: {
       primary: '#8a2d3b',
       secondary: '#f3f0eb',
-      accent: '#e8940a',
+      accent: '#d4a574',
       background: '#faf8f5',
       text: '#1c1917',
       button: '#8a2d3b',

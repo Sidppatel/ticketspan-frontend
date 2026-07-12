@@ -116,7 +116,7 @@ export function GetStartedPage() {
                   rows={4}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Monthly rooftop series, about 300 tickets plus 12 VIP tables per night..."
+                  placeholder="Monthly rooftop series, about 300 tickets plus 12 tables per night..."
                 />
               </div>
               {error ? <p className="text-sm text-destructive">{error}</p> : null}
