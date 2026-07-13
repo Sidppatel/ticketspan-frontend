@@ -26,8 +26,7 @@ export function useLandingReveal(scope: RefObject<HTMLDivElement | null>) {
   useEffect(() => {
     let disposed = false;
     let ctx: { revert(): void } | undefined;
-
-    void Promise.all([
+    const start = () => void Promise.all([
       import('gsap'),
       import('gsap/ScrollTrigger'),
       import('gsap/SplitText'),
@@ -69,8 +68,15 @@ export function useLandingReveal(scope: RefObject<HTMLDivElement | null>) {
       }, scope);
     });
 
+    const idle = typeof window.requestIdleCallback === 'function';
+    const idleId = idle
+      ? window.requestIdleCallback(start, { timeout: 2500 })
+      : window.setTimeout(start, 1200);
+
     return () => {
       disposed = true;
+      if (idle) window.cancelIdleCallback(idleId);
+      else window.clearTimeout(idleId);
       ctx?.revert();
     };
   }, [scope]);

@@ -1,10 +1,50 @@
-import { useMemo, useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { Draggable } from 'gsap/Draggable';
+import { useEffect, useMemo, useRef, type RefObject } from 'react';
+import type { gsap as GsapCore } from 'gsap';
+import type { Draggable as DraggableType } from 'gsap/Draggable';
 import { cn } from '@/shared/lib/cn';
 
-gsap.registerPlugin(useGSAP, Draggable);
+interface MockGsapBundle {
+  gsap: typeof GsapCore;
+  Draggable: typeof DraggableType;
+}
+
+let mockGsapLoaded: Promise<MockGsapBundle> | null = null;
+
+function loadMockGsap(): Promise<MockGsapBundle> {
+  if (!mockGsapLoaded) {
+    mockGsapLoaded = Promise.all([import('gsap'), import('gsap/Draggable')]).then(
+      ([core, drag]) => {
+        core.gsap.registerPlugin(drag.Draggable);
+        return { gsap: core.gsap, Draggable: drag.Draggable };
+      },
+    );
+  }
+  return mockGsapLoaded;
+}
+
+function useMockGsap(
+  setup: (bundle: MockGsapBundle) => void | (() => void),
+  scope: RefObject<HTMLElement | null>,
+  deps: unknown[] = [],
+): void {
+  useEffect(() => {
+    let disposed = false;
+    let ctx: { revert(): void } | undefined;
+    let cleanup: (() => void) | void;
+    void loadMockGsap().then((bundle) => {
+      if (disposed || !scope.current) return;
+      ctx = bundle.gsap.context(() => {
+        cleanup = setup(bundle);
+      }, scope);
+    });
+    return () => {
+      disposed = true;
+      cleanup?.();
+      ctx?.revert();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
 
 function LiveNumber({
   initial,
@@ -20,8 +60,8 @@ function LiveNumber({
   prefix?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  useGSAP(
-    () => {
+  useMockGsap(
+    ({ gsap }) => {
       const el = ref.current;
       if (!el) {
         return;
@@ -52,7 +92,8 @@ function LiveNumber({
         tween?.kill();
       };
     },
-    { dependencies: [] },
+    ref,
+    [],
   );
   return <span ref={ref}>{prefix + initial.toLocaleString()}</span>;
 }
@@ -86,8 +127,8 @@ export function HeroTicket() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
+  useMockGsap(
+    ({ gsap }) => {
       const wrap = wrapRef.current;
       const card = cardRef.current;
       if (!wrap || !card) {
@@ -117,7 +158,7 @@ export function HeroTicket() {
       });
       return () => mm.revert();
     },
-    { scope: wrapRef },
+    wrapRef,
   );
 
   return (
@@ -188,8 +229,8 @@ export function FloorPlanMock() {
   const tileRefs = useRef<(HTMLDivElement | null)[]>([]);
   const sold = useMemo(() => pickSoldIndices(), []);
 
-  useGSAP(
-    () => {
+  useMockGsap(
+    ({ gsap, Draggable }) => {
       const board = boardRef.current;
       if (!board) {
         return;
@@ -226,7 +267,8 @@ export function FloorPlanMock() {
       });
       return () => draggers.forEach((d) => d?.kill());
     },
-    { scope: boardRef, dependencies: [sold] },
+    boardRef,
+    [sold],
   );
 
   return (

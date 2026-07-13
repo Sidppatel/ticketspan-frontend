@@ -1,9 +1,8 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { imageUrl } from '@/shared/upload';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
 import { cn } from '@/shared/lib/cn';
+import { useLazyGsap } from '@/shared/motion/useLazyGsap';
 
 interface ArtistCardProps {
   name: string;
@@ -19,8 +18,8 @@ export function ArtistCard({ name, slug, primaryImagePath, subtitle, hrefBase, c
   const imageRef = useRef<HTMLImageElement>(null);
   const glintRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
+  useLazyGsap(
+    ({ gsap }) => {
       const card = cardRef.current;
       if (!card) return;
 
@@ -93,7 +92,7 @@ export function ArtistCard({ name, slug, primaryImagePath, subtitle, hrefBase, c
         card.removeEventListener('mouseleave', onMouseLeave);
       };
     },
-    { scope: cardRef }
+    cardRef,
   );
 
   return (

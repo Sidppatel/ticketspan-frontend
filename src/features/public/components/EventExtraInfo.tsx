@@ -1,9 +1,8 @@
 import { useMemo, useRef } from 'react';
 import { Info, Sparkles, HelpCircle, Lock, Calendar, Star, Compass } from 'lucide-react';
 import { parseMeta, publicMeta } from './catalogJson';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
 import { resolveCssColor } from '@/shared/theme/branding';
+import { useLazyGsap } from '@/shared/motion/useLazyGsap';
 
 function humanize(key: string): string {
   return key
@@ -28,8 +27,8 @@ export function EventExtraInfo({ extraInfoJson }: { extraInfoJson: string }) {
   const items = useMemo(() => publicMeta(parseMeta(extraInfoJson)), [extraInfoJson]);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
+  useLazyGsap(
+    ({ gsap }) => {
       if (!containerRef.current || items.length === 0) return;
       const rows = containerRef.current.querySelectorAll('[data-info-row]');
 
@@ -86,7 +85,8 @@ export function EventExtraInfo({ extraInfoJson }: { extraInfoJson: string }) {
         });
       });
     },
-    { scope: containerRef, dependencies: [items] }
+    containerRef,
+    [items],
   );
 
   if (items.length === 0) {

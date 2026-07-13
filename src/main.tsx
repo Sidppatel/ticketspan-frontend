@@ -5,9 +5,22 @@ import { App } from '@/App';
 import { ThemeProvider } from '@/shared/theme/ThemeContext';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { initErrorReporter } from '@/shared/errorReporter';
+import { resolvePortalContext } from '@/shared/subdomain';
+import { fetchPublicBranding, prefetchDefaultPublicEventList, prefetchPublicEventBySlug } from '@/shared/theme/brandingPrefetch';
 import '@/index.css';
 
 initErrorReporter();
+const bootContext = resolvePortalContext();
+if (bootContext.portal === 'public' && bootContext.tenantSlug) {
+  void fetchPublicBranding(bootContext.tenantSlug).catch(() => undefined);
+  const bootPath = window.location.pathname;
+  const eventSlugMatch = /^\/events\/([^/]+)$/.exec(bootPath);
+  if (eventSlugMatch) {
+    prefetchPublicEventBySlug(decodeURIComponent(eventSlugMatch[1]));
+  } else if (bootPath === '/') {
+    prefetchDefaultPublicEventList();
+  }
+}
 document.documentElement.style.colorScheme = 'light';
 
 const container = document.getElementById('root');

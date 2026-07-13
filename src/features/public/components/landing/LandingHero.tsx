@@ -13,7 +13,7 @@ export function LandingHero() {
   return (
     <section className="relative overflow-hidden bg-stage text-on-stage">
       <div
-        className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-70"
+        className="pointer-events-none absolute inset-x-0 top-0 h-full max-h-[90vh] bg-cover bg-center opacity-70"
         style={{ backgroundImage: 'url(/hero.webp)' }}
       />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-stage/70 via-stage/60 to-stage" />

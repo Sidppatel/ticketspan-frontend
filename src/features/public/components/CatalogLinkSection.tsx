@@ -1,14 +1,10 @@
 import { useRef } from 'react';
 import { metaValue, type CatalogLink } from './catalogJson';
 import type { LucideIcon } from 'lucide-react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArtistCard } from './ArtistCard';
 import { SponsorLogo } from './SponsorLogo';
 import { SectionTitle } from './SectionTitle';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useLazyGsap } from '@/shared/motion/useLazyGsap';
 
 export function CatalogLinkSection({
   title,
@@ -29,8 +25,8 @@ export function CatalogLinkSection({
   const isSponsors = title.toLowerCase().includes('sponsor');
   const showHorizontalScroll = !isSponsors && links.length > 2;
 
-  useGSAP(
-    () => {
+  useLazyGsap(
+    ({ gsap }) => {
       if (!containerRef.current) return;
       const container = containerRef.current;
 
@@ -78,7 +74,8 @@ export function CatalogLinkSection({
         );
       }
     },
-    { scope: containerRef, dependencies: [links, showHorizontalScroll] }
+    containerRef,
+    [links, showHorizontalScroll],
   );
 
   if (links.length === 0) {

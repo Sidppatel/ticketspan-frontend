@@ -104,15 +104,17 @@ export function TenantLandingPage() {
       <LandingNav />
       <LandingHero />
       <VenueMarquee />
-      <HowItWorks />
-      <FloorPlanShowcase />
-      <AdminShowcase />
-      <EventNightShowcase />
-      <FeatureLedger />
-      <FounderNote />
-      <PricingTeaser />
-      <OrganizerDirectory />
-      <ClosingCta />
+      <div className="cv-auto">
+        <HowItWorks />
+        <FloorPlanShowcase />
+        <AdminShowcase />
+        <EventNightShowcase />
+        <FeatureLedger />
+        <FounderNote />
+        <PricingTeaser />
+        <OrganizerDirectory />
+        <ClosingCta />
+      </div>
     </div>
   );
 }

@@ -1,9 +1,5 @@
 import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+import { useLazyGsap } from '@/shared/motion/useLazyGsap';
 
 const defaultFormat = (n: number) => Math.round(n).toLocaleString();
 
@@ -16,8 +12,8 @@ interface CountUpProps {
 export function CountUp({ value, prefix = '', format }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const fmt = format ?? defaultFormat;
-  useGSAP(
-    () => {
+  useLazyGsap(
+    ({ gsap }) => {
       const el = ref.current;
       if (!el) {
         return;
@@ -37,7 +33,8 @@ export function CountUp({ value, prefix = '', format }: CountUpProps) {
       });
       return () => mm.revert();
     },
-    { dependencies: [value] },
+    ref,
+    [value],
   );
   return <span ref={ref}>{prefix + fmt(value)}</span>;
 }

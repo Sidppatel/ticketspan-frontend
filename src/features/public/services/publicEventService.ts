@@ -1,5 +1,6 @@
 import { eventClient, bookingClient, tableBookingClient, pricingClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
+import { takePrefetchedEventBySlug, takePrefetchedEventList } from '@/shared/theme/brandingPrefetch';
 import type { Event, EventImage, ScheduleItem } from '@/shared/proto/event';
 import type { Booking } from '@/shared/proto/bookings';
 import type { EventLayout } from '@/shared/proto/booking';
@@ -12,14 +13,18 @@ export async function calculatePrice(pricesId: string, seats: number): Promise<P
 }
 
 export async function listPublicEvents(search: string, category = ''): Promise<Event[]> {
-  const response = await callRpc(() =>
-    eventClient.listEvents({ page: { offset: 0, limit: 50, search }, status: 'Published', category }),
-  );
+  const prefetched = !search && !category ? takePrefetchedEventList() : null;
+  const response = prefetched
+    ? await prefetched
+    : await callRpc(() =>
+        eventClient.listEvents({ page: { offset: 0, limit: 50, search }, status: 'Published', category }),
+      );
   return response.events;
 }
 
 export async function getEventBySlug(slug: string): Promise<Event> {
-  return callRpc(() => eventClient.getEventBySlug({ slug }));
+  const prefetched = takePrefetchedEventBySlug(slug);
+  return prefetched ?? callRpc(() => eventClient.getEventBySlug({ slug }));
 }
 
 export async function listEventImages(eventsId: string, type: string): Promise<EventImage[]> {

@@ -68,10 +68,10 @@
   --on-stage: var(--color-sand-200);
   --on-stage-soft: var(--color-sand-500);
 
-  --font-body-stack: 'Inter', -apple-system, system-ui, sans-serif;
-  --font-display-stack: 'Fraunces Variable', 'Fraunces', 'Georgia', serif;
-  --font-accent-stack: 'Fraunces Variable', 'Fraunces', 'Georgia', serif;
-  --font-mono-stack: 'JetBrains Mono', ui-monospace, monospace;
+  --font-body-stack: 'Inter', 'Inter Fallback', -apple-system, system-ui, sans-serif;
+  --font-display-stack: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', 'Georgia', serif;
+  --font-accent-stack: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', 'Georgia', serif;
+  --font-mono-stack: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
 
   --radius-input: 4px;
   --radius-card: 10px;

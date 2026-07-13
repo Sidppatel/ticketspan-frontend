@@ -330,3 +330,46 @@ h3 {
   background: var(--voltage-accent);
   box-shadow: 0 0 12px color-mix(in srgb, var(--voltage-accent) 70%, transparent);
 }
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 6000px;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+  size-adjust: 106.1%;
+}
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Georgia');
+  ascent-override: 97.8%;
+  descent-override: 25.5%;
+  line-gap-override: 0%;
+  size-adjust: 91.1%;
+}
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Courier New');
+  ascent-override: 102%;
+  descent-override: 30%;
+  line-gap-override: 0%;
+  size-adjust: 88.3%;
+}
+@keyframes hero-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero-reveal] {
+    animation: hero-reveal 0.48s var(--ease-out, ease-out) both;
+  }
+}

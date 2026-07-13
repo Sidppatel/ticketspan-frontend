@@ -1,9 +1,8 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { imageUrl } from '@/shared/upload';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
 import { cn } from '@/shared/lib/cn';
+import { useLazyGsap } from '@/shared/motion/useLazyGsap';
 
 interface SponsorLogoProps {
   name: string;
@@ -19,8 +18,8 @@ export function SponsorLogo({ name, slug, primaryImagePath, subtitle, hrefBase, 
   const glintRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  useGSAP(
-    () => {
+  useLazyGsap(
+    ({ gsap }) => {
       const card = containerRef.current;
       if (!card) return;
 
@@ -89,7 +88,7 @@ export function SponsorLogo({ name, slug, primaryImagePath, subtitle, hrefBase, 
         card.removeEventListener('mouseleave', onMouseLeave);
       };
     },
-    { scope: containerRef }
+    containerRef,
   );
 
   return (

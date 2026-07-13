@@ -10,7 +10,7 @@ interface PriceBadgeProps {
 
 export function PriceBadge({ priceCents, className, prefix = '', suffix = '' }: PriceBadgeProps) {
   return (
-    <span className={cn('font-display font-bold text-accent-gold tracking-tight', className)}>
+    <span className={cn('font-display font-bold text-voltage-ink tracking-tight', className)}>
       {prefix}
       {centsToUSD(priceCents)}
       {suffix}

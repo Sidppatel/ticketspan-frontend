@@ -138,7 +138,7 @@ export function HelpCenterPage() {
       ) : (
         groups.map((group) => (
           <section key={group.title} className="space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-accent-gold">{group.title}</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-voltage-ink">{group.title}</h2>
             <div className="space-y-2">
               {group.items.map((item) => (
                 <FaqRow key={item.q} item={item} />

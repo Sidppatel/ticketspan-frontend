@@ -43,21 +43,11 @@ const FeedbackPage = lazy(() =>
 const OrganizerPage = lazy(() =>
   import('@/features/public/pages/OrganizerPage').then((m) => ({ default: m.OrganizerPage })),
 );
-const TermsPage = lazy(() =>
-  import('@/features/public/pages/TermsPage').then((m) => ({ default: m.TermsPage })),
-);
-const PrivacyPage = lazy(() =>
-  import('@/features/public/pages/PrivacyPage').then((m) => ({ default: m.PrivacyPage })),
-);
-const RefundPolicyPage = lazy(() =>
-  import('@/features/public/pages/RefundPolicyPage').then((m) => ({ default: m.RefundPolicyPage })),
-);
-const HelpCenterPage = lazy(() =>
-  import('@/features/public/pages/HelpCenterPage').then((m) => ({ default: m.HelpCenterPage })),
-);
-const ContactSupportPage = lazy(() =>
-  import('@/features/public/pages/ContactSupportPage').then((m) => ({ default: m.ContactSupportPage })),
-);
+import { TermsPage } from '@/features/public/pages/TermsPage';
+import { PrivacyPage } from '@/features/public/pages/PrivacyPage';
+import { RefundPolicyPage } from '@/features/public/pages/RefundPolicyPage';
+import { HelpCenterPage } from '@/features/public/pages/HelpCenterPage';
+import { ContactSupportPage } from '@/features/public/pages/ContactSupportPage';
 const GetStartedPage = lazy(() =>
   import('@/features/public/pages/GetStartedPage').then((m) => ({ default: m.GetStartedPage })),
 );

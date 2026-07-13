@@ -28,7 +28,7 @@ export function EventFooter({ organizerName, className, light = false }: EventFo
             <span className={cn('text-lg font-black tracking-tight font-display', light ? 'text-white' : 'text-foreground')}>
               svyne
             </span>
-            <span className="text-[9px] font-bold uppercase tracking-wider bg-accent-gold/15 text-accent-gold px-2 py-0.5 rounded border border-accent-gold/20">
+            <span className={cn('text-[9px] font-bold uppercase tracking-wider bg-accent-gold/15 px-2 py-0.5 rounded border border-accent-gold/20', light ? 'text-accent-gold' : 'text-voltage-ink')}>
               Box Office
             </span>
           </div>
@@ -60,9 +60,9 @@ export function EventFooter({ organizerName, className, light = false }: EventFo
         {}
         <div className="md:col-span-4 space-y-3 text-xs md:text-right">
           <h4 className={cn('font-bold uppercase tracking-wider', light ? 'text-white' : 'text-foreground')}>Presented By</h4>
-          <p className="font-bold text-sm text-accent-gold font-display uppercase tracking-wider">{presentedBy}</p>
+          <p className={cn('font-bold text-sm font-display uppercase tracking-wider', light ? 'text-accent-gold' : 'text-voltage-ink')}>{presentedBy}</p>
           <div className="flex md:justify-end gap-3 pt-1">
-            <a href="#" className="hover:text-accent-burgundy" aria-label="Twitter">𝕏</a>
+            <a href="#" className="hover:text-accent-burgundy" aria-label="𝕏 Twitter">𝕏</a>
             <a href="#" className="hover:text-accent-burgundy" aria-label="Instagram">📸</a>
             <a href="#" className="hover:text-accent-burgundy" aria-label="Facebook">🌐</a>
           </div>

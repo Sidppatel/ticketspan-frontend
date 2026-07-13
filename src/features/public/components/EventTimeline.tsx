@@ -3,14 +3,10 @@ import { CalendarClock, Award, Flame, Coffee, Radio, HelpCircle } from 'lucide-r
 import { useAsync } from '@/shared/hooks/useAsync';
 import { listScheduleItems } from '@/features/public/services/publicEventService';
 import { formatEpoch } from '@/shared/lib/format';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { resolveCssColor } from '@/shared/theme/branding';
 import { TimelineItem } from './TimelineItem';
 import { SectionTitle } from './SectionTitle';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useLazyGsap } from '@/shared/motion/useLazyGsap';
 
 const TYPE_STYLES: Record<string, { ring: string; dotBg: string; text: string; bg: string; icon: ComponentType<{ className?: string }> }> = {
   Performance: {
@@ -65,8 +61,8 @@ export function EventTimeline({ eventsId }: { eventsId: string }) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
+  useLazyGsap(
+    ({ gsap, ScrollTrigger }) => {
       if (!timelineRef.current || !progressBarRef.current || items.length === 0) return;
 
       const timeline = timelineRef.current;
@@ -150,7 +146,8 @@ export function EventTimeline({ eventsId }: { eventsId: string }) {
         });
       });
     },
-    { scope: timelineRef, dependencies: [items] }
+    timelineRef,
+    [items],
   );
 
   if (items.length === 0) {

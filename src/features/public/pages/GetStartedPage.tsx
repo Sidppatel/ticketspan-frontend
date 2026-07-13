@@ -40,7 +40,7 @@ export function GetStartedPage() {
 
   return (
     <div className="min-h-screen bg-stage">
-      <div className="mx-auto flex max-w-xl flex-col px-4 py-10 md:py-16">
+      <main className="mx-auto flex max-w-xl flex-col px-4 py-10 md:py-16">
         <div className="mb-10 flex items-center justify-between">
           <Link to="/" className="font-display text-xl text-on-stage">
             Svyne
@@ -128,7 +128,7 @@ export function GetStartedPage() {
             </form>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,15 +1,10 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { CalendarDays, MapPin, Ticket } from 'lucide-react';
 import type { Event } from '@/shared/proto/event';
 import { imageUrl } from '@/shared/upload';
 import { formatEventDate } from '@/shared/lib/format';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Countdown } from '@/features/public/components/discover/Countdown';
 import { PriceBadge } from './PriceBadge';
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface HeroProps {
   event: Event;
@@ -28,35 +23,36 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
   const containerRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
-        gsap.set('[data-hero-reveal]', { opacity: 0, y: 16 });
-        gsap.to('[data-hero-reveal]', {
-          opacity: 1,
-          y: 0,
-          duration: 0.48,
-          ease: 'power3.out',
-          stagger: 0.06,
-        });
-        if (imageRef.current) {
-          gsap.to(imageRef.current, {
-            yPercent: 12,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: 'top top',
-              end: 'bottom top',
-              scrub: 0.6,
-            },
+  useEffect(() => {
+    let disposed = false;
+    let ctx: { revert(): void } | undefined;
+    void Promise.all([import('gsap'), import('gsap/ScrollTrigger')]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        if (disposed || !imageRef.current) return;
+        gsap.registerPlugin(ScrollTrigger);
+        ctx = gsap.context(() => {
+          const mm = gsap.matchMedia();
+          mm.add('(prefers-reduced-motion: no-preference)', () => {
+            gsap.to(imageRef.current, {
+              yPercent: 12,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.6,
+              },
+            });
           });
-        }
-      });
-      return () => mm.revert();
-    },
-    { scope: containerRef },
-  );
+          return () => mm.revert();
+        }, containerRef);
+      },
+    );
+    return () => {
+      disposed = true;
+      ctx?.revert();
+    };
+  }, []);
 
   return (
     <section
@@ -81,30 +77,30 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
       </div>
 
       <div className="relative mx-auto max-w-7xl space-y-7 px-4 md:px-8">
-        <p data-hero-reveal className="font-mono text-xs font-medium uppercase tracking-[0.25em] text-voltage">
+        <p data-hero-reveal style={{ animationDelay: '0ms' }} className="font-mono text-xs font-medium uppercase tracking-[0.25em] text-voltage">
           {date}
           {event.category ? ` — ${event.category}` : ''}
         </p>
 
         <h1
-          data-hero-reveal
+          data-hero-reveal style={{ animationDelay: '60ms' }}
           className="max-w-4xl font-display text-4xl font-semibold leading-[1.02] md:text-6xl lg:text-7xl"
         >
           {event.title}
         </h1>
 
         {event.description ? (
-          <p data-hero-reveal className="max-w-2xl text-sm leading-relaxed text-on-stage-soft md:text-base line-clamp-3">
+          <p data-hero-reveal style={{ animationDelay: '120ms' }} className="max-w-2xl text-sm leading-relaxed text-on-stage-soft md:text-base line-clamp-3">
             {event.description}
           </p>
         ) : null}
 
-        <div data-hero-reveal>
+        <div data-hero-reveal style={{ animationDelay: '180ms' }}>
           <Countdown startEpoch={event.startDate} endEpoch={event.endDate} />
         </div>
 
         <div
-          data-hero-reveal
+          data-hero-reveal style={{ animationDelay: '240ms' }}
           className="flex max-w-3xl flex-wrap gap-x-8 gap-y-3 border-y border-on-stage/15 py-5 text-sm"
         >
           {date ? (
@@ -125,7 +121,7 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
           ) : null}
         </div>
 
-        <div data-hero-reveal className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center">
+        <div data-hero-reveal style={{ animationDelay: '300ms' }} className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center">
           <button
             onClick={onGetTickets}
             className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-primary px-8 text-base font-medium text-primary-foreground shadow-[var(--shadow-e1)] transition-[transform,background-color] duration-[180ms] ease-[var(--ease-out)] hover:bg-brand-hover active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-stage"

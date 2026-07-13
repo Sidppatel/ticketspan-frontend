@@ -1,9 +1,9 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { resolvePortalContext } from '@/shared/subdomain';
 import { Toaster } from '@/shared/ui/sonner';
 
-const PublicRoutes = lazy(() => import('@/app/PublicRoutes'));
+import PublicRoutes from '@/app/PublicRoutes';
 const AdminRoutes = lazy(() => import('@/app/AdminRoutes'));
 const DeveloperRoutes = lazy(() => import('@/app/DeveloperRoutes'));
 const StaffRoutes = lazy(() => import('@/app/StaffRoutes'));
@@ -33,8 +33,31 @@ function selectRoutes(portal: string) {
 }
 
 export function App() {
-  useLocation(); 
+  useLocation();
   const { portal } = resolvePortalContext();
+  useEffect(() => {
+    const el = document.getElementById('hero-flash');
+    if (!el) return;
+    const remove = () => {
+      window.setTimeout(() => el.remove(), 1500);
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          if (typeof window.requestIdleCallback === 'function') {
+            window.requestIdleCallback(() => el.remove(), { timeout: 1000 });
+          } else {
+            window.setTimeout(() => el.remove(), 250);
+          }
+        }),
+      );
+    };
+    const img = el.querySelector('img');
+    if (img && !img.complete) {
+      img.addEventListener('load', remove);
+      img.addEventListener('error', remove);
+      return;
+    }
+    remove();
+  }, []);
   return (
     <>
       <Suspense fallback={<AppLoading />}>
