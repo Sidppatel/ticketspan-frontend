@@ -57,11 +57,11 @@ export function TicketCard({
       {}
       <div 
         className="absolute left-[-8px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-background border-r border-border-strong"
-        style={{ '--svyne-notch': 'var(--background)' } as React.CSSProperties}
+        style={{ '--entryvine-notch': 'var(--background)' } as React.CSSProperties}
       />
       <div 
         className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-background border-l border-border-strong"
-        style={{ '--svyne-notch': 'var(--background)' } as React.CSSProperties}
+        style={{ '--entryvine-notch': 'var(--background)' } as React.CSSProperties}
       />
 
       <div className="pl-3 pr-4 relative min-w-0 flex-1">

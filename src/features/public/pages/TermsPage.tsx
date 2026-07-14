@@ -5,7 +5,7 @@ export function TermsPage() {
     <StaticPageShell
       eyebrow="Legals"
       title="Terms of Service"
-      intro="These terms govern your use of the Svyne box office platform, including ticket purchases, table bookings, and event check-in services."
+      intro="These terms govern your use of the EntryVine box office platform, including ticket purchases, table bookings, and event check-in services."
       updated="July 2026"
     >
       <StaticSection heading="1. Acceptance of Terms">
@@ -16,8 +16,8 @@ export function TermsPage() {
       </StaticSection>
       <StaticSection heading="2. The Platform">
         <p>
-          Svyne provides ticketing and box office technology on behalf of independent event organizers. The organizer
-          named on each event page (not Svyne) is the seller of record, host of the event, and responsible for the
+          EntryVine provides ticketing and box office technology on behalf of independent event organizers. The organizer
+          named on each event page (not EntryVine) is the seller of record, host of the event, and responsible for the
           event taking place as described.
         </p>
       </StaticSection>
@@ -32,7 +32,7 @@ export function TermsPage() {
       <StaticSection heading="4. Pricing, Fees & Taxes">
         <p>
           Prices, service fees, and applicable sales tax are displayed before you confirm payment. The total shown at
-          checkout is the full amount charged. Payment is processed securely by Stripe; Svyne does not store your card
+          checkout is the full amount charged. Payment is processed securely by Stripe; EntryVine does not store your card
           details.
         </p>
       </StaticSection>
@@ -65,8 +65,8 @@ export function TermsPage() {
       </StaticSection>
       <StaticSection heading="9. Limitation of Liability">
         <p>
-          To the maximum extent permitted by law, Svyne's liability to you for any claim arising out of the platform is
-          limited to the amount you paid for the affected booking. Svyne is not liable for the acts or omissions of
+          To the maximum extent permitted by law, EntryVine's liability to you for any claim arising out of the platform is
+          limited to the amount you paid for the affected booking. EntryVine is not liable for the acts or omissions of
           organizers, venues, or performers.
         </p>
       </StaticSection>

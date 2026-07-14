@@ -8,7 +8,7 @@ function pad(n: number): string {
 function Unit({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex flex-col items-center">
-      <span key={value} className="svyne-page font-mono text-2xl font-medium tabular-nums text-on-stage md:text-3xl">
+      <span key={value} className="entryvine-page font-mono text-2xl font-medium tabular-nums text-on-stage md:text-3xl">
         {value}
       </span>
       <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-on-stage-soft">{label}</span>
@@ -29,7 +29,7 @@ export function Countdown({ startEpoch, endEpoch }: { startEpoch: string; endEpo
   if (parts.live) {
     return (
       <span className="inline-flex items-center gap-2 rounded-full bg-voltage/20 px-3 py-1 font-mono text-xs font-medium uppercase tracking-widest text-on-stage">
-        <span className="size-2 rounded-full bg-voltage svyne-urgent" />
+        <span className="size-2 rounded-full bg-voltage entryvine-urgent" />
         Happening now
       </span>
     );

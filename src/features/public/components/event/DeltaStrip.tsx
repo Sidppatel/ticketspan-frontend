@@ -8,7 +8,7 @@ export function DeltaStrip({ delta }: { delta: EventDelta }) {
   if (dismissed || messages.length === 0) return null;
 
   return (
-    <div className="svyne-page mx-auto max-w-7xl px-4 md:px-8">
+    <div className="entryvine-page mx-auto max-w-7xl px-4 md:px-8">
       <div className="mt-6 flex items-start justify-between gap-3 rounded-lg border border-voltage/30 bg-voltage/10 px-4 py-3">
         <div className="flex items-start gap-2.5">
           <Sparkle className="mt-0.5 size-4 shrink-0 text-voltage-ink" />

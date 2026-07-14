@@ -5,7 +5,7 @@ export function PrivacyPage() {
     <StaticPageShell
       eyebrow="Legals"
       title="Privacy Policy"
-      intro="How Svyne collects, uses, and protects your information when you browse events, buy tickets, and attend."
+      intro="How EntryVine collects, uses, and protects your information when you browse events, buy tickets, and attend."
       updated="July 2026"
     >
       <StaticSection heading="1. Information We Collect">

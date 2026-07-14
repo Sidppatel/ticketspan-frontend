@@ -173,7 +173,7 @@ function TicketCard({ cardRef }: { cardRef: React.Ref<HTMLDivElement> }) {
   return (
     <div
       ref={cardRef}
-      className="svyne-tilt w-full rotate-2 overflow-hidden rounded-xl bg-surface shadow-[var(--shadow-e2)] motion-reduce:rotate-0"
+      className="entryvine-tilt w-full rotate-2 overflow-hidden rounded-xl bg-surface shadow-[var(--shadow-e2)] motion-reduce:rotate-0"
     >
       <div className="space-y-4 p-6">
         <div className="flex items-baseline justify-between gap-4">
@@ -191,7 +191,7 @@ function TicketCard({ cardRef }: { cardRef: React.Ref<HTMLDivElement> }) {
           </p>
         </div>
       </div>
-      <div className="svyne-ticket-edge" style={{ ['--svyne-notch' as string]: 'var(--stage)' }} />
+      <div className="entryvine-ticket-edge" style={{ ['--entryvine-notch' as string]: 'var(--stage)' }} />
       <div className="flex items-center justify-between gap-4 p-5">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-faint">Booking</p>
@@ -300,7 +300,7 @@ export function FloorPlanMock() {
                 table.shape === 'round' ? 'rounded-full' : 'rounded-md',
                 isOpen && 'cursor-grab border border-on-stage-soft/40 text-on-stage transition-shadow hover:shadow-[0_0_14px_color-mix(in_srgb,var(--voltage-accent)_35%,transparent)] active:cursor-grabbing',
                 isSold && 'bg-on-stage-soft/15 text-on-stage-soft line-through',
-                isHeld && 'svyne-hold-pulse bg-voltage text-voltage-ink shadow-[var(--shadow-e1)]',
+                isHeld && 'entryvine-hold-pulse bg-voltage text-voltage-ink shadow-[var(--shadow-e1)]',
               )}
             >
               {table.label}
@@ -331,7 +331,7 @@ export function DashboardMock() {
       <div className="flex items-center justify-between border-b border-hairline px-5 py-3">
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-faint">Solstice Rooftop · live</p>
         <span className="flex items-center gap-1.5 font-mono text-[11px] text-success">
-          <span className="svyne-urgent h-1.5 w-1.5 rounded-full bg-success" /> On sale
+          <span className="entryvine-urgent h-1.5 w-1.5 rounded-full bg-success" /> On sale
         </span>
       </div>
       <div className="grid grid-cols-3 divide-x divide-hairline border-b border-hairline">
@@ -368,7 +368,7 @@ export function ScannerMock() {
       <div className="px-4 pb-3 pt-4 border-b border-on-stage-soft/10">
         <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-on-stage-soft">Door scan</p>
       </div>
-      <div className="svyne-scanline px-4 py-8 text-center text-success">
+      <div className="entryvine-scanline px-4 py-8 text-center text-success">
         <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-success/30 bg-success/10">
           <Check className="h-5 w-5 text-success" />
         </div>

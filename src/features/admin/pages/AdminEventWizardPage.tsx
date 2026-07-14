@@ -161,7 +161,7 @@ export function AdminEventWizardPage() {
             <div className="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2">
               <Field>
                 <FieldLabel htmlFor="title" className="text-[10px]">Title</FieldLabel>
-                <div className="svyne-spring-input">
+                <div className="entryvine-spring-input">
                   <Input
                     id="title"
                     value={title}
@@ -173,7 +173,7 @@ export function AdminEventWizardPage() {
               </Field>
               <Field>
                 <FieldLabel htmlFor="category" className="text-[10px]">Category</FieldLabel>
-                <div className="svyne-spring-input">
+                <div className="entryvine-spring-input">
                   <Input
                     id="category"
                     value={category}
@@ -270,7 +270,7 @@ export function AdminEventWizardPage() {
               <Button variant="ghost" onClick={() => navigate(-1)} disabled={submitting} className="h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs">
                 Cancel
               </Button>
-              <Button onClick={submit} disabled={submitting} className="svyne-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20">
+              <Button onClick={submit} disabled={submitting} className="entryvine-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20">
                 {submitting ? 'Creating…' : 'Next Step →'}
               </Button>
             </div>
@@ -292,7 +292,7 @@ export function AdminEventWizardPage() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">Name</label>
-              <div className="svyne-spring-input">
+              <div className="entryvine-spring-input">
                 <Input
                   value={venueDraft.name}
                   onChange={(e) => setVenueDraft({ ...venueDraft, name: e.target.value })}
@@ -322,7 +322,7 @@ export function AdminEventWizardPage() {
                 type="button"
                 onClick={handleCreateVenue}
                 disabled={venueSubmitting || !venueDraft.name.trim()}
-                className="svyne-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
+                className="entryvine-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
               >
                 {venueSubmitting ? 'Creating...' : 'Create Venue'}
               </Button>

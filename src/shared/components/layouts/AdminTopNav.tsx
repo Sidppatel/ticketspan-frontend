@@ -137,7 +137,7 @@ export function AdminTopNav() {
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <span className="font-display text-lg font-semibold tracking-tight">
-              svyne <span className="font-light text-voltage">·</span>{' '}
+              entryvine <span className="font-light text-voltage">·</span>{' '}
               <span className="text-sm font-medium tracking-normal text-muted-foreground">admin</span>
             </span>
             <span

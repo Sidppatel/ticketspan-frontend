@@ -12,7 +12,7 @@ function AppLoading() {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center gap-5 bg-stage text-on-stage">
       <span className="flex items-center gap-2 font-display text-2xl">
-        <span className="h-2 w-2 animate-pulse rounded-full bg-voltage" /> Svyne
+        <span className="h-2 w-2 animate-pulse rounded-full bg-voltage" /> EntryVine
       </span>
       <span className="h-6 w-6 animate-spin rounded-full border-2 border-on-stage-soft/30 border-t-voltage" />
     </div>

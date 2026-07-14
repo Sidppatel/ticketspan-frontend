@@ -11,7 +11,7 @@ import { Button } from '@/shared/ui/button';
 import { Search, CalendarCheck2 } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
 
-const NOTCH = { ['--svyne-notch' as string]: 'var(--background)' } as CSSProperties;
+const NOTCH = { ['--entryvine-notch' as string]: 'var(--background)' } as CSSProperties;
 
 export function BookingsPage() {
   const [searchInput, setSearchInput] = useState('');
@@ -91,7 +91,7 @@ export function BookingsPage() {
                     {unclaimed ? <Badge variant="warn">{claimedSummary(booking)}</Badge> : null}
                   </div>
                 </div>
-                <div className="svyne-ticket-edge" style={NOTCH} />
+                <div className="entryvine-ticket-edge" style={NOTCH} />
                 <div className="flex items-center justify-between p-4 text-sm">
                   <span className="text-ink-soft">Seats reserved</span>
                   <span className="font-mono text-lg font-medium text-ink">{booking.seatsReserved}</span>

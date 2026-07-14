@@ -1,6 +1,6 @@
-# Svyne "Box Office" Design System
+# EntryVine "Box Office" Design System
 
-**The single source of truth** for UI/UX, themes, shadcn components, and animation across the Svyne event platform. If a styling decision isn't here, it isn't a standard. Tokens live in `src/index.css` — this document mirrors and explains them.
+**The single source of truth** for UI/UX, themes, shadcn components, and animation across the EntryVine event platform. If a styling decision isn't here, it isn't a standard. Tokens live in `src/index.css` — this document mirrors and explains them.
 
 Peer set we measure against: **Ticketleap, Eventbrite, TickPick, Vivid Seats**. The job: make browsing and booking effortless on a phone, and make the organizer console legible on a desktop.
 
@@ -103,12 +103,12 @@ The memorable device. A **marigold perforated tear line** with two notches bitte
 ```tsx
 <div className="overflow-hidden rounded-lg border border-border bg-card">
   <div className="p-4">{/* event info */}</div>
-  <div className="svyne-ticket-edge" style={{ ['--svyne-notch' as string]: '#FBF6F0' }} />
+  <div className="entryvine-ticket-edge" style={{ ['--entryvine-notch' as string]: '#FBF6F0' }} />
   <div className="p-4 font-mono text-sm">{/* booking code, the stub */}</div>
 </div>
 ```
 
-`.svyne-ticket-edge` (in `index.css`) draws the dashed marigold line + end notches. The notch fill defaults to the page canvas; set `--svyne-notch` to the surface color when the edge sits inside a non-canvas element (e.g. `#ffffff` inside a white card). Use it on **event cards, the checkout order summary, and the My Bookings ticket.**
+`.entryvine-ticket-edge` (in `index.css`) draws the dashed marigold line + end notches. The notch fill defaults to the page canvas; set `--entryvine-notch` to the surface color when the edge sits inside a non-canvas element (e.g. `#ffffff` inside a white card). Use it on **event cards, the checkout order summary, and the My Bookings ticket.**
 
 ---
 
@@ -117,9 +117,9 @@ The memorable device. A **marigold perforated tear line** with two notches bitte
 GSAP (`gsap` + `@gsap/react`) is the motion engine. **All motion is gated on `prefers-reduced-motion`** — the `usePageEntrance` hook uses `gsap.matchMedia`, and the `index.css` keyframes are disabled in the reduced-motion block.
 
 - **Page entrance** — `usePageEntrance()` (`src/shared/hooks/usePageEntrance.ts`): staggered fade-up of a page's children. Already wired into layouts via `ref={page} key={pathname}`.
-- **List stagger** — event/ticket grids fade up with a small per-item delay (CSS `animationDelay` on `.svyne-page`, or GSAP stagger).
-- **Sticky buy-bar** — slides up on mount (`svyne-slide-*` curve `cubic-bezier(0.32,0.72,0,1)`).
-- **Urgency** — `.svyne-urgent` (marigold pulse) **only** on "selling fast" / "limited" — never ambient.
+- **List stagger** — event/ticket grids fade up with a small per-item delay (CSS `animationDelay` on `.entryvine-page`, or GSAP stagger).
+- **Sticky buy-bar** — slides up on mount (`entryvine-slide-*` curve `cubic-bezier(0.32,0.72,0,1)`).
+- **Urgency** — `.entryvine-urgent` (marigold pulse) **only** on "selling fast" / "limited" — never ambient.
 - **Hover** — cards lift 1px + marigold border; buttons `active:scale-[0.97]`.
 
 Keep it subtle and fast (200–500ms). No bouncing, no spinning. Extra motion reads as noise.

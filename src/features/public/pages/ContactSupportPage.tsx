@@ -6,7 +6,7 @@ const channels = [
     icon: Mail,
     title: 'Email Support',
     body: 'Best for billing errors, account issues, and anything with a booking reference. We reply within one business day.',
-    action: { label: 'support@svyne.com', href: 'mailto:support@svyne.com' },
+    action: { label: 'support@entryvine.com', href: 'mailto:support@entryvine.com' },
   },
   {
     icon: Ticket,

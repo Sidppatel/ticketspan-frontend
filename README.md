@@ -1,12 +1,12 @@
-# Svyne Event Frontend
+# EntryVine Event Frontend
 
-Single React app for the Svyne multi-tenant event platform. One codebase serves four portals — **public**, **admin**, **staff**, **developer** — selected by subdomain. All structured data goes over **gRPC-Web** to `svyne-event-backend`; the only REST call is multipart image upload.
+Single React app for the EntryVine multi-tenant event platform. One codebase serves four portals — **public**, **admin**, **staff**, **developer** — selected by subdomain. All structured data goes over **gRPC-Web** to `entryvine-event-backend`; the only REST call is multipart image upload.
 
 ## Quick start
 
 ```bash
 pnpm install
-pnpm gen:proto          # generate gRPC stubs from ../svyne-event-backend/protos
+pnpm gen:proto          # generate gRPC stubs from ../entryvine-event-backend/protos
 cp .env.example .env    # set VITE_BACKEND_URL if not :60262
 pnpm dev                # http://localhost:5173
 ```

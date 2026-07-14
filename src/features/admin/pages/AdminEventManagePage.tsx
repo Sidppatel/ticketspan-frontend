@@ -428,7 +428,7 @@ export function AdminEventManagePage() {
                 <Button
                   size="sm"
                   disabled={!tableTemplateId}
-                  className="svyne-spring-btn h-9 px-4 rounded-lg font-bold text-xs"
+                  className="entryvine-spring-btn h-9 px-4 rounded-lg font-bold text-xs"
                   onClick={() =>
                     guard(
                       () =>
@@ -604,7 +604,7 @@ export function AdminEventManagePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5 md:col-span-2">
                 <Label>Name</Label>
-                <div className="svyne-spring-input">
+                <div className="entryvine-spring-input">
                   <Input
                     value={newTemplateName}
                     onChange={(e) => setNewTemplateName(e.target.value)}
@@ -643,7 +643,7 @@ export function AdminEventManagePage() {
 
               <div className="space-y-1.5">
                 <Label>Capacity (Seats)</Label>
-                <div className="svyne-spring-input">
+                <div className="entryvine-spring-input">
                   <Input
                     type="number"
                     value={newTemplateCapacity}
@@ -655,7 +655,7 @@ export function AdminEventManagePage() {
 
               <div className="space-y-1.5">
                 <Label>Base Price (USD)</Label>
-                <div className="svyne-spring-input">
+                <div className="entryvine-spring-input">
                   <Input
                     value={newTemplatePriceUsd}
                     onChange={(e) => setNewTemplatePriceUsd(e.target.value)}
@@ -666,7 +666,7 @@ export function AdminEventManagePage() {
 
               <div className="space-y-1.5">
                 <Label>Width (px)</Label>
-                <div className="svyne-spring-input">
+                <div className="entryvine-spring-input">
                   <Input
                     type="number"
                     value={newTemplateWidth}
@@ -678,7 +678,7 @@ export function AdminEventManagePage() {
 
               <div className="space-y-1.5">
                 <Label>Height (px)</Label>
-                <div className="svyne-spring-input">
+                <div className="entryvine-spring-input">
                   <Input
                     type="number"
                     value={newTemplateHeight}
@@ -714,7 +714,7 @@ export function AdminEventManagePage() {
                 type="button"
                 onClick={handleCreateTableTemplate}
                 disabled={newTemplateSubmitting || !newTemplateName.trim()}
-                className="svyne-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
+                className="entryvine-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
               >
                 {newTemplateSubmitting ? 'Creating...' : 'Create Template'}
               </Button>

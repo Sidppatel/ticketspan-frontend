@@ -20,7 +20,7 @@ export function AvailabilityBadge({ quantityLeft, maxQuantity, className }: Avai
 
   if (left !== undefined && left <= 10) {
     return (
-      <span className={cn('inline-flex items-center gap-1.5 rounded-full bg-accent-gold/15 border border-accent-gold/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-gold svyne-urgent', className)}>
+      <span className={cn('inline-flex items-center gap-1.5 rounded-full bg-accent-gold/15 border border-accent-gold/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-gold entryvine-urgent', className)}>
         Only {left} left
       </span>
     );

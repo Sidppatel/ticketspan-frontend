@@ -43,7 +43,7 @@ export function GetStartedPage() {
       <main className="mx-auto flex max-w-xl flex-col px-4 py-10 md:py-16">
         <div className="mb-10 flex items-center justify-between">
           <Link to="/" className="font-display text-xl text-on-stage">
-            Svyne
+            EntryVine
           </Link>
           <Link to="/" className="text-sm text-on-stage-soft underline underline-offset-4 hover:text-on-stage">
             Back to events
@@ -60,7 +60,7 @@ export function GetStartedPage() {
                 your box office.
               </p>
             </div>
-            <div className="svyne-ticket-edge" style={{ ['--svyne-notch' as string]: 'var(--stage)' }} />
+            <div className="entryvine-ticket-edge" style={{ ['--entryvine-notch' as string]: 'var(--stage)' }} />
             <div className="p-6">
               <Link to="/" className="text-sm text-text-link underline underline-offset-4">
                 Browse events while you wait
@@ -124,7 +124,7 @@ export function GetStartedPage() {
               <Button type="submit" size="lg" disabled={submitting} className="w-full">
                 {submitting ? 'Sending…' : 'Request my box office'}
               </Button>
-              <p className="text-center font-mono text-xs text-ink-faint">We only use this to contact you about Svyne.</p>
+              <p className="text-center font-mono text-xs text-ink-faint">We only use this to contact you about EntryVine.</p>
             </form>
           </div>
         )}

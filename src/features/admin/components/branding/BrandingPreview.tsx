@@ -271,7 +271,7 @@ function PreviewFooter({ branding }: { branding: TenantBranding }) {
       <span className="text-[11px] text-ink-soft">
         © {new Date().getFullYear()} {branding.tenantName || 'Your brand'}
       </span>
-      <span className="text-[11px] font-medium text-brand">Powered by svyne</span>
+      <span className="text-[11px] font-medium text-brand">Powered by entryvine</span>
     </div>
   );
 }

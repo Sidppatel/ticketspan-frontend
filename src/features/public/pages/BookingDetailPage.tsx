@@ -19,7 +19,7 @@ import { Input } from '@/shared/ui/input';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
 
-const NOTCH = { ['--svyne-notch' as string]: 'var(--background)' } as CSSProperties;
+const NOTCH = { ['--entryvine-notch' as string]: 'var(--background)' } as CSSProperties;
 
 const STATUS_STYLE: Record<string, string> = {
   Confirmed: 'bg-success/10 text-success',
@@ -91,7 +91,7 @@ export function BookingDetailPage() {
   return (
     <div className="space-y-4">
       {justPaid ? (
-        <div className="svyne-page overflow-hidden rounded-lg border border-success/25 bg-surface shadow-[var(--shadow-e1)]">
+        <div className="entryvine-page overflow-hidden rounded-lg border border-success/25 bg-surface shadow-[var(--shadow-e1)]">
           <div className="flex items-center gap-3 p-5">
             <CheckCircle2 className="size-6 shrink-0 text-success" />
             <div>
@@ -101,7 +101,7 @@ export function BookingDetailPage() {
               </p>
             </div>
           </div>
-          <div className="svyne-ticket-edge" style={NOTCH} />
+          <div className="entryvine-ticket-edge" style={NOTCH} />
           <div className="h-3" />
         </div>
       ) : null}

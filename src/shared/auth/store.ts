@@ -38,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: () => Boolean(get().accessToken),
     }),
     {
-      name: 'svyne-auth',
+      name: 'entryvine-auth',
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

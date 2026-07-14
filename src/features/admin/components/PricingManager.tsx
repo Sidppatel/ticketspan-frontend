@@ -108,7 +108,7 @@ export function PricingManager({
           </p>
           <CardTitle className="mt-1 font-display text-base font-bold text-foreground">Prices &amp; rules</CardTitle>
         </div>
-        <Button size="sm" onClick={() => setRuleBuilderOpen(true)} disabled={noApplicablePrices || ruleBuilderOpen} className="svyne-spring-btn h-9 px-4 rounded-lg font-bold text-xs">
+        <Button size="sm" onClick={() => setRuleBuilderOpen(true)} disabled={noApplicablePrices || ruleBuilderOpen} className="entryvine-spring-btn h-9 px-4 rounded-lg font-bold text-xs">
           <Plus className="mr-1.5 h-4 w-4" /> Add New Rule
         </Button>
       </CardHeader>
@@ -338,7 +338,7 @@ function RulePriceRow({
         <span className="text-[10px] text-muted-foreground line-through font-display font-bold">
           {centsToUSD(basePriceCents)}
         </span>
-        <div className="relative w-28 svyne-spring-input">
+        <div className="relative w-28 entryvine-spring-input">
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-bold">
             $
           </span>
@@ -352,7 +352,7 @@ function RulePriceRow({
         </div>
         <Button
           size="sm"
-          className={cn("h-9 px-4 rounded-lg font-bold text-xs", dirty ? "svyne-spring-btn shadow-md shadow-primary/20" : "")}
+          className={cn("h-9 px-4 rounded-lg font-bold text-xs", dirty ? "entryvine-spring-btn shadow-md shadow-primary/20" : "")}
           variant={dirty ? 'default' : 'outline'}
           disabled={!dirty}
           onClick={handleSave}
@@ -429,7 +429,7 @@ function InlineRuleBuilder({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1.5 md:col-span-2">
           <Label className="text-[10px]">Name</Label>
-          <div className="svyne-spring-input">
+          <div className="entryvine-spring-input">
             <Input
               value={name}
               placeholder="e.g. Pre-sale"
@@ -442,7 +442,7 @@ function InlineRuleBuilder({
 
         <div className="space-y-1.5">
           <Label className="text-[10px]">Type</Label>
-          <div className="svyne-spring-input">
+          <div className="entryvine-spring-input">
             <Input
               value={ruleType}
               placeholder="Presale"
@@ -461,7 +461,7 @@ function InlineRuleBuilder({
 
         <div className="space-y-1.5">
           <Label className="text-[10px]">Discount %</Label>
-          <div className="svyne-spring-input relative">
+          <div className="entryvine-spring-input relative">
             <Input
               type="number"
               min={0}
@@ -476,7 +476,7 @@ function InlineRuleBuilder({
 
         <div className="space-y-1.5 md:col-span-2">
           <Label className="text-[10px]">Capacity (people/seats, 0 = no cap)</Label>
-          <div className="svyne-spring-input">
+          <div className="entryvine-spring-input">
             <Input
               type="number"
               min={0}
@@ -502,7 +502,7 @@ function InlineRuleBuilder({
         <Button variant="ghost" onClick={onCancel} disabled={busy} className="h-9 px-4 rounded-lg font-bold text-xs">
           Cancel
         </Button>
-        <Button onClick={submit} disabled={busy || !name.trim()} className="svyne-spring-btn h-9 px-6 rounded-lg font-bold text-xs shadow-sm">
+        <Button onClick={submit} disabled={busy || !name.trim()} className="entryvine-spring-btn h-9 px-6 rounded-lg font-bold text-xs shadow-sm">
           {busy ? 'Saving…' : 'Create rule'}
         </Button>
       </div>

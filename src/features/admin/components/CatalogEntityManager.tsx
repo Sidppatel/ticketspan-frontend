@@ -109,7 +109,7 @@ export function CatalogEntityManager<T extends CatalogEntity>(props: ManagerProp
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label>Name</Label>
-              <div className="svyne-spring-input">
+              <div className="entryvine-spring-input">
                 <Input value={name} onChange={(e) => setName(e.target.value)} className="h-10 bg-background border-border text-sm" />
               </div>
             </div>
@@ -119,7 +119,7 @@ export function CatalogEntityManager<T extends CatalogEntity>(props: ManagerProp
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 border-t border-border/20 pt-4">
-            <Button onClick={add} disabled={!name.trim()} className={cn("svyne-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20", !name.trim() && "opacity-40 cursor-not-allowed")}>
+            <Button onClick={add} disabled={!name.trim()} className={cn("entryvine-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20", !name.trim() && "opacity-40 cursor-not-allowed")}>
               Add {props.title.toLowerCase().replace(/s$/, '')}
             </Button>
           </div>
@@ -235,7 +235,7 @@ function EntityRow<T extends CatalogEntity>({
             <MetaEditor rows={meta} onChange={setMeta} suggestedKeys={suggestedKeys} />
             
             <div className="flex items-center justify-end border-t border-border/10 pt-3">
-              <Button size="sm" onClick={() => persist(item.isActive)} className="svyne-spring-btn h-9 px-6 rounded-lg font-bold text-xs">
+              <Button size="sm" onClick={() => persist(item.isActive)} className="entryvine-spring-btn h-9 px-6 rounded-lg font-bold text-xs">
                 Save Settings
               </Button>
             </div>

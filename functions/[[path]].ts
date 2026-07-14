@@ -6,9 +6,9 @@ interface Env {
 const BOT = /bot|crawler|spider|facebookexternalhit|twitterbot|slackbot|linkedinbot|whatsapp|telegrambot|discordbot|embedly|pinterest|googlebot|bingbot|gptbot|oai-searchbot|chatgpt-user|claudebot|claude-web|anthropic-ai|perplexity|google-extended|duckassistbot|cohere-ai|ccbot|meta-externalagent|applebot|amazonbot|youbot|bytespider/i;
 
 const ROUTES: Record<string, { service: string; method: string }> = {
-  events: { service: 'svyne.event.EventService', method: 'GetEventBySlug' },
-  performers: { service: 'svyne.catalog.PerformerService', method: 'GetPerformerBySlug' },
-  sponsors: { service: 'svyne.catalog.SponsorService', method: 'GetSponsorBySlug' },
+  events: { service: 'entryvine.event.EventService', method: 'GetEventBySlug' },
+  performers: { service: 'entryvine.catalog.PerformerService', method: 'GetPerformerBySlug' },
+  sponsors: { service: 'entryvine.catalog.SponsorService', method: 'GetSponsorBySlug' },
 };
 
 // ponytail: hand-rolled gRPC-Web framing for 3 unary slug lookups; the backend is

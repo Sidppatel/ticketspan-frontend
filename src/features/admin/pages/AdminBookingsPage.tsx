@@ -57,7 +57,7 @@ export function AdminBookingsPage() {
         <p className="text-xs text-muted-foreground">Manage confirmed event reservations and view payment details.</p>
       </div>
 
-      <div className="svyne-float-card border border-border bg-card shadow-xl rounded-2xl overflow-hidden transition-all duration-300">
+      <div className="entryvine-float-card border border-border bg-card shadow-xl rounded-2xl overflow-hidden transition-all duration-300">
         <CardHeader className="border-b border-border/20 px-6 py-4">
           <CardTitle className="text-base font-bold font-display text-foreground flex items-center gap-2">
             Filters
@@ -67,7 +67,7 @@ export function AdminBookingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div className="space-y-1.5 md:col-span-1">
               <Label>Event ID</Label>
-              <div className="svyne-spring-input">
+              <div className="entryvine-spring-input">
                 <Input
                   value={eventsId}
                   onChange={(e) => setEventsId(e.target.value)}

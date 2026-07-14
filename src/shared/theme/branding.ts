@@ -172,7 +172,7 @@ export interface BrandingPreset {
 
 export const BRANDING_PRESETS: BrandingPreset[] = [
   {
-    name: 'Svyne Classic',
+    name: 'EntryVine Classic',
     colors: {
       primary: '#8a2d3b',
       secondary: '#f3f0eb',

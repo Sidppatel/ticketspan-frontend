@@ -30,7 +30,7 @@ export function VenueMarquee() {
   const loop = [...marqueeWords, ...marqueeWords];
   return (
     <div className="overflow-hidden border-y border-hairline/40 bg-stage py-5 text-on-stage">
-      <div className="svyne-marquee flex w-max items-center gap-8 font-display text-2xl italic text-on-stage-soft md:text-3xl">
+      <div className="entryvine-marquee flex w-max items-center gap-8 font-display text-2xl italic text-on-stage-soft md:text-3xl">
         {loop.map((word, i) => (
           <span key={i} className="flex items-center gap-8">
             {word}
@@ -195,7 +195,7 @@ function MagicLinkPreview() {
   return (
     <div className="mt-auto border-t border-hairline/60 pt-4 space-y-3 font-mono text-xs text-ink-soft select-none">
       <div className="flex items-center justify-between">
-        <span>From: noreply@svyne.com</span>
+        <span>From: noreply@entryvine.com</span>
         <span className="bg-brand/10 text-brand px-2 py-0.5 rounded font-sans font-semibold text-xs">Active</span>
       </div>
       <div className="flex items-center justify-between">
@@ -287,7 +287,7 @@ function SeoPreview() {
   return (
     <div className="mt-auto border-t border-hairline/60 pt-4 text-xs text-ink-soft space-y-1.5 select-none leading-relaxed">
       <div className="flex items-center gap-1 font-mono text-ink-faint">
-        <span>svyne.com</span>
+        <span>entryvine.com</span>
         <span>›</span>
         <span>e</span>
         <span>›</span>
@@ -430,12 +430,12 @@ export function FounderNote() {
             venue selling $3,000 in tickets might lose $800 before they ever see a dime.
           </p>
           <p>
-            I built Svyne because I think the person who books the DJ, hires the security, and sweeps
+            I built EntryVine because I think the person who books the DJ, hires the security, and sweeps
             the floor at 3 AM should keep the money their guests paid. Not a platform that puts their
             logo on your door and calls it a partnership.
           </p>
           <p>
-            One honest caveat: Svyne is built for venues that sell their own tickets &mdash;
+            One honest caveat: EntryVine is built for venues that sell their own tickets &mdash;
             promoters, clubs, rooftops, theaters, pop-ups. If you&rsquo;re reselling a 20,000-seat
             arena tour, we&rsquo;re probably not your fit yet. I&rsquo;d rather be great for 500
             venues than mediocre for 50,000.
@@ -625,7 +625,7 @@ export function ClosingCta() {
   return (
     <section id="start" className="scroll-mt-24 bg-background px-4 py-16 md:px-6 md:py-24">
       <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl bg-stage px-6 py-14 text-on-stage md:px-14 md:py-20">
-        <p data-reveal className="font-mono text-xs uppercase tracking-[0.3em] text-voltage">Open a Svyne box office</p>
+        <p data-reveal className="font-mono text-xs uppercase tracking-[0.3em] text-voltage">Open a EntryVine box office</p>
         <h2 data-split className="mt-4 max-w-2xl font-display text-3xl md:text-4xl lg:text-5xl">
           Draft your first night <em className="italic text-voltage">before your coffee gets cold.</em>
         </h2>

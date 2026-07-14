@@ -57,7 +57,7 @@ export function DeveloperTaxRemittancePage() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Card>
               <CardContent className="py-4">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Svyne must remit</p>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">EntryVine must remit</p>
                 <p className="text-2xl font-semibold font-mono">{centsToUSD(data.platformTotalCents)}</p>
               </CardContent>
             </Card>
@@ -70,14 +70,14 @@ export function DeveloperTaxRemittancePage() {
           </div>
 
           <RemittanceSection
-            title="Tax to remit — collected by Svyne"
-            description="Tax collected on the platform account. Svyne pays these amounts to the tax authorities each month."
+            title="Tax to remit — collected by EntryVine"
+            description="Tax collected on the platform account. EntryVine pays these amounts to the tax authorities each month."
             months={data.platformMonths}
             csvName="tax-remittance-platform.csv"
           />
 
           <RemittanceSection
-            title="Tenant-collected tax — not remitted by Svyne"
+            title="Tenant-collected tax — not remitted by EntryVine"
             description="Tax that flowed to tenant payouts. Each tenant remits these amounts themselves; shown for oversight only."
             months={data.selfMonths}
             csvName="tax-remittance-self.csv"

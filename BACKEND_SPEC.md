@@ -1,6 +1,6 @@
 # Frontend → Backend RPC requests
 
-RPCs the redesigned frontend is wired (or ready) for. Add to `svyne-event-backend/protos`, then `pnpm gen:proto` here.
+RPCs the redesigned frontend is wired (or ready) for. Add to `entryvine-event-backend/protos`, then `pnpm gen:proto` here.
 
 ## 1. Public tenant resolution (blocker for anonymous browsing)
 `TenantService.GetPublicTenantBySlug(slug) → { tenantsId, name, slug }`

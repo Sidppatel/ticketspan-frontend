@@ -211,7 +211,7 @@ export function DeveloperReportingAccessPage() {
                       disabled={busyTenantId === tenant.tenantsId}
                       onChange={(e) => changeTaxMode(tenant, e.target.value as 'platform' | 'self')}
                     >
-                      <option value="platform">Platform (Svyne)</option>
+                      <option value="platform">Platform (EntryVine)</option>
                       <option value="self">Tenant self-collects</option>
                     </Select>
                   </td>

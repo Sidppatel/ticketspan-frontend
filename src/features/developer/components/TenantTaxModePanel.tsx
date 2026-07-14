@@ -27,7 +27,7 @@ export function TenantTaxModePanel() {
     const reason = window.prompt(
       mode === TAX_MODE_SELF
         ? `"${name}" will collect and remit its own sales tax; the tax line flows to their payout. Reason:`
-        : `Svyne will collect and remit sales tax on behalf of "${name}". Reason:`,
+        : `EntryVine will collect and remit sales tax on behalf of "${name}". Reason:`,
     );
     if (!reason || !reason.trim()) {
       return;
@@ -59,7 +59,7 @@ export function TenantTaxModePanel() {
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm text-ink-soft">
-          Platform mode: Svyne keeps the tax inside its application fee and remits it for the
+          Platform mode: EntryVine keeps the tax inside its application fee and remits it for the
           tenant. Self mode: the tax line is still charged at checkout but flows into the tenant
           payout, and the tenant remits it themselves. Changes require a reason and are
           audit-logged.
@@ -88,7 +88,7 @@ export function TenantTaxModePanel() {
                   {tenant.taxCollectionMode === TAX_MODE_SELF ? (
                     <Badge variant="warn">Tenant self-collects</Badge>
                   ) : (
-                    <Badge variant="success">Svyne (platform)</Badge>
+                    <Badge variant="success">EntryVine (platform)</Badge>
                   )}
                 </td>
                 <td className="py-1.5">
@@ -100,7 +100,7 @@ export function TenantTaxModePanel() {
                       void changeMode(tenant.tenantsId, tenant.name, e.target.value as 'platform' | 'self')
                     }
                   >
-                    <option value={TAX_MODE_PLATFORM}>Platform (Svyne)</option>
+                    <option value={TAX_MODE_PLATFORM}>Platform (EntryVine)</option>
                     <option value={TAX_MODE_SELF}>Tenant self-collects</option>
                   </Select>
                 </td>

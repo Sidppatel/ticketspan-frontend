@@ -7,13 +7,13 @@ import { Card, CardContent } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Ticket } from 'lucide-react';
 
-const NOTCH = { ['--svyne-notch' as string]: 'var(--surface)' } as CSSProperties;
+const NOTCH = { ['--entryvine-notch' as string]: 'var(--surface)' } as CSSProperties;
 
 export function EventCard({ event, index }: { event: Event; index: number }) {
   return (
     <Link
       to={`/events/${event.slug}`}
-      className="svyne-page group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="entryvine-page group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
     >
       <Card interactive className="flex h-full flex-col overflow-hidden">
@@ -31,7 +31,7 @@ export function EventCard({ event, index }: { event: Event; index: number }) {
             </div>
           )}
         </div>
-        <div className="svyne-ticket-edge mx-5" style={NOTCH} />
+        <div className="entryvine-ticket-edge mx-5" style={NOTCH} />
         <CardContent className="flex flex-1 flex-col justify-between gap-3 p-5">
           <div className="space-y-1.5">
             <p className="font-mono text-xs font-medium uppercase tracking-widest text-brand">

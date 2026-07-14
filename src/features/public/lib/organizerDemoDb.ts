@@ -47,7 +47,7 @@ export interface DemoOrganizerStats {
   revenueByMonth: { label: string; cents: number }[];
 }
 
-const STORAGE_KEY = 'svyne_demo_organizer_db_v1';
+const STORAGE_KEY = 'entryvine_demo_organizer_db_v1';
 const DAY = 86400;
 
 function at(daysFromNow: number, durationDays = 1): { startsAt: number; endsAt: number } {

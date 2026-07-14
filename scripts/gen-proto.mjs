@@ -10,7 +10,7 @@ const binExt = isWindows ? '.CMD' : '';
 const protocBin = join(root, 'node_modules', '.bin', `protoc${binExt}`);
 const pluginBin = join(root, 'node_modules', '.bin', `protoc-gen-ts${binExt}`);
 const outDir = join(root, 'src', 'shared', 'proto');
-const protoPath = resolve(root, '..', 'svyne-event-backend', 'protos');
+const protoPath = resolve(root, '..', 'entryvine-event-backend', 'protos');
 
 const protoFiles = [
   'common.proto',

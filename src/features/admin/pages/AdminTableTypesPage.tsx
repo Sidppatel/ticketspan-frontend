@@ -83,7 +83,7 @@ export function AdminTableTypesPage() {
 
       { }
       <div
-        className="svyne-float-card border border-border bg-card shadow-xl rounded-2xl overflow-hidden transition-all duration-300"
+        className="entryvine-float-card border border-border bg-card shadow-xl rounded-2xl overflow-hidden transition-all duration-300"
       >
         <CardHeader className="border-b border-border/20 px-6 py-4">
           <CardTitle className="text-base font-bold font-display text-foreground flex items-center gap-2">
@@ -101,7 +101,7 @@ export function AdminTableTypesPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-1.5 md:col-span-2">
               <Label>Name (Locked after creation)</Label>
-              <div className="svyne-spring-input">
+              <div className="entryvine-spring-input">
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -141,7 +141,7 @@ export function AdminTableTypesPage() {
 
             <div className="space-y-1.5">
               <Label>Capacity (Seats)</Label>
-              <div className="svyne-spring-input">
+              <div className="entryvine-spring-input">
                 <Input
                   type="number"
                   value={capacity}
@@ -154,7 +154,7 @@ export function AdminTableTypesPage() {
 
             <div className="space-y-1.5">
               <Label>Base Price (USD)</Label>
-              <div className="svyne-spring-input">
+              <div className="entryvine-spring-input">
                 <Input
                   value={priceUsd}
                   onChange={(e) => setPriceUsd(e.target.value)}
@@ -166,7 +166,7 @@ export function AdminTableTypesPage() {
 
             <div className="space-y-1.5">
               <Label>Width (px)</Label>
-              <div className="svyne-spring-input">
+              <div className="entryvine-spring-input">
                 <Input
                   type="number"
                   value={width}
@@ -179,7 +179,7 @@ export function AdminTableTypesPage() {
 
             <div className="space-y-1.5">
               <Label>Height (px)</Label>
-              <div className="svyne-spring-input">
+              <div className="entryvine-spring-input">
                 <Input
                   type="number"
                   value={height}
@@ -206,7 +206,7 @@ export function AdminTableTypesPage() {
               onClick={add}
               disabled={!name.trim()}
               className={cn(
-                "svyne-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20",
+                "entryvine-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20",
                 !name.trim() && "opacity-40 cursor-not-allowed"
               )}
             >
@@ -426,7 +426,7 @@ function TableTypeRow({ template, onChanged }: { template: TableTemplate; onChan
               <Button
                 onClick={() => persist(template.isActive)}
                 size="sm"
-                className="svyne-spring-btn h-9 px-6 rounded-lg font-bold text-xs"
+                className="entryvine-spring-btn h-9 px-6 rounded-lg font-bold text-xs"
               >
                 Save Settings
               </Button>

@@ -161,7 +161,7 @@ function ConfirmationReceipt({
     <div className="flex flex-col h-full">
       <div className="flex-1 space-y-6 pt-4 text-center pb-6">
         <div className="space-y-2">
-          <CheckCircle2 className="size-12 mx-auto text-success animate-[svyne-fade-up_0.5s_ease-out]" />
+          <CheckCircle2 className="size-12 mx-auto text-success animate-[entryvine-fade-up_0.5s_ease-out]" />
           <h3 className="text-xl font-black text-white font-display uppercase tracking-tight">Booking Confirmed</h3>
           <p className="text-xs text-white/50">Your secure entries are verified and issued</p>
         </div>
@@ -182,7 +182,7 @@ function ConfirmationReceipt({
         </div>
 
         {}
-        <div className="svyne-ticket-edge mx-4" style={{ '--svyne-notch': 'var(--background)' } as React.CSSProperties} />
+        <div className="entryvine-ticket-edge mx-4" style={{ '--entryvine-notch': 'var(--background)' } as React.CSSProperties} />
 
         <div className="p-5 space-y-4">
           {}

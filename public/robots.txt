@@ -1,4 +1,4 @@
-# Svyne Events — search engines and AI assistants are welcome.
+# EntryVine Events — search engines and AI assistants are welcome.
 # Public event, performer, and sponsor pages may be indexed and read by AI.
 # Checkout, account, and token-bearing pages are excluded for user privacy.
 

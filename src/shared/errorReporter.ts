@@ -4,7 +4,7 @@ const FLUSH_INTERVAL_MS = 5000;
 const MAX_QUEUE_FLUSH_SIZE = 10;
 const MAX_REPORTS_PER_SESSION = 30;
 const MAX_BREADCRUMBS = 10;
-const OFFLINE_STORAGE_KEY = 'svyne_pending_error_reports';
+const OFFLINE_STORAGE_KEY = 'entryvine_pending_error_reports';
 const MAX_OFFLINE_REPORTS = 50;
 
 type Breadcrumb = { at: number; action: string };
@@ -18,10 +18,10 @@ let currentUrl = '';
 let initialized = false;
 
 function sessionId(): string {
-  let id = sessionStorage.getItem('svyne_error_session_id');
+  let id = sessionStorage.getItem('entryvine_error_session_id');
   if (!id) {
     id = crypto.randomUUID();
-    sessionStorage.setItem('svyne_error_session_id', id);
+    sessionStorage.setItem('entryvine_error_session_id', id);
   }
   return id;
 }

@@ -70,7 +70,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
       { }
       {!isAuthenticated && (
         <div className="bg-accent-gold/10 border border-accent-gold/20 p-4 rounded-xl space-y-2 text-xs">
-          <p className="font-bold text-accent-gold">Secure your Svyne Profile</p>
+          <p className="font-bold text-accent-gold">Secure your EntryVine Profile</p>
           <p className="text-white/70 leading-relaxed text-[11px]">
             Create an account to manage your tickets in one place. Guests must enter a valid email to receive entry codes.
           </p>

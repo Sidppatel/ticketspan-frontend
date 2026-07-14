@@ -27,7 +27,7 @@ interface IntentState {
   holdExpiresAt: number;
 }
 
-const NOTCH = { ['--svyne-notch' as string]: 'var(--background)' } as CSSProperties;
+const NOTCH = { ['--entryvine-notch' as string]: 'var(--background)' } as CSSProperties;
 const URGENT_HOLD_SECONDS = 120;
 
 export function CheckoutPage() {
@@ -151,7 +151,7 @@ export function CheckoutPage() {
               )}
             </div>
 
-            <div className="svyne-ticket-edge" style={NOTCH} />
+            <div className="entryvine-ticket-edge" style={NOTCH} />
 
             <div className="space-y-6 p-6">
               {booking && booking.lines && booking.lines.length > 0 ? (
@@ -217,7 +217,7 @@ export function CheckoutPage() {
             </div>
             <p className="leading-relaxed text-ink-soft">
               Payments are processed by Stripe over an encrypted connection. Your card details never
-              touch Svyne servers.
+              touch EntryVine servers.
             </p>
           </div>
         </div>
@@ -330,7 +330,7 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
           <div
             className={
               urgent
-                ? 'svyne-urgent flex items-center gap-2 rounded-md border border-warning/30 bg-warning/10 px-4 py-3 text-sm font-medium text-warning'
+                ? 'entryvine-urgent flex items-center gap-2 rounded-md border border-warning/30 bg-warning/10 px-4 py-3 text-sm font-medium text-warning'
                 : 'flex items-center gap-2 rounded-md border border-hairline bg-surface-sunken px-4 py-3 text-sm text-ink-soft'
             }
           >

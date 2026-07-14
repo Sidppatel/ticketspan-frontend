@@ -1,6 +1,6 @@
 import type { Event } from '@/shared/proto/event';
 
-const KEY_PREFIX = 'svyne_seen_event_';
+const KEY_PREFIX = 'entryvine_seen_event_';
 const MAX_REMEMBERED = 30;
 
 interface EventSnapshot {

@@ -105,7 +105,7 @@ export function VoiceZone({
             {!published ? (
               <Button
                 size="sm"
-                className="svyne-spring-btn h-9 rounded-lg px-4 text-xs font-bold"
+                className="entryvine-spring-btn h-9 rounded-lg px-4 text-xs font-bold"
                 disabled={!completion.canPublish}
                 title={completion.canPublish ? 'Publish this event' : 'Add a ticket type or a table first'}
                 onClick={onPublish}
@@ -209,7 +209,7 @@ export function WhatsNext({
         <div className="border-t border-border/40 pt-5">
           <Button
             size="lg"
-            className="svyne-spring-btn h-12 w-full rounded-xl text-sm font-bold uppercase tracking-wider shadow-md shadow-primary/20 sm:w-auto sm:px-10"
+            className="entryvine-spring-btn h-12 w-full rounded-xl text-sm font-bold uppercase tracking-wider shadow-md shadow-primary/20 sm:w-auto sm:px-10"
             disabled={!completion.canPublish}
             title={completion.canPublish ? 'Publish this event' : 'Add a ticket type or a table first'}
             onClick={onPublish}
@@ -303,13 +303,13 @@ export function EditSection({
       <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 p-6">
         <div className="space-y-1.5">
           <Label className="text-[10px]">Title</Label>
-          <div className="svyne-spring-input">
+          <div className="entryvine-spring-input">
             <Input value={title} onChange={(e) => setTitle(e.target.value)} className="h-10 bg-background border-border text-sm" />
           </div>
         </div>
         <div className="space-y-1.5">
           <Label className="text-[10px]">Category</Label>
-          <div className="svyne-spring-input">
+          <div className="entryvine-spring-input">
             <Input
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -391,7 +391,7 @@ export function EditSection({
         {error ? <p className="text-[10px] font-bold text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-2.5 leading-normal animate-shake md:col-span-2">{error}</p> : null}
 
         <div className="md:col-span-2 flex justify-end border-t border-border/10 pt-4 mt-2">
-          <Button onClick={save} disabled={saving} className="svyne-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20">
+          <Button onClick={save} disabled={saving} className="entryvine-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20">
             {saving ? 'Saving…' : 'Save details'}
           </Button>
         </div>

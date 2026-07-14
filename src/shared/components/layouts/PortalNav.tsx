@@ -92,7 +92,7 @@ function Brand({ section, className, onStage }: { section?: string; className?: 
   return (
     <span className={cn('font-semibold tracking-tight font-display text-lg flex items-center gap-1.5', className)}>
       <span className={cn('transition-opacity hover:opacity-80', onStage ? 'text-on-stage' : 'text-foreground')}>
-        svyne
+        entryvine
       </span>
       {section ? (
         <>

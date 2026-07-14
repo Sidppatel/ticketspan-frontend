@@ -29,7 +29,7 @@ export function LandingNav() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
         <Link to="/" className="flex items-baseline gap-2 text-on-stage">
           <span className="flex items-center gap-1.5 font-display text-xl">
-            <span className="h-1.5 w-1.5 rounded-full bg-voltage" /> Svyne
+            <span className="h-1.5 w-1.5 rounded-full bg-voltage" /> EntryVine
           </span>
           <span className="hidden font-mono text-[10px] uppercase tracking-[0.25em] text-on-stage-soft sm:inline">The box office</span>
         </Link>
