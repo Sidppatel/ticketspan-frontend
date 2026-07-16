@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { resolvePortalContext } from '@/shared/subdomain';
 import { Toaster } from '@/shared/ui/sonner';
 
-import PublicRoutes from '@/app/PublicRoutes';
+const PublicRoutes = lazy(() => import('@/app/PublicRoutes'));
 const AdminRoutes = lazy(() => import('@/app/AdminRoutes'));
 const DeveloperRoutes = lazy(() => import('@/app/DeveloperRoutes'));
 const StaffRoutes = lazy(() => import('@/app/StaffRoutes'));

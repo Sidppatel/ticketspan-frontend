@@ -6,7 +6,10 @@ import {
   getCheckInStats,
   getGuestList,
   checkInGuest,
+  lookupBooking,
+  uncheckInTicket,
 } from '@/features/staff/services/staffService';
+import type { GuestBooking } from '@/shared/proto/bookings';
 import { rpcErrorMessage } from '@/shared/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
@@ -23,6 +26,7 @@ import {
   FileCheck,
   ChevronRight,
   Sparkles,
+  Undo2,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
 
@@ -30,6 +34,11 @@ interface ScanOverlayState {
   show: boolean;
   success: boolean;
   message: string;
+}
+
+interface UncheckTarget {
+  ticketsId: string;
+  guestName: string;
 }
 
 export function StaffCheckInPage() {
@@ -44,6 +53,9 @@ export function StaffCheckInPage() {
   
   
   const [scanOverlay, setScanOverlay] = useState<ScanOverlayState | null>(null);
+  const [pendingBooking, setPendingBooking] = useState<GuestBooking | null>(null);
+  const [uncheckTarget, setUncheckTarget] = useState<UncheckTarget | null>(null);
+  const [uncheckReason, setUncheckReason] = useState('');
 
   
   const guestListLoader = useCallback(() => getGuestList(eventsId), [eventsId]);
@@ -80,11 +92,18 @@ export function StaffCheckInPage() {
 
   async function handleScan(e: React.FormEvent) {
     e.preventDefault();
-    if (!qrToken.trim()) return;
+    const code = qrToken.trim();
+    if (!code) return;
 
     setCheckingIn(true);
     try {
-      const res = await scanTicket(qrToken.trim(), eventsId);
+      const bookingLookup = await lookupBooking(eventsId, code);
+      if (bookingLookup.found && bookingLookup.booking) {
+        setPendingBooking(bookingLookup.booking);
+        setQrToken('');
+        return;
+      }
+      const res = await scanTicket(code, eventsId);
       if (res.valid) {
         triggerOverlay(true, `Checked In: ${res.holderName || 'Guest'}`);
         setQrToken('');
@@ -101,11 +120,22 @@ export function StaffCheckInPage() {
 
   async function handleManualCheckIn(e: React.FormEvent) {
     e.preventDefault();
-    if (!manualCode.trim()) return;
+    const code = manualCode.trim();
+    if (!code) return;
 
     setCheckingIn(true);
     try {
-      const res = await checkInGuest(eventsId, manualCode.trim(), manualType);
+      if (manualType === 'Booking') {
+        const bookingLookup = await lookupBooking(eventsId, code);
+        if (bookingLookup.found && bookingLookup.booking) {
+          setPendingBooking(bookingLookup.booking);
+          setManualCode('');
+        } else {
+          triggerOverlay(false, bookingLookup.message || 'Booking not found.');
+        }
+        return;
+      }
+      const res = await checkInGuest(eventsId, code, manualType);
       if (res.valid) {
         triggerOverlay(true, `Checked In: ${res.holderName || 'Guest'}`);
         setManualCode('');
@@ -137,6 +167,35 @@ export function StaffCheckInPage() {
     }
   }
 
+  async function handleConfirmBookingCheckIn() {
+    if (!pendingBooking) return;
+    const bookingsId = pendingBooking.bookingsId;
+    setPendingBooking(null);
+    await handleActionCheckIn(bookingsId, 'Booking');
+  }
+
+  async function handleConfirmUncheck(e: React.FormEvent) {
+    e.preventDefault();
+    if (!uncheckTarget || !uncheckReason.trim()) return;
+
+    setCheckingIn(true);
+    try {
+      const res = await uncheckInTicket(eventsId, uncheckTarget.ticketsId, uncheckReason.trim());
+      if (res.valid) {
+        triggerOverlay(true, res.message || 'Check-in undone.');
+        setUncheckTarget(null);
+        setUncheckReason('');
+        reloadAll();
+      } else {
+        triggerOverlay(false, res.message || 'Undo check-in failed.');
+      }
+    } catch (err) {
+      triggerOverlay(false, rpcErrorMessage(err));
+    } finally {
+      setCheckingIn(false);
+    }
+  }
+
   
   const filteredBookings = (guestList.data ?? []).filter((b) => {
     const query = searchQuery.toLowerCase().trim();
@@ -154,6 +213,10 @@ export function StaffCheckInPage() {
 
     return matchesBooking || matchesTicket;
   });
+
+  const pendingUncheckedTickets = pendingBooking
+    ? pendingBooking.tickets.filter((t) => t.status !== 'CheckedIn')
+    : [];
 
   if (notAuthorized) {
     return (
@@ -185,7 +248,7 @@ export function StaffCheckInPage() {
         )}>
           <div className="flex flex-col items-center gap-6 text-white text-center">
             {scanOverlay.success ? (
-              <CheckCircle2 className="size-32 animate-bounce stroke-[1.5]" />
+              <CheckCircle2 className="size-32 animate-fade-in stroke-[1.5]" />
             ) : (
               <XCircle className="size-32 stroke-[1.5]" />
             )}
@@ -198,6 +261,120 @@ export function StaffCheckInPage() {
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {pendingBooking && (
+        <div className="fixed inset-0 z-40 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-6 animate-fade-in">
+          <Card className="w-full sm:max-w-lg border border-border bg-card shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden max-h-[85vh] flex flex-col">
+            <CardHeader className="pb-3 border-b border-border/20 px-5 py-4 shrink-0">
+              <CardTitle className="text-sm font-bold font-display flex items-center gap-2 text-foreground">
+                <Users className="h-4 w-4 text-primary" />
+                Confirm Booking Check-In
+              </CardTitle>
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                {pendingBooking.buyerName} · Booking <span className="font-mono">{pendingBooking.bookingNumber}</span>
+              </p>
+            </CardHeader>
+            <CardContent className="p-5 space-y-4 overflow-y-auto">
+              <div className="space-y-2">
+                {pendingBooking.tickets.map((t) => (
+                  <div key={t.ticketsId} className="flex items-center justify-between text-xs py-1.5 px-2 rounded-lg bg-muted/20">
+                    <div>
+                      <p className="font-semibold text-foreground">Seat #{t.seatNumber} : {t.guestName}</p>
+                      <p className="text-[9px] text-muted-foreground font-mono">{t.ticketCode}</p>
+                    </div>
+                    {t.status === 'CheckedIn' ? (
+                      <span className="text-[10px] font-bold text-success flex items-center gap-1">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Already In
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
+                        Will Check In
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {pendingUncheckedTickets.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center font-semibold">
+                  Everyone in this booking is already checked in.
+                </p>
+              ) : (
+                <p className="text-xs text-foreground text-center font-semibold">
+                  {pendingUncheckedTickets.length} of {pendingBooking.tickets.length} guests will be checked in.
+                </p>
+              )}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setPendingBooking(null)}
+                  className="flex-1 h-11 text-xs font-semibold"
+                >
+                  Cancel
+                </Button>
+                {pendingUncheckedTickets.length > 0 && (
+                  <Button
+                    onClick={handleConfirmBookingCheckIn}
+                    disabled={checkingIn}
+                    className="flex-1 h-11 text-xs font-semibold bg-primary hover:bg-primary/95 text-white"
+                  >
+                    <FileCheck className="h-4 w-4 mr-1.5" />
+                    Check In {pendingUncheckedTickets.length}
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {uncheckTarget && (
+        <div className="fixed inset-0 z-40 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-6 animate-fade-in">
+          <Card className="w-full sm:max-w-md border border-border bg-card shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden">
+            <CardHeader className="pb-3 border-b border-border/20 px-5 py-4">
+              <CardTitle className="text-sm font-bold font-display flex items-center gap-2 text-foreground">
+                <Undo2 className="h-4 w-4 text-destructive" />
+                Undo Check-In
+              </CardTitle>
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                {uncheckTarget.guestName} will be marked as not checked in. A reason is required for the audit log.
+              </p>
+            </CardHeader>
+            <CardContent className="p-5">
+              <form onSubmit={handleConfirmUncheck} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="uncheck-reason">Reason</Label>
+                  <Input
+                    id="uncheck-reason"
+                    placeholder="e.g. Accidental scan, guest left early..."
+                    value={uncheckReason}
+                    onChange={(e) => setUncheckReason(e.target.value)}
+                    required
+                    autoFocus
+                    className="h-10 bg-background/50 border-border focus:border-primary text-sm"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => { setUncheckTarget(null); setUncheckReason(''); }}
+                    className="flex-1 h-11 text-xs font-semibold"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={checkingIn || !uncheckReason.trim()}
+                    className="flex-1 h-11 text-xs font-semibold bg-destructive hover:bg-destructive/90 text-white"
+                  >
+                    Undo Check-In
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       )}
 
@@ -363,7 +540,7 @@ export function StaffCheckInPage() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleActionCheckIn(b.bookingsId, 'Booking')}
+                              onClick={() => setPendingBooking(b)}
                               disabled={checkingIn}
                               className="h-7 px-3 text-[10px] font-semibold border-border hover:bg-muted"
                             >
@@ -387,9 +564,20 @@ export function StaffCheckInPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               {t.status === 'CheckedIn' ? (
-                                <span className="text-[10px] font-bold text-success flex items-center gap-1 bg-success/10 px-2 py-0.5 rounded border border-success/15">
-                                  <CheckCircle2 className="h-3.5 w-3.5" /> Checked In
-                                </span>
+                                <>
+                                  <span className="text-[10px] font-bold text-success flex items-center gap-1 bg-success/10 px-2 py-0.5 rounded border border-success/15">
+                                    <CheckCircle2 className="h-3.5 w-3.5" /> Checked In
+                                  </span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setUncheckTarget({ ticketsId: t.ticketsId, guestName: t.guestName })}
+                                    disabled={checkingIn}
+                                    className="h-6 px-2 text-[10px] text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md"
+                                  >
+                                    <Undo2 className="h-3 w-3 mr-0.5" /> Undo
+                                  </Button>
+                                </>
                               ) : (
                                 <>
                                   <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${

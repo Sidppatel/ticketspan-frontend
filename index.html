@@ -36,7 +36,6 @@
 <body>
   <div id="hero-flash"
     style="position:absolute;top:0;left:0;right:0;height:96vh;z-index:1;overflow:hidden;pointer-events:none;background:var(--color-charcoal-ink)">
-    <img src="/hero.webp" alt="" fetchpriority="high" style="width:100%;height:100%;object-fit:cover;opacity:.7" />
     <div
       style="position:absolute;inset:0;background:linear-gradient(to right,color-mix(in srgb,var(--color-charcoal-ink) 85%,transparent),color-mix(in srgb,var(--color-charcoal-ink) 40%,transparent) 50%,transparent),linear-gradient(to bottom,color-mix(in srgb,var(--color-charcoal-ink) 70%,transparent),color-mix(in srgb,var(--color-charcoal-ink) 60%,transparent) 50%,var(--color-charcoal-ink))">
     </div>
@@ -44,10 +43,20 @@
   <script>
     (function () {
       var sub = window.location.hostname.split('.')[0];
+      var portalParam = new URLSearchParams(window.location.search).get('portal');
       var portalSub = sub === 'admin' || sub === 'staff' || sub === 'developer';
-      var storedPortal = window.localStorage.getItem('ticketspan-portal');
+      var storedPortal = portalParam || window.localStorage.getItem('ticketspan-portal');
+      var flash = document.getElementById('hero-flash');
       if (portalSub || (storedPortal && storedPortal !== 'public')) {
-        document.getElementById('hero-flash').remove();
+        flash.style.cssText = 'position:fixed;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;background:var(--color-charcoal-ink);pointer-events:none';
+        flash.innerHTML = '<span style="font-family:\'Space Grotesk\',system-ui,sans-serif;font-size:clamp(44px,13vw,80px);font-weight:600;letter-spacing:-0.03em;color:#fff">ticketspan</span>';
+      } else {
+        var img = document.createElement('img');
+        img.src = '/hero.webp';
+        img.alt = '';
+        img.setAttribute('fetchpriority', 'high');
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;opacity:.7';
+        flash.insertBefore(img, flash.firstChild);
       }
       var themeColor = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim();
       if (themeColor) {

@@ -559,7 +559,7 @@ export function PricingTeaser() {
           <div className="flex shrink-0 items-center gap-6 font-mono text-sm">
             <span className="text-on-stage-soft">$50 ticket</span>
             <span aria-hidden className="text-on-stage-soft">&rarr;</span>
-            <span className="text-on-stage-soft">buyer pays $55.00</span>
+            <span className="text-on-stage-soft">buyer pays $55.32</span>
             <span aria-hidden className="text-on-stage-soft">&rarr;</span>
             <span className="text-voltage">you get $50.00</span>
           </div>

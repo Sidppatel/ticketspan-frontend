@@ -52,9 +52,20 @@ Env: `VITE_BACKEND_URL` (default `http://localhost:8000`), `VITE_GOOGLE_CLIENT_I
 |---|---|---|
 | 0 | Attendee | public: browse, book, my-bookings, profile |
 | 1 | Admin | full admin dashboard + settings (invitations, financial) |
-| 2 | Staff | check-in scanner |
+| 2 | Staff | staff portal: assigned-event check-in (see below) |
 | 3 | Sub-Tenant | admin minus tenant-settings (invitations/financial hidden) |
+| 4 | Event Manager | per-event scoped admin (RLS + EventAccess guards + fail-closed interceptor) |
 | 99 | Developer | global console; `tenants_id` null, bypasses tenant context |
+
+### Staff portal (`staff.<domain>` subdomain, or `?portal=staff` locally via `pnpm dev:staff`)
+
+Mobile-first check-in portal for role 2, backed by `CheckInService` (`bookings.proto`). Staff only see events they are assigned to (`staff_event_access`, managed in the admin Event Team panel), within a 24h before-start / 24h after-end window.
+
+- **Dashboard** (`/staff`): "Happening Now" hero card (live check-in stats) + upcoming events list.
+- **Check-in desk** (`/staff/:eventsId`): QR/token scan, manual code entry (ticket code or booking number), guest-list search, per-ticket check-in.
+- **Booking check-in is never blind**: a booking QR/number opens a confirmation view (`LookupBooking` RPC) listing every ticket's status; staff confirm, and only unchecked tickets are checked in (per-ticket QR remains the security model).
+- **Undo check-in** (`UncheckInTicket` RPC): requires a reason, logged to `checkin_logs` with method `uncheck`; reverts the ticket to Claimed/Unassigned and the booking to Paid.
+- Every attempt (success + failure) is audited in `checkin_logs`, event-isolated.
 
 Tenant + role + identity come from **JWT claims** (`tenants_id`, `role`, `tenant_slug`, `sub`); the backend `TenantResolutionMiddleware` enforces them. Developers skip tenant lookup.
 

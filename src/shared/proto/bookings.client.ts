@@ -5,6 +5,8 @@
 import { CheckInService } from "./bookings";
 import type { ListCheckInLogsResponse } from "./bookings";
 import type { ListCheckInLogsRequest } from "./bookings";
+import type { UncheckInTicketRequest } from "./bookings";
+import type { LookupBookingResponse } from "./bookings";
 import type { CheckInGuestRequest } from "./bookings";
 import type { GetGuestListResponse } from "./bookings";
 import type { ListEventsForStaffResponse } from "./bookings";
@@ -345,6 +347,14 @@ export interface ICheckInServiceClient {
      */
     checkInGuest(input: CheckInGuestRequest, options?: RpcOptions): UnaryCall<CheckInGuestRequest, ScanResponse>;
     /**
+     * @generated from protobuf rpc: LookupBooking(ticketspan.booking.CheckInGuestRequest) returns (ticketspan.booking.LookupBookingResponse);
+     */
+    lookupBooking(input: CheckInGuestRequest, options?: RpcOptions): UnaryCall<CheckInGuestRequest, LookupBookingResponse>;
+    /**
+     * @generated from protobuf rpc: UncheckInTicket(ticketspan.booking.UncheckInTicketRequest) returns (ticketspan.booking.ScanResponse);
+     */
+    uncheckInTicket(input: UncheckInTicketRequest, options?: RpcOptions): UnaryCall<UncheckInTicketRequest, ScanResponse>;
+    /**
      * @generated from protobuf rpc: ListCheckInLogs(ticketspan.booking.ListCheckInLogsRequest) returns (ticketspan.booking.ListCheckInLogsResponse);
      */
     listCheckInLogs(input: ListCheckInLogsRequest, options?: RpcOptions): UnaryCall<ListCheckInLogsRequest, ListCheckInLogsResponse>;
@@ -394,10 +404,24 @@ export class CheckInServiceClient implements ICheckInServiceClient, ServiceInfo 
         return stackIntercept<CheckInGuestRequest, ScanResponse>("unary", this._transport, method, opt, input);
     }
     /**
+     * @generated from protobuf rpc: LookupBooking(ticketspan.booking.CheckInGuestRequest) returns (ticketspan.booking.LookupBookingResponse);
+     */
+    lookupBooking(input: CheckInGuestRequest, options?: RpcOptions): UnaryCall<CheckInGuestRequest, LookupBookingResponse> {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept<CheckInGuestRequest, LookupBookingResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: UncheckInTicket(ticketspan.booking.UncheckInTicketRequest) returns (ticketspan.booking.ScanResponse);
+     */
+    uncheckInTicket(input: UncheckInTicketRequest, options?: RpcOptions): UnaryCall<UncheckInTicketRequest, ScanResponse> {
+        const method = this.methods[6], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UncheckInTicketRequest, ScanResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: ListCheckInLogs(ticketspan.booking.ListCheckInLogsRequest) returns (ticketspan.booking.ListCheckInLogsResponse);
      */
     listCheckInLogs(input: ListCheckInLogsRequest, options?: RpcOptions): UnaryCall<ListCheckInLogsRequest, ListCheckInLogsResponse> {
-        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        const method = this.methods[7], opt = this._transport.mergeOptions(options);
         return stackIntercept<ListCheckInLogsRequest, ListCheckInLogsResponse>("unary", this._transport, method, opt, input);
     }
 }

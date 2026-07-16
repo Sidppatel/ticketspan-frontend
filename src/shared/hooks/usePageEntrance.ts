@@ -16,7 +16,6 @@ export function usePageEntrance<T extends HTMLElement = HTMLElement>() {
             first && first.children.length > 1 ? first.children : root.children;
           const limited = Array.from(targets).slice(0, 6);
           gsap.from(limited, {
-            opacity: 0,
             y: 12,
             duration: 0.48,
             ease: 'power3.out',

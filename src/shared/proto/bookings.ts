@@ -1010,6 +1010,40 @@ export interface CheckInGuestRequest {
      */
     type: string;
 }
+/**
+ * @generated from protobuf message ticketspan.booking.LookupBookingResponse
+ */
+export interface LookupBookingResponse {
+    /**
+     * @generated from protobuf field: bool found = 1;
+     */
+    found: boolean;
+    /**
+     * @generated from protobuf field: ticketspan.booking.GuestBooking booking = 2;
+     */
+    booking?: GuestBooking;
+    /**
+     * @generated from protobuf field: string message = 3;
+     */
+    message: string;
+}
+/**
+ * @generated from protobuf message ticketspan.booking.UncheckInTicketRequest
+ */
+export interface UncheckInTicketRequest {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: string tickets_id = 2;
+     */
+    ticketsId: string;
+    /**
+     * @generated from protobuf field: string reason = 3;
+     */
+    reason: string;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Booking$Type extends MessageType<Booking> {
     constructor() {
@@ -3971,6 +4005,131 @@ class CheckInGuestRequest$Type extends MessageType<CheckInGuestRequest> {
  * @generated MessageType for protobuf message ticketspan.booking.CheckInGuestRequest
  */
 export const CheckInGuestRequest = new CheckInGuestRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class LookupBookingResponse$Type extends MessageType<LookupBookingResponse> {
+    constructor() {
+        super("ticketspan.booking.LookupBookingResponse", [
+            { no: 1, name: "found", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 2, name: "booking", kind: "message", T: () => GuestBooking },
+            { no: 3, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<LookupBookingResponse>): LookupBookingResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.found = false;
+        message.message = "";
+        if (value !== undefined)
+            reflectionMergePartial<LookupBookingResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LookupBookingResponse): LookupBookingResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* bool found */ 1:
+                    message.found = reader.bool();
+                    break;
+                case /* ticketspan.booking.GuestBooking booking */ 2:
+                    message.booking = GuestBooking.internalBinaryRead(reader, reader.uint32(), options, message.booking);
+                    break;
+                case /* string message */ 3:
+                    message.message = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: LookupBookingResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* bool found = 1; */
+        if (message.found !== false)
+            writer.tag(1, WireType.Varint).bool(message.found);
+        /* ticketspan.booking.GuestBooking booking = 2; */
+        if (message.booking)
+            GuestBooking.internalBinaryWrite(message.booking, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* string message = 3; */
+        if (message.message !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.message);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.booking.LookupBookingResponse
+ */
+export const LookupBookingResponse = new LookupBookingResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class UncheckInTicketRequest$Type extends MessageType<UncheckInTicketRequest> {
+    constructor() {
+        super("ticketspan.booking.UncheckInTicketRequest", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "tickets_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "reason", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<UncheckInTicketRequest>): UncheckInTicketRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.ticketsId = "";
+        message.reason = "";
+        if (value !== undefined)
+            reflectionMergePartial<UncheckInTicketRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UncheckInTicketRequest): UncheckInTicketRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* string tickets_id */ 2:
+                    message.ticketsId = reader.string();
+                    break;
+                case /* string reason */ 3:
+                    message.reason = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: UncheckInTicketRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* string tickets_id = 2; */
+        if (message.ticketsId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.ticketsId);
+        /* string reason = 3; */
+        if (message.reason !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.reason);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.booking.UncheckInTicketRequest
+ */
+export const UncheckInTicketRequest = new UncheckInTicketRequest$Type();
 /**
  * @generated ServiceType for protobuf service ticketspan.booking.BookingService
  */
@@ -4011,5 +4170,7 @@ export const CheckInService = new ServiceType("ticketspan.booking.CheckInService
     { name: "ListEventsForStaff", options: {}, I: Empty, O: ListEventsForStaffResponse },
     { name: "GetGuestList", options: {}, I: UuidValue, O: GetGuestListResponse },
     { name: "CheckInGuest", options: {}, I: CheckInGuestRequest, O: ScanResponse },
+    { name: "LookupBooking", options: {}, I: CheckInGuestRequest, O: LookupBookingResponse },
+    { name: "UncheckInTicket", options: {}, I: UncheckInTicketRequest, O: ScanResponse },
     { name: "ListCheckInLogs", options: {}, I: ListCheckInLogsRequest, O: ListCheckInLogsResponse }
 ]);
