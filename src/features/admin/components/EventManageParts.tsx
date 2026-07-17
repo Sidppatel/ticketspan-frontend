@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { updateEvent, setEventFeesIncluded, setEventAch } from '@/features/admin/services/eventAdminService';
 import { listVenues } from '@/features/admin/services/catalogService';
+import { getMyTenant } from '@/features/admin/services/tenantService';
 import { epochToZonedInput, zonedInputToEpoch } from '@/shared/lib/timezone';
 import { DateTimePicker } from '@/shared/ui/date-time-picker';
 import type { Event } from '@/shared/proto/event';
@@ -233,6 +234,8 @@ export function EditSection({
 }) {
   const venuesLoader = useCallback(() => listVenues(), []);
   const venues = useAsync(venuesLoader);
+  const tenantLoader = useCallback(() => getMyTenant(), []);
+  const tenant = useAsync(tenantLoader);
   const [title, setTitle] = useState(event.title);
   const [description, setDescription] = useState(event.description);
   const [category, setCategory] = useState(event.category);
@@ -372,21 +375,22 @@ export function EditSection({
               </span>
             </span>
           </label>
-          <label className="flex items-start gap-3 text-sm cursor-pointer">
-            <input
-              type="checkbox"
-              className="mt-1"
-              checked={achEnabled}
-              onChange={(e) => toggleAch(e.target.checked)}
-            />
-            <span>
-              <span className="font-bold text-sm block">Offer ACH (bank) payment</span>
-              <span className="block text-xs text-muted-foreground mt-1 leading-relaxed">
-                Buyers may pay by US bank debit at a lower fee. Requires ACH to be enabled for your organization by the
-                developer.
+          {tenant.data?.achEnabled ? (
+            <label className="flex items-start gap-3 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={achEnabled}
+                onChange={(e) => toggleAch(e.target.checked)}
+              />
+              <span>
+                <span className="font-bold text-sm block">Offer ACH (bank) payment</span>
+                <span className="block text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Buyers may pay by US bank debit at a lower fee.
+                </span>
               </span>
-            </span>
-          </label>
+            </label>
+          ) : null}
         </div>
         {error ? <p className="text-[10px] font-bold text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-2.5 leading-normal animate-shake md:col-span-2">{error}</p> : null}
 
