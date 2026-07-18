@@ -313,10 +313,14 @@ export function BookingDetailPage() {
                     </div>
                     <div className="flex justify-between text-muted-foreground">
                       <span>Service fee</span>
-                      <span>{centsToUSD(b.feeCents)}</span>
+                      <span>{centsToUSD(b.serviceFeeCents)}</span>
                     </div>
                   </>
                 )}
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Tax</span>
+                  <span>{centsToUSD(b.taxCents)}</span>
+                </div>
                 <div className="flex justify-between border-t pt-2 font-medium text-foreground">
                   <span>Total</span>
                   <span>{centsToUSD(b.totalCents)}</span>

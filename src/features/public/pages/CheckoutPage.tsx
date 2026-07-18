@@ -191,12 +191,10 @@ export function CheckoutPage() {
                       </div>
                     </>
                   )}
-                  {booking.taxCents > 0 ? (
-                    <div className="flex justify-between text-ink-soft">
-                      <span>Tax</span>
-                      <span className="font-mono">{centsToUSD(booking.taxCents)}</span>
-                    </div>
-                  ) : null}
+                  <div className="flex justify-between text-ink-soft">
+                    <span>Tax</span>
+                    <span className="font-mono">{centsToUSD(booking.taxCents)}</span>
+                  </div>
                   <div className="flex items-center justify-between border-t border-hairline pt-3 font-semibold text-foreground">
                     <span>Total</span>
                     <span className="font-mono text-lg">{centsToUSD(booking.totalCents)}</span>
