@@ -5,6 +5,7 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { EventService } from "./event";
+import type { AiSettingsResponse } from "./event";
 import type { GenerateEventInfoResponse } from "./event";
 import type { GenerateEventInfoRequest } from "./event";
 import type { MediaSettings } from "./event";
@@ -129,6 +130,10 @@ export interface IEventServiceClient {
      * @generated from protobuf rpc: GenerateEventInfo(ticketspan.event.GenerateEventInfoRequest) returns (ticketspan.event.GenerateEventInfoResponse);
      */
     generateEventInfo(input: GenerateEventInfoRequest, options?: RpcOptions): UnaryCall<GenerateEventInfoRequest, GenerateEventInfoResponse>;
+    /**
+     * @generated from protobuf rpc: GetAiSettings(ticketspan.common.Empty) returns (ticketspan.event.AiSettingsResponse);
+     */
+    getAiSettings(input: Empty, options?: RpcOptions): UnaryCall<Empty, AiSettingsResponse>;
 }
 /**
  * @generated from protobuf service ticketspan.event.EventService
@@ -294,5 +299,12 @@ export class EventServiceClient implements IEventServiceClient, ServiceInfo {
     generateEventInfo(input: GenerateEventInfoRequest, options?: RpcOptions): UnaryCall<GenerateEventInfoRequest, GenerateEventInfoResponse> {
         const method = this.methods[21], opt = this._transport.mergeOptions(options);
         return stackIntercept<GenerateEventInfoRequest, GenerateEventInfoResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: GetAiSettings(ticketspan.common.Empty) returns (ticketspan.event.AiSettingsResponse);
+     */
+    getAiSettings(input: Empty, options?: RpcOptions): UnaryCall<Empty, AiSettingsResponse> {
+        const method = this.methods[22], opt = this._transport.mergeOptions(options);
+        return stackIntercept<Empty, AiSettingsResponse>("unary", this._transport, method, opt, input);
     }
 }

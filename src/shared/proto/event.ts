@@ -556,6 +556,10 @@ export interface GenerateEventInfoRequest {
      * @generated from protobuf field: string prompt = 1;
      */
     prompt: string;
+    /**
+     * @generated from protobuf field: optional string target_field = 2;
+     */
+    targetField?: string;
 }
 /**
  * @generated from protobuf message ticketspan.event.GenerateEventInfoResponse
@@ -574,9 +578,55 @@ export interface GenerateEventInfoResponse {
      */
     category: string;
     /**
-     * @generated from protobuf field: string date_suggestion = 4;
+     * @generated from protobuf field: string start_date = 4;
      */
-    dateSuggestion: string;
+    startDate: string;
+    /**
+     * @generated from protobuf field: string end_date = 5;
+     */
+    endDate: string;
+    /**
+     * @generated from protobuf field: string venues_id = 6;
+     */
+    venuesId: string;
+    /**
+     * @generated from protobuf field: ticketspan.event.VenueSuggestion venue_suggestion = 7;
+     */
+    venueSuggestion?: VenueSuggestion;
+}
+/**
+ * @generated from protobuf message ticketspan.event.VenueSuggestion
+ */
+export interface VenueSuggestion {
+    /**
+     * @generated from protobuf field: string name = 1;
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: string line1 = 2;
+     */
+    line1: string;
+    /**
+     * @generated from protobuf field: string city = 3;
+     */
+    city: string;
+    /**
+     * @generated from protobuf field: string zip = 4;
+     */
+    zip: string;
+    /**
+     * @generated from protobuf field: string state = 5;
+     */
+    state: string;
+}
+/**
+ * @generated from protobuf message ticketspan.event.AiSettingsResponse
+ */
+export interface AiSettingsResponse {
+    /**
+     * @generated from protobuf field: int32 prompt_max_length = 1;
+     */
+    promptMaxLength: number;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class EventImage$Type extends MessageType<EventImage> {
@@ -2309,7 +2359,8 @@ export const EventStats = new EventStats$Type();
 class GenerateEventInfoRequest$Type extends MessageType<GenerateEventInfoRequest> {
     constructor() {
         super("ticketspan.event.GenerateEventInfoRequest", [
-            { no: 1, name: "prompt", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "prompt", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "target_field", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<GenerateEventInfoRequest>): GenerateEventInfoRequest {
@@ -2327,6 +2378,9 @@ class GenerateEventInfoRequest$Type extends MessageType<GenerateEventInfoRequest
                 case /* string prompt */ 1:
                     message.prompt = reader.string();
                     break;
+                case /* optional string target_field */ 2:
+                    message.targetField = reader.string();
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -2342,6 +2396,9 @@ class GenerateEventInfoRequest$Type extends MessageType<GenerateEventInfoRequest
         /* string prompt = 1; */
         if (message.prompt !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.prompt);
+        /* optional string target_field = 2; */
+        if (message.targetField !== undefined)
+            writer.tag(2, WireType.LengthDelimited).string(message.targetField);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2359,7 +2416,10 @@ class GenerateEventInfoResponse$Type extends MessageType<GenerateEventInfoRespon
             { no: 1, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "category", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "date_suggestion", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 4, name: "start_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "end_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "venue_suggestion", kind: "message", T: () => VenueSuggestion }
         ]);
     }
     create(value?: PartialMessage<GenerateEventInfoResponse>): GenerateEventInfoResponse {
@@ -2367,7 +2427,9 @@ class GenerateEventInfoResponse$Type extends MessageType<GenerateEventInfoRespon
         message.title = "";
         message.description = "";
         message.category = "";
-        message.dateSuggestion = "";
+        message.startDate = "";
+        message.endDate = "";
+        message.venuesId = "";
         if (value !== undefined)
             reflectionMergePartial<GenerateEventInfoResponse>(this, message, value);
         return message;
@@ -2386,8 +2448,17 @@ class GenerateEventInfoResponse$Type extends MessageType<GenerateEventInfoRespon
                 case /* string category */ 3:
                     message.category = reader.string();
                     break;
-                case /* string date_suggestion */ 4:
-                    message.dateSuggestion = reader.string();
+                case /* string start_date */ 4:
+                    message.startDate = reader.string();
+                    break;
+                case /* string end_date */ 5:
+                    message.endDate = reader.string();
+                    break;
+                case /* string venues_id */ 6:
+                    message.venuesId = reader.string();
+                    break;
+                case /* ticketspan.event.VenueSuggestion venue_suggestion */ 7:
+                    message.venueSuggestion = VenueSuggestion.internalBinaryRead(reader, reader.uint32(), options, message.venueSuggestion);
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2410,9 +2481,18 @@ class GenerateEventInfoResponse$Type extends MessageType<GenerateEventInfoRespon
         /* string category = 3; */
         if (message.category !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.category);
-        /* string date_suggestion = 4; */
-        if (message.dateSuggestion !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.dateSuggestion);
+        /* string start_date = 4; */
+        if (message.startDate !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.startDate);
+        /* string end_date = 5; */
+        if (message.endDate !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.endDate);
+        /* string venues_id = 6; */
+        if (message.venuesId !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.venuesId);
+        /* ticketspan.event.VenueSuggestion venue_suggestion = 7; */
+        if (message.venueSuggestion)
+            VenueSuggestion.internalBinaryWrite(message.venueSuggestion, writer.tag(7, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2423,6 +2503,132 @@ class GenerateEventInfoResponse$Type extends MessageType<GenerateEventInfoRespon
  * @generated MessageType for protobuf message ticketspan.event.GenerateEventInfoResponse
  */
 export const GenerateEventInfoResponse = new GenerateEventInfoResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class VenueSuggestion$Type extends MessageType<VenueSuggestion> {
+    constructor() {
+        super("ticketspan.event.VenueSuggestion", [
+            { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "line1", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "city", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "zip", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "state", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<VenueSuggestion>): VenueSuggestion {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.name = "";
+        message.line1 = "";
+        message.city = "";
+        message.zip = "";
+        message.state = "";
+        if (value !== undefined)
+            reflectionMergePartial<VenueSuggestion>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: VenueSuggestion): VenueSuggestion {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string name */ 1:
+                    message.name = reader.string();
+                    break;
+                case /* string line1 */ 2:
+                    message.line1 = reader.string();
+                    break;
+                case /* string city */ 3:
+                    message.city = reader.string();
+                    break;
+                case /* string zip */ 4:
+                    message.zip = reader.string();
+                    break;
+                case /* string state */ 5:
+                    message.state = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: VenueSuggestion, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string name = 1; */
+        if (message.name !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.name);
+        /* string line1 = 2; */
+        if (message.line1 !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.line1);
+        /* string city = 3; */
+        if (message.city !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.city);
+        /* string zip = 4; */
+        if (message.zip !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.zip);
+        /* string state = 5; */
+        if (message.state !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.state);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.event.VenueSuggestion
+ */
+export const VenueSuggestion = new VenueSuggestion$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class AiSettingsResponse$Type extends MessageType<AiSettingsResponse> {
+    constructor() {
+        super("ticketspan.event.AiSettingsResponse", [
+            { no: 1, name: "prompt_max_length", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<AiSettingsResponse>): AiSettingsResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.promptMaxLength = 0;
+        if (value !== undefined)
+            reflectionMergePartial<AiSettingsResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AiSettingsResponse): AiSettingsResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 prompt_max_length */ 1:
+                    message.promptMaxLength = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: AiSettingsResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 prompt_max_length = 1; */
+        if (message.promptMaxLength !== 0)
+            writer.tag(1, WireType.Varint).int32(message.promptMaxLength);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.event.AiSettingsResponse
+ */
+export const AiSettingsResponse = new AiSettingsResponse$Type();
 /**
  * @generated ServiceType for protobuf service ticketspan.event.EventService
  */
@@ -2448,5 +2654,6 @@ export const EventService = new ServiceType("ticketspan.event.EventService", [
     { name: "SetPrimaryEventImage", options: {}, I: RemoveEventImageRequest, O: AckResponse },
     { name: "ReorderEventImages", options: {}, I: ReorderEventImagesRequest, O: AckResponse },
     { name: "GetMediaSettings", options: {}, I: Empty, O: MediaSettings },
-    { name: "GenerateEventInfo", options: {}, I: GenerateEventInfoRequest, O: GenerateEventInfoResponse }
+    { name: "GenerateEventInfo", options: {}, I: GenerateEventInfoRequest, O: GenerateEventInfoResponse },
+    { name: "GetAiSettings", options: {}, I: Empty, O: AiSettingsResponse }
 ]);

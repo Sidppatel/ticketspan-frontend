@@ -23,16 +23,23 @@ export interface GenerateEventInfoResponse {
   title: string;
   description: string;
   category: string;
-  dateSuggestion: string;
+  startDate: string;
+  endDate: string;
 }
 
-export async function generateEventInfo(prompt: string): Promise<GenerateEventInfoResponse> {
-  const response = await callRpc(() => eventClient.generateEventInfo({ prompt }));
+export async function getAiSettings(): Promise<{ promptMaxLength: number }> {
+  const response = await callRpc(() => eventClient.getAiSettings({}));
+  return { promptMaxLength: response.promptMaxLength };
+}
+
+export async function generateEventInfo(prompt: string, targetField?: string): Promise<GenerateEventInfoResponse> {
+  const response = await callRpc(() => eventClient.generateEventInfo({ prompt, targetField: targetField || '' }));
   return {
     title: response.title,
     description: response.description,
     category: response.category,
-    dateSuggestion: response.dateSuggestion,
+    startDate: response.startDate,
+    endDate: response.endDate,
   };
 }
 

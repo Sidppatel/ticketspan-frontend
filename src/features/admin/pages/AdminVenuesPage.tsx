@@ -20,7 +20,7 @@ import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
 import { CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { cn } from '@/shared/lib/cn';
-import { MapPin } from 'lucide-react';
+import { MapPin, Sparkles } from 'lucide-react';
 import {
   US_STATES,
   isValidEmail,
@@ -31,6 +31,8 @@ import {
   formatUsPhone,
 } from '@/shared/lib/validation';
 import type { Venue } from '@/shared/proto/catalog';
+import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
+import { searchVenueWithZip, fetchUserZipCode } from '@/shared/lib/location';
 
 export function venueError(draft: VenueDraft): string | null {
   if (!draft.name.trim()) {
@@ -96,6 +98,51 @@ export function AdminVenuesPage() {
   const [draft, setDraft] = useState<VenueDraft>(emptyDraft());
   const [notice, setNotice] = useState<string | null>(null);
 
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [searchDesc, setSearchDesc] = useState('');
+  const [searchZip, setSearchZip] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
+  async function openSearchModal() {
+    setIsSearchModalOpen(true);
+    setSearchDesc('');
+    setSearchError(null);
+    setSearchZip('');
+    const zip = await fetchUserZipCode();
+    if (zip) {
+      setSearchZip(zip);
+    } else {
+      setSearchZip('10001');
+    }
+  }
+
+  async function handleSearchVenue() {
+    if (!searchDesc.trim() || !searchZip.trim()) return;
+    setIsSearching(true);
+    setSearchError(null);
+    try {
+      const res = await searchVenueWithZip(searchDesc, searchZip, true);
+      if (res) {
+        setDraft({
+          ...emptyDraft(),
+          name: res.name,
+          line1: res.line1,
+          city: res.city,
+          state: res.state,
+          zip: res.zip,
+        });
+        setIsSearchModalOpen(false);
+      } else {
+        setSearchError("Could not find a venue matching that description nearby.");
+      }
+    } catch {
+      setSearchError("An error occurred while searching.");
+    } finally {
+      setIsSearching(false);
+    }
+  }
+
   async function add() {
     const err = venueError(draft);
     if (err) {
@@ -140,6 +187,9 @@ export function AdminVenuesPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 border-t border-border/20 pt-4">
+            <Button type="button" variant="ghost" onClick={openSearchModal} className="h-11 px-6 rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" /> Suggest One
+            </Button>
             <Button onClick={add} disabled={!draft.name.trim()} className={cn("ticketspan-spring-btn h-11 px-8 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20", !draft.name.trim() && "opacity-40 cursor-not-allowed")}>
               Add venue
             </Button>
@@ -161,6 +211,51 @@ export function AdminVenuesPage() {
           <VenueRow key={venue.venuesId} venue={venue} onChanged={reload} />
         ))}
       </div>
+
+      <Dialog open={isSearchModalOpen} onOpenChange={setIsSearchModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogTitle className="text-lg font-bold font-display text-foreground flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" /> Venue Search
+          </DialogTitle>
+          <div className="space-y-4 py-4">
+            {searchError ? (
+              <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-xs font-bold text-destructive animate-shake">
+                {searchError}
+              </div>
+            ) : null}
+            
+            <div className="space-y-1.5">
+              <Label>Description / Name</Label>
+              <Input
+                value={searchDesc}
+                onChange={(e) => setSearchDesc(e.target.value)}
+                placeholder="e.g. Downtown Library"
+                className="h-10 bg-background border-border text-sm"
+              />
+            </div>
+            
+            <div className="space-y-1.5">
+              <Label>Zip Code</Label>
+              <Input
+                value={searchZip}
+                onChange={(e) => setSearchZip(e.target.value)}
+                placeholder="e.g. 10001"
+                className="h-10 bg-background border-border text-sm"
+              />
+              <p className="text-[10px] text-muted-foreground">Used as the center point for the search.</p>
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-4 border-t border-border/20">
+              <Button type="button" variant="ghost" onClick={() => setIsSearchModalOpen(false)} disabled={isSearching} className="h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs">
+                Cancel
+              </Button>
+              <Button type="button" onClick={handleSearchVenue} disabled={isSearching || !searchDesc.trim() || !searchZip.trim()} className="ticketspan-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20">
+                {isSearching ? 'Searching...' : 'Search'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

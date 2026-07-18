@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useAsync } from '@/shared/hooks/useAsync';
-import { updateEvent, setEventFeesIncluded, setEventAch, generateEventInfo } from '@/features/admin/services/eventAdminService';
+import { updateEvent, setEventFeesIncluded, setEventAch, generateEventInfo, getAiSettings, type GenerateEventInfoResponse } from '@/features/admin/services/eventAdminService';
 import { listVenues } from '@/features/admin/services/catalogService';
 import { getMyTenant } from '@/features/admin/services/tenantService';
 import { epochToZonedInput, zonedInputToEpoch } from '@/shared/lib/timezone';
@@ -30,6 +30,24 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { Tone, SectionId, ChecklistItem, EventCompletion, EventVoice } from '@/features/admin/lib/eventInsights';
+
+function formatAiValue(field: string, val: string) {
+  if ((field === 'startDate' || field === 'endDate') && val.includes('T')) {
+    const [datePart, timePart] = val.split('T');
+    if (timePart) {
+      const [hourStr, minStr] = timePart.split(':');
+      let hours = parseInt(hourStr, 10);
+      if (!isNaN(hours)) {
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const formattedHour = String(hours).padStart(2, '0');
+        return `${datePart}, ${formattedHour}:${minStr} ${ampm}`;
+      }
+    }
+  }
+  return val;
+}
 
 const STATUS_STYLES: Record<string, string> = {
   Published: 'bg-success/15 text-success ring-success/30',
@@ -254,6 +272,17 @@ export function EditSection({
   const [aiPrompt, setAiPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiErrorMsg, setAiErrorMsg] = useState<string | null>(null);
+  const [aiPromptLimit, setAiPromptLimit] = useState(200);
+
+  const [aiStep, setAiStep] = useState<'prompt' | 'review'>('prompt');
+  const [aiResult, setAiResult] = useState<GenerateEventInfoResponse | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState<string | null>(null);
+
+  useEffect(() => {
+    getAiSettings()
+      .then((settings) => setAiPromptLimit(settings.promptMaxLength))
+      .catch((caught) => console.error('Failed to load AI settings', caught));
+  }, []);
 
   async function handleGenerate() {
     if (!aiPrompt.trim()) return;
@@ -261,16 +290,66 @@ export function EditSection({
     setIsGenerating(true);
     try {
       const result = await generateEventInfo(aiPrompt);
-      if (result.title) setTitle(result.title);
-      if (result.description) setDescription(result.description);
-      if (result.category) setCategory(result.category);
-      setIsAiModalOpen(false);
-      setAiPrompt('');
+      setAiResult(result);
+      setAiStep('review');
     } catch (caught) {
       setAiErrorMsg(rpcErrorMessage(caught));
     } finally {
       setIsGenerating(false);
     }
+  }
+
+  async function handleRegenerateField(field: 'title' | 'description' | 'category' | 'startDate' | 'endDate') {
+    if (!aiResult) return;
+    setIsRegenerating(field);
+    setAiErrorMsg(null);
+    try {
+      const result = await generateEventInfo(aiPrompt, field);
+      setAiResult({ ...aiResult, [field]: result[field] });
+    } catch (caught) {
+      setAiErrorMsg(rpcErrorMessage(caught));
+    } finally {
+      setIsRegenerating(null);
+    }
+  }
+
+
+
+  function handleFillField(field: 'title' | 'description' | 'category' | 'startDate' | 'endDate', val: string) {
+    if (field === 'title') setTitle(val);
+    if (field === 'description') setDescription(val);
+    if (field === 'category') setCategory(val);
+    if (field === 'startDate') setStart(val);
+    if (field === 'endDate') setEnd(val);
+    
+    if (aiResult) {
+      const nextResult = { ...aiResult, [field]: '' };
+      setAiResult(nextResult);
+      if (!nextResult.title && !nextResult.description && !nextResult.category && !nextResult.startDate && !nextResult.endDate) {
+        setIsAiModalOpen(false);
+        resetAiState();
+      }
+    }
+  }
+
+  function handleFillAll() {
+    if (!aiResult) return;
+    if (aiResult.title) setTitle(aiResult.title);
+    if (aiResult.description) setDescription(aiResult.description);
+    if (aiResult.category) setCategory(aiResult.category);
+    if (aiResult.startDate) setStart(aiResult.startDate);
+    if (aiResult.endDate) setEnd(aiResult.endDate);
+    
+    setIsAiModalOpen(false);
+    resetAiState();
+  }
+
+  function resetAiState() {
+    setAiPrompt('');
+    setAiStep('prompt');
+    setAiResult(null);
+    setAiErrorMsg(null);
+    setIsRegenerating(null);
   }
 
   async function toggleFeesIncluded(next: boolean) {
@@ -443,44 +522,96 @@ export function EditSection({
             <Wand2 className="h-5 w-5 text-primary" /> Describe Your Event
           </DialogTitle>
           <div className="space-y-4 py-4">
-            <p className="text-sm text-muted-foreground">
-              Describe your event in plain English, and our AI will automatically fill in the title, description, and category.
-            </p>
             {aiErrorMsg ? (
               <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-xs font-bold text-destructive animate-shake">
                 {aiErrorMsg}
               </div>
             ) : null}
-            <Textarea
-              value={aiPrompt}
-              onChange={(e) => setAiPrompt(e.target.value)}
-              placeholder="e.g. I'm hosting a tech meetup for React developers next Friday at the library. We will have free pizza."
-              rows={5}
-              className="bg-background border-border text-sm"
-              disabled={isGenerating}
-            />
-            <div className="flex justify-end gap-3 pt-4 border-t border-border/20">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  setIsAiModalOpen(false);
-                  setAiErrorMsg(null);
-                }}
-                disabled={isGenerating}
-                className="h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleGenerate}
-                disabled={isGenerating || !aiPrompt.trim()}
-                className="ticketspan-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
-              >
-                {isGenerating ? 'Generating...' : 'Generate Details'}
-              </Button>
-            </div>
+
+            {aiStep === 'prompt' && (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  Describe your event in plain English, and our AI will automatically fill in the title, description, and category.
+                </p>
+                <div className="relative">
+                  <Textarea
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    placeholder="e.g. I'm hosting a tech meetup for React developers next Friday at the library. We will have free pizza."
+                    rows={5}
+                    maxLength={aiPromptLimit}
+                    className="bg-background border-border text-sm pb-6"
+                    disabled={isGenerating}
+                  />
+                  <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground">
+                    {aiPrompt.length} / {aiPromptLimit}
+                  </div>
+                </div>
+                <div className="flex justify-end gap-3 pt-4 border-t border-border/20">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setIsAiModalOpen(false);
+                      resetAiState();
+                    }}
+                    disabled={isGenerating}
+                    className="h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={isGenerating || !aiPrompt.trim()}
+                    className="ticketspan-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
+                  >
+                    {isGenerating ? 'Generating...' : 'Generate Details'}
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {aiStep === 'review' && aiResult && (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">Review and select the details to fill in.</p>
+                <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
+                  {(['title', 'description', 'category', 'startDate', 'endDate'] as const).map(field => {
+                    const val = aiResult[field];
+                    if (!val) return null;
+                    return (
+                      <div key={field} className="p-4 rounded-xl border border-border bg-muted/20 flex flex-col gap-3">
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="space-y-1 w-full overflow-hidden">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{field}</p>
+                            <p className="text-sm font-semibold text-foreground break-words whitespace-pre-wrap">{formatAiValue(field, val)}</p>
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button type="button" variant="outline" size="sm" onClick={() => handleRegenerateField(field)} disabled={isRegenerating !== null} className="h-8 px-4 text-[10px] font-bold uppercase tracking-wider rounded-lg">
+                            {isRegenerating === field ? 'Regenerating...' : 'Regenerate'}
+                          </Button>
+                          <Button type="button" size="sm" onClick={() => handleFillField(field, val)} disabled={isRegenerating !== null} className="h-8 px-6 text-[10px] font-bold uppercase tracking-wider ticketspan-spring-btn rounded-lg">
+                            Fill
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {(!aiResult.title && !aiResult.description && !aiResult.category && !aiResult.startDate && !aiResult.endDate) && (
+                    <p className="text-sm font-semibold text-success py-4 text-center">All generated fields have been filled!</p>
+                  )}
+                </div>
+                <div className="flex justify-end gap-3 pt-4 border-t border-border/20">
+                  <Button type="button" variant="ghost" onClick={() => { setIsAiModalOpen(false); resetAiState(); }} className="h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs">
+                    Close
+                  </Button>
+                  <Button type="button" onClick={handleFillAll} className="ticketspan-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20">
+                    Fill All Remaining
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
