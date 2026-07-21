@@ -94,3 +94,7 @@ graphify-out/
 **/local_emails/
 **/*local_emails/
 
+public/mockups/aurora.html
+public/mockups/index.html
+public/mockups/pulse.html
+public/mockups/soiree.html

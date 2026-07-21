@@ -46,12 +46,12 @@ export function TicketCard({
     <div
       data-ticket-tier-card
       className={cn(
-        'relative flex items-center justify-between overflow-hidden rounded-lg border bg-surface p-5 transition-[border-color,box-shadow,transform] duration-[280ms] ease-[var(--ease-out)]',
+        'relative flex items-center justify-between overflow-hidden rounded-xl border p-5 backdrop-blur-md transition-[border-color,box-shadow,transform] duration-[280ms] ease-[var(--ease-out)]',
         isSoldOut
-          ? 'border-hairline opacity-60'
+          ? 'border-hairline bg-surface/60 opacity-60'
           : isPopular
-            ? 'border-brand/40 shadow-[var(--shadow-e1)] hover:shadow-[var(--shadow-e2)]'
-            : 'border-hairline hover:border-hairline-strong hover:shadow-[var(--shadow-e1)]',
+            ? 'border-brand/40 bg-gradient-to-br from-brand/[0.07] to-surface/80 shadow-[var(--shadow-e1)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-e2)]'
+            : 'border-hairline bg-surface/75 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-[var(--shadow-e1)]',
       )}
     >
       {}

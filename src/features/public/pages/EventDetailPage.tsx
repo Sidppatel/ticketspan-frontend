@@ -16,6 +16,8 @@ import { VenueCard } from '@/features/public/components/VenueCard';
 import { EventFooter } from '@/features/public/components/EventFooter';
 import { CheckoutDrawer } from '@/features/public/components/checkout/CheckoutDrawer';
 import { DeltaStrip } from '@/features/public/components/event/DeltaStrip';
+import { PersuasionBand } from '@/features/public/components/event/PersuasionBand';
+import { buildPersuasion } from '@/features/public/lib/persuasion';
 import { rememberEventVisit } from '@/features/public/lib/eventMemory';
 import { TicketCard } from '@/features/public/components/TicketCard';
 import { SectionTitle } from '@/features/public/components/SectionTitle';
@@ -94,6 +96,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
 
   const admissionTiers = useMemo(() => ticketTypes ?? [], [ticketTypes]);
   const minPriceCents = useMemo(() => minTicketPriceCents(admissionTiers), [admissionTiers]);
+  const persuasion = useMemo(() => buildPersuasion(event, admissionTiers), [event, admissionTiers]);
 
   const upsert = useCallback((item: CartItem) => {
     setCart((prev) => {
@@ -186,11 +189,13 @@ function EventDetailPageContent({ event }: { event: Event }) {
         minPriceCents={minPriceCents}
       />
 
+      <PersuasionBand persuasion={persuasion} onGetTickets={scrollToBooking} cartCount={cart.length} />
+
       {delta ? <DeltaStrip delta={delta} /> : null}
 
       <div id="booking-panel" className="max-w-7xl mx-auto px-4 md:px-8 mt-12 md:mt-16">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-          <div className="space-y-12">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+          <div className="min-w-0 space-y-12">
             {showTickets && (
               <div className="space-y-4">
                 <SectionTitle
@@ -323,9 +328,9 @@ function EventDetailPageContent({ event }: { event: Event }) {
                 {cart.length === 0 ? (
                   <div className="space-y-3 py-8 text-center">
                     <Ticket className="mx-auto size-8 stroke-1 text-ink-faint" />
-                    <p className="text-sm font-medium text-ink">Nothing selected yet</p>
+                    <p className="text-sm font-medium text-ink">Your seats go right here</p>
                     <p className="mx-auto max-w-[220px] text-xs leading-relaxed text-ink-soft">
-                      Pick tickets or a table and your order appears here.
+                      Pick a ticket above and we’ll hold it for you while you check out.
                     </p>
                   </div>
                 ) : (

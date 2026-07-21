@@ -5,6 +5,8 @@ import { imageUrl } from '@/shared/upload';
 import { formatEventDate } from '@/shared/lib/format';
 import { Countdown } from '@/features/public/components/discover/Countdown';
 import { PriceBadge } from './PriceBadge';
+import { AuroraBackground } from './AuroraBackground';
+import { useLazyGsap } from '@/shared/motion/useLazyGsap';
 
 interface HeroProps {
   event: Event;
@@ -22,6 +24,33 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
   const date = formatEventDate(event.startDate);
   const containerRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useLazyGsap(
+    ({ gsap }) => {
+      const btn = buttonRef.current;
+      if (!btn) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const xTo = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3' });
+      const yTo = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3' });
+      const onMove = (e: PointerEvent) => {
+        const r = btn.getBoundingClientRect();
+        xTo((e.clientX - r.left - r.width / 2) * 0.3);
+        yTo((e.clientY - r.top - r.height / 2) * 0.5);
+      };
+      const onLeave = () => {
+        xTo(0);
+        yTo(0);
+      };
+      btn.addEventListener('pointermove', onMove);
+      btn.addEventListener('pointerleave', onLeave);
+      return () => {
+        btn.removeEventListener('pointermove', onMove);
+        btn.removeEventListener('pointerleave', onLeave);
+      };
+    },
+    buttonRef,
+  );
 
   useEffect(() => {
     let disposed = false;
@@ -61,6 +90,7 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
       className="relative w-full overflow-hidden bg-stage pb-16 pt-28 text-on-stage md:pb-24 md:pt-36"
     >
       <div className="absolute inset-0 select-none overflow-hidden">
+        <AuroraBackground className="absolute inset-0 h-full w-full" />
         {event.primaryImageId ? (
           <img
             ref={imageRef}
@@ -68,12 +98,10 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
             alt=""
             fetchPriority="high"
             decoding="async"
-            className="h-[115%] w-full scale-105 object-cover opacity-45"
+            className="h-[115%] w-full scale-105 object-cover opacity-35 mix-blend-luminosity"
           />
-        ) : (
-          <div className="h-full w-full bg-gradient-to-br from-brand/30 to-stage" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-stage via-stage/60 to-stage/20" />
+        ) : null}
+        <div className="absolute inset-0 bg-gradient-to-t from-stage via-stage/55 to-stage/10" />
       </div>
 
       <div className="relative mx-auto max-w-7xl space-y-7 px-4 md:px-8">
@@ -123,8 +151,9 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
 
         <div data-hero-reveal style={{ animationDelay: '300ms' }} className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center">
           <button
+            ref={buttonRef}
             onClick={onGetTickets}
-            className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-primary px-8 text-base font-medium text-primary-foreground shadow-[var(--shadow-e1)] transition-[transform,background-color] duration-[180ms] ease-[var(--ease-out)] hover:bg-brand-hover active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-stage"
+            className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-primary px-8 text-base font-medium text-primary-foreground shadow-[var(--shadow-e1)] transition-[background-color] duration-[180ms] ease-[var(--ease-out)] hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-stage"
           >
             Get tickets
             {minPriceCents !== undefined ? (
