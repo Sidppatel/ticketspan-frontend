@@ -768,6 +768,19 @@ export interface ListPlatformLeadsResponse {
     meta?: PageMeta;
 }
 /**
+ * @generated from protobuf message ticketspan.admin.ReloadSqlResult
+ */
+export interface ReloadSqlResult {
+    /**
+     * @generated from protobuf field: int32 files_applied = 1;
+     */
+    filesApplied: number;
+    /**
+     * @generated from protobuf field: repeated string files = 2;
+     */
+    files: string[];
+}
+/**
  * @generated from protobuf message ticketspan.admin.HealthStatus
  */
 export interface HealthStatus {
@@ -3264,6 +3277,61 @@ class ListPlatformLeadsResponse$Type extends MessageType<ListPlatformLeadsRespon
  */
 export const ListPlatformLeadsResponse = new ListPlatformLeadsResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class ReloadSqlResult$Type extends MessageType<ReloadSqlResult> {
+    constructor() {
+        super("ticketspan.admin.ReloadSqlResult", [
+            { no: 1, name: "files_applied", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "files", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ReloadSqlResult>): ReloadSqlResult {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.filesApplied = 0;
+        message.files = [];
+        if (value !== undefined)
+            reflectionMergePartial<ReloadSqlResult>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ReloadSqlResult): ReloadSqlResult {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 files_applied */ 1:
+                    message.filesApplied = reader.int32();
+                    break;
+                case /* repeated string files */ 2:
+                    message.files.push(reader.string());
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ReloadSqlResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 files_applied = 1; */
+        if (message.filesApplied !== 0)
+            writer.tag(1, WireType.Varint).int32(message.filesApplied);
+        /* repeated string files = 2; */
+        for (let i = 0; i < message.files.length; i++)
+            writer.tag(2, WireType.LengthDelimited).string(message.files[i]);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.admin.ReloadSqlResult
+ */
+export const ReloadSqlResult = new ReloadSqlResult$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class HealthStatus$Type extends MessageType<HealthStatus> {
     constructor() {
         super("ticketspan.admin.HealthStatus", [
@@ -3394,4 +3462,10 @@ export const PlatformLeadService = new ServiceType("ticketspan.admin.PlatformLea
  */
 export const HealthService = new ServiceType("ticketspan.admin.HealthService", [
     { name: "Check", options: {}, I: Empty, O: HealthStatus }
+]);
+/**
+ * @generated ServiceType for protobuf service ticketspan.admin.MaintenanceService
+ */
+export const MaintenanceService = new ServiceType("ticketspan.admin.MaintenanceService", [
+    { name: "ReloadSqlObjects", options: {}, I: Empty, O: ReloadSqlResult }
 ]);

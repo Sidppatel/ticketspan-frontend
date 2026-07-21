@@ -97,6 +97,7 @@ export function FloorPlanBuilder({
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [dragBox, setDragBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [pending, setPending] = useState<{ drag: 'new-table'; typeId: string } | { drag: 'new-object'; objectType: string } | null>(null);
 
   const historyRef = useRef<Scene[]>([]);
   const futureRef = useRef<Scene[]>([]);
@@ -492,6 +493,13 @@ export function FloorPlanBuilder({
 
   function onViewportPointerDown(e: ReactPointerEvent) {
     if (e.target !== e.currentTarget && (e.target as HTMLElement).dataset.canvas !== '1') return;
+    if (pending) {
+      const { x, y } = canvasPoint(e.clientX, e.clientY);
+      if (pending.drag === 'new-table') placeTable(pending.typeId, x, y);
+      else placeObject(pending.objectType, x, y);
+      setPending(null);
+      return;
+    }
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
     panRef.current = { startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y };
     setSelected(null);
@@ -595,6 +603,13 @@ export function FloorPlanBuilder({
 
       {notice ? <p className="text-sm text-amber-foreground">{notice}</p> : null}
 
+      {pending ? (
+        <div className="flex items-center gap-2 rounded-md border bg-card px-3 py-2 text-sm">
+          <span>Tap the canvas to place {pending.drag === 'new-table' ? typeById.get(pending.typeId)?.label ?? 'table' : pending.objectType}.</span>
+          <Button size="sm" variant="outline" onClick={() => setPending(null)}>Cancel</Button>
+        </div>
+      ) : null}
+
       <div className="flex gap-2">
         <div className="w-48 shrink-0 space-y-3 rounded-md border bg-card p-3">
           <div>
@@ -605,7 +620,8 @@ export function FloorPlanBuilder({
                   className="flex items-stretch overflow-hidden rounded-md border border-input">
                   <button type="button" draggable
                     onDragStart={(e) => startPaletteDrag(e, { drag: 'new-table', typeId: t.eventTablesId })}
-                    className="flex-1 cursor-grab px-2 py-1.5 text-left text-xs hover:bg-muted">
+                    onClick={() => { setNotice(null); setPending({ drag: 'new-table', typeId: t.eventTablesId }); }}
+                    className={`flex-1 cursor-grab px-2 py-1.5 text-left text-xs hover:bg-muted ${pending?.drag === 'new-table' && pending.typeId === t.eventTablesId ? 'bg-muted ring-2 ring-inset ring-ink' : ''}`}>
                     <span className="block font-medium">{t.label}</span>
                     <span className="block text-muted-foreground">{t.defaultWidth}×{t.defaultHeight} · {centsToUSD(t.priceCents)}</span>
                   </button>
@@ -630,14 +646,15 @@ export function FloorPlanBuilder({
               {OBJECT_TYPES.map((o) => (
                 <button key={o} type="button" draggable
                   onDragStart={(e) => startPaletteDrag(e, { drag: 'new-object', objectType: o })}
-                  className="block w-full cursor-grab rounded-md border border-input px-2 py-1.5 text-left text-xs hover:bg-muted">
+                  onClick={() => { setNotice(null); setPending({ drag: 'new-object', objectType: o }); }}
+                  className={`block w-full cursor-grab rounded-md border border-input px-2 py-1.5 text-left text-xs hover:bg-muted ${pending?.drag === 'new-object' && pending.objectType === o ? 'bg-muted ring-2 ring-inset ring-ink' : ''}`}>
                   {OBJECT_GLYPH[o]} {o}
                 </button>
               ))}
             </div>
           </div>
           <p className="text-[11px] leading-snug text-muted-foreground">
-            Drag onto canvas. Ctrl+scroll zooms, drag empty space pans. Delete key removes selection.
+            Tap an item then tap the canvas to place it (or drag on desktop). Ctrl+scroll zooms, drag empty space pans. Delete key removes selection.
           </p>
         </div>
 
@@ -649,7 +666,7 @@ export function FloorPlanBuilder({
           onPointerDown={onViewportPointerDown}
           onPointerMove={onViewportPointerMove}
           onPointerUp={onViewportPointerUp}
-          className="relative h-[560px] flex-1 cursor-grab overflow-hidden rounded-md border bg-muted"
+          className={`relative h-[560px] flex-1 overflow-hidden rounded-md border bg-muted ${pending ? 'cursor-crosshair' : 'cursor-grab'}`}
         >
           <div
             data-canvas="1"

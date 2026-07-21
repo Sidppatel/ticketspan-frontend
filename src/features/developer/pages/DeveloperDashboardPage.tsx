@@ -1,15 +1,17 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, ArrowRight, Building2, DollarSign, Landmark, Users } from 'lucide-react';
+import { Activity, ArrowRight, Building2, DatabaseZap, DollarSign, Landmark, Users } from 'lucide-react';
 import { useAsync } from '@/shared/hooks/useAsync';
 import {
   getDeveloperDashboard,
   listTenants,
   achEnabledCount,
   getDeveloperLogs,
+  reloadSqlObjects,
 } from '@/features/developer/services/developerService';
 import { centsToUSD, formatEpoch } from '@/shared/lib/format';
 import { CountUp } from '@/shared/motion/CountUp';
+import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 
 function heroGreeting() {
@@ -143,6 +145,8 @@ export function DeveloperDashboardPage() {
         </div>
       </section>
 
+      <MaintenancePanel />
+
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-3">
           <div>
@@ -183,6 +187,62 @@ export function DeveloperDashboardPage() {
         </Card>
       </section>
     </div>
+  );
+}
+
+function MaintenancePanel() {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  async function handleReload() {
+    if (!window.confirm('Reload all SQL objects (functions, views, stored procedures, policies) on the live database?')) {
+      return;
+    }
+    setBusy(true);
+    setResult(null);
+    setFailed(false);
+    try {
+      const response = await reloadSqlObjects();
+      setResult(`Applied ${response.filesApplied} SQL files successfully.`);
+    } catch {
+      setFailed(true);
+      setResult('Reload failed — transaction rolled back, database unchanged. Check error logs.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="space-y-4">
+      <div>
+        <h2 className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight text-foreground">
+          <DatabaseZap className="h-5 w-5 text-brand" /> Database maintenance
+        </h2>
+        <p className="text-sm text-ink-soft">
+          Push the SQL objects shipped with this backend build to the live database.
+        </p>
+      </div>
+      <Card>
+        <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <p className="font-display text-base font-semibold text-foreground">Reload SQL objects</p>
+            <p className="text-sm text-ink-soft">
+              Re-applies functions, views, stored procedures, and policies in one transaction. Fails
+              safe: any error rolls everything back.
+            </p>
+            {result ? (
+              <p className={failed ? 'text-sm font-medium text-destructive' : 'text-sm font-medium text-brand'}>
+                {result}
+              </p>
+            ) : null}
+          </div>
+          <Button onClick={handleReload} disabled={busy} className="shrink-0">
+            {busy ? 'Reloading…' : 'Reload SQL objects'}
+          </Button>
+        </CardContent>
+      </Card>
+    </section>
   );
 }
 

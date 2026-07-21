@@ -1,4 +1,4 @@
-import { tenantClient, logClient, dashboardClient, tenantTierClient } from '@/shared/apiClient';
+import { tenantClient, logClient, dashboardClient, tenantTierClient, maintenanceClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
 import type {
   Tenant,
@@ -13,6 +13,7 @@ import type {
   ErrorLogEntry,
   ErrorLogPage,
   ErrorLogStats,
+  ReloadSqlResult,
 } from '@/shared/proto/admin';
 import type { TenantReportingAccessRow } from '@/shared/proto/reporting';
 
@@ -48,6 +49,10 @@ export async function setTenantTaxMode(tenantsId: string, mode: 'platform' | 'se
 
 export async function getDeveloperDashboard(): Promise<DeveloperDashboard> {
   return callRpc(() => dashboardClient.getDeveloperDashboard({}));
+}
+
+export async function reloadSqlObjects(): Promise<ReloadSqlResult> {
+  return callRpc(() => maintenanceClient.reloadSqlObjects({}));
 }
 
 export function achEnabledCount(tenants: Tenant[]): number {

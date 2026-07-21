@@ -26,6 +26,7 @@ import {
   FeedbackServiceClient,
   PlatformLeadServiceClient,
   HealthServiceClient,
+  MaintenanceServiceClient,
 } from '@/shared/proto/admin.client';
 import { EnumServiceClient } from '@/shared/proto/enums.client';
 import { FeeServiceClient } from '@/shared/proto/fees.client';
@@ -101,3 +102,4 @@ export const floorPlanClient = new FloorPlanServiceClient(transport);
 export const reportingClient = new ReportingServiceClient(transport);
 export const tenantTierClient = new TenantTierServiceClient(transport);
 export const developerBillingClient = new DeveloperBillingServiceClient(transport);
+export const maintenanceClient = new MaintenanceServiceClient(transport);

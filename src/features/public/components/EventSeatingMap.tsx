@@ -210,6 +210,21 @@ export function EventSeatingMap({
     return null;
   }
 
+  let tipStyle: React.CSSProperties | null = null;
+  if (hoveredTable) {
+    const w = hoveredTable.width || 80;
+    const h = hoveredTable.height || 80;
+    const cx = pan.x + (hoveredTable.posX + w / 2) * zoom;
+    const topY = pan.y + hoveredTable.posY * zoom;
+    const botY = pan.y + (hoveredTable.posY + h) * zoom;
+    const cw = containerRef.current?.clientWidth ?? 0;
+    const half = 112;
+    const left = cw ? Math.min(Math.max(cx, half + 8), cw - half - 8) : cx;
+    tipStyle = topY > 180
+      ? { left, top: topY - 8, transform: 'translate(-50%, -100%)' }
+      : { left, top: botY + 8, transform: 'translate(-50%, 0)' };
+  }
+
   return (
     <div className="space-y-4">
       {error && (
@@ -269,8 +284,8 @@ export function EventSeatingMap({
         </div>
 
         { }
-        {hoveredTable && (
-          <div className="absolute top-4 right-4 z-30 w-56 bg-stage-elevated/95 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-2xl text-xs space-y-2 animate-in fade-in duration-200">
+        {hoveredTable && tipStyle && (
+          <div style={tipStyle} className="pointer-events-none absolute z-30 w-56 bg-stage-elevated/95 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-2xl text-xs space-y-2 animate-in fade-in duration-200">
             <div className="flex items-center justify-between">
               <span className="font-black text-sm text-white font-display uppercase">{hoveredTable.label}</span>
               <span className="inline-flex items-center gap-1 rounded bg-accent-gold/10 text-accent-gold text-[8px] font-black uppercase tracking-wider px-2 py-0.5 border border-accent-gold/20">
@@ -393,9 +408,9 @@ export function EventSeatingMap({
 
 
               const bgStyle = isSelected
-                ? 'var(--accent-burgundy)'
+                ? 'linear-gradient(155deg, color-mix(in srgb, var(--accent-burgundy) 88%, white), var(--accent-burgundy))'
                 : isAvailable
-                  ? 'var(--surface-card)'
+                  ? 'linear-gradient(155deg, var(--surface-card), color-mix(in srgb, var(--surface-card) 85%, var(--accent-gold)))'
                   : 'color-mix(in srgb, var(--stage-elevated) 75%, var(--brand))';
 
               const borderStyle = isSelected
@@ -436,7 +451,7 @@ export function EventSeatingMap({
                     top: table.posY,
                     width: table.width || 80,
                     height: table.height || 80,
-                    backgroundColor: bgStyle,
+                    background: bgStyle,
                     border: borderStyle,
                   }}
                   className={cn(
@@ -444,21 +459,18 @@ export function EventSeatingMap({
                     shapeRadius(shape),
                     textStyle,
                     isAvailable
-                      ? 'cursor-pointer hover:scale-105 hover:shadow-[0_0_15px_color-mix(in_srgb,var(--voltage-accent)_30%,transparent)] active:scale-95 z-20'
+                      ? 'cursor-pointer hover:scale-110 hover:-translate-y-1 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--accent-gold)_35%,transparent)] active:scale-95 z-20'
                       : 'cursor-not-allowed'
                   )}
                 >
                   { }
-                  {isSelected ? (
-                    <span className="flex size-4.5 items-center justify-center rounded-full bg-white text-accent-burgundy shadow-[0_0_10px_color-mix(in_srgb,var(--surface)_40%,transparent)] animate-bounce">
-                      <Check className="size-3 stroke-[3]" />
+                  {isSelected && (
+                    <span className="mb-0.5 flex size-4 items-center justify-center rounded-full bg-white text-accent-burgundy shadow-[0_0_10px_color-mix(in_srgb,var(--surface)_40%,transparent)]">
+                      <Check className="size-2.5 stroke-[3]" />
                     </span>
-                  ) : (
-                    <>
-                      <span className="max-w-full truncate px-1 font-display font-black text-sm uppercase tracking-tight">{table.label}</span>
-                      <span className="text-[8px] opacity-60 font-mono mt-0.5">{capacity} PAX</span>
-                    </>
                   )}
+                  <span className="max-w-full truncate px-1 font-display font-black text-sm uppercase tracking-tight">{table.label}</span>
+                  <span className="text-[8px] opacity-60 font-mono mt-0.5">{capacity} PAX</span>
                 </button>
               );
             })}
