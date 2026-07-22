@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { CalendarDays, MapPin, Ticket } from 'lucide-react';
 import type { Event } from '@/shared/proto/event';
 import { imageUrl } from '@/shared/upload';
@@ -7,6 +7,8 @@ import { Countdown } from '@/features/public/components/discover/Countdown';
 import { PriceBadge } from './PriceBadge';
 import { AuroraBackground } from './AuroraBackground';
 import { useLazyGsap } from '@/shared/motion/useLazyGsap';
+import { useAsync } from '@/shared/hooks/useAsync';
+import { getVenue } from '@/features/admin/services/catalogService';
 
 interface HeroProps {
   event: Event;
@@ -25,6 +27,21 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
   const containerRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const venueLoader = useCallback(() => {
+    return event.venuesId ? getVenue(event.venuesId) : Promise.resolve(null);
+  }, [event.venuesId]);
+
+  const { data: venue } = useAsync(venueLoader);
+
+  const addressString = venue
+    ? `${venue.line1 || ''} ${venue.line2 || ''}, ${venue.city || ''}, ${venue.state || ''} ${venue.zip || ''}`.trim()
+    : '';
+  const mapsSearchUrl = addressString
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressString)}`
+    : venue?.name
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name)}`
+    : '';
 
   useLazyGsap(
     ({ gsap }) => {
@@ -142,11 +159,16 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
             <Ticket className="size-4 text-voltage" />
             {EVENT_TYPE_LABEL[event.eventType] || EVENT_TYPE_LABEL.Open}
           </span>
-          {event.totalCapacity > 0 ? (
-            <span className="inline-flex items-center gap-2 text-on-stage-soft">
+          {venue?.name ? (
+            <a
+              href={mapsSearchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-on-stage-soft hover:text-voltage transition-colors hover:underline"
+            >
               <MapPin className="size-4 text-voltage" />
-              {event.totalCapacity} capacity
-            </span>
+              {venue.name}
+            </a>
           ) : null}
         </div>
 
