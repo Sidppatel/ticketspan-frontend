@@ -50,13 +50,13 @@ export function ScrollRail({
   const nudge = (dir: number) => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' });
+    el.scrollBy({ left: dir * el.clientWidth * 0.8 });
   };
 
   const scrollable = state.frac < 0.995;
   const isDark = tone === 'dark';
   const arrowBase =
-    'absolute top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full border backdrop-blur transition disabled:pointer-events-none disabled:opacity-0';
+    'absolute top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border backdrop-blur transition disabled:pointer-events-none disabled:opacity-0';
   const arrowTone = isDark
     ? 'border-white/15 bg-stage/70 text-white hover:bg-stage/90'
     : 'border-border bg-surface/85 text-ink shadow-sm hover:bg-surface';
