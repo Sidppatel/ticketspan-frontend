@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#f5f1e8"/>
-  <rect x="4.5" y="4.5" width="55" height="55" fill="none" stroke="#191714" stroke-width="2"/>
-  <rect x="9.5" y="9.5" width="45" height="45" fill="none" stroke="#191714" stroke-width="0.75" opacity="0.35"/>
-  <text x="32" y="43" font-family="Georgia, 'Times New Roman', serif" font-size="27" fill="#191714" text-anchor="middle" letter-spacing="1">TS</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <rect width="48" height="48" fill="#f5f1e8"/>
+  <rect x="3.375" y="3.375" width="41.25" height="41.25" fill="none" stroke="#191714" stroke-width="1.5"/>
+  <rect x="7.125" y="7.125" width="33.75" height="33.75" fill="none" stroke="#191714" stroke-width="0.56" opacity="0.35"/>
+  <text x="24" y="32.25" font-family="Georgia, 'Times New Roman', serif" font-size="20.25" fill="#191714" text-anchor="middle" letter-spacing="0.75">TS</text>
 </svg>
