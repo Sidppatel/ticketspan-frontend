@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
+import { PasswordInput } from '@/shared/ui/password-input';
 import { Label } from '@/shared/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
@@ -40,9 +41,8 @@ export function LoginPage() {
             </div>
             <div className="space-y-1">
               <Label htmlFor="password">Password</Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

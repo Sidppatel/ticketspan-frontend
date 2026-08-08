@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
+import { PasswordInput } from '@/shared/ui/password-input';
 import { Label } from '@/shared/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
@@ -77,9 +77,9 @@ export function SetPasswordPage() {
             >
               <div className="space-y-1">
                 <Label htmlFor="password">New password</Label>
-                <Input
+                <PasswordInput
                   id="password"
-                  type="password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
