@@ -35,12 +35,13 @@ function redirect(path: string): void {
 
 export async function callRpc<I extends object, O extends object>(
   invoke: () => UnaryCall<I, O>,
+  skipAutoRefresh = false,
 ): Promise<O> {
   try {
     return await invoke().response;
   } catch (error) {
     if (error instanceof RpcError) {
-      if (error.code === 'UNAUTHENTICATED') {
+      if (error.code === 'UNAUTHENTICATED' && !skipAutoRefresh) {
         const refreshed = await tryRefresh();
         if (refreshed) {
           return await invoke().response;

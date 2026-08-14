@@ -5,13 +5,15 @@ import { useAuthStore } from '@/shared/auth/store';
 import type { AuthResponse, UserProfile } from '@/shared/proto/auth';
 
 export async function loginWithPassword(email: string, password: string): Promise<AuthResponse> {
-  const auth = await callRpc(() =>
-    authClient.login({
-      email,
-      password,
-      tenantSlug: currentTenantSlug(),
-      portal: resolvePortalContext().portal,
-    }),
+  const auth = await callRpc(
+    () =>
+      authClient.login({
+        email,
+        password,
+        tenantSlug: currentTenantSlug(),
+        portal: resolvePortalContext().portal,
+      }),
+    true,
   );
   useAuthStore.getState().setSession(auth);
   return auth;
@@ -25,57 +27,63 @@ export interface SignUpInput {
 }
 
 export async function signUp(input: SignUpInput): Promise<AuthResponse> {
-  const auth = await callRpc(() =>
-    authClient.signUp({
-      email: input.email,
-      password: input.password,
-      firstName: input.firstName,
-      lastName: input.lastName,
-      tenantSlug: currentTenantSlug(),
-    }),
+  const auth = await callRpc(
+    () =>
+      authClient.signUp({
+        email: input.email,
+        password: input.password,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        tenantSlug: currentTenantSlug(),
+      }),
+    true,
   );
   useAuthStore.getState().setSession(auth);
   return auth;
 }
 
 export async function loginWithGoogle(googleToken: string): Promise<AuthResponse> {
-  const auth = await callRpc(() =>
-    authClient.googleSignIn({
-      googleToken,
-      tenantSlug: currentTenantSlug(),
-      portal: resolvePortalContext().portal,
-    }),
+  const auth = await callRpc(
+    () =>
+      authClient.googleSignIn({
+        googleToken,
+        tenantSlug: currentTenantSlug(),
+        portal: resolvePortalContext().portal,
+      }),
+    true,
   );
   useAuthStore.getState().setSession(auth);
   return auth;
 }
 
 export async function requestMagicLink(email: string): Promise<void> {
-  await callRpc(() => authClient.requestMagicLink({ email, tenantSlug: currentTenantSlug() }));
+  await callRpc(() => authClient.requestMagicLink({ email, tenantSlug: currentTenantSlug() }), true);
 }
 
 export async function verifyMagicLink(token: string): Promise<AuthResponse> {
-  const auth = await callRpc(() => authClient.verifyMagicLink({ token }));
+  const auth = await callRpc(() => authClient.verifyMagicLink({ token }), true);
   useAuthStore.getState().setSession(auth);
   return auth;
 }
 
 export async function requestPasswordReset(email: string): Promise<void> {
-  await callRpc(() =>
-    authClient.requestPasswordReset({
-      email,
-      tenantSlug: currentTenantSlug(),
-      origin: typeof window !== 'undefined' ? window.location.origin : '',
-    }),
+  await callRpc(
+    () =>
+      authClient.requestPasswordReset({
+        email,
+        tenantSlug: currentTenantSlug(),
+        origin: typeof window !== 'undefined' ? window.location.origin : '',
+      }),
+    true,
   );
 }
 
 export async function validateResetToken(token: string): Promise<void> {
-  await callRpc(() => authClient.validatePasswordResetToken({ token }));
+  await callRpc(() => authClient.validatePasswordResetToken({ token }), true);
 }
 
 export async function setPassword(token: string, newPassword: string): Promise<void> {
-  await callRpc(() => authClient.setPassword({ token, newPassword }));
+  await callRpc(() => authClient.setPassword({ token, newPassword }), true);
 }
 
 export async function loadProfile(): Promise<UserProfile> {
