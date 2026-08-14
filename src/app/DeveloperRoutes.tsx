@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { useActingTenantStore } from '@/shared/actingTenant';
-import { AdminEventsPage } from '@/features/admin/pages/AdminEventsPage';
+
 import { AdminEventWizardPage } from '@/features/admin/pages/AdminEventWizardPage';
 import { AdminEventManagePage } from '@/features/admin/pages/AdminEventManagePage';
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
@@ -24,6 +24,8 @@ import { DeveloperTaxLookupPage } from '@/features/developer/pages/DeveloperTaxL
 import { DeveloperTaxRemittancePage } from '@/features/developer/pages/DeveloperTaxRemittancePage';
 import { DeveloperLeadsPage } from '@/features/developer/pages/DeveloperLeadsPage';
 
+import { DeveloperEventsPage } from '@/features/developer/pages/DeveloperEventsPage';
+
 function RequireActingTenant({ children }: { children: ReactNode }) {
   const tenantsId = useActingTenantStore((state) => state.tenantsId);
   return tenantsId ? children : <Navigate to="/tenants" replace />;
@@ -44,7 +46,7 @@ export default function DeveloperRoutes() {
         <Route path="tenants" element={<DeveloperTenantsPage />} />
         <Route path="leads" element={<DeveloperLeadsPage />} />
         <Route path="tenants/:tenantsId" element={<DeveloperTenantDashboardPage />} />
-        <Route path="events" element={<RequireActingTenant><AdminEventsPage /></RequireActingTenant>} />
+        <Route path="events" element={<DeveloperEventsPage />} />
         <Route path="events/new" element={<RequireActingTenant><AdminEventWizardPage /></RequireActingTenant>} />
         <Route path="events/:eventsId" element={<RequireActingTenant><AdminEventManagePage /></RequireActingTenant>} />
         <Route path="fees" element={<DeveloperFeesPage />} />
