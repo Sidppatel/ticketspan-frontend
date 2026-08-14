@@ -140,11 +140,7 @@ export function LandingBackdrop() {
       ro.disconnect();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
-      try {
-        container.removeChild(canvas);
-      } catch {
-        /* ignore */
-      }
+      canvas.remove();
     };
   }, []);
 

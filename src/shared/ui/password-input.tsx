@@ -4,15 +4,9 @@ import { Input, type InputProps } from '@/shared/ui/input';
 import { cn } from '@/shared/lib/cn';
 
 export interface PasswordInputProps extends InputProps {
-  /**
-   * Optional custom duration (ms) to keep password visible during reveal before auto-masking.
-   * Default: 5000ms (5s).
-   */
+
   revealDurationMs?: number;
-  /**
-   * If true, limits the reveal action to strictly 1 time per input session/mount.
-   * Default: true.
-   */
+
   oneTimeOnly?: boolean;
 }
 
@@ -53,7 +47,6 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
       }, revealDurationMs);
     }, [isVisible, oneTimeOnly, hasBeenRevealed, maskPassword, clearRevealTimer, revealDurationMs]);
 
-    // Security Hardening 1: Auto-mask on page visibility change or window blur (shoulder-surfing prevention)
     React.useEffect(() => {
       const handleVisibilityChange = () => {
         if (document.visibilityState === 'hidden') {
@@ -84,7 +77,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           ref={ref}
           type={isVisible ? 'text' : 'password'}
           onChange={(e) => {
-            // Reset revealed flag if user clears field completely
+
             if (e.target.value === '' && oneTimeOnly) {
               setHasBeenRevealed(false);
               maskPassword();

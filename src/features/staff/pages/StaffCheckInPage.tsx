@@ -9,8 +9,9 @@ import {
   lookupBooking,
   uncheckInTicket,
 } from '@/features/staff/services/staffService';
-import type { GuestBooking } from '@/shared/proto/bookings';
 import { rpcErrorMessage } from '@/shared/session';
+import type { GuestBooking, GuestTicket } from '@/shared/proto/bookings';
+import { StaffGuestList } from '@/features/staff/components/StaffGuestList';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -24,8 +25,6 @@ import {
   ArrowLeft,
   XCircle,
   FileCheck,
-  ChevronRight,
-  Sparkles,
   Undo2,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
@@ -215,7 +214,7 @@ export function StaffCheckInPage() {
   });
 
   const pendingUncheckedTickets = pendingBooking
-    ? pendingBooking.tickets.filter((t) => t.status !== 'CheckedIn')
+    ? pendingBooking.tickets.filter((t: GuestTicket) => t.status !== 'CheckedIn')
     : [];
 
   if (notAuthorized) {
@@ -278,7 +277,7 @@ export function StaffCheckInPage() {
             </CardHeader>
             <CardContent className="p-5 space-y-4 overflow-y-auto">
               <div className="space-y-2">
-                {pendingBooking.tickets.map((t) => (
+                {pendingBooking.tickets.map((t: GuestTicket) => (
                   <div key={t.ticketsId} className="flex items-center justify-between text-xs py-1.5 px-2 rounded-lg bg-muted/20">
                     <div>
                       <p className="font-semibold text-foreground">Seat #{t.seatNumber} : {t.guestName}</p>
@@ -497,115 +496,15 @@ export function StaffCheckInPage() {
               <p className="text-[11px] text-muted-foreground leading-normal">Browse and manage ticket check-ins.</p>
             </CardHeader>
             <CardContent className="p-0">
-              {guestList.loading ? (
-                <div className="flex flex-col items-center justify-center py-16 space-y-3">
-                  <div className="size-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-                  <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider animate-pulse">Loading guest list...</p>
-                </div>
-              ) : guestList.error ? (
-                <p className="text-destructive text-center py-12 text-xs font-semibold">{guestList.error}</p>
-              ) : filteredBookings.length === 0 ? (
-                <div className="text-center py-16 text-muted-foreground space-y-3 max-w-sm mx-auto">
-                  <div className="inline-flex p-3 bg-muted/40 rounded-full text-muted-foreground/60">
-                    <Sparkles className="h-6 w-6" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-foreground">No matching guests found</p>
-                    <p className="text-[11px] text-muted-foreground leading-normal">Try modifying search tags or check in codes manually.</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="divide-y divide-border/20 max-h-[600px] overflow-y-auto">
-                  {filteredBookings.map((b) => (
-                    <div key={b.bookingsId} className="p-4 space-y-3 hover:bg-muted/10 transition-colors">
-                      {}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b pb-2 border-dashed border-border/20">
-                        <div>
-                          <p className="font-bold text-sm text-foreground">
-                            {b.buyerName}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground">
-                            Booking: <span className="font-mono text-foreground/80">{b.bookingNumber}</span>
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[9px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border ${
-                            b.status === 'CheckedIn' 
-                              ? 'bg-success/10 text-success border-success/15' 
-                              : 'bg-primary/10 text-primary border-primary/15'
-                          }`}>
-                            {b.status === 'CheckedIn' ? 'All In' : b.status}
-                          </span>
-                          {b.status !== 'CheckedIn' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setPendingBooking(b)}
-                              disabled={checkingIn}
-                              className="h-7 px-3 text-[10px] font-semibold border-border hover:bg-muted"
-                            >
-                              Check In All
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-
-                      {}
-                      <div className="pl-2 space-y-2">
-                        {b.tickets.map((t) => (
-                          <div key={t.ticketsId} className="flex items-center justify-between py-1 text-xs">
-                            <div className="space-y-0.5">
-                              <p className="font-semibold text-foreground">
-                                Seat #{t.seatNumber} : {t.guestName}
-                              </p>
-                              <p className="text-[9px] text-muted-foreground font-mono">
-                                Ticket Code: {t.ticketCode}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {t.status === 'CheckedIn' ? (
-                                <>
-                                  <span className="text-[10px] font-bold text-success flex items-center gap-1 bg-success/10 px-2 py-0.5 rounded border border-success/15">
-                                    <CheckCircle2 className="h-3.5 w-3.5" /> Checked In
-                                  </span>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => setUncheckTarget({ ticketsId: t.ticketsId, guestName: t.guestName })}
-                                    disabled={checkingIn}
-                                    className="h-6 px-2 text-[10px] text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md"
-                                  >
-                                    <Undo2 className="h-3 w-3 mr-0.5" /> Undo
-                                  </Button>
-                                </>
-                              ) : (
-                                <>
-                                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                                    t.status === 'Claimed' 
-                                      ? 'bg-marigold/10 text-marigold border-marigold/15' 
-                                      : 'bg-muted text-muted-foreground border-border'
-                                  }`}>
-                                    {t.status}
-                                  </span>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => handleActionCheckIn(t.ticketsId, 'Ticket')}
-                                    disabled={checkingIn}
-                                    className="h-6 px-2 text-[10px] text-primary hover:bg-primary/10 rounded-md"
-                                  >
-                                    Check In <ChevronRight className="h-3 w-3 ml-0.5" />
-                                  </Button>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <StaffGuestList
+                loading={guestList.loading}
+                error={guestList.error}
+                filteredBookings={filteredBookings}
+                checkingIn={checkingIn}
+                setPendingBooking={setPendingBooking}
+                setUncheckTarget={setUncheckTarget}
+                handleActionCheckIn={handleActionCheckIn}
+              />
             </CardContent>
           </Card>
         </div>

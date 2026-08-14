@@ -16,10 +16,6 @@ import { getVenue } from '@/features/admin/services/catalogService';
 import { EventCatalogLinks } from '@/features/admin/components/EventCatalogLinks';
 import { EventExtraInfoEditor } from '@/features/admin/components/EventExtraInfoEditor';
 import { getEventLayout } from '@/features/admin/services/layoutService';
-import { tzForState } from '@/shared/lib/timezone';
-import type { TableTemplate } from '@/shared/proto/booking';
-import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
-import { Switch } from '@/shared/ui/switch';
 import { PricingManager } from '@/features/admin/components/PricingManager';
 import { GroupDiscountsPanel } from '@/features/admin/components/GroupDiscountsPanel';
 import { ScheduleTimeline } from '@/features/admin/components/ScheduleTimeline';
@@ -27,6 +23,8 @@ import { TicketTypesManager } from '@/features/admin/components/TicketTypesManag
 import { CheckInLogsPanel } from '@/features/admin/components/CheckInLogsPanel';
 import { FloorPlanPanel } from '@/features/admin/components/FloorPlanPanel';
 import { EventMediaManager } from '@/features/admin/components/EventMediaManager';
+import { CreateTableTemplateModal } from '@/features/admin/components/CreateTableTemplateModal';
+import { EventSectionNav } from '@/features/admin/components/EventSectionNav';
 import { listStaffForEvent } from '@/features/admin/services/staffAdminService';
 import { EventTeamPanel } from '@/features/admin/components/EventTeamPanel';
 import { isEventManager } from '@/shared/roles';
@@ -34,7 +32,8 @@ import { toast } from 'sonner';
 import { rpcErrorMessage } from '@/shared/session';
 import { centsToUSD, centsToUsdInput, usdToCents, formatEventDate } from '@/shared/lib/format';
 import { addCents } from '@/shared/lib/math';
-import { cn } from '@/shared/lib/cn';
+import { tzForState } from '@/shared/lib/timezone';
+import type { TableTemplate } from '@/shared/proto/booking';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -51,15 +50,12 @@ import {
   Eye,
   Sparkles,
   ArrowRight,
-  CheckCircle2,
-  AlertCircle,
   Plus,
   type LucideIcon,
 } from 'lucide-react';
 import { EventBrandingPreview } from '@/features/admin/components/branding/EventBrandingPreview';
 import { VoiceZone, WhatsNext, EditSection, Stat } from '@/features/admin/components/EventManageParts';
 import { buildCompletion, buildVoice, buildSuggestions, type SectionId } from '@/features/admin/lib/eventInsights';
-
 
 export function AdminEventManagePage() {
   const { eventsId = '' } = useParams();
@@ -125,7 +121,6 @@ export function AdminEventManagePage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [floorKey, setFloorKey] = useState(0);
 
-  // Inline Table Template creation state
   const [isCreateTableTemplateOpen, setIsCreateTableTemplateOpen] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
   const [newTemplateColor, setNewTemplateColor] = useState('#3b82f6');
@@ -158,7 +153,6 @@ export function AdminEventManagePage() {
       });
       await templates.reload();
 
-      // Auto select the new template
       setTableTemplateId(templateId);
       setTableLabel(newTemplateName);
       setTableCapacity(newTemplateCapacity);
@@ -296,44 +290,12 @@ export function AdminEventManagePage() {
       ) : null}
 
       {event.data && completion ? (
-        <div id="section-canvas" className="scroll-mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {SECTIONS.map((section) => {
-            const items = completion.items.filter((i) => i.section === section.id);
-            const needsAttention = items.some((i) => i.weight === 'critical' && !i.done);
-            const allDone = items.length > 0 && items.every((i) => i.done);
-            const isActive = section.id === activeSection;
-            return (
-              <button
-                key={section.id}
-                onClick={() => openSection(section.id)}
-                className={cn(
-                  'group flex items-center gap-3 rounded-2xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm',
-                  isActive ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/20' : 'border-border bg-card',
-                )}
-              >
-                <span
-                  className={cn(
-                    'flex size-10 shrink-0 items-center justify-center rounded-xl [&_svg]:size-5',
-                    isActive ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground group-hover:text-foreground',
-                  )}
-                >
-                  <section.icon />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-                    {section.label}
-                    {needsAttention ? (
-                      <AlertCircle className="size-3.5 text-amber-foreground" />
-                    ) : allDone ? (
-                      <CheckCircle2 className="size-3.5 text-success" />
-                    ) : null}
-                  </span>
-                  <span className="block truncate text-xs text-muted-foreground">{section.hint}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <EventSectionNav
+          sections={SECTIONS}
+          completion={completion}
+          activeSection={activeSection}
+          openSection={openSection}
+        />
       ) : null}
 
       {activeSection === 'basics' && event.data && (
@@ -352,7 +314,7 @@ export function AdminEventManagePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
-              {/* Admin reuses a catalog table type and overrides values; cannot create new types. */}
+              {}
               <div className="flex flex-wrap items-end gap-3 p-4 border border-border/50 bg-muted/20 rounded-xl">
                 <div className="space-y-1.5 flex flex-col">
                   <div className="flex items-center justify-between gap-2 min-w-[12rem]">
@@ -531,8 +493,6 @@ export function AdminEventManagePage() {
         </div>
       )}
 
-
-
       {activeSection === 'timeline' && event.data && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <EventMediaManager eventsId={eventsId} />
@@ -593,139 +553,30 @@ export function AdminEventManagePage() {
         />
       ) : null}
 
-      <Dialog open={isCreateTableTemplateOpen} onOpenChange={setIsCreateTableTemplateOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogTitle className="text-lg font-bold font-display text-foreground flex items-center gap-2">
-            <LayoutGrid className="h-5 w-5 text-primary" /> Create Table Template
-          </DialogTitle>
-          <div className="space-y-4 py-4">
-            {newTemplateError ? (
-              <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-xs font-bold text-destructive animate-shake">
-                {newTemplateError}
-              </div>
-            ) : null}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5 md:col-span-2">
-                <Label>Name</Label>
-                <div className="ticketspan-spring-input">
-                  <Input
-                    value={newTemplateName}
-                    onChange={(e) => setNewTemplateName(e.target.value)}
-                    placeholder="e.g. Center Lounge"
-                    className="h-10 bg-background border-border text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label>Color Swatch</Label>
-                <div className="flex items-center gap-2 h-10 border border-border bg-background rounded-lg px-2.5">
-                  <Input
-                    type="color"
-                    value={newTemplateColor}
-                    onChange={(e) => setNewTemplateColor(e.target.value)}
-                    className="h-6 w-9 p-0 border-0 cursor-pointer rounded"
-                  />
-                  <span className="text-[11px] font-mono text-muted-foreground uppercase">{newTemplateColor}</span>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label>Shape</Label>
-                <Select
-                  value={newTemplateShape}
-                  onChange={(e) => setNewTemplateShape(e.target.value)}
-                >
-                  {['Round', 'Rectangle', 'Square', 'Cocktail'].map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label>Capacity (Seats)</Label>
-                <div className="ticketspan-spring-input">
-                  <Input
-                    type="number"
-                    value={newTemplateCapacity}
-                    onChange={(e) => setNewTemplateCapacity(Number(e.target.value))}
-                    className="h-10 bg-background border-border text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label>Base Price (USD)</Label>
-                <div className="ticketspan-spring-input">
-                  <Input
-                    value={newTemplatePriceUsd}
-                    onChange={(e) => setNewTemplatePriceUsd(e.target.value)}
-                    className="h-10 bg-background border-border text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label>Width (px)</Label>
-                <div className="ticketspan-spring-input">
-                  <Input
-                    type="number"
-                    value={newTemplateWidth}
-                    onChange={(e) => setNewTemplateWidth(Number(e.target.value))}
-                    className="h-10 bg-background border-border text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label>Height (px)</Label>
-                <div className="ticketspan-spring-input">
-                  <Input
-                    type="number"
-                    value={newTemplateHeight}
-                    onChange={(e) => setNewTemplateHeight(Number(e.target.value))}
-                    className="h-10 bg-background border-border text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center md:col-span-2 py-2 gap-2 text-sm font-semibold">
-                <Switch
-                  checked={newTemplateAllInclusive}
-                  onCheckedChange={setNewTemplateAllInclusive}
-                  label="All-inclusive"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t border-border/20">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  setIsCreateTableTemplateOpen(false);
-                  setNewTemplateError(null);
-                }}
-                disabled={newTemplateSubmitting}
-                className="h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleCreateTableTemplate}
-                disabled={newTemplateSubmitting || !newTemplateName.trim()}
-                className="ticketspan-spring-btn h-10 px-6 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20"
-              >
-                {newTemplateSubmitting ? 'Creating...' : 'Create Template'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CreateTableTemplateModal
+        isOpen={isCreateTableTemplateOpen}
+        onOpenChange={setIsCreateTableTemplateOpen}
+        newTemplateName={newTemplateName}
+        setNewTemplateName={setNewTemplateName}
+        newTemplateColor={newTemplateColor}
+        setNewTemplateColor={setNewTemplateColor}
+        newTemplateShape={newTemplateShape}
+        setNewTemplateShape={setNewTemplateShape}
+        newTemplateCapacity={newTemplateCapacity}
+        setNewTemplateCapacity={setNewTemplateCapacity}
+        newTemplatePriceUsd={newTemplatePriceUsd}
+        setNewTemplatePriceUsd={setNewTemplatePriceUsd}
+        newTemplateWidth={newTemplateWidth}
+        setNewTemplateWidth={setNewTemplateWidth}
+        newTemplateHeight={newTemplateHeight}
+        setNewTemplateHeight={setNewTemplateHeight}
+        newTemplateAllInclusive={newTemplateAllInclusive}
+        setNewTemplateAllInclusive={setNewTemplateAllInclusive}
+        newTemplateError={newTemplateError}
+        setNewTemplateError={setNewTemplateError}
+        newTemplateSubmitting={newTemplateSubmitting}
+        handleCreateTableTemplate={handleCreateTableTemplate}
+      />
     </div>
   );
 }

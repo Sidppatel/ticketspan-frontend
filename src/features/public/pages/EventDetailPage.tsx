@@ -62,7 +62,7 @@ export function EventDetailPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface-canvas p-4 text-center">
         <div className="max-w-md space-y-4">
-          <h2 className="font-display text-2xl font-semibold text-ink">We can't find that event</h2>
+          <h2 className="font-display text-2xl font-semibold text-ink">We can&apos;t find that event</h2>
           <p className="text-sm text-ink-soft">{error || 'The link may be outdated. Check the address or head back to browse events.'}</p>
         </div>
       </div>
@@ -184,7 +184,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
         image={event.primaryImageId ? imageUrl(event.primaryImageId) : undefined}
       />
 
-      {/* Chapter 1: Immersive Dark Hero */}
+      
       <Hero
         event={event}
         onGetTickets={scrollToBooking}
@@ -281,8 +281,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
               </div>
             )}
 
-
-            {/* Event Description */}
+            
             {event.description && (
               <div className="py-8 border-t border-border-soft space-y-3">
                 <SectionTitle title="Story & Details" />
@@ -292,37 +291,35 @@ function EventDetailPageContent({ event }: { event: Event }) {
               </div>
             )}
 
-            {/* Lineup / Performers */}
+            
             {event.performersJson && (
               <EventPerformers performersJson={event.performersJson} />
             )}
 
-            {/* Event Timeline */}
+            
             <div className="pt-6">
               <DeferUntilVisible minHeight={780}>
                 <EventTimeline eventsId={event.eventsId} />
               </DeferUntilVisible>
             </div>
 
-            {/* Venue Card Address & Map details */}
+            
             <div className="pt-6">
               <DeferUntilVisible minHeight={420}>
                 <VenueCard venuesId={event.venuesId} />
               </DeferUntilVisible>
             </div>
 
-            {/* FAQs / Extra Guidelines Info */}
+            
             {event.extraInfoJson && (
               <div className="pt-6">
                 <EventExtraInfo extraInfoJson={event.extraInfoJson} />
               </div>
             )}
 
-
-
           </div>
 
-          {/* Right Column: Checkout Dock */}
+          
           <aside className="lg:sticky lg:top-24 space-y-6">
             <Card className="overflow-hidden border border-border bg-card shadow-md rounded-2xl">
               <div className="flex items-center justify-between border-b border-hairline bg-surface-sunken px-6 py-4">
@@ -468,7 +465,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
         </div>
       </div>
 
-      {/* Floating Bottom Action Bar for Mobile */}
+      
       {cart.length > 0 && (
         <div className="fixed inset-x-0 bottom-0 z-50 space-y-3 border-t border-stage-elevated bg-stage/95 px-6 py-4 shadow-[var(--shadow-e2)] backdrop-blur-md md:hidden">
           <div className="flex items-center justify-between gap-4">
@@ -494,7 +491,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
         </div>
       )}
 
-      {/* Same-page Multi-step Checkout Drawer */}
+      
       <CheckoutDrawer
         isOpen={isCheckoutOpen}
         onClose={handleClose}
@@ -503,7 +500,7 @@ function EventDetailPageContent({ event }: { event: Event }) {
         preferredMethod={checkoutMethod}
       />
 
-      {/* Visual Footer */}
+      
       <EventFooter />
     </div>
   );

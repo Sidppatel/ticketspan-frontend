@@ -10,7 +10,7 @@ const SOCIAL_KEYS = ['website', 'instagram', 'twitter', 'facebook', 'youtube', '
 const DETAIL_SKIP = new Set([...SOCIAL_KEYS, 'description']);
 
 function href(key: string, value: string): string {
-  if (/^https?:\/\//i.test(value)) {
+  if (/^https?:\/\//.test(value)) {
     return value;
   }
   if (key === 'website') {

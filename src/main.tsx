@@ -11,7 +11,6 @@ import '@/index.css';
 
 initErrorReporter();
 
-// Dynamically preconnect to the backend API origin
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 if (backendUrl) {
   try {
@@ -21,8 +20,8 @@ if (backendUrl) {
     link.href = origin;
     link.crossOrigin = 'anonymous';
     document.head.appendChild(link);
-  } catch {
-    // Ignore invalid URLs
+  } catch (e) {
+    void e;
   }
 }
 

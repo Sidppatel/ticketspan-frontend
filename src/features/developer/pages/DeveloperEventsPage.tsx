@@ -55,11 +55,9 @@ export function DeveloperEventsPage() {
   const [search, setSearch] = useState('');
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
 
-  // Sync selected tenant if active tenant store changes
   const effectiveTenantId = selectedTenantId || activeTenantsId || (tenants.length > 0 ? tenants[0].tenantsId : '');
   const selectedTenant = useMemo(() => tenants.find((t) => t.tenantsId === effectiveTenantId), [tenants, effectiveTenantId]);
 
-  // Load events when a tenant is selected or active
   const eventsLoader = useCallback(async () => {
     if (!effectiveTenantId) return [];
     return listAdminEvents();
@@ -68,7 +66,6 @@ export function DeveloperEventsPage() {
   const { data: eventsData, loading: loadingEvents, error: eventsError } = useAsync(eventsLoader);
   const events = useMemo(() => eventsData ?? [], [eventsData]);
 
-  // Load performance report for financial breakdown (past 5 years)
   const perfLoader = useCallback(async () => {
     if (!effectiveTenantId) return [];
     const nowSec = Math.floor(Date.now() / 1000);
@@ -84,7 +81,6 @@ export function DeveloperEventsPage() {
 
   const { data: perfRows } = useAsync(perfLoader);
 
-  // Map performance row by event ID
   const perfMap = useMemo(() => {
     const map = new Map<string, EventPerformanceRow>();
     (perfRows ?? []).forEach((row) => {
@@ -95,7 +91,6 @@ export function DeveloperEventsPage() {
 
   const now = useMemo(() => new Date(), []);
 
-  // Filter events into active/future vs past vs drafts
   const filteredEvents = useMemo(() => {
     const q = search.trim().toLowerCase();
     return events.filter((ev) => {
@@ -138,14 +133,10 @@ export function DeveloperEventsPage() {
       const capacity = perf ? perf.capacity : event.totalCapacity;
       const checkedIn = perf ? perf.checkedIn : 0;
 
-      // Financial estimations/breakdowns based on ticketspan fee logic:
-      // Estimated Credit Card (Stripe) Fee: ~2.9% + $0.30 per order
       const ccFeeCents = ordersCount > 0 ? Math.round(grossSaleCents * 0.029 + ordersCount * 30) : 0;
 
-      // Platform / Developer Service Fee: ~5% + $0.99 per order (or 0 if no sales)
       const developerFeeCents = ordersCount > 0 ? Math.round(grossSaleCents * 0.05 + ordersCount * 99) : 0;
 
-      // Net Paid to Tenant = Gross Sales - CC Fees - Developer Fees
       const tenantPaidCents = Math.max(0, grossSaleCents - ccFeeCents - developerFeeCents);
 
       return {
@@ -164,7 +155,6 @@ export function DeveloperEventsPage() {
     [perfMap]
   );
 
-  // Summary aggregates for current tab view
   const tabAggregates = useMemo(() => {
     let totalGross = 0;
     let totalTenantPaid = 0;
@@ -186,7 +176,7 @@ export function DeveloperEventsPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      {/* Top Header & Tenant Switcher */}
+      {}
       <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
@@ -197,7 +187,7 @@ export function DeveloperEventsPage() {
           </p>
         </div>
 
-        {/* Tenant Picker Dropdown */}
+        {}
         <div className="flex items-center gap-3">
           <Building2 className="h-5 w-5 text-muted-foreground" />
           <Select
@@ -231,7 +221,7 @@ export function DeveloperEventsPage() {
         </div>
       </section>
 
-      {/* Acting Tenant Indicator Banner */}
+      {}
       {selectedTenant ? (
         <Card className="border-amber-500/30 bg-amber-500/5">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
@@ -261,7 +251,7 @@ export function DeveloperEventsPage() {
         </Card>
       ) : null}
 
-      {/* Summary KPI Cards for Selected View */}
+      {}
       <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2 pt-4">
@@ -316,7 +306,7 @@ export function DeveloperEventsPage() {
         </Card>
       </section>
 
-      {/* Tabs & Search Controls */}
+      {}
       <section className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="inline-flex flex-wrap gap-1 rounded-lg border bg-muted p-1">
           <button
@@ -372,7 +362,7 @@ export function DeveloperEventsPage() {
         </div>
       </section>
 
-      {/* Events List / Cards */}
+      {}
       {loadingEvents ? (
         <div className="space-y-4">
           {[0, 1, 2].map((i) => (
@@ -416,7 +406,7 @@ export function DeveloperEventsPage() {
               <Card key={ev.eventsId} className="transition-all hover:border-border/80">
                 <CardContent className="p-5">
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                    {/* Event Header Info */}
+                    {}
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h3 className="text-lg font-semibold text-foreground">{ev.title}</h3>
@@ -435,7 +425,7 @@ export function DeveloperEventsPage() {
                       </div>
                     </div>
 
-                    {/* Quick Financial Summary pill & Expand toggle */}
+                    {}
                     <div className="flex items-center gap-3">
                       <div className="text-right">
                         <div className="text-sm font-semibold text-emerald-600">
@@ -464,7 +454,7 @@ export function DeveloperEventsPage() {
                     </div>
                   </div>
 
-                  {/* Financial Metrics Summary Bar */}
+                  {}
                   <div className="mt-4 grid grid-cols-2 gap-2 rounded-lg border bg-muted/30 p-3 sm:grid-cols-4">
                     <div>
                       <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -492,7 +482,7 @@ export function DeveloperEventsPage() {
                     </div>
                   </div>
 
-                  {/* Expanded Small Details View */}
+                  {}
                   {isExpanded ? (
                     <div className="mt-4 border-t pt-4 space-y-4">
                       <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
