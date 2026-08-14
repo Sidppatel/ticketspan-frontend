@@ -33,7 +33,7 @@ export function AdminDashboardPage() {
   const { data: eventEntries, loading: eventsLoading } = useAsync(eventsLoader);
 
   const bookingsLoader = useCallback(() => listBookings('', 'Paid'), []);
-  const { data: bookings } = useAsync(bookingsLoader);
+  const { data: bookings, loading: bookingsLoading } = useAsync(bookingsLoader);
 
   const now = useMemo(() => new Date(), []);
   const greeting = buildGreeting(user?.firstName ?? '', data?.activeEvents ?? 0, data?.totalAttendees ?? 0, now);
@@ -123,7 +123,9 @@ export function AdminDashboardPage() {
             </Link>
           </div>
           <CardContent className="p-0">
-            {upcoming.length > 0 ? (
+            {eventsLoading ? (
+              <ListSkeleton />
+            ) : upcoming.length > 0 ? (
               <ul className="divide-y divide-hairline">
                 {upcoming.map((item) => (
                   <li key={item.eventsId}>
@@ -161,7 +163,9 @@ export function AdminDashboardPage() {
             </Link>
           </div>
           <CardContent className="p-0">
-            {recent.length > 0 ? (
+            {bookingsLoading ? (
+              <ListSkeleton />
+            ) : recent.length > 0 ? (
               <ul className="divide-y divide-hairline">
                 {recent.map((b) => (
                   <li key={b.bookingsId} className="flex items-center justify-between gap-3 px-5 py-3.5">
@@ -259,5 +263,21 @@ function EmptyEvents() {
         </Link>
       </CardContent>
     </Card>
+  );
+}
+
+function ListSkeleton() {
+  return (
+    <div className="divide-y divide-hairline">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex items-center justify-between gap-3 px-5 py-3.5">
+          <div className="space-y-2">
+            <div className="h-4 w-44 animate-pulse rounded bg-muted" />
+            <div className="h-3 w-28 animate-pulse rounded bg-muted" />
+          </div>
+          <div className="h-5 w-16 animate-pulse rounded bg-muted" />
+        </div>
+      ))}
+    </div>
   );
 }
