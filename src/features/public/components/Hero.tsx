@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { CalendarDays, MapPin, Ticket } from 'lucide-react';
+import { CalendarDays, MapPin, Ticket, ShieldCheck, Flame } from 'lucide-react';
 import type { Event } from '@/shared/proto/event';
 import { imageUrl } from '@/shared/upload';
 import { formatEventDate } from '@/shared/lib/format';
@@ -18,7 +18,7 @@ interface HeroProps {
 
 const EVENT_TYPE_LABEL: Record<string, string> = {
   Open: 'General admission',
-  Table: 'table seating',
+  Table: 'Table seating',
   Both: 'Tickets & tables',
 };
 
@@ -107,7 +107,7 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
     <section
       ref={containerRef}
       aria-label="Event introduction"
-      className="relative w-full overflow-hidden bg-stage pb-16 pt-28 text-on-stage md:pb-24 md:pt-36"
+      className="relative w-full overflow-hidden bg-stage pb-14 pt-24 text-on-stage md:pb-20 md:pt-32"
     >
       <div className="absolute inset-0 select-none overflow-hidden">
         <AuroraBackground className="absolute inset-0 h-full w-full" />
@@ -118,27 +118,36 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
             alt=""
             fetchPriority="high"
             decoding="async"
-            className="h-[115%] w-full scale-105 object-cover opacity-35 mix-blend-luminosity"
+            className="h-[115%] w-full scale-105 object-cover opacity-40 mix-blend-luminosity"
           />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-stage via-stage/55 to-stage/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-stage via-stage/60 to-stage/20" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl space-y-7 px-4 md:px-8">
-        <p data-hero-reveal style={{ animationDelay: '0ms' }} className="font-mono text-xs font-medium uppercase tracking-[0.25em] text-voltage">
-          {date}
-          {event.category ? ` — ${event.category}` : ''}
-        </p>
+      <div className="relative mx-auto max-w-7xl space-y-6 px-4 md:px-8">
+        <div data-hero-reveal style={{ animationDelay: '0ms' }} className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-voltage/15 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-voltage backdrop-blur-sm border border-voltage/30">
+            <Flame className="size-3 text-voltage animate-pulse" /> Selling fast
+          </span>
+          {event.category && (
+            <span className="rounded-full bg-on-stage/10 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-on-stage-soft backdrop-blur-sm">
+              {event.category}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 rounded-full bg-on-stage/10 px-3 py-1 font-sans text-[11px] font-medium text-on-stage-soft backdrop-blur-sm">
+            <ShieldCheck className="size-3 text-emerald-400" /> Verified Host
+          </span>
+        </div>
 
         <h1
           data-hero-reveal style={{ animationDelay: '60ms' }}
-          className="max-w-4xl font-display text-4xl font-semibold leading-[1.02] md:text-6xl lg:text-7xl"
+          className="max-w-4xl font-display text-3xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
         >
           {event.title}
         </h1>
 
         {event.description ? (
-          <p data-hero-reveal style={{ animationDelay: '120ms' }} className="max-w-2xl text-sm leading-relaxed text-on-stage-soft md:text-base line-clamp-3">
+          <p data-hero-reveal style={{ animationDelay: '120ms' }} className="max-w-2xl text-sm leading-relaxed text-on-stage-soft sm:text-base line-clamp-3 font-normal">
             {event.description}
           </p>
         ) : null}
@@ -149,16 +158,16 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
 
         <div
           data-hero-reveal style={{ animationDelay: '240ms' }}
-          className="flex max-w-3xl flex-wrap gap-x-8 gap-y-3 border-y border-on-stage/15 py-5 text-sm"
+          className="flex max-w-3xl flex-wrap gap-x-6 gap-y-3 border-y border-on-stage/15 py-4 text-xs sm:text-sm"
         >
           {date ? (
-            <span className="inline-flex items-center gap-2 text-on-stage-soft">
-              <CalendarDays className="size-4 text-voltage" />
+            <span className="inline-flex items-center gap-2 text-on-stage-soft font-medium">
+              <CalendarDays className="size-4 text-voltage shrink-0" />
               {date}
             </span>
           ) : null}
-          <span className="inline-flex items-center gap-2 text-on-stage-soft">
-            <Ticket className="size-4 text-voltage" />
+          <span className="inline-flex items-center gap-2 text-on-stage-soft font-medium">
+            <Ticket className="size-4 text-voltage shrink-0" />
             {EVENT_TYPE_LABEL[event.eventType] || EVENT_TYPE_LABEL.Open}
           </span>
           {venue?.name ? (
@@ -166,9 +175,9 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
               href={mapsSearchUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-on-stage-soft hover:text-voltage transition-colors hover:underline"
+              className="inline-flex items-center gap-2 text-on-stage-soft font-medium hover:text-voltage transition-colors hover:underline"
             >
-              <MapPin className="size-4 text-voltage" />
+              <MapPin className="size-4 text-voltage shrink-0" />
               {venue.name}
             </a>
           ) : null}
@@ -178,12 +187,12 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
           <button
             ref={buttonRef}
             onClick={onGetTickets}
-            className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-primary px-8 text-base font-medium text-primary-foreground shadow-[var(--shadow-e1)] transition-[background-color] duration-[180ms] ease-[var(--ease-out)] hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-stage"
+            className="inline-flex h-13 cursor-pointer items-center justify-center gap-2.5 rounded-xl bg-brand px-8 text-base font-bold text-brand-ink shadow-lg transition-all duration-200 hover:bg-brand-hover active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-stage"
           >
             Get tickets
             {minPriceCents !== undefined ? (
-              <span className="font-normal opacity-90">
-                · from <PriceBadge priceCents={minPriceCents} className="text-primary-foreground" />
+              <span className="font-mono text-sm font-normal opacity-90">
+                · from <PriceBadge priceCents={minPriceCents} className="text-brand-ink font-bold" />
               </span>
             ) : null}
           </button>
@@ -192,3 +201,4 @@ export function Hero({ event, onGetTickets, minPriceCents }: HeroProps) {
     </section>
   );
 }
+

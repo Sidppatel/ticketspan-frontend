@@ -1,32 +1,31 @@
 import { useCallback, useMemo, useState, useEffect } from 'react';
-import { ShieldCheck, Ticket, Users } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { getEventBySlug } from '@/features/public/services/publicEventService';
 import { listEventTicketTypes } from '@/features/public/services/paymentService';
 import { minTicketPriceCents } from '@/features/public/lib/discover';
 
-import { Hero } from '@/features/public/components/Hero';
-import { EventTimeline } from '@/features/public/components/EventTimeline';
-import { EventExtraInfo } from '@/features/public/components/EventExtraInfo';
-import { EventPerformers } from '@/features/public/components/EventPerformers';
-import { EventSponsors } from '@/features/public/components/EventSponsors';
-import { EventSeatingMap } from '@/features/public/components/EventSeatingMap';
-import { VenueCard } from '@/features/public/components/VenueCard';
+import { BentoHeader } from '@/features/public/components/event/BentoHeader';
+import { TicketPassDeck } from '@/features/public/components/event/TicketPassDeck';
+import { PerformerBentoGrid } from '@/features/public/components/event/PerformerBentoGrid';
+import { ScheduleStream } from '@/features/public/components/event/ScheduleStream';
+import { VenueLogisticsBento } from '@/features/public/components/event/VenueLogisticsBento';
+import { LoungeSeatingBento } from '@/features/public/components/event/LoungeSeatingBento';
+import { BentoOrderSummary } from '@/features/public/components/event/BentoOrderSummary';
+import { EventTabNav } from '@/features/public/components/EventTabNav';
+import { EventMobileStickyBar } from '@/features/public/components/EventMobileStickyBar';
 import { EventFooter } from '@/features/public/components/EventFooter';
 import { CheckoutDrawer } from '@/features/public/components/checkout/CheckoutDrawer';
-import { DeltaStrip } from '@/features/public/components/event/DeltaStrip';
 import { PersuasionBand } from '@/features/public/components/event/PersuasionBand';
+import { DeltaStrip } from '@/features/public/components/event/DeltaStrip';
 import { buildPersuasion } from '@/features/public/lib/persuasion';
 import { rememberEventVisit } from '@/features/public/lib/eventMemory';
-import { TicketCard } from '@/features/public/components/TicketCard';
-import { SectionTitle } from '@/features/public/components/SectionTitle';
+import { GroupDiscountBanner } from '@/features/public/components/GroupDiscountBanner';
+import { EventSponsors } from '@/features/public/components/EventSponsors';
 
 import { Seo } from '@/shared/components/Seo';
-import { DeferUntilVisible } from '@/shared/components/DeferUntilVisible';
 import { imageUrl } from '@/shared/upload';
-import { createMultiBooking, quoteCart, cartServiceFeeCents, lineAllInExclTaxCents } from '@/features/public/services/paymentService';
-import { GroupDiscountBanner } from '@/features/public/components/GroupDiscountBanner';
+import { createMultiBooking, quoteCart } from '@/features/public/services/paymentService';
 import {
   type CartItem,
   DEFAULT_HOLD_SECONDS,
@@ -37,9 +36,6 @@ import {
 import { rpcErrorMessage } from '@/shared/session';
 import { useAuth } from '@/shared/auth/useAuth';
 import { setReturnTo } from '@/shared/auth/returnTo';
-import { centsToUSD } from '@/shared/lib/format';
-import { Button } from '@/shared/ui/button';
-import { Card, CardContent } from '@/shared/ui/card';
 import type { Event } from '@/shared/proto/event';
 
 export function EventDetailPage() {
@@ -52,7 +48,7 @@ export function EventDetailPage() {
       <div className="flex min-h-screen items-center justify-center bg-stage text-on-stage">
         <div className="flex flex-col items-center gap-3">
           <div className="size-10 animate-spin rounded-full border-4 border-on-stage/10 border-t-brand" />
-          <p className="text-sm text-on-stage-soft">Loading event…</p>
+          <p className="text-sm text-on-stage-soft font-mono">Loading Bento Studio…</p>
         </div>
       </div>
     );
@@ -62,8 +58,8 @@ export function EventDetailPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface-canvas p-4 text-center">
         <div className="max-w-md space-y-4">
-          <h2 className="font-display text-2xl font-semibold text-ink">We can&apos;t find that event</h2>
-          <p className="text-sm text-ink-soft">{error || 'The link may be outdated. Check the address or head back to browse events.'}</p>
+          <h2 className="font-display text-2xl font-bold text-ink uppercase">Event Not Found</h2>
+          <p className="text-sm text-ink-soft">{error || 'The link may be outdated or incorrect.'}</p>
         </div>
       </div>
     );
@@ -127,14 +123,9 @@ function EventDetailPageContent({ event }: { event: Event }) {
     savePendingCart(event.eventsId, cart, holdSeconds);
   }, [cart, event.eventsId, holdSeconds]);
 
-  const subtotal = quote?.subtotalCents ?? 0;
-  const serviceFee = quote ? cartServiceFeeCents(quote) : 0;
-  const tax = quote?.taxCents ?? 0;
   const total = quote?.totalCents ?? 0;
-  const discount = quote?.discountCents ?? 0;
   const achAvailable = quote?.achAvailable ?? false;
   const achTotal = quote?.achTotalCents ?? 0;
-  const achSavings = quote?.achSavingsCents ?? 0;
 
   async function handleCheckout(method: 'card' | 'ach' = 'card') {
     if (!isAuthenticated) {
@@ -177,321 +168,106 @@ function EventDetailPageContent({ event }: { event: Event }) {
   const showTables = event.eventType === 'Table' || event.eventType === 'Both';
 
   return (
-    <div className="w-full bg-surface-canvas min-h-screen pb-16 md:pb-8">
+    <div className="w-full bg-surface-canvas min-h-screen pb-24 md:pb-12">
       <Seo
         title={event.title}
         description={event.description}
         image={event.primaryImageId ? imageUrl(event.primaryImageId) : undefined}
       />
 
-      
-      <Hero
+      <BentoHeader
         event={event}
         onGetTickets={scrollToBooking}
         minPriceCents={minPriceCents}
+      />
+
+      <EventTabNav
+        hasPerformers={Boolean(event.performersJson && event.performersJson !== '[]')}
+        hasSponsors={Boolean(event.sponsorsJson && event.sponsorsJson !== '[]')}
+        hasTimeline={true}
+        hasVenue={Boolean(event.venuesId)}
+        hasExtraInfo={Boolean(event.extraInfoJson || event.description)}
       />
 
       <PersuasionBand persuasion={persuasion} onGetTickets={scrollToBooking} cartCount={cart.length} />
 
       {delta ? <DeltaStrip delta={delta} /> : null}
 
-      <div id="booking-panel" className="max-w-7xl mx-auto px-4 md:px-8 mt-12 md:mt-16 [content-visibility:auto] [contain-intrinsic-size:auto_4000px]">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-          <div className="min-w-0 space-y-12">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 mt-8 md:mt-12 space-y-12">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
+          <div className="lg:col-span-8 space-y-12 min-w-0">
             {showTickets && (
-              <div className="space-y-4">
-                <SectionTitle
-                  title="Tickets"
-                  subtitle="Choose your admission"
-                  icon={Ticket}
-                />
+              <div id="booking-panel" className="space-y-4">
                 <GroupDiscountBanner hint={quote?.groupDiscount} />
-                <div className="space-y-3">
-                  {!ticketTypes ? (
-                    <div className="flex min-h-[340px] items-center justify-center rounded-2xl border border-border-soft bg-surface-card text-sm text-ink-soft animate-pulse">Loading tickets…</div>
-                  ) : admissionTiers.length === 0 ? (
-                    <p className="py-6 text-center text-sm text-ink-soft">
-                      No tickets on sale right now.
-                    </p>
-                  ) : (
-                    admissionTiers.map((tt, index) => {
-                      const qty = cart.find((i) => i.key === `Ticket:${tt.eventTicketTypesId}`)?.seats || 0;
-                      const availableQuantity = tt.capacity > 0 ? Math.max(0, tt.capacity - tt.soldCount) : undefined;
+                <TicketPassDeck
+                  admissionTiers={admissionTiers}
+                  feesIncluded={event.feesIncluded}
+                  achAvailable={achAvailable}
+                  cart={cart}
+                  upsert={upsert}
+                  removeKey={removeKey}
+                />
+              </div>
+            )}
 
-                      return (
-                        <TicketCard
-                          key={tt.eventTicketTypesId}
-                          label={tt.label}
-                          description={tt.description}
-                          priceCents={tt.priceCents}
-                          platformFeeCents={tt.platformFeeCents}
-                          feesIncluded={event.feesIncluded}
-                          achAvailable={achAvailable}
-                          quantity={qty}
-                          maxQuantity={tt.maxQuantity || undefined}
-                          availableQuantity={availableQuantity}
-                          isPopular={index === 0}
-                          discountedPriceCents={
-                            tt.sellingPriceCents > 0 && tt.sellingPriceCents < tt.priceCents
-                              ? tt.sellingPriceCents
-                              : undefined
-                          }
-                          onQuantityChange={(newQty) => {
-                            const key = `Ticket:${tt.eventTicketTypesId}`;
-                            if (newQty <= 0) {
-                              removeKey(key);
-                            } else {
-                              upsert({
-                                key,
-                                kind: 'Ticket',
-                                refId: tt.eventTicketTypesId,
-                                label: tt.label,
-                                seats: newQty,
-                              });
-                            }
-                          }}
-                        />
-                      );
-                    })
-                  )}
-                </div>
+            {showTables && (
+              <LoungeSeatingBento
+                eventsId={event.eventsId}
+                feesIncluded={event.feesIncluded}
+                cart={cart}
+                upsert={upsert}
+                removeKey={removeKey}
+              />
+            )}
+
+            {event.performersJson && (
+              <div id="performers-section">
+                <PerformerBentoGrid performersJson={event.performersJson} />
               </div>
             )}
 
             {event.sponsorsJson && (
-              <EventSponsors sponsorsJson={event.sponsorsJson} />
-            )}
-
-            {showTables && (
-              <div className="space-y-4">
-                <SectionTitle
-                  title="Lounge Booking"
-                  subtitle="Select a table layout to reserve the block"
-                  icon={Users}
-                />
-                <DeferUntilVisible minHeight={590}>
-                  <EventSeatingMap
-                    eventsId={event.eventsId}
-                    feesIncluded={event.feesIncluded}
-                    cart={cart}
-                    upsert={upsert}
-                    removeKey={removeKey}
-                  />
-                </DeferUntilVisible>
+              <div id="sponsors-section">
+                <EventSponsors sponsorsJson={event.sponsorsJson} />
               </div>
             )}
 
-            
-            {event.description && (
-              <div className="py-8 border-t border-border-soft space-y-3">
-                <SectionTitle title="Story & Details" />
-                <p className="whitespace-pre-line leading-relaxed text-body text-sm font-medium font-sans max-w-3xl">
-                  {event.description}
-                </p>
-              </div>
-            )}
-
-            
-            {event.performersJson && (
-              <EventPerformers performersJson={event.performersJson} />
-            )}
-
-            
-            <div className="pt-6">
-              <DeferUntilVisible minHeight={780}>
-                <EventTimeline eventsId={event.eventsId} />
-              </DeferUntilVisible>
+            <div id="schedule-section">
+              <ScheduleStream eventsId={event.eventsId} />
             </div>
 
-            
-            <div className="pt-6">
-              <DeferUntilVisible minHeight={420}>
-                <VenueCard venuesId={event.venuesId} />
-              </DeferUntilVisible>
+            <div id="venue-section">
+              <VenueLogisticsBento
+                venuesId={event.venuesId}
+                extraInfoJson={event.extraInfoJson}
+                description={event.storyDescription || event.description}
+              />
             </div>
-
-            
-            {event.extraInfoJson && (
-              <div className="pt-6">
-                <EventExtraInfo extraInfoJson={event.extraInfoJson} />
-              </div>
-            )}
-
           </div>
 
-          
-          <aside className="lg:sticky lg:top-24 space-y-6">
-            <Card className="overflow-hidden border border-border bg-card shadow-md rounded-2xl">
-              <div className="flex items-center justify-between border-b border-hairline bg-surface-sunken px-6 py-4">
-                <span className="font-display text-sm font-semibold text-ink">Your order</span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-soft">
-                  <ShieldCheck className="size-3.5 text-success" /> Secure checkout
-                </span>
-              </div>
-
-              <CardContent className="p-6 space-y-6">
-                {cart.length === 0 ? (
-                  <div className="space-y-3 py-8 text-center">
-                    <Ticket className="mx-auto size-8 stroke-1 text-ink-faint" />
-                    <p className="text-sm font-medium text-ink">Your seats go right here</p>
-                    <p className="mx-auto max-w-[220px] text-xs leading-relaxed text-ink-soft">
-                      Pick a ticket above and we’ll hold it for you while you check out.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="divide-y divide-border-soft">
-                      {cart.map((item) => {
-                        const line = quote?.lines.find((l) => `${l.kind}:${l.refId}` === item.key);
-                        const linePrice = event.feesIncluded
-                          ? (line ? lineAllInExclTaxCents(line) : undefined)
-                          : line?.breakdown?.sellingPriceCents;
-                        return (
-                          <div key={item.key} className="flex items-center justify-between py-3 text-xs">
-                            <div className="space-y-1 min-w-0 pr-3">
-                              <div className="flex items-center gap-1.5">
-                                <span className="rounded bg-brand/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">
-                                  {item.kind}
-                                </span>
-                                <span className="block max-w-[130px] truncate font-semibold text-foreground">{item.label}</span>
-                              </div>
-                              <span className="block text-ink-soft">
-                                {item.seats} {item.seats === 1 ? 'seat' : 'seats'}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3 shrink-0">
-                              <span className="font-mono font-medium text-foreground">
-                                {linePrice !== undefined ? centsToUSD(linePrice) : '—'}
-                              </span>
-                              <button
-                                className="cursor-pointer text-xs font-medium text-ink-faint hover:text-destructive hover:underline"
-                                onClick={() => removeKey(item.key)}
-                                type="button"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <div className="border-t border-border-strong pt-4 space-y-2">
-                      <div className="space-y-1.5 text-xs">
-                        {discount > 0 && (
-                          <div className="flex justify-between font-medium text-success">
-                            <span>{quote?.groupDiscount?.appliedRuleName || 'You save'}</span>
-                            <span className="font-mono">-{centsToUSD(discount)}</span>
-                          </div>
-                        )}
-                        {!event.feesIncluded && (
-                          <>
-                            <div className="flex justify-between text-ink-soft">
-                              <span>Subtotal</span>
-                              <span className="font-mono">{centsToUSD(subtotal)}</span>
-                            </div>
-                            <div className="flex justify-between text-ink-soft">
-                              <span>Service fee</span>
-                              <span className="font-mono">{centsToUSD(serviceFee)}</span>
-                            </div>
-                          </>
-                        )}
-                        {tax > 0 && (
-                          <div className="flex justify-between text-ink-soft">
-                            <span>Tax</span>
-                            <span className="font-mono">{centsToUSD(tax)}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between border-t border-hairline pt-2 text-sm font-semibold text-foreground">
-                          <span>{event.feesIncluded ? 'Total (incl. fees)' : 'Total'}</span>
-                          <span className="font-mono">{centsToUSD(total)}</span>
-                        </div>
-                        {achAvailable && achSavings > 0 && (
-                          <div className="flex items-center justify-between rounded-lg bg-success/10 border border-success/20 px-2.5 py-1.5 text-success">
-                            <span className="font-semibold">Pay by bank (ACH)</span>
-                            <span className="font-mono font-semibold">
-                              {centsToUSD(achTotal)} · save {centsToUSD(achSavings)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {bookingError && (
-                  <div role="alert" className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-xl text-sm font-medium leading-normal">
-                    {bookingError}
-                  </div>
-                )}
-
-                <Button
-                  disabled={busy || cart.length === 0 || !quote}
-                  onClick={() => handleCheckout('card')}
-                  size="lg"
-                  className="w-full"
-                >
-                  {busy ? 'Reserving…' : 'Continue to checkout'}
-                </Button>
-                {achAvailable && achSavings > 0 && (
-                  <Button
-                    disabled={busy || cart.length === 0 || !quote}
-                    onClick={() => handleCheckout('ach')}
-                    size="lg"
-                    variant="outline"
-                    className="w-full border-success/30 text-success hover:bg-success/10 hover:text-success"
-                  >
-                    {busy ? 'Reserving…' : `Pay by bank and save ${centsToUSD(achSavings)}`}
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-
-            <div className="space-y-3 rounded-lg border border-hairline bg-surface p-5 text-xs">
-              <div className="flex items-center gap-2 border-b border-hairline pb-3 font-display text-sm font-semibold text-foreground">
-                <ShieldCheck className="size-4 text-success" /> How your tickets work
-              </div>
-              <p className="leading-relaxed text-ink-soft">
-                <span className="font-semibold text-foreground">Instant delivery.</span> Tickets appear
-                in your account and inbox the moment payment completes.
-              </p>
-              <p className="leading-relaxed text-ink-soft">
-                <span className="font-semibold text-foreground">All sales final.</span> Tickets are
-                non-refundable once purchased.
-              </p>
-            </div>
+          <aside className="hidden lg:block lg:col-span-4 lg:sticky lg:top-24">
+            <BentoOrderSummary
+              cart={cart}
+              quote={quote}
+              feesIncluded={event.feesIncluded}
+              busy={busy}
+              bookingError={bookingError}
+              onRemoveKey={removeKey}
+              onCheckout={handleCheckout}
+            />
           </aside>
-
         </div>
-      </div>
+      </main>
 
-      
-      {cart.length > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-50 space-y-3 border-t border-stage-elevated bg-stage/95 px-6 py-4 shadow-[var(--shadow-e2)] backdrop-blur-md md:hidden">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex flex-col">
-              <span className="text-xs text-on-stage-soft">Total</span>
-              <span className="font-mono text-base font-medium text-on-stage">{centsToUSD(total)}</span>
-            </div>
-            <Button onClick={() => handleCheckout('card')} disabled={busy || !quote} size="lg" className="px-8">
-              {busy ? 'Reserving…' : 'Checkout'}
-            </Button>
-          </div>
-          {achAvailable && achSavings > 0 && (
-            <Button
-              onClick={() => handleCheckout('ach')}
-              disabled={busy || !quote}
-              size="lg"
-              variant="outline"
-              className="w-full border-success/40 text-success hover:bg-success/10 hover:text-success"
-            >
-              {busy ? 'Reserving…' : `Pay by bank and save ${centsToUSD(achSavings)}`}
-            </Button>
-          )}
-        </div>
-      )}
+      <EventMobileStickyBar
+        minPriceCents={minPriceCents}
+        cartCount={cart.length}
+        totalCents={total}
+        busy={busy}
+        onGetTickets={scrollToBooking}
+        onCheckout={() => handleCheckout('card')}
+      />
 
-      
       <CheckoutDrawer
         isOpen={isCheckoutOpen}
         onClose={handleClose}
@@ -500,7 +276,6 @@ function EventDetailPageContent({ event }: { event: Event }) {
         preferredMethod={checkoutMethod}
       />
 
-      
       <EventFooter />
     </div>
   );

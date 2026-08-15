@@ -1,8 +1,6 @@
-import { useMemo, useRef } from 'react';
-import { Info, Sparkles, HelpCircle, Lock, Calendar, Star, Compass } from 'lucide-react';
+import { useMemo } from 'react';
+import { Sparkles, HelpCircle, Lock, Calendar, Star, Compass, ShieldCheck } from 'lucide-react';
 import { parseMeta, publicMeta } from './catalogJson';
-import { resolveCssColor } from '@/shared/theme/branding';
-import { useLazyGsap } from '@/shared/motion/useLazyGsap';
 
 function humanize(key: string): string {
   return key
@@ -11,7 +9,6 @@ function humanize(key: string): string {
     .trim()
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
-
 
 function getMetaIcon(key: string) {
   const k = key.toLowerCase();
@@ -25,112 +22,38 @@ function getMetaIcon(key: string) {
 
 export function EventExtraInfo({ extraInfoJson }: { extraInfoJson: string }) {
   const items = useMemo(() => publicMeta(parseMeta(extraInfoJson)), [extraInfoJson]);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useLazyGsap(
-    ({ gsap }) => {
-      if (!containerRef.current || items.length === 0) return;
-      const rows = containerRef.current.querySelectorAll('[data-info-row]');
-
-      
-      gsap.from(rows, {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        stagger: 0.08,
-        ease: 'power2.out',
-        clearProps: 'opacity,transform',
-      });
-
-      
-      rows.forEach((row) => {
-        const iconContainer = row.querySelector('[data-info-icon-container]');
-        
-        row.addEventListener('mouseenter', () => {
-          gsap.to(row, {
-            borderColor: 'var(--primary)',
-            backgroundColor: resolveCssColor('--brand', 0.02),
-            x: 5,
-            duration: 0.3,
-            ease: 'power2.out',
-          });
-          if (iconContainer) {
-            gsap.to(iconContainer, {
-              scale: 1.15,
-              rotate: 15,
-              backgroundColor: 'var(--primary)',
-              color: 'var(--primary-foreground)',
-              duration: 0.3,
-            });
-          }
-        });
-
-        row.addEventListener('mouseleave', () => {
-          gsap.to(row, {
-            borderColor: 'var(--border)',
-            backgroundColor: 'var(--card)',
-            x: 0,
-            duration: 0.4,
-            ease: 'power2.out',
-          });
-          if (iconContainer) {
-            gsap.to(iconContainer, {
-              scale: 1,
-              rotate: 0,
-              backgroundColor: resolveCssColor('--brand', 0.08),
-              color: 'var(--primary)',
-              duration: 0.4,
-            });
-          }
-        });
-      });
-    },
-    containerRef,
-    [items],
-  );
 
   if (items.length === 0) {
     return null;
   }
 
   return (
-    <section ref={containerRef} className="space-y-6">
-      {}
-      <div className="flex items-center gap-3 border-b border-hairline-strong pb-4">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
-          <Info className="size-5" />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h4 className="font-display text-base font-bold uppercase tracking-wide text-foreground flex items-center gap-2">
+          <ShieldCheck className="size-4 text-brand" /> Guidelines & Policy Vault
+        </h4>
+        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+          {items.length} Rules Defined
         </span>
-        <div>
-          <h2 className="text-2xl font-black tracking-tight text-ink uppercase font-display">
-            Good to know
-          </h2>
-          <p className="text-xs text-muted-foreground font-medium">
-            Important details, guidelines, and restrictions for attendees
-          </p>
-        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {items.map((item) => {
           const MetaIcon = getMetaIcon(item.key);
           return (
             <div
               key={item.key}
-              data-info-row
-              className="flex items-start gap-4 p-5 rounded-2xl border border-border bg-card shadow-sm transition-all duration-300"
+              className="group flex items-start gap-3.5 p-4 rounded-2xl border border-border-strong bg-surface-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-md"
             >
-              {}
-              <div 
-                data-info-icon-container
-                className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary border border-primary/10 transition-all duration-300"
-              >
-                <MetaIcon className="size-5" />
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand border border-brand/20 transition-transform duration-200 group-hover:scale-110">
+                <MetaIcon className="size-4.5" />
               </div>
-              <div className="space-y-1 min-w-0">
-                <h4 className="text-sm font-extrabold uppercase tracking-wider text-ink font-display">
+              <div className="space-y-0.5 min-w-0">
+                <h5 className="font-display text-xs font-bold uppercase tracking-wider text-foreground">
                   {humanize(item.key)}
-                </h4>
-                <p className="text-sm leading-relaxed text-body whitespace-pre-wrap">
+                </h5>
+                <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
                   {item.value}
                 </p>
               </div>
@@ -138,6 +61,6 @@ export function EventExtraInfo({ extraInfoJson }: { extraInfoJson: string }) {
           );
         })}
       </div>
-    </section>
+    </div>
   );
 }

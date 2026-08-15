@@ -10,6 +10,7 @@ export function AdminSponsorsPage() {
       title="Sponsors"
       entityType="sponsor"
       suggestedKeys={SPONSOR_KEYS}
+      aspectRatio="1:1"
       load={listSponsors}
       create={createSponsor}
       update={updateSponsor}

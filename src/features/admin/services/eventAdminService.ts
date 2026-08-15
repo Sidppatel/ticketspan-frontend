@@ -17,6 +17,12 @@ export interface EventDraft {
   venuesId: string;
   imagePath: string;
   extraInfoJson?: string;
+  shortDescription?: string;
+  storyDescription?: string;
+  heroBackdropImageId?: string;
+  posterImageId?: string;
+  isVerifiedOrganizer?: boolean;
+  urgencyBadgeText?: string;
 }
 
 export async function createEvent(draft: EventDraft): Promise<string> {
@@ -35,6 +41,12 @@ export async function createEvent(draft: EventDraft): Promise<string> {
       eventType: draft.eventType,
       venuesId: draft.venuesId,
       scheduledPublishAt: '0',
+      shortDescription: draft.shortDescription ?? '',
+      storyDescription: draft.storyDescription ?? '',
+      heroBackdropImageId: draft.heroBackdropImageId ?? '',
+      posterImageId: draft.posterImageId ?? '',
+      isVerifiedOrganizer: draft.isVerifiedOrganizer ?? true,
+      urgencyBadgeText: draft.urgencyBadgeText ?? '',
     }),
   );
   return response.eventsId;
@@ -54,6 +66,12 @@ export async function updateEvent(eventsId: string, draft: EventDraft): Promise<
       venuesId: draft.venuesId,
       eventType: draft.eventType,
       extraInfoJson: draft.extraInfoJson ?? '',
+      shortDescription: draft.shortDescription ?? '',
+      storyDescription: draft.storyDescription ?? '',
+      heroBackdropImageId: draft.heroBackdropImageId ?? '',
+      posterImageId: draft.posterImageId ?? '',
+      isVerifiedOrganizer: draft.isVerifiedOrganizer ?? true,
+      urgencyBadgeText: draft.urgencyBadgeText ?? '',
     }),
   );
 }
@@ -72,6 +90,12 @@ export async function setEventExtraInfo(event: Event, extraInfoJson: string): Pr
       venuesId: event.venuesId,
       eventType: event.eventType,
       extraInfoJson,
+      shortDescription: event.shortDescription ?? '',
+      storyDescription: event.storyDescription ?? '',
+      heroBackdropImageId: event.heroBackdropImageId ?? '',
+      posterImageId: event.posterImageId ?? '',
+      isVerifiedOrganizer: event.isVerifiedOrganizer ?? true,
+      urgencyBadgeText: event.urgencyBadgeText ?? '',
     }),
   );
 }

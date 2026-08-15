@@ -148,7 +148,6 @@ export function EventSeatingMap({
     }
   }
 
-
   const fitView = useCallback(() => {
     const el = containerRef.current;
     if (!el || !canvas.w || !canvas.h) return;
@@ -185,7 +184,6 @@ export function EventSeatingMap({
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-
     if ((e.target as HTMLElement).closest('button')) return;
     userAdjusted.current = true;
     setIsDragging(true);
@@ -271,23 +269,6 @@ export function EventSeatingMap({
       </div>
 
       <div className="relative overflow-hidden rounded-3xl border border-border-soft bg-stage shadow-2xl min-h-[500px]">
-        { }
-        <div className="absolute bottom-4 left-4 z-30 flex items-center gap-3 sm:gap-4 bg-stage-elevated/90 backdrop-blur-md px-3 py-2 rounded-xl border border-white/5 text-[10px] uppercase font-bold tracking-wider text-on-stage-soft">
-          <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-white border border-accent-gold" />
-            <span>Available</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-accent-burgundy" />
-            <span>Selected</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-white/20" />
-            <span>Reserved</span>
-          </div>
-        </div>
-
-        { }
         {hoveredTable && tipStyle && (
           <div style={tipStyle} className="pointer-events-none absolute z-30 w-56 bg-stage-elevated/95 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-2xl text-xs space-y-2 animate-in fade-in duration-200">
             <div className="flex items-center justify-between">
@@ -346,7 +327,6 @@ export function EventSeatingMap({
           </div>
         )}
 
-        { }
         <div
           ref={containerRef}
           onMouseDown={handleMouseDown}
@@ -358,7 +338,6 @@ export function EventSeatingMap({
             isDragging ? 'cursor-grabbing' : 'cursor-grab'
           )}
         >
-          { }
           <div
             className="absolute inset-0 opacity-10 pointer-events-none"
             style={{
@@ -373,7 +352,6 @@ export function EventSeatingMap({
             }}
           />
 
-          { }
           <div
             className="absolute"
             style={{
@@ -384,7 +362,6 @@ export function EventSeatingMap({
               transition: isDragging ? 'none' : 'transform 0.15s ease-out',
             }}
           >
-            { }
             {layout.objects.map((o) => (
               <div
                 key={o.layoutObjectsId}
@@ -402,14 +379,12 @@ export function EventSeatingMap({
               </div>
             ))}
 
-            { }
             {layout.tables.map((table) => {
               const type = typeById.get(table.eventTablesId);
               const isAvailable = table.status === 'Available';
               const isSelected = inCart(`Table:${table.tablesId}`);
               const capacity = capacityOf(table);
               const shape = table.shapeOverride || type?.shape || 'Rectangle';
-
 
               const bgStyle = isSelected
                 ? 'linear-gradient(155deg, color-mix(in srgb, var(--accent-burgundy) 88%, white), var(--accent-burgundy))'
@@ -467,7 +442,6 @@ export function EventSeatingMap({
                       : 'cursor-not-allowed'
                   )}
                 >
-                  { }
                   {isSelected && (
                     <span className="mb-0.5 flex size-4 items-center justify-center rounded-full bg-white text-accent-burgundy shadow-[0_0_10px_color-mix(in_srgb,var(--surface)_40%,transparent)]">
                       <Check className="size-2.5 stroke-[3]" />

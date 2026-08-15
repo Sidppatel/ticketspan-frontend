@@ -10,6 +10,7 @@ export function AdminPerformersPage() {
       title="Performers"
       entityType="performer"
       suggestedKeys={PERFORMER_KEYS}
+      aspectRatio="1:1"
       load={listPerformers}
       create={createPerformer}
       update={updatePerformer}

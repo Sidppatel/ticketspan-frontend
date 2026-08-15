@@ -12,13 +12,14 @@ import {
   type VenueDraft,
 } from '@/features/admin/services/catalogService';
 import { rpcErrorMessage } from '@/shared/session';
-import { uploadImage, imageUrl } from '@/shared/upload';
+import { imageUrl } from '@/shared/upload';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
 import { CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { UnifiedImageUploader } from '@/shared/components/upload/UnifiedImageUploader';
 import { cn } from '@/shared/lib/cn';
 import { MapPin } from 'lucide-react';
 import {
@@ -332,22 +333,15 @@ function VenueGallery({ venuesId }: { venuesId: string }) {
   const loader = useCallback(() => listVenueImages(venuesId), [venuesId]);
   const { data, reload } = useAsync(loader);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
 
-  async function upload(file: File | undefined) {
-    if (!file) {
-      return;
-    }
-    setBusy(true);
+  async function handleUploaded(imagesId: string) {
+    if (!imagesId) return;
     setError(null);
     try {
-      const result = await uploadImage(file, 'venue', venuesId);
-      await addVenueImage(venuesId, result.imagesId);
+      await addVenueImage(venuesId, imagesId);
       reload();
     } catch (caught) {
       setError(rpcErrorMessage(caught));
-    } finally {
-      setBusy(false);
     }
   }
 
@@ -362,23 +356,30 @@ function VenueGallery({ venuesId }: { venuesId: string }) {
   }
 
   return (
-    <div className="space-y-2 border-t border-border/10 pt-4">
-      <Label className="text-[10px]">Images</Label>
-      <Input type="file" accept="image/*" disabled={busy} onChange={(e) => upload(e.target.files?.[0])} className="text-xs h-9" />
+    <div className="space-y-4 border-t border-border/10 pt-4">
+      <UnifiedImageUploader
+        entityType="venue"
+        entityId={venuesId}
+        imagesId=""
+        onChange={handleUploaded}
+        aspectRatio="16:9"
+        label="Add Venue Gallery Photo"
+        hint="Supports 16:9 widescreen stage/layout photos"
+      />
       {error ? <p className="text-[10px] text-destructive bg-destructive/10 p-1.5 rounded">{error}</p> : null}
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {(data ?? []).map((image) => (
-          <div key={image.imagesId} className="w-28 space-y-1.5 p-2 border border-border rounded-lg bg-card shadow-sm">
-            <img src={imageUrl(image.imagesId)} alt="" className="h-20 w-full rounded object-cover" />
+          <div key={image.imagesId} className="space-y-1.5 p-2 border border-border/60 rounded-xl bg-card shadow-sm">
+            <img src={imageUrl(image.imagesId)} alt="" className="aspect-video w-full rounded-lg object-cover" />
             <div className="flex items-center justify-between text-[10px] font-bold">
               {image.isPrimary ? (
-                <span className="text-primary">Primary</span>
+                <span className="text-primary font-mono uppercase text-[9px] bg-primary/10 px-2 py-0.5 rounded">Primary</span>
               ) : (
-                <button className="text-muted-foreground hover:text-foreground transition-colors" onClick={() => guard(() => setPrimaryVenueImage(venuesId, image.imagesId))}>
+                <button className="text-muted-foreground hover:text-foreground transition-colors font-semibold" onClick={() => guard(() => setPrimaryVenueImage(venuesId, image.imagesId))}>
                   Set primary
                 </button>
               )}
-              <button className="text-destructive/80 hover:text-destructive transition-colors" onClick={() => guard(() => removeVenueImage(venuesId, image.imagesId))}>
+              <button className="text-destructive/80 hover:text-destructive transition-colors font-bold px-1" onClick={() => guard(() => removeVenueImage(venuesId, image.imagesId))}>
                 ✕
               </button>
             </div>

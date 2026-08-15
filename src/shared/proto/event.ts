@@ -346,6 +346,12 @@ export interface Event {
      * @generated from protobuf field: double venue_combined_tax_rate = 26;
      */
     venueCombinedTaxRate: number;
+    shortDescription?: string;
+    storyDescription?: string;
+    heroBackdropImageId?: string;
+    posterImageId?: string;
+    isVerifiedOrganizer?: boolean;
+    urgencyBadgeText?: string;
 }
 /**
  * @generated from protobuf message ticketspan.event.GetEventBySlugRequest
@@ -412,6 +418,12 @@ export interface CreateEventRequest {
      * @generated from protobuf field: string event_type = 16;
      */
     eventType: string; // Open | Table | Both; default Open
+    shortDescription?: string;
+    storyDescription?: string;
+    heroBackdropImageId?: string;
+    posterImageId?: string;
+    isVerifiedOrganizer?: boolean;
+    urgencyBadgeText?: string;
 }
 /**
  * @generated from protobuf message ticketspan.event.CreateEventResponse
@@ -470,6 +482,12 @@ export interface UpdateEventRequest {
      * @generated from protobuf field: string extra_info_json = 12;
      */
     extraInfoJson: string; // JSON array [{key,value,isPublic,sortOrder}]; empty = unchanged
+    shortDescription?: string;
+    storyDescription?: string;
+    heroBackdropImageId?: string;
+    posterImageId?: string;
+    isVerifiedOrganizer?: boolean;
+    urgencyBadgeText?: string;
 }
 /**
  * @generated from protobuf message ticketspan.event.ChangeEventStatusRequest
@@ -1396,7 +1414,13 @@ class Event$Type extends MessageType<Event> {
             { no: 23, name: "venue_county_tax_rate", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
             { no: 24, name: "venue_city_tax_rate", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
             { no: 25, name: "venue_local_tax_rate", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 26, name: "venue_combined_tax_rate", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ }
+            { no: 26, name: "venue_combined_tax_rate", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 27, name: "short_description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 28, name: "story_description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 29, name: "hero_backdrop_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 30, name: "poster_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 31, name: "is_verified_organizer", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 32, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Event>): Event {
@@ -1427,6 +1451,12 @@ class Event$Type extends MessageType<Event> {
         message.venueCityTaxRate = 0;
         message.venueLocalTaxRate = 0;
         message.venueCombinedTaxRate = 0;
+        message.shortDescription = "";
+        message.storyDescription = "";
+        message.heroBackdropImageId = "";
+        message.posterImageId = "";
+        message.isVerifiedOrganizer = true;
+        message.urgencyBadgeText = "";
         if (value !== undefined)
             reflectionMergePartial<Event>(this, message, value);
         return message;
@@ -1513,6 +1543,24 @@ class Event$Type extends MessageType<Event> {
                     break;
                 case /* double venue_combined_tax_rate */ 26:
                     message.venueCombinedTaxRate = reader.double();
+                    break;
+                case /* string short_description */ 27:
+                    message.shortDescription = reader.string();
+                    break;
+                case /* string story_description */ 28:
+                    message.storyDescription = reader.string();
+                    break;
+                case /* string hero_backdrop_image_id */ 29:
+                    message.heroBackdropImageId = reader.string();
+                    break;
+                case /* string poster_image_id */ 30:
+                    message.posterImageId = reader.string();
+                    break;
+                case /* bool is_verified_organizer */ 31:
+                    message.isVerifiedOrganizer = reader.bool();
+                    break;
+                case /* string urgency_badge_text */ 32:
+                    message.urgencyBadgeText = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1604,6 +1652,24 @@ class Event$Type extends MessageType<Event> {
         /* double venue_combined_tax_rate = 26; */
         if (message.venueCombinedTaxRate !== 0)
             writer.tag(26, WireType.Bit64).double(message.venueCombinedTaxRate);
+        /* string short_description = 27; */
+        if (message.shortDescription !== undefined && message.shortDescription !== "")
+            writer.tag(27, WireType.LengthDelimited).string(message.shortDescription);
+        /* string story_description = 28; */
+        if (message.storyDescription !== undefined && message.storyDescription !== "")
+            writer.tag(28, WireType.LengthDelimited).string(message.storyDescription);
+        /* string hero_backdrop_image_id = 29; */
+        if (message.heroBackdropImageId !== undefined && message.heroBackdropImageId !== "")
+            writer.tag(29, WireType.LengthDelimited).string(message.heroBackdropImageId);
+        /* string poster_image_id = 30; */
+        if (message.posterImageId !== undefined && message.posterImageId !== "")
+            writer.tag(30, WireType.LengthDelimited).string(message.posterImageId);
+        /* bool is_verified_organizer = 31; */
+        if (message.isVerifiedOrganizer !== undefined && message.isVerifiedOrganizer !== true)
+            writer.tag(31, WireType.Varint).bool(message.isVerifiedOrganizer);
+        /* string urgency_badge_text = 32; */
+        if (message.urgencyBadgeText !== undefined && message.urgencyBadgeText !== "")
+            writer.tag(32, WireType.LengthDelimited).string(message.urgencyBadgeText);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1677,7 +1743,13 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
             { no: 10, name: "layout_mode", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 14, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 15, name: "scheduled_publish_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
-            { no: 16, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 16, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 17, name: "short_description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 18, name: "story_description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 19, name: "hero_backdrop_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 20, name: "poster_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 21, name: "is_verified_organizer", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 22, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<CreateEventRequest>): CreateEventRequest {
@@ -1695,6 +1767,12 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         message.venuesId = "";
         message.scheduledPublishAt = "0";
         message.eventType = "";
+        message.shortDescription = "";
+        message.storyDescription = "";
+        message.heroBackdropImageId = "";
+        message.posterImageId = "";
+        message.isVerifiedOrganizer = true;
+        message.urgencyBadgeText = "";
         if (value !== undefined)
             reflectionMergePartial<CreateEventRequest>(this, message, value);
         return message;
@@ -1742,6 +1820,24 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
                     break;
                 case /* string event_type */ 16:
                     message.eventType = reader.string();
+                    break;
+                case /* string short_description */ 17:
+                    message.shortDescription = reader.string();
+                    break;
+                case /* string story_description */ 18:
+                    message.storyDescription = reader.string();
+                    break;
+                case /* string hero_backdrop_image_id */ 19:
+                    message.heroBackdropImageId = reader.string();
+                    break;
+                case /* string poster_image_id */ 20:
+                    message.posterImageId = reader.string();
+                    break;
+                case /* bool is_verified_organizer */ 21:
+                    message.isVerifiedOrganizer = reader.bool();
+                    break;
+                case /* string urgency_badge_text */ 22:
+                    message.urgencyBadgeText = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1794,6 +1890,24 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         /* string event_type = 16; */
         if (message.eventType !== "")
             writer.tag(16, WireType.LengthDelimited).string(message.eventType);
+        /* string short_description = 17; */
+        if (message.shortDescription !== undefined && message.shortDescription !== "")
+            writer.tag(17, WireType.LengthDelimited).string(message.shortDescription);
+        /* string story_description = 18; */
+        if (message.storyDescription !== undefined && message.storyDescription !== "")
+            writer.tag(18, WireType.LengthDelimited).string(message.storyDescription);
+        /* string hero_backdrop_image_id = 19; */
+        if (message.heroBackdropImageId !== undefined && message.heroBackdropImageId !== "")
+            writer.tag(19, WireType.LengthDelimited).string(message.heroBackdropImageId);
+        /* string poster_image_id = 20; */
+        if (message.posterImageId !== undefined && message.posterImageId !== "")
+            writer.tag(20, WireType.LengthDelimited).string(message.posterImageId);
+        /* bool is_verified_organizer = 21; */
+        if (message.isVerifiedOrganizer !== undefined && message.isVerifiedOrganizer !== true)
+            writer.tag(21, WireType.Varint).bool(message.isVerifiedOrganizer);
+        /* string urgency_badge_text = 22; */
+        if (message.urgencyBadgeText !== undefined && message.urgencyBadgeText !== "")
+            writer.tag(22, WireType.LengthDelimited).string(message.urgencyBadgeText);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1865,7 +1979,13 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
             { no: 8, name: "is_featured", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 10, name: "venues_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 11, name: "event_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 12, name: "extra_info_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 12, name: "extra_info_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 13, name: "short_description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 14, name: "story_description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 15, name: "hero_backdrop_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 16, name: "poster_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 17, name: "is_verified_organizer", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 18, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<UpdateEventRequest>): UpdateEventRequest {
@@ -1881,6 +2001,12 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         message.venuesId = "";
         message.eventType = "";
         message.extraInfoJson = "";
+        message.shortDescription = "";
+        message.storyDescription = "";
+        message.heroBackdropImageId = "";
+        message.posterImageId = "";
+        message.isVerifiedOrganizer = true;
+        message.urgencyBadgeText = "";
         if (value !== undefined)
             reflectionMergePartial<UpdateEventRequest>(this, message, value);
         return message;
@@ -1922,6 +2048,24 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
                     break;
                 case /* string extra_info_json */ 12:
                     message.extraInfoJson = reader.string();
+                    break;
+                case /* string short_description */ 13:
+                    message.shortDescription = reader.string();
+                    break;
+                case /* string story_description */ 14:
+                    message.storyDescription = reader.string();
+                    break;
+                case /* string hero_backdrop_image_id */ 15:
+                    message.heroBackdropImageId = reader.string();
+                    break;
+                case /* string poster_image_id */ 16:
+                    message.posterImageId = reader.string();
+                    break;
+                case /* bool is_verified_organizer */ 17:
+                    message.isVerifiedOrganizer = reader.bool();
+                    break;
+                case /* string urgency_badge_text */ 18:
+                    message.urgencyBadgeText = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1968,6 +2112,24 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         /* string extra_info_json = 12; */
         if (message.extraInfoJson !== "")
             writer.tag(12, WireType.LengthDelimited).string(message.extraInfoJson);
+        /* string short_description = 13; */
+        if (message.shortDescription !== undefined && message.shortDescription !== "")
+            writer.tag(13, WireType.LengthDelimited).string(message.shortDescription);
+        /* string story_description = 14; */
+        if (message.storyDescription !== undefined && message.storyDescription !== "")
+            writer.tag(14, WireType.LengthDelimited).string(message.storyDescription);
+        /* string hero_backdrop_image_id = 15; */
+        if (message.heroBackdropImageId !== undefined && message.heroBackdropImageId !== "")
+            writer.tag(15, WireType.LengthDelimited).string(message.heroBackdropImageId);
+        /* string poster_image_id = 16; */
+        if (message.posterImageId !== undefined && message.posterImageId !== "")
+            writer.tag(16, WireType.LengthDelimited).string(message.posterImageId);
+        /* bool is_verified_organizer = 17; */
+        if (message.isVerifiedOrganizer !== undefined && message.isVerifiedOrganizer !== true)
+            writer.tag(17, WireType.Varint).bool(message.isVerifiedOrganizer);
+        /* string urgency_badge_text = 18; */
+        if (message.urgencyBadgeText !== undefined && message.urgencyBadgeText !== "")
+            writer.tag(18, WireType.LengthDelimited).string(message.urgencyBadgeText);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
