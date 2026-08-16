@@ -31,7 +31,7 @@ import { rpcErrorMessage } from '@/shared/session';
 import { centsToUSD, formatEventDate } from '@/shared/lib/format';
 import { tzForState } from '@/shared/lib/timezone';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card } from '@/shared/ui/card';
 import {
   CalendarCheck2,
   DollarSign,
@@ -44,7 +44,7 @@ import {
   Info,
   type LucideIcon,
 } from 'lucide-react';
-import { EventBrandingPreview } from '@/features/admin/components/branding/EventBrandingPreview';
+import { EventLivePreview } from '@/features/admin/components/EventLivePreview';
 import { VoiceZone, WhatsNext, EditSection, Stat } from '@/features/admin/components/EventManageParts';
 import { buildCompletion, buildVoice, type SectionId } from '@/features/admin/lib/eventInsights';
 
@@ -303,16 +303,7 @@ export function AdminEventManagePage() {
 
       {activeSection === 'preview' && event.data && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Card className="border border-border bg-card shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-border/20 px-6 py-4">
-              <CardTitle className="text-base font-bold font-display text-foreground flex items-center gap-2">
-                <Eye className="h-4.5 w-4.5 text-primary" /> Branded Event Preview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <EventBrandingPreview eventName={event.data.title} />
-            </CardContent>
-          </Card>
+          <EventLivePreview event={event.data} previewUrl={previewHref()} />
         </div>
       )}
 

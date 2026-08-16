@@ -38,6 +38,8 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { setReturnTo } from '@/shared/auth/returnTo';
 import type { Event } from '@/shared/proto/event';
 
+import { toast } from 'sonner';
+
 export function EventDetailPage() {
   const { slug = '' } = useParams();
   const loader = useCallback(() => getEventBySlug(slug), [slug]);
@@ -68,7 +70,13 @@ export function EventDetailPage() {
   return <EventDetailPageContent event={event} />;
 }
 
-function EventDetailPageContent({ event }: { event: Event }) {
+export function EventDetailPageContent({
+  event,
+  isPreview = false,
+}: {
+  event: Event;
+  isPreview?: boolean;
+}) {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,10 +86,11 @@ function EventDetailPageContent({ event }: { event: Event }) {
   const [checkoutMethod, setCheckoutMethod] = useState<'card' | 'ach'>('card');
 
   const [cart, setCart] = useState<CartItem[]>(() => {
+    if (isPreview) return [];
     clearOtherPendingCarts(event.eventsId);
     return takePendingCart(event.eventsId);
   });
-  const [delta] = useState(() => rememberEventVisit(event));
+  const [delta] = useState(() => (isPreview ? null : rememberEventVisit(event)));
   const [busy, setBusy] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
 
@@ -120,14 +129,20 @@ function EventDetailPageContent({ event }: { event: Event }) {
   const holdSeconds = quote?.holdSeconds || DEFAULT_HOLD_SECONDS;
 
   useEffect(() => {
+    if (isPreview) return;
     savePendingCart(event.eventsId, cart, holdSeconds);
-  }, [cart, event.eventsId, holdSeconds]);
+  }, [cart, event.eventsId, holdSeconds, isPreview]);
 
   const total = quote?.totalCents ?? 0;
   const achAvailable = quote?.achAvailable ?? false;
   const achTotal = quote?.achTotalCents ?? 0;
 
   async function handleCheckout(method: 'card' | 'ach' = 'card') {
+    if (isPreview) {
+      toast.info('Preview Mode: Cart and pricing simulator is active. Live bookings are disabled.');
+      return;
+    }
+
     if (!isAuthenticated) {
       savePendingCart(event.eventsId, cart, holdSeconds);
       setReturnTo(location.pathname + location.search);
