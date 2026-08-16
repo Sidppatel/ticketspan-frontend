@@ -55,9 +55,6 @@ export interface IReportingServiceClient {
      */
     getSalesByChannel(input: ReportRangeRequest, options?: RpcOptions): UnaryCall<ReportRangeRequest, SalesByChannelList>;
     /**
-     * Only available when the tenant's tax_collection_mode is 'self' (tenant
-     * remits their own sales tax); monthly totals with per-event drill-down.
-     *
      * @generated from protobuf rpc: GetTaxReport(ticketspan.reporting.ReportRangeRequest) returns (ticketspan.reporting.TaxReport);
      */
     getTaxReport(input: ReportRangeRequest, options?: RpcOptions): UnaryCall<ReportRangeRequest, TaxReport>;
@@ -114,9 +111,6 @@ export class ReportingServiceClient implements IReportingServiceClient, ServiceI
         return stackIntercept<ReportRangeRequest, SalesByChannelList>("unary", this._transport, method, opt, input);
     }
     /**
-     * Only available when the tenant's tax_collection_mode is 'self' (tenant
-     * remits their own sales tax); monthly totals with per-event drill-down.
-     *
      * @generated from protobuf rpc: GetTaxReport(ticketspan.reporting.ReportRangeRequest) returns (ticketspan.reporting.TaxReport);
      */
     getTaxReport(input: ReportRangeRequest, options?: RpcOptions): UnaryCall<ReportRangeRequest, TaxReport> {
@@ -141,17 +135,10 @@ export interface ITenantTierServiceClient {
      */
     setTenantAdvancedReporting(input: SetTenantAdvancedReportingRequest, options?: RpcOptions): UnaryCall<SetTenantAdvancedReportingRequest, AckResponse>;
     /**
-     * Developer gate for ACH: enable/disable ACH for a tenant and set the fee formula
-     * that replaces the service fee when a buyer pays by ACH.
-     *
      * @generated from protobuf rpc: SetTenantAch(ticketspan.reporting.SetTenantAchRequest) returns (ticketspan.common.AckResponse);
      */
     setTenantAch(input: SetTenantAchRequest, options?: RpcOptions): UnaryCall<SetTenantAchRequest, AckResponse>;
     /**
-     * Developer gate for tax routing: 'platform' = TicketSpan collects and remits sales
-     * tax on the tenant's behalf (default); 'self' = tax flows to the tenant payout
-     * and the tenant remits it themselves.
-     *
      * @generated from protobuf rpc: SetTenantTaxMode(ticketspan.reporting.SetTenantTaxModeRequest) returns (ticketspan.common.AckResponse);
      */
     setTenantTaxMode(input: SetTenantTaxModeRequest, options?: RpcOptions): UnaryCall<SetTenantTaxModeRequest, AckResponse>;
@@ -187,9 +174,6 @@ export class TenantTierServiceClient implements ITenantTierServiceClient, Servic
         return stackIntercept<SetTenantAdvancedReportingRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Developer gate for ACH: enable/disable ACH for a tenant and set the fee formula
-     * that replaces the service fee when a buyer pays by ACH.
-     *
      * @generated from protobuf rpc: SetTenantAch(ticketspan.reporting.SetTenantAchRequest) returns (ticketspan.common.AckResponse);
      */
     setTenantAch(input: SetTenantAchRequest, options?: RpcOptions): UnaryCall<SetTenantAchRequest, AckResponse> {
@@ -197,10 +181,6 @@ export class TenantTierServiceClient implements ITenantTierServiceClient, Servic
         return stackIntercept<SetTenantAchRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Developer gate for tax routing: 'platform' = TicketSpan collects and remits sales
-     * tax on the tenant's behalf (default); 'self' = tax flows to the tenant payout
-     * and the tenant remits it themselves.
-     *
      * @generated from protobuf rpc: SetTenantTaxMode(ticketspan.reporting.SetTenantTaxModeRequest) returns (ticketspan.common.AckResponse);
      */
     setTenantTaxMode(input: SetTenantTaxModeRequest, options?: RpcOptions): UnaryCall<SetTenantTaxModeRequest, AckResponse> {

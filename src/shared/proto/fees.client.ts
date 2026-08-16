@@ -21,14 +21,10 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  */
 export interface IFeeServiceClient {
     /**
-     * Read: any authenticated user (tenants pick a formula; UIs display it).
-     *
      * @generated from protobuf rpc: ListFeeFormulas(ticketspan.common.Empty) returns (ticketspan.fees.ListFeeFormulasResponse);
      */
     listFeeFormulas(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListFeeFormulasResponse>;
     /**
-     * Write: developer only.
-     *
      * @generated from protobuf rpc: CreateFeeFormula(ticketspan.fees.FeeFormulaInput) returns (ticketspan.common.UuidValue);
      */
     createFeeFormula(input: FeeFormulaInput, options?: RpcOptions): UnaryCall<FeeFormulaInput, UuidValue>;
@@ -41,14 +37,10 @@ export interface IFeeServiceClient {
      */
     deleteFeeFormula(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
     /**
-     * Developer cross-tenant overview of every event + its priced line items.
-     *
      * @generated from protobuf rpc: ListAllEvents(ticketspan.common.Empty) returns (ticketspan.fees.DeveloperEventsResponse);
      */
     listAllEvents(input: Empty, options?: RpcOptions): UnaryCall<Empty, DeveloperEventsResponse>;
     /**
-     * Attach a formula to a ticket type / table (developer or own tenant).
-     *
      * @generated from protobuf rpc: AssignFeeFormula(ticketspan.fees.AssignFeeFormulaRequest) returns (ticketspan.common.AckResponse);
      */
     assignFeeFormula(input: AssignFeeFormulaRequest, options?: RpcOptions): UnaryCall<AssignFeeFormulaRequest, AckResponse>;
@@ -63,8 +55,6 @@ export class FeeServiceClient implements IFeeServiceClient, ServiceInfo {
     constructor(private readonly _transport: RpcTransport) {
     }
     /**
-     * Read: any authenticated user (tenants pick a formula; UIs display it).
-     *
      * @generated from protobuf rpc: ListFeeFormulas(ticketspan.common.Empty) returns (ticketspan.fees.ListFeeFormulasResponse);
      */
     listFeeFormulas(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListFeeFormulasResponse> {
@@ -72,8 +62,6 @@ export class FeeServiceClient implements IFeeServiceClient, ServiceInfo {
         return stackIntercept<Empty, ListFeeFormulasResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Write: developer only.
-     *
      * @generated from protobuf rpc: CreateFeeFormula(ticketspan.fees.FeeFormulaInput) returns (ticketspan.common.UuidValue);
      */
     createFeeFormula(input: FeeFormulaInput, options?: RpcOptions): UnaryCall<FeeFormulaInput, UuidValue> {
@@ -95,8 +83,6 @@ export class FeeServiceClient implements IFeeServiceClient, ServiceInfo {
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Developer cross-tenant overview of every event + its priced line items.
-     *
      * @generated from protobuf rpc: ListAllEvents(ticketspan.common.Empty) returns (ticketspan.fees.DeveloperEventsResponse);
      */
     listAllEvents(input: Empty, options?: RpcOptions): UnaryCall<Empty, DeveloperEventsResponse> {
@@ -104,8 +90,6 @@ export class FeeServiceClient implements IFeeServiceClient, ServiceInfo {
         return stackIntercept<Empty, DeveloperEventsResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Attach a formula to a ticket type / table (developer or own tenant).
-     *
      * @generated from protobuf rpc: AssignFeeFormula(ticketspan.fees.AssignFeeFormulaRequest) returns (ticketspan.common.AckResponse);
      */
     assignFeeFormula(input: AssignFeeFormulaRequest, options?: RpcOptions): UnaryCall<AssignFeeFormulaRequest, AckResponse> {

@@ -21,9 +21,6 @@ import type { CreatePriceRequest } from "./pricing";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
 /**
- * The Pricing Module: the single source of truth for all pricing. Floor plan and
- * checkout consume CalculatePrice; they never compute prices themselves.
- *
  * @generated from protobuf service ticketspan.pricing.PricingService
  */
 export interface IPricingServiceClient {
@@ -77,9 +74,6 @@ export interface IPricingServiceClient {
     setTenantDefaultFeeFormula(input: SetTenantDefaultFeeFormulaRequest, options?: RpcOptions): UnaryCall<SetTenantDefaultFeeFormulaRequest, AckResponse>;
 }
 /**
- * The Pricing Module: the single source of truth for all pricing. Floor plan and
- * checkout consume CalculatePrice; they never compute prices themselves.
- *
  * @generated from protobuf service ticketspan.pricing.PricingService
  */
 export class PricingServiceClient implements IPricingServiceClient, ServiceInfo {

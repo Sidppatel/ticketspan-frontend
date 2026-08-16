@@ -15,10 +15,6 @@ import type { SaveAsTemplateRequest } from "./floorplan";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
 /**
- * Reusable whole-floor-plan templates (grid + tables + objects). Distinct from
- * per-table table_templates. Layout objects and per-table overrides are saved
- * through TableBookingService.SaveEventLayout.
- *
  * @generated from protobuf service ticketspan.floorplan.FloorPlanService
  */
 export interface IFloorPlanServiceClient {
@@ -40,10 +36,6 @@ export interface IFloorPlanServiceClient {
     deleteFloorPlanTemplate(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
 }
 /**
- * Reusable whole-floor-plan templates (grid + tables + objects). Distinct from
- * per-table table_templates. Layout objects and per-table overrides are saved
- * through TableBookingService.SaveEventLayout.
- *
  * @generated from protobuf service ticketspan.floorplan.FloorPlanService
  */
 export class FloorPlanServiceClient implements IFloorPlanServiceClient, ServiceInfo {

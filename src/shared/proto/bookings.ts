@@ -63,8 +63,6 @@ export interface Booking {
      */
     seatsReserved: number;
     /**
-     * Cart lines (empty for single-line legacy bookings).
-     *
      * @generated from protobuf field: repeated ticketspan.booking.BookingLine lines = 11;
      */
     lines: BookingLine[];
@@ -85,8 +83,6 @@ export interface Booking {
      */
     ticketsTotal: number;
     /**
-     * Tickets on this booking with status Claimed or CheckedIn.
-     *
      * @generated from protobuf field: int32 tickets_claimed = 16;
      */
     ticketsClaimed: number;
@@ -144,10 +140,6 @@ export interface Booking {
     paymentMethodBrand: string;
 }
 /**
- * One line of a booking, for display on checkout / booking detail. Carries the
- * immutable pricing snapshot captured at purchase so historical bookings always
- * show the original price even after rules/prices change.
- *
  * @generated from protobuf message ticketspan.booking.BookingLine
  */
 export interface BookingLine {
@@ -158,11 +150,11 @@ export interface BookingLine {
     /**
      * @generated from protobuf field: string kind = 2;
      */
-    kind: string; // Ticket | Table
+    kind: string;
     /**
      * @generated from protobuf field: string label = 3;
      */
-    label: string; // tier label or table label
+    label: string;
     /**
      * @generated from protobuf field: string event_ticket_types_id = 4;
      */
@@ -178,15 +170,15 @@ export interface BookingLine {
     /**
      * @generated from protobuf field: int32 subtotal_cents = 7;
      */
-    subtotalCents: number; // = selling
+    subtotalCents: number;
     /**
      * @generated from protobuf field: int32 fee_cents = 8;
      */
-    feeCents: number; // = platform + gateway + tax
+    feeCents: number;
     /**
      * @generated from protobuf field: int32 total_cents = 9;
      */
-    totalCents: number; // = final
+    totalCents: number;
     /**
      * @generated from protobuf field: int32 base_price_cents = 10;
      */
@@ -202,7 +194,7 @@ export interface BookingLine {
     /**
      * @generated from protobuf field: string applied_rule_name = 13;
      */
-    appliedRuleName: string; // empty = no rule
+    appliedRuleName: string;
     /**
      * @generated from protobuf field: int32 platform_fee_cents = 14;
      */
@@ -238,19 +230,17 @@ export interface CreateMultiBookingRequest {
     lines: BookingLineInput[];
 }
 /**
- * One previewed cart line: the sellable identity + its full breakdown.
- *
  * @generated from protobuf message ticketspan.booking.CartQuoteLine
  */
 export interface CartQuoteLine {
     /**
      * @generated from protobuf field: string kind = 1;
      */
-    kind: string; // Ticket | Table
+    kind: string;
     /**
      * @generated from protobuf field: string ref_id = 2;
      */
-    refId: string; // event_ticket_types_id (Ticket) or tables_id (Table)
+    refId: string;
     /**
      * @generated from protobuf field: string label = 3;
      */
@@ -265,8 +255,6 @@ export interface CartQuoteLine {
     breakdown?: PriceBreakdown;
 }
 /**
- * A non-reserving preview of an entire cart: per-line breakdowns + summed totals.
- *
  * @generated from protobuf message ticketspan.booking.CartQuote
  */
 export interface CartQuote {
@@ -277,15 +265,15 @@ export interface CartQuote {
     /**
      * @generated from protobuf field: int32 base_total_cents = 2;
      */
-    baseTotalCents: number; // sum of line base prices (pre-discount)
+    baseTotalCents: number;
     /**
      * @generated from protobuf field: int32 subtotal_cents = 3;
      */
-    subtotalCents: number; // sum of selling prices
+    subtotalCents: number;
     /**
      * @generated from protobuf field: int32 discount_cents = 4;
      */
-    discountCents: number; // base_total - subtotal
+    discountCents: number;
     /**
      * @generated from protobuf field: int32 platform_fee_cents = 5;
      */
@@ -301,11 +289,11 @@ export interface CartQuote {
     /**
      * @generated from protobuf field: int32 fee_cents = 8;
      */
-    feeCents: number; // platform + gateway + tax
+    feeCents: number;
     /**
      * @generated from protobuf field: int32 total_cents = 9;
      */
-    totalCents: number; // final amount the customer pays
+    totalCents: number;
     /**
      * @generated from protobuf field: int32 organizer_net_cents = 10;
      */
@@ -315,15 +303,10 @@ export interface CartQuote {
      */
     currency: string;
     /**
-     * Cart hold window in seconds, from app_settings.booking_hold_seconds.
-     *
      * @generated from protobuf field: int32 hold_seconds = 12;
      */
     holdSeconds: number;
     /**
-     * ACH (bank) checkout: offered for this event, the discounted bank total, and
-     * what the buyer saves vs the card total. ach_available=false → the other two are 0.
-     *
      * @generated from protobuf field: bool ach_available = 13;
      */
     achAvailable: boolean;
@@ -336,47 +319,39 @@ export interface CartQuote {
      */
     achSavingsCents: number;
     /**
-     * Everything the group-discount banner renders, computed server-side. Always
-     * present; applied_min_qty = 0 means no tier is active for this cart.
-     *
      * @generated from protobuf field: ticketspan.booking.GroupDiscountHint group_discount = 16;
      */
     groupDiscount?: GroupDiscountHint;
 }
 /**
- * Server-computed group-discount state for a cart. The client renders these
- * values verbatim and never derives savings itself.
- *
  * @generated from protobuf message ticketspan.booking.GroupDiscountHint
  */
 export interface GroupDiscountHint {
     /**
      * @generated from protobuf field: string applied_rule_name = 1;
      */
-    appliedRuleName: string; // empty = no tier applied
+    appliedRuleName: string;
     /**
      * @generated from protobuf field: int32 applied_min_qty = 2;
      */
-    appliedMinQty: number; // 0 = no tier applied
+    appliedMinQty: number;
     /**
      * @generated from protobuf field: int32 group_discount_cents = 3;
      */
-    groupDiscountCents: number; // what the group tier saved on this cart
+    groupDiscountCents: number;
     /**
      * @generated from protobuf field: int32 discounted_seats = 4;
      */
-    discountedSeats: number; // seats that actually received the tier price
+    discountedSeats: number;
     /**
      * @generated from protobuf field: bool capped = 5;
      */
-    capped: boolean; // true = a capacity cap left some seats at full price
+    capped: boolean;
     /**
      * @generated from protobuf field: int32 eligible_qty = 6;
      */
-    eligibleQty: number; // ticket seats counted toward the threshold
+    eligibleQty: number;
     /**
-     * The next tier up, if any. next_tier_min_qty = 0 means there is none.
-     *
      * @generated from protobuf field: int32 next_tier_min_qty = 7;
      */
     nextTierMinQty: number;
@@ -387,7 +362,7 @@ export interface GroupDiscountHint {
     /**
      * @generated from protobuf field: string next_tier_kind = 9;
      */
-    nextTierKind: string; // FixedUnitPrice | PercentOff | AmountOffOrder
+    nextTierKind: string;
     /**
      * @generated from protobuf field: int32 next_tier_bps = 10;
      */
@@ -404,15 +379,15 @@ export interface BookingLineInput {
     /**
      * @generated from protobuf field: string kind = 1;
      */
-    kind: string; // Ticket | Table
+    kind: string;
     /**
      * @generated from protobuf field: string ref_id = 2;
      */
-    refId: string; // event_ticket_types_id (Ticket) or tables_id (Table)
+    refId: string;
     /**
      * @generated from protobuf field: int32 seats = 3;
      */
-    seats: number; // ticket quantity; ignored for tables (= capacity)
+    seats: number;
 }
 /**
  * @generated from protobuf message ticketspan.booking.CreateBookingRequest
@@ -524,11 +499,8 @@ export interface EventTicketType {
     /**
      * @generated from protobuf field: int32 capacity = 8;
      */
-    capacity: number; // seats this tier contributes to event capacity (0 = uncapped)
+    capacity: number;
     /**
-     * Current selling price after active price rules (equals price_cents when no
-     * discount applies). Display hint; QuoteCart is authoritative at booking time.
-     *
      * @generated from protobuf field: int32 selling_price_cents = 9;
      */
     sellingPriceCents: number;
@@ -567,9 +539,6 @@ export interface PaymentIntentRequest {
      */
     bookingsId: string;
     /**
-     * "ach" opens a bank-only intent priced at the ACH fee; anything else (default)
-     * = the normal card/wallets intent. Ignored when the event isn't ACH-enabled.
-     *
      * @generated from protobuf field: string preferred_method = 2;
      */
     preferredMethod: string;
@@ -599,15 +568,10 @@ export interface PaymentIntentResponse {
      */
     amountCents: string;
     /**
-     * Unix seconds when the seat hold expires (0 = no hold).
-     *
      * @generated from protobuf field: int64 hold_expires_at = 6;
      */
     holdExpiresAt: string;
     /**
-     * True when this booking's event offers ACH — the UI may show the bank option
-     * and re-price via UpdatePaymentIntentForMethod when the buyer picks it.
-     *
      * @generated from protobuf field: bool ach_allowed = 7;
      */
     achAllowed: boolean;
@@ -623,7 +587,7 @@ export interface UpdatePaymentMethodRequest {
     /**
      * @generated from protobuf field: string method = 2;
      */
-    method: string; // "card" | "ach"
+    method: string;
 }
 /**
  * @generated from protobuf message ticketspan.booking.UpdatePaymentMethodResponse
@@ -632,25 +596,21 @@ export interface UpdatePaymentMethodResponse {
     /**
      * @generated from protobuf field: int32 total_cents = 1;
      */
-    totalCents: number; // new amount the buyer will be charged
+    totalCents: number;
     /**
      * @generated from protobuf field: int32 savings_cents = 2;
      */
-    savingsCents: number; // card total - this total (0 for card)
+    savingsCents: number;
 }
 /**
  * @generated from protobuf message ticketspan.booking.PaymentStatusResponse
  */
 export interface PaymentStatusResponse {
     /**
-     * Booking lifecycle: Pending|Paid|Cancelled|Refunded|Expired.
-     *
      * @generated from protobuf field: string booking_status = 1;
      */
     bookingStatus: string;
     /**
-     * Stripe payment: RequiresConfirmation|Succeeded|Failed|Refunded.
-     *
      * @generated from protobuf field: string payment_status = 2;
      */
     paymentStatus: string;

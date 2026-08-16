@@ -12,503 +12,360 @@ import {
 import { rpcErrorMessage } from '@/shared/session';
 import type { GuestBooking, GuestTicket } from '@/shared/proto/bookings';
 import { StaffGuestList } from '@/features/staff/components/StaffGuestList';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { CameraQrScanner } from '@/features/staff/components/CameraQrScanner';
+import { BookingCheckInModal } from '@/features/staff/components/BookingCheckInModal';
+import { CheckOutGuestModal } from '@/features/staff/components/CheckOutGuestModal';
+import { Card } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
-import { Select } from '@/shared/ui/select';
 import {
-  Search,
   Scan,
   Users,
   CheckCircle2,
   ArrowLeft,
   XCircle,
-  FileCheck,
-  Undo2,
+  RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
+import { toast } from 'sonner';
 
-interface ScanOverlayState {
-  show: boolean;
+interface ScanFeedbackState {
   success: boolean;
   message: string;
-}
-
-interface UncheckTarget {
-  ticketsId: string;
-  guestName: string;
+  holderName?: string;
 }
 
 export function StaffCheckInPage() {
   const { eventsId = '' } = useParams();
   const navigate = useNavigate();
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [qrToken, setQrToken] = useState('');
+  const [activeTab, setActiveTab] = useState<'scanner' | 'roster'>('scanner');
   const [manualCode, setManualCode] = useState('');
-  const [manualType, setManualType] = useState<'Booking' | 'Ticket'>('Ticket');
-  const [checkingIn, setCheckingIn] = useState(false);
-  
-  
-  const [scanOverlay, setScanOverlay] = useState<ScanOverlayState | null>(null);
-  const [pendingBooking, setPendingBooking] = useState<GuestBooking | null>(null);
-  const [uncheckTarget, setUncheckTarget] = useState<UncheckTarget | null>(null);
-  const [uncheckReason, setUncheckReason] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  
+  const [feedback, setFeedback] = useState<ScanFeedbackState | null>(null);
+  const [pendingBooking, setPendingBooking] = useState<GuestBooking | null>(null);
+  const [checkOutTicket, setCheckOutTicket] = useState<GuestTicket | null>(null);
+
   const guestListLoader = useCallback(() => getGuestList(eventsId), [eventsId]);
   const guestList = useAsync(guestListLoader);
 
   const statsLoader = useCallback(() => getCheckInStats(eventsId), [eventsId]);
   const stats = useAsync(statsLoader);
 
-  
   const reloadAll = useCallback(() => {
     guestList.reload();
     stats.reload();
   }, [guestList, stats]);
 
-  const triggerOverlay = (success: boolean, message: string) => {
-    setScanOverlay({ show: true, success, message });
-    
-    
+  const triggerFeedback = (success: boolean, message: string, holderName?: string) => {
+    setFeedback({ success, message, holderName });
+
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       if (success) {
-        navigator.vibrate(150); 
+        navigator.vibrate(150);
       } else {
-        navigator.vibrate([100, 50, 100]); 
+        navigator.vibrate([100, 50, 100]);
       }
     }
-    
-    
+
+    if (success) {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
+
     setTimeout(() => {
-      setScanOverlay(null);
-    }, 1500);
+      setFeedback(null);
+    }, 2800);
   };
 
-  const notAuthorized = !!(guestList.error && guestList.error.includes('Not Authorized'));
+  const handleQrScan = useCallback(
+    async (code: string) => {
+      const clean = code.trim();
+      if (!clean || isProcessing) return;
 
-  async function handleScan(e: React.FormEvent) {
-    e.preventDefault();
-    const code = qrToken.trim();
-    if (!code) return;
+      setIsProcessing(true);
+      try {
+        const bookingLookup = await lookupBooking(eventsId, clean);
+        if (bookingLookup.found && bookingLookup.booking) {
+          setPendingBooking(bookingLookup.booking);
+          return;
+        }
 
-    setCheckingIn(true);
-    try {
-      const bookingLookup = await lookupBooking(eventsId, code);
-      if (bookingLookup.found && bookingLookup.booking) {
-        setPendingBooking(bookingLookup.booking);
-        setQrToken('');
-        return;
+        const res = await scanTicket(clean, eventsId);
+        if (res.valid) {
+          triggerFeedback(true, `Verified: ${res.holderName || 'Guest'}`, res.holderName);
+          reloadAll();
+        } else {
+          triggerFeedback(false, res.message || 'Ticket verification failed.');
+        }
+      } catch (err) {
+        triggerFeedback(false, rpcErrorMessage(err));
+      } finally {
+        setIsProcessing(false);
       }
-      const res = await scanTicket(code, eventsId);
-      if (res.valid) {
-        triggerOverlay(true, `Checked In: ${res.holderName || 'Guest'}`);
-        setQrToken('');
-        reloadAll();
-      } else {
-        triggerOverlay(false, res.message || 'Check-in failed.');
-      }
-    } catch (err) {
-      triggerOverlay(false, rpcErrorMessage(err));
-    } finally {
-      setCheckingIn(false);
-    }
-  }
+    },
+    [eventsId, isProcessing, reloadAll],
+  );
 
-  async function handleManualCheckIn(e: React.FormEvent) {
+  async function handleManualSubmit(e: React.FormEvent) {
     e.preventDefault();
     const code = manualCode.trim();
     if (!code) return;
 
-    setCheckingIn(true);
+    setIsProcessing(true);
     try {
-      if (manualType === 'Booking') {
-        const bookingLookup = await lookupBooking(eventsId, code);
-        if (bookingLookup.found && bookingLookup.booking) {
-          setPendingBooking(bookingLookup.booking);
-          setManualCode('');
-        } else {
-          triggerOverlay(false, bookingLookup.message || 'Booking not found.');
-        }
+      const bookingLookup = await lookupBooking(eventsId, code);
+      if (bookingLookup.found && bookingLookup.booking) {
+        setPendingBooking(bookingLookup.booking);
+        setManualCode('');
         return;
       }
-      const res = await checkInGuest(eventsId, code, manualType);
+
+      const res = await checkInGuest(eventsId, code, 'Ticket');
       if (res.valid) {
-        triggerOverlay(true, `Checked In: ${res.holderName || 'Guest'}`);
+        triggerFeedback(true, `Checked In: ${res.holderName || 'Guest'}`, res.holderName);
         setManualCode('');
         reloadAll();
       } else {
-        triggerOverlay(false, res.message || 'Check-in failed.');
+        const bookingRes = await checkInGuest(eventsId, code, 'Booking');
+        if (bookingRes.valid) {
+          triggerFeedback(true, `Booking Checked In: ${bookingRes.holderName || 'Group'}`, bookingRes.holderName);
+          setManualCode('');
+          reloadAll();
+        } else {
+          triggerFeedback(false, res.message || bookingRes.message || 'Check-in failed.');
+        }
       }
     } catch (err) {
-      triggerOverlay(false, rpcErrorMessage(err));
+      triggerFeedback(false, rpcErrorMessage(err));
     } finally {
-      setCheckingIn(false);
+      setIsProcessing(false);
     }
   }
 
-  async function handleActionCheckIn(codeOrId: string, type: 'Booking' | 'Ticket') {
-    setCheckingIn(true);
+  async function handleBatchCheckInAll(booking: GuestBooking) {
+    setIsProcessing(true);
     try {
-      const res = await checkInGuest(eventsId, codeOrId, type);
+      const res = await checkInGuest(eventsId, booking.bookingsId, 'Booking');
       if (res.valid) {
-        triggerOverlay(true, `Successfully Checked In!`);
+        toast.success(`Group check-in completed for ${booking.buyerName}`);
+        setPendingBooking(null);
         reloadAll();
       } else {
-        triggerOverlay(false, res.message || 'Check-in failed.');
+        toast.error(res.message || 'Failed to check in group');
       }
     } catch (err) {
-      triggerOverlay(false, rpcErrorMessage(err));
+      toast.error(rpcErrorMessage(err));
     } finally {
-      setCheckingIn(false);
+      setIsProcessing(false);
     }
   }
 
-  async function handleConfirmBookingCheckIn() {
-    if (!pendingBooking) return;
-    const bookingsId = pendingBooking.bookingsId;
-    setPendingBooking(null);
-    await handleActionCheckIn(bookingsId, 'Booking');
-  }
-
-  async function handleConfirmUncheck(e: React.FormEvent) {
-    e.preventDefault();
-    if (!uncheckTarget || !uncheckReason.trim()) return;
-
-    setCheckingIn(true);
+  async function handleSingleTicketCheckIn(ticket: GuestTicket) {
+    setIsProcessing(true);
     try {
-      const res = await uncheckInTicket(eventsId, uncheckTarget.ticketsId, uncheckReason.trim());
+      const res = await checkInGuest(eventsId, ticket.ticketsId, 'Ticket');
       if (res.valid) {
-        triggerOverlay(true, res.message || 'Check-in undone.');
-        setUncheckTarget(null);
-        setUncheckReason('');
+        toast.success(`Checked in ${ticket.guestName || 'Guest'}`);
+        if (pendingBooking) {
+          const updatedLookup = await lookupBooking(eventsId, pendingBooking.bookingsId);
+          if (updatedLookup.found && updatedLookup.booking) {
+            setPendingBooking(updatedLookup.booking);
+          }
+        }
         reloadAll();
       } else {
-        triggerOverlay(false, res.message || 'Undo check-in failed.');
+        toast.error(res.message || 'Check-in failed');
       }
     } catch (err) {
-      triggerOverlay(false, rpcErrorMessage(err));
+      toast.error(rpcErrorMessage(err));
     } finally {
-      setCheckingIn(false);
+      setIsProcessing(false);
     }
   }
 
-  
-  const filteredBookings = (guestList.data ?? []).filter((b) => {
-    const query = searchQuery.toLowerCase().trim();
-    if (!query) return true;
-
-    const matchesBooking =
-      b.bookingNumber.toLowerCase().includes(query) ||
-      b.buyerName.toLowerCase().includes(query);
-
-    const matchesTicket = b.tickets.some(
-      (t) =>
-        t.ticketCode.toLowerCase().includes(query) ||
-        t.guestName.toLowerCase().includes(query),
-    );
-
-    return matchesBooking || matchesTicket;
-  });
-
-  const pendingUncheckedTickets = pendingBooking
-    ? pendingBooking.tickets.filter((t: GuestTicket) => t.status !== 'CheckedIn')
-    : [];
-
-  if (notAuthorized) {
-    return (
-      <div className="max-w-md mx-auto mt-16 text-center space-y-6">
-        <div className="inline-flex p-4 bg-destructive/10 rounded-full text-destructive border border-destructive/20 animate-shake">
-          <XCircle className="h-12 w-12" />
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold font-display tracking-tight text-foreground">Not Authorized</h2>
-          <p className="text-muted-foreground text-xs leading-normal">
-            You do not have access to this event check-in, or the current time is outside the allowed window (24 hours before event start to 24 hours after event end).
-          </p>
-        </div>
-        <Button variant="outline" onClick={() => navigate('/staff')} className="w-full h-11 text-xs">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Staff Portal
-        </Button>
-      </div>
-    );
+  async function handleExecuteCheckOut(reason: string) {
+    if (!checkOutTicket) return;
+    setIsProcessing(true);
+    try {
+      const res = await uncheckInTicket(eventsId, checkOutTicket.ticketsId, reason);
+      if (res.valid) {
+        toast.success(res.message || 'Check-in undone successfully');
+        setCheckOutTicket(null);
+        reloadAll();
+      } else {
+        toast.error(res.message || 'Could not undo check-in');
+      }
+    } catch (err) {
+      toast.error(rpcErrorMessage(err));
+    } finally {
+      setIsProcessing(false);
+    }
   }
+
+  const total = stats.data?.total ?? 0;
+  const checkedIn = stats.data?.checkedIn ?? 0;
+  const pct = total > 0 ? Math.round((checkedIn / total) * 100) : 0;
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto py-2 relative">
-      
-      {}
-      {scanOverlay && (
-        <div className={cn(
-          "fixed inset-0 z-50 flex flex-col items-center justify-center animate-fade-in p-6 backdrop-blur-md",
-          scanOverlay.success ? "bg-success/95" : "bg-destructive/95"
-        )}>
-          <div className="flex flex-col items-center gap-6 text-white text-center">
-            {scanOverlay.success ? (
-              <CheckCircle2 className="size-32 animate-fade-in stroke-[1.5]" />
-            ) : (
-              <XCircle className="size-32 stroke-[1.5]" />
-            )}
-            <div className="space-y-2">
-              <h2 className="text-4xl font-extrabold tracking-tight font-display uppercase">
-                {scanOverlay.success ? 'Valid Ticket' : 'Invalid Ticket'}
-              </h2>
-              <p className="text-lg font-semibold opacity-90 max-w-md leading-normal">
-                {scanOverlay.message}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+    <div className="max-w-2xl mx-auto space-y-5 pb-16">
+      <div className="flex items-center justify-between gap-3">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => navigate('/staff')}
+          className="h-9 px-2.5 text-xs font-bold gap-1 text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" /> Events
+        </Button>
 
-      {pendingBooking && (
-        <div className="fixed inset-0 z-40 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-6 animate-fade-in">
-          <Card className="w-full sm:max-w-lg border border-border bg-card shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden max-h-[85vh] flex flex-col">
-            <CardHeader className="pb-3 border-b border-border/20 px-5 py-4 shrink-0">
-              <CardTitle className="text-sm font-bold font-display flex items-center gap-2 text-foreground">
-                <Users className="h-4 w-4 text-primary" />
-                Confirm Booking Check-In
-              </CardTitle>
-              <p className="text-[11px] text-muted-foreground leading-normal">
-                {pendingBooking.buyerName} · Booking <span className="font-mono">{pendingBooking.bookingNumber}</span>
-              </p>
-            </CardHeader>
-            <CardContent className="p-5 space-y-4 overflow-y-auto">
-              <div className="space-y-2">
-                {pendingBooking.tickets.map((t: GuestTicket) => (
-                  <div key={t.ticketsId} className="flex items-center justify-between text-xs py-1.5 px-2 rounded-lg bg-muted/20">
-                    <div>
-                      <p className="font-semibold text-foreground">Seat #{t.seatNumber} : {t.guestName}</p>
-                      <p className="text-[9px] text-muted-foreground font-mono">{t.ticketCode}</p>
-                    </div>
-                    {t.status === 'CheckedIn' ? (
-                      <span className="text-[10px] font-bold text-success flex items-center gap-1">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Already In
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
-                        Will Check In
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {pendingUncheckedTickets.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center font-semibold">
-                  Everyone in this booking is already checked in.
-                </p>
-              ) : (
-                <p className="text-xs text-foreground text-center font-semibold">
-                  {pendingUncheckedTickets.length} of {pendingBooking.tickets.length} guests will be checked in.
-                </p>
-              )}
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setPendingBooking(null)}
-                  className="flex-1 h-11 text-xs font-semibold"
-                >
-                  Cancel
-                </Button>
-                {pendingUncheckedTickets.length > 0 && (
-                  <Button
-                    onClick={handleConfirmBookingCheckIn}
-                    disabled={checkingIn}
-                    className="flex-1 h-11 text-xs font-semibold bg-primary hover:bg-primary/95 text-white"
-                  >
-                    <FileCheck className="h-4 w-4 mr-1.5" />
-                    Check In {pendingUncheckedTickets.length}
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {uncheckTarget && (
-        <div className="fixed inset-0 z-40 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-6 animate-fade-in">
-          <Card className="w-full sm:max-w-md border border-border bg-card shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden">
-            <CardHeader className="pb-3 border-b border-border/20 px-5 py-4">
-              <CardTitle className="text-sm font-bold font-display flex items-center gap-2 text-foreground">
-                <Undo2 className="h-4 w-4 text-destructive" />
-                Undo Check-In
-              </CardTitle>
-              <p className="text-[11px] text-muted-foreground leading-normal">
-                {uncheckTarget.guestName} will be marked as not checked in. A reason is required for the audit log.
-              </p>
-            </CardHeader>
-            <CardContent className="p-5">
-              <form onSubmit={handleConfirmUncheck} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="uncheck-reason">Reason</Label>
-                  <Input
-                    id="uncheck-reason"
-                    placeholder="e.g. Accidental scan, guest left early..."
-                    value={uncheckReason}
-                    onChange={(e) => setUncheckReason(e.target.value)}
-                    required
-                    autoFocus
-                    className="h-10 bg-background/50 border-border focus:border-primary text-sm"
-                  />
-                </div>
-                <div className="flex gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => { setUncheckTarget(null); setUncheckReason(''); }}
-                    className="flex-1 h-11 text-xs font-semibold"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={checkingIn || !uncheckReason.trim()}
-                    className="flex-1 h-11 text-xs font-semibold bg-destructive hover:bg-destructive/90 text-white"
-                  >
-                    Undo Check-In
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/30 pb-4">
-        <div className="space-y-1">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/staff')} className="-ml-2 mb-1 gap-1 text-muted-foreground hover:bg-muted/30">
-            <ArrowLeft className="h-4 w-4" /> Portal Home
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={reloadAll}
+            className="h-8 text-xs font-bold gap-1.5 rounded-lg"
+          >
+            <RefreshCw className={cn('size-3', (stats.loading || guestList.loading) && 'animate-spin')} />
+            Refresh
           </Button>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Scan className="h-5.5 w-5.5 text-primary" />
-            Check-In Desk
-          </h1>
         </div>
-        {stats.data && (
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-xl text-xs font-bold font-display uppercase tracking-wider">
-              {stats.data.checkedIn} Checked In
-            </div>
-            <div className="bg-card border border-border px-4 py-2 rounded-xl text-xs font-bold text-muted-foreground font-display uppercase tracking-wider">
-              {stats.data.remaining} Remaining
-            </div>
-          </div>
-        )}
       </div>
 
-      {}
-      <div className="grid gap-6 md:grid-cols-3">
-        {}
-        <div className="space-y-6 md:col-span-1">
-          {}
-          <Card className="border border-border bg-card shadow-lg rounded-2xl overflow-hidden">
-            <CardHeader className="pb-3 border-b border-border/20 px-5 py-4">
-              <CardTitle className="text-sm font-bold font-display flex items-center gap-2 text-foreground">
-                <Scan className="h-4 w-4 text-primary" />
-                Scan Ticket QR
-              </CardTitle>
-              <p className="text-[11px] text-muted-foreground leading-normal">Simulate scanner inputs at the door.</p>
-            </CardHeader>
-            <CardContent className="p-5">
-              <form onSubmit={handleScan} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="qr-input">Scan Token</Label>
-                  <Input
-                    id="qr-input"
-                    placeholder="Enter QR token hash..."
-                    value={qrToken}
-                    onChange={(e) => setQrToken(e.target.value)}
-                    required
-                    className="h-10 bg-background/50 border-border focus:border-primary text-sm"
-                  />
-                </div>
-                <Button type="submit" className="w-full h-10 text-xs font-semibold bg-primary hover:bg-primary/95 text-white" disabled={checkingIn}>
-                  <FileCheck className="h-4 w-4 mr-1.5" /> Check In Token
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {}
-          <Card className="border border-border bg-card shadow-lg rounded-2xl overflow-hidden">
-            <CardHeader className="pb-3 border-b border-border/20 px-5 py-4">
-              <CardTitle className="text-sm font-bold font-display flex items-center gap-2 text-foreground">
-                <Users className="h-4 w-4 text-primary" />
-                Manual Lookup Check-In
-              </CardTitle>
-              <p className="text-[11px] text-muted-foreground leading-normal">Override check-in using codes.</p>
-            </CardHeader>
-            <CardContent className="p-5">
-              <form onSubmit={handleManualCheckIn} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="manual-type">Type</Label>
-                  <Select
-                    id="manual-type"
-                    value={manualType}
-                    onChange={(e) => setManualType(e.target.value as 'Booking' | 'Ticket')}
-                    className="h-10 bg-background/50 border-border"
-                  >
-                    <option value="Ticket">Single Ticket</option>
-                    <option value="Booking">Whole Booking</option>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="manual-code">Code / Number</Label>
-                  <Input
-                    id="manual-code"
-                    placeholder={manualType === 'Ticket' ? "Enter Ticket Code..." : "Enter Booking Number..."}
-                    value={manualCode}
-                    onChange={(e) => setManualCode(e.target.value)}
-                    required
-                    className="h-10 bg-background/50 border-border focus:border-primary text-sm"
-                  />
-                </div>
-                <Button type="submit" variant="outline" className="w-full h-10 text-xs font-semibold border-border hover:bg-muted" disabled={checkingIn}>
-                  Check In Manual
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+      <Card className="border border-border/80 bg-card shadow-sm rounded-3xl overflow-hidden p-5">
+        <div className="flex items-center justify-between gap-4 pb-3">
+          <div>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+              Event Check-In
+            </span>
+            <h1 className="text-lg font-extrabold font-display text-foreground tracking-tight">
+              Attendee Access Portal
+            </h1>
+          </div>
+          <div className="text-right">
+            <span className="text-2xl font-extrabold font-display text-primary">{pct}%</span>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold">
+              {checkedIn} of {total} in
+            </p>
+          </div>
         </div>
 
-        {}
-        <div className="md:col-span-2 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search by buyer name, guest name, booking number, or ticket code..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-11 w-full bg-card border-border hover:border-hairline-strong focus:border-primary text-sm rounded-xl shadow-sm"
-            />
-          </div>
+        <div className="w-full bg-muted/60 h-2 rounded-full overflow-hidden">
+          <div
+            className="bg-primary h-full rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </Card>
 
-          <Card className="border border-border bg-card shadow-lg rounded-2xl overflow-hidden">
-            <CardHeader className="pb-3 border-b border-border/20 px-5 py-4">
-              <CardTitle className="text-sm font-bold font-display flex items-center gap-2 text-foreground">
-                <Users className="h-4 w-4 text-primary" />
-                Guest List
-              </CardTitle>
-              <p className="text-[11px] text-muted-foreground leading-normal">Browse and manage ticket check-ins.</p>
-            </CardHeader>
-            <CardContent className="p-0">
-              <StaffGuestList
-                loading={guestList.loading}
-                error={guestList.error}
-                filteredBookings={filteredBookings}
-                checkingIn={checkingIn}
-                setPendingBooking={setPendingBooking}
-                setUncheckTarget={setUncheckTarget}
-                handleActionCheckIn={handleActionCheckIn}
+      <div className="grid grid-cols-2 gap-2 p-1 bg-muted/30 border border-border/50 rounded-2xl">
+        <button
+          type="button"
+          onClick={() => setActiveTab('scanner')}
+          className={cn(
+            'flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer',
+            activeTab === 'scanner'
+              ? 'bg-card text-foreground shadow-sm border border-border/50'
+              : 'text-muted-foreground hover:text-foreground',
+          )}
+        >
+          <Scan className="size-4 text-primary" /> Camera Scanner
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('roster')}
+          className={cn(
+            'flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer',
+            activeTab === 'roster'
+              ? 'bg-card text-foreground shadow-sm border border-border/50'
+              : 'text-muted-foreground hover:text-foreground',
+          )}
+        >
+          <Users className="size-4 text-primary" /> Guest Roster
+        </button>
+      </div>
+
+      {feedback && (
+        <div
+          className={cn(
+            'p-4 rounded-2xl border text-sm font-bold flex items-center gap-3 animate-in fade-in zoom-in-95 duration-200 shadow-xl',
+            feedback.success
+              ? 'border-success/30 bg-success/15 text-success-foreground'
+              : 'border-destructive/30 bg-destructive/15 text-destructive',
+          )}
+        >
+          {feedback.success ? (
+            <CheckCircle2 className="size-6 text-success shrink-0" />
+          ) : (
+            <XCircle className="size-6 text-destructive shrink-0" />
+          )}
+          <div className="space-y-0.5">
+            <p className="font-extrabold">{feedback.message}</p>
+            {feedback.holderName && (
+              <p className="text-xs font-medium opacity-90">Attendee verified: {feedback.holderName}</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'scanner' ? (
+        <div className="space-y-4">
+          <CameraQrScanner
+            onScan={handleQrScan}
+            isPaused={isProcessing || pendingBooking !== null}
+          />
+
+          <Card className="border border-border/70 bg-card shadow-sm rounded-2xl p-4">
+            <form onSubmit={handleManualSubmit} className="flex items-center gap-2">
+              <Input
+                placeholder="Or type ticket code or booking #…"
+                value={manualCode}
+                onChange={(e) => setManualCode(e.target.value)}
+                className="h-10 bg-background text-xs font-mono rounded-xl flex-1"
               />
-            </CardContent>
+              <Button
+                type="submit"
+                disabled={isProcessing || !manualCode.trim()}
+                className="ticketspan-spring-btn h-10 px-5 text-xs font-bold rounded-xl"
+              >
+                Verify
+              </Button>
+            </form>
           </Card>
         </div>
-      </div>
+      ) : (
+        <StaffGuestList
+          bookings={guestList.data || []}
+          onCheckInTicket={(t) => void handleSingleTicketCheckIn(t)}
+          onCheckInBooking={(b) => void handleBatchCheckInAll(b)}
+          onTriggerCheckOut={(t) => setCheckOutTicket(t)}
+          isProcessing={isProcessing}
+        />
+      )}
+
+      <BookingCheckInModal
+        isOpen={pendingBooking !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingBooking(null);
+        }}
+        booking={pendingBooking}
+        onCheckInAll={handleBatchCheckInAll}
+        onCheckInSingle={handleSingleTicketCheckIn}
+        isProcessing={isProcessing}
+      />
+
+      <CheckOutGuestModal
+        isOpen={checkOutTicket !== null}
+        onOpenChange={(open) => {
+          if (!open) setCheckOutTicket(null);
+        }}
+        guestName={checkOutTicket?.guestName || 'Attendee'}
+        ticketCode={checkOutTicket?.ticketCode || ''}
+        onConfirm={handleExecuteCheckOut}
+        isProcessing={isProcessing}
+      />
     </div>
   );
 }

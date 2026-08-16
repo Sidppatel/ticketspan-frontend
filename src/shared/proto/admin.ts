@@ -147,6 +147,14 @@ export interface StaffMember {
      * @generated from protobuf field: int32 role = 5;
      */
     role: number;
+    /**
+     * @generated from protobuf field: int64 access_start = 6;
+     */
+    accessStart: string;
+    /**
+     * @generated from protobuf field: int64 access_end = 7;
+     */
+    accessEnd: string;
 }
 /**
  * @generated from protobuf message ticketspan.admin.ListStaffResponse
@@ -169,6 +177,35 @@ export interface AssignStaffRequest {
      * @generated from protobuf field: string events_id = 2;
      */
     eventsId: string;
+    /**
+     * @generated from protobuf field: int64 access_start = 3;
+     */
+    accessStart: string;
+    /**
+     * @generated from protobuf field: int64 access_end = 4;
+     */
+    accessEnd: string;
+}
+/**
+ * @generated from protobuf message ticketspan.admin.UpdateStaffAccessWindowRequest
+ */
+export interface UpdateStaffAccessWindowRequest {
+    /**
+     * @generated from protobuf field: string users_id = 1;
+     */
+    usersId: string;
+    /**
+     * @generated from protobuf field: string events_id = 2;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: int64 access_start = 3;
+     */
+    accessStart: string;
+    /**
+     * @generated from protobuf field: int64 access_end = 4;
+     */
+    accessEnd: string;
 }
 /**
  * @generated from protobuf message ticketspan.admin.CreateInvitationRequest
@@ -1191,7 +1228,9 @@ class StaffMember$Type extends MessageType<StaffMember> {
             { no: 2, name: "first_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "last_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 4, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "role", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 5, name: "role", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 6, name: "access_start", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 7, name: "access_end", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
         ]);
     }
     create(value?: PartialMessage<StaffMember>): StaffMember {
@@ -1201,6 +1240,8 @@ class StaffMember$Type extends MessageType<StaffMember> {
         message.lastName = "";
         message.email = "";
         message.role = 0;
+        message.accessStart = "0";
+        message.accessEnd = "0";
         if (value !== undefined)
             reflectionMergePartial<StaffMember>(this, message, value);
         return message;
@@ -1224,6 +1265,12 @@ class StaffMember$Type extends MessageType<StaffMember> {
                     break;
                 case /* int32 role */ 5:
                     message.role = reader.int32();
+                    break;
+                case /* int64 access_start */ 6:
+                    message.accessStart = reader.int64().toString();
+                    break;
+                case /* int64 access_end */ 7:
+                    message.accessEnd = reader.int64().toString();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1252,6 +1299,12 @@ class StaffMember$Type extends MessageType<StaffMember> {
         /* int32 role = 5; */
         if (message.role !== 0)
             writer.tag(5, WireType.Varint).int32(message.role);
+        /* int64 access_start = 6; */
+        if (message.accessStart !== "0")
+            writer.tag(6, WireType.Varint).int64(message.accessStart);
+        /* int64 access_end = 7; */
+        if (message.accessEnd !== "0")
+            writer.tag(7, WireType.Varint).int64(message.accessEnd);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1314,13 +1367,17 @@ class AssignStaffRequest$Type extends MessageType<AssignStaffRequest> {
     constructor() {
         super("ticketspan.admin.AssignStaffRequest", [
             { no: 1, name: "users_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "access_start", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 4, name: "access_end", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
         ]);
     }
     create(value?: PartialMessage<AssignStaffRequest>): AssignStaffRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.usersId = "";
         message.eventsId = "";
+        message.accessStart = "0";
+        message.accessEnd = "0";
         if (value !== undefined)
             reflectionMergePartial<AssignStaffRequest>(this, message, value);
         return message;
@@ -1335,6 +1392,12 @@ class AssignStaffRequest$Type extends MessageType<AssignStaffRequest> {
                     break;
                 case /* string events_id */ 2:
                     message.eventsId = reader.string();
+                    break;
+                case /* int64 access_start */ 3:
+                    message.accessStart = reader.int64().toString();
+                    break;
+                case /* int64 access_end */ 4:
+                    message.accessEnd = reader.int64().toString();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1354,6 +1417,12 @@ class AssignStaffRequest$Type extends MessageType<AssignStaffRequest> {
         /* string events_id = 2; */
         if (message.eventsId !== "")
             writer.tag(2, WireType.LengthDelimited).string(message.eventsId);
+        /* int64 access_start = 3; */
+        if (message.accessStart !== "0")
+            writer.tag(3, WireType.Varint).int64(message.accessStart);
+        /* int64 access_end = 4; */
+        if (message.accessEnd !== "0")
+            writer.tag(4, WireType.Varint).int64(message.accessEnd);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1364,6 +1433,77 @@ class AssignStaffRequest$Type extends MessageType<AssignStaffRequest> {
  * @generated MessageType for protobuf message ticketspan.admin.AssignStaffRequest
  */
 export const AssignStaffRequest = new AssignStaffRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class UpdateStaffAccessWindowRequest$Type extends MessageType<UpdateStaffAccessWindowRequest> {
+    constructor() {
+        super("ticketspan.admin.UpdateStaffAccessWindowRequest", [
+            { no: 1, name: "users_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "access_start", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 4, name: "access_end", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+        ]);
+    }
+    create(value?: PartialMessage<UpdateStaffAccessWindowRequest>): UpdateStaffAccessWindowRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.usersId = "";
+        message.eventsId = "";
+        message.accessStart = "0";
+        message.accessEnd = "0";
+        if (value !== undefined)
+            reflectionMergePartial<UpdateStaffAccessWindowRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateStaffAccessWindowRequest): UpdateStaffAccessWindowRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string users_id */ 1:
+                    message.usersId = reader.string();
+                    break;
+                case /* string events_id */ 2:
+                    message.eventsId = reader.string();
+                    break;
+                case /* int64 access_start */ 3:
+                    message.accessStart = reader.int64().toString();
+                    break;
+                case /* int64 access_end */ 4:
+                    message.accessEnd = reader.int64().toString();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: UpdateStaffAccessWindowRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string users_id = 1; */
+        if (message.usersId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.usersId);
+        /* string events_id = 2; */
+        if (message.eventsId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.eventsId);
+        /* int64 access_start = 3; */
+        if (message.accessStart !== "0")
+            writer.tag(3, WireType.Varint).int64(message.accessStart);
+        /* int64 access_end = 4; */
+        if (message.accessEnd !== "0")
+            writer.tag(4, WireType.Varint).int64(message.accessEnd);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.admin.UpdateStaffAccessWindowRequest
+ */
+export const UpdateStaffAccessWindowRequest = new UpdateStaffAccessWindowRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class CreateInvitationRequest$Type extends MessageType<CreateInvitationRequest> {
     constructor() {
@@ -3416,6 +3556,7 @@ export const StaffService = new ServiceType("ticketspan.admin.StaffService", [
     { name: "ListStaffForEvent", options: {}, I: UuidValue, O: ListStaffResponse },
     { name: "AssignStaff", options: {}, I: AssignStaffRequest, O: AckResponse },
     { name: "UnassignStaff", options: {}, I: AssignStaffRequest, O: AckResponse },
+    { name: "UpdateStaffAccessWindow", options: {}, I: UpdateStaffAccessWindowRequest, O: AckResponse },
     { name: "ListAllStaff", options: {}, I: Empty, O: ListStaffResponse },
     { name: "AssignStaffByEmail", options: {}, I: AssignStaffByEmailRequest, O: AssignStaffByEmailResponse },
     { name: "AddOrInviteStaff", options: {}, I: AddOrInviteStaffRequest, O: AddOrInviteStaffResponse },

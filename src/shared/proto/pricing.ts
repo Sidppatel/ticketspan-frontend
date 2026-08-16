@@ -33,7 +33,7 @@ export interface Price {
     /**
      * @generated from protobuf field: string pricing_type = 4;
      */
-    pricingType: string; // TicketTier | Table
+    pricingType: string;
     /**
      * @generated from protobuf field: int32 base_price_cents = 5;
      */
@@ -49,11 +49,11 @@ export interface Price {
     /**
      * @generated from protobuf field: string fee_formulas_id = 8;
      */
-    feeFormulasId: string; // developer-only override; empty = tenant default
+    feeFormulasId: string;
     /**
      * @generated from protobuf field: int32 max_quantity = 10;
      */
-    maxQuantity: number; // 0 = unlimited
+    maxQuantity: number;
     /**
      * @generated from protobuf field: bool is_active = 11;
      */
@@ -90,7 +90,7 @@ export interface CreatePriceRequest {
     /**
      * @generated from protobuf field: string fee_formulas_id = 7;
      */
-    feeFormulasId: string; // honored only for developers
+    feeFormulasId: string;
     /**
      * @generated from protobuf field: int32 max_quantity = 9;
      */
@@ -131,7 +131,7 @@ export interface UpdatePriceRequest {
     /**
      * @generated from protobuf field: string fee_formulas_id = 8;
      */
-    feeFormulasId: string; // applied only for developers
+    feeFormulasId: string;
 }
 /**
  * @generated from protobuf message ticketspan.pricing.ListPricesResponse
@@ -153,7 +153,7 @@ export interface PriceRule {
     /**
      * @generated from protobuf field: string prices_id = 2;
      */
-    pricesId: string; // set when scope = Price; empty for event-wide
+    pricesId: string;
     /**
      * @generated from protobuf field: string name = 3;
      */
@@ -161,11 +161,11 @@ export interface PriceRule {
     /**
      * @generated from protobuf field: string rule_type = 4;
      */
-    ruleType: string; // Presale | LastMinute | TimeWindow | Dynamic | Group
+    ruleType: string;
     /**
      * @generated from protobuf field: int32 priority = 5;
      */
-    priority: number; // higher wins
+    priority: number;
     /**
      * @generated from protobuf field: int32 price_cents = 6;
      */
@@ -173,19 +173,19 @@ export interface PriceRule {
     /**
      * @generated from protobuf field: int64 active_from = 7;
      */
-    activeFrom: string; // unix seconds; 0 = unset
+    activeFrom: string;
     /**
      * @generated from protobuf field: int64 active_until = 8;
      */
-    activeUntil: string; // unix seconds; 0 = unset
+    activeUntil: string;
     /**
      * @generated from protobuf field: int32 min_remaining = 9;
      */
-    minRemaining: number; // -1 = unset
+    minRemaining: number;
     /**
      * @generated from protobuf field: int32 max_remaining = 10;
      */
-    maxRemaining: number; // -1 = unset
+    maxRemaining: number;
     /**
      * @generated from protobuf field: bool is_active = 11;
      */
@@ -193,44 +193,37 @@ export interface PriceRule {
     /**
      * @generated from protobuf field: string scope = 12;
      */
-    scope: string; // Price | Event
+    scope: string;
     /**
      * @generated from protobuf field: string events_id = 13;
      */
-    eventsId: string; // set when scope = Event; empty otherwise
+    eventsId: string;
     /**
      * @generated from protobuf field: int32 capacity = 14;
      */
-    capacity: number; // discount applies only to this many people/seats (0 = no cap)
+    capacity: number;
     /**
-     * Group tier fields; only meaningful when rule_type = Group. min_qty is the
-     * cart quantity that triggers the tier, max_qty its upper bound (0 = open).
-     * Among qualifying tiers the highest min_qty wins.
-     *
      * @generated from protobuf field: int32 min_qty = 15;
      */
-    minQty: number; // 0 = unset
+    minQty: number;
     /**
      * @generated from protobuf field: int32 max_qty = 16;
      */
-    maxQty: number; // 0 = unset
+    maxQty: number;
     /**
      * @generated from protobuf field: string discount_kind = 17;
      */
-    discountKind: string; // FixedUnitPrice | PercentOff | AmountOffOrder; empty = unset
+    discountKind: string;
     /**
      * @generated from protobuf field: int32 discount_bps = 18;
      */
-    discountBps: number; // basis points for PercentOff (1500 = 15%)
+    discountBps: number;
 }
 /**
  * @generated from protobuf message ticketspan.pricing.CreatePriceRuleRequest
  */
 export interface CreatePriceRuleRequest {
     /**
-     * owner_id is the prices_id when scope = Price, or the events_id when scope =
-     * Event. Defaults to a per-price rule when scope is empty.
-     *
      * @generated from protobuf field: string owner_id = 1;
      */
     ownerId: string;
@@ -269,27 +262,27 @@ export interface CreatePriceRuleRequest {
     /**
      * @generated from protobuf field: string scope = 10;
      */
-    scope: string; // Price | Event; empty = Price
+    scope: string;
     /**
      * @generated from protobuf field: int32 capacity = 11;
      */
-    capacity: number; // discount applies only to this many people/seats (0 = no cap)
+    capacity: number;
     /**
      * @generated from protobuf field: int32 min_qty = 12;
      */
-    minQty: number; // 0 = unset
+    minQty: number;
     /**
      * @generated from protobuf field: int32 max_qty = 13;
      */
-    maxQty: number; // 0 = unset
+    maxQty: number;
     /**
      * @generated from protobuf field: string discount_kind = 14;
      */
-    discountKind: string; // FixedUnitPrice | PercentOff | AmountOffOrder
+    discountKind: string;
     /**
      * @generated from protobuf field: int32 discount_bps = 15;
      */
-    discountBps: number; // basis points for PercentOff (1500 = 15%)
+    discountBps: number;
 }
 /**
  * @generated from protobuf message ticketspan.pricing.UpdatePriceRuleRequest
@@ -338,23 +331,23 @@ export interface UpdatePriceRuleRequest {
     /**
      * @generated from protobuf field: int32 capacity = 11;
      */
-    capacity: number; // discount applies only to this many people/seats (0 = no cap)
+    capacity: number;
     /**
      * @generated from protobuf field: int32 min_qty = 12;
      */
-    minQty: number; // 0 = unset
+    minQty: number;
     /**
      * @generated from protobuf field: int32 max_qty = 13;
      */
-    maxQty: number; // 0 = unset
+    maxQty: number;
     /**
      * @generated from protobuf field: string discount_kind = 14;
      */
-    discountKind: string; // FixedUnitPrice | PercentOff | AmountOffOrder
+    discountKind: string;
     /**
      * @generated from protobuf field: int32 discount_bps = 15;
      */
-    discountBps: number; // basis points for PercentOff (1500 = 15%)
+    discountBps: number;
 }
 /**
  * @generated from protobuf message ticketspan.pricing.ListPriceRulesResponse
@@ -380,25 +373,17 @@ export interface CalculatePriceRequest {
     /**
      * @generated from protobuf field: int64 at = 3;
      */
-    at: string; // unix seconds; 0 = now
+    at: string;
     /**
      * @generated from protobuf field: int32 remaining = 4;
      */
-    remaining: number; // -1 = unknown
+    remaining: number;
     /**
-     * Cart quantity used to evaluate Group tiers. 0 = use seats (admin preview).
-     *
      * @generated from protobuf field: int32 group_qty = 5;
      */
     groupQty: number;
 }
 /**
- * Full server-authoritative breakdown for one priced line. Every surface (admin
- * preview, customer checkout, persisted booking snapshot) renders these numbers;
- * pricing math lives only in the backend engine (app.price_breakdown).
- *   subtotal_cents/fee_cents/total_cents are retained as convenience aggregates:
- *   subtotal = selling, fee = platform + gateway + tax, total = final.
- *
  * @generated from protobuf message ticketspan.pricing.PriceBreakdown
  */
 export interface PriceBreakdown {
@@ -417,23 +402,23 @@ export interface PriceBreakdown {
     /**
      * @generated from protobuf field: int32 base_price_cents = 4;
      */
-    basePriceCents: number; // original price before any rule
+    basePriceCents: number;
     /**
      * @generated from protobuf field: int32 selling_price_cents = 5;
      */
-    sellingPriceCents: number; // price after the active rule
+    sellingPriceCents: number;
     /**
      * @generated from protobuf field: int32 discount_cents = 6;
      */
-    discountCents: number; // base - selling (>= 0)
+    discountCents: number;
     /**
      * @generated from protobuf field: string applied_price_rules_id = 7;
      */
-    appliedPriceRulesId: string; // empty = no rule active
+    appliedPriceRulesId: string;
     /**
      * @generated from protobuf field: string applied_rule_name = 8;
      */
-    appliedRuleName: string; // empty = no rule active
+    appliedRuleName: string;
     /**
      * @generated from protobuf field: int32 platform_fee_cents = 9;
      */
@@ -449,20 +434,16 @@ export interface PriceBreakdown {
     /**
      * @generated from protobuf field: int32 final_price_cents = 12;
      */
-    finalPriceCents: number; // what the customer pays
+    finalPriceCents: number;
     /**
      * @generated from protobuf field: int32 organizer_net_cents = 13;
      */
-    organizerNetCents: number; // what the organizer receives (= selling)
+    organizerNetCents: number;
     /**
      * @generated from protobuf field: string currency = 14;
      */
     currency: string;
     /**
-     * Group tier outcome for this line. When a capacity cap applies, only
-     * group_discounted_seats of the line's seats bill at group_unit_cents and the
-     * remainder bill at standard_unit_cents, so selling is a blended figure.
-     *
      * @generated from protobuf field: int32 group_discounted_seats = 15;
      */
     groupDiscountedSeats: number;
@@ -486,11 +467,11 @@ export interface SetTenantDefaultFeeFormulaRequest {
     /**
      * @generated from protobuf field: string fee_formulas_id = 2;
      */
-    feeFormulasId: string; // empty = clear default
+    feeFormulasId: string;
     /**
      * @generated from protobuf field: string reason = 3;
      */
-    reason: string; // required audit note
+    reason: string;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class Price$Type extends MessageType<Price> {

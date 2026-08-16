@@ -73,10 +73,6 @@ export interface ITableBookingServiceClient {
      */
     deleteEventTicketType(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
     /**
-     * Catalog table-type price rules: reusable presale/last-minute rules attached to
-     * a table template and snapshotted onto event prices when a table type is created
-     * from that template.
-     *
      * @generated from protobuf rpc: CreateTableTemplatePriceRule(ticketspan.booking.CreateTableTemplatePriceRuleRequest) returns (ticketspan.common.UuidValue);
      */
     createTableTemplatePriceRule(input: CreateTableTemplatePriceRuleRequest, options?: RpcOptions): UnaryCall<CreateTableTemplatePriceRuleRequest, UuidValue>;
@@ -89,8 +85,6 @@ export interface ITableBookingServiceClient {
      */
     deleteTableTemplatePriceRule(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
     /**
-     * Catalog table-type templates (tenant-scoped, reusable across events).
-     *
      * @generated from protobuf rpc: ListTableTemplates(ticketspan.common.Empty) returns (ticketspan.booking.ListTableTemplatesResponse);
      */
     listTableTemplates(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListTableTemplatesResponse>;
@@ -194,10 +188,6 @@ export class TableBookingServiceClient implements ITableBookingServiceClient, Se
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Catalog table-type price rules: reusable presale/last-minute rules attached to
-     * a table template and snapshotted onto event prices when a table type is created
-     * from that template.
-     *
      * @generated from protobuf rpc: CreateTableTemplatePriceRule(ticketspan.booking.CreateTableTemplatePriceRuleRequest) returns (ticketspan.common.UuidValue);
      */
     createTableTemplatePriceRule(input: CreateTableTemplatePriceRuleRequest, options?: RpcOptions): UnaryCall<CreateTableTemplatePriceRuleRequest, UuidValue> {
@@ -219,8 +209,6 @@ export class TableBookingServiceClient implements ITableBookingServiceClient, Se
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Catalog table-type templates (tenant-scoped, reusable across events).
-     *
      * @generated from protobuf rpc: ListTableTemplates(ticketspan.common.Empty) returns (ticketspan.booking.ListTableTemplatesResponse);
      */
     listTableTemplates(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListTableTemplatesResponse> {

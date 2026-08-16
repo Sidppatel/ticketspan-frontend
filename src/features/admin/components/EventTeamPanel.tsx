@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { assignStaffByEmail, unassignStaff } from '@/features/admin/services/staffAdminService';
 import { rpcErrorMessage } from '@/shared/session';
-import { accessWindow, initials } from '@/shared/lib/format';
+import { accessWindow, initials, formatEventDate } from '@/shared/lib/format';
 import type { StaffMember } from '@/shared/proto/admin';
 import { Roles } from '@/shared/roles';
 import { Button } from '@/shared/ui/button';
@@ -11,7 +11,8 @@ import { Label } from '@/shared/ui/label';
 import { Select } from '@/shared/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
-import { Users, UserPlus, Clock, Mail, Sparkles } from 'lucide-react';
+import { Users, UserPlus, Clock, Mail, Sparkles, SlidersHorizontal } from 'lucide-react';
+import { StaffAccessWindowModal } from '@/features/admin/components/StaffAccessWindowModal';
 
 type Props = {
   eventsId: string;
@@ -35,7 +36,9 @@ export function EventTeamPanel({ eventsId, startDate, endDate, staff, loading, o
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<number>(Roles.Staff);
   const [sending, setSending] = useState(false);
-  const window = accessWindow(startDate, endDate);
+  const [editingMember, setEditingMember] = useState<StaffMember | null>(null);
+
+  const defaultWindow = accessWindow(startDate, endDate);
 
   async function invite() {
     const clean = email.trim();
@@ -135,7 +138,7 @@ export function EventTeamPanel({ eventsId, startDate, endDate, staff, loading, o
               <p className="text-sm font-bold text-foreground">No one on the team yet</p>
               <p className="max-w-sm text-xs text-muted-foreground">
                 Invite check-in staff to scan tickets and welcome guests. They’ll get access 24 hours
-                before the event and for 24 hours after it ends.
+                before the event and for 24 hours after it ends by default.
               </p>
             </div>
           </div>
@@ -146,43 +149,80 @@ export function EventTeamPanel({ eventsId, startDate, endDate, staff, loading, o
             </p>
             {staff.map((member) => {
               const pending = isPending(member);
+              const hasCustomWindow = Number(member.accessStart) > 0 || Number(member.accessEnd) > 0;
+              const accessText = hasCustomWindow
+                ? `${formatEventDate(Number(member.accessStart))} → ${formatEventDate(Number(member.accessEnd))}`
+                : defaultWindow
+                  ? `${defaultWindow.from} → ${defaultWindow.to}`
+                  : null;
+
               return (
                 <div
                   key={member.usersId}
-                  className="flex items-center gap-3 rounded-xl border border-border/50 bg-card px-4 py-3 shadow-sm"
+                  className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-border/50 bg-card p-4 shadow-sm"
                 >
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                     {initials(member.firstName, member.lastName, member.email)}
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1 space-y-0.5">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="truncate text-sm font-bold text-foreground">{displayName(member)}</span>
                       <Badge variant="neutral">
                         {member.role === Roles.EventManager ? 'Event Manager' : 'Check-in Staff'}
                       </Badge>
                       <Badge variant={pending ? 'warn' : 'success'}>{pending ? 'Pending' : 'Active'}</Badge>
+                      {hasCustomWindow && (
+                        <Badge variant="neutral" className="text-[10px] text-primary border-primary/30">
+                          Custom Hours
+                        </Badge>
+                      )}
                     </div>
                     <p className="truncate text-xs text-muted-foreground">{member.email}</p>
-                    {window && !pending ? (
+                    {accessText && !pending ? (
                       <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground">
-                        <Clock className="h-3 w-3" /> Access {window.from} → {window.to}
+                        <Clock className="h-3 w-3" /> Access: {accessText}
                       </p>
                     ) : null}
                   </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 shrink-0 text-xs font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => void remove(member)}
-                  >
-                    Remove
-                  </Button>
+                  <div className="flex items-center gap-2 self-end sm:self-center">
+                    {!pending && member.role === Roles.Staff && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setEditingMember(member)}
+                        className="h-8 text-xs font-bold gap-1.5 rounded-lg"
+                      >
+                        <SlidersHorizontal className="size-3.5" /> Access Hours
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 text-xs font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => void remove(member)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
                 </div>
               );
             })}
           </div>
         )}
       </CardContent>
+
+      <StaffAccessWindowModal
+        isOpen={editingMember !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingMember(null);
+        }}
+        member={editingMember}
+        eventsId={eventsId}
+        defaultStartDate={startDate}
+        defaultEndDate={endDate}
+        timeZone="UTC"
+        onSaved={onChanged}
+      />
     </Card>
   );
 }

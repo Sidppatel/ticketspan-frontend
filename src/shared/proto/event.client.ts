@@ -78,8 +78,6 @@ export interface IEventServiceClient {
      */
     setEventFeesIncluded(input: SetEventFeesIncludedRequest, options?: RpcOptions): UnaryCall<SetEventFeesIncludedRequest, AckResponse>;
     /**
-     * Admin opt-in to offering ACH at checkout (only sticks if the tenant is ACH-enabled).
-     *
      * @generated from protobuf rpc: SetEventAch(ticketspan.event.SetEventAchRequest) returns (ticketspan.common.AckResponse);
      */
     setEventAch(input: SetEventAchRequest, options?: RpcOptions): UnaryCall<SetEventAchRequest, AckResponse>;
@@ -204,8 +202,6 @@ export class EventServiceClient implements IEventServiceClient, ServiceInfo {
         return stackIntercept<SetEventFeesIncludedRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Admin opt-in to offering ACH at checkout (only sticks if the tenant is ACH-enabled).
-     *
      * @generated from protobuf rpc: SetEventAch(ticketspan.event.SetEventAchRequest) returns (ticketspan.common.AckResponse);
      */
     setEventAch(input: SetEventAchRequest, options?: RpcOptions): UnaryCall<SetEventAchRequest, AckResponse> {

@@ -64,8 +64,6 @@ export interface Table {
      */
     feeFormulasId: string;
     /**
-     * Per-individual-table overrides of the parent event_table type (empty/0 = inherit).
-     *
      * @generated from protobuf field: string shape_override = 12;
      */
     shapeOverride: string;
@@ -78,15 +76,11 @@ export interface Table {
      */
     capacityOverride: number;
     /**
-     * Linked Pricing Module price (authoritative). Empty = legacy cached price.
-     *
      * @generated from protobuf field: string prices_id = 15;
      */
     pricesId: string;
 }
 /**
- * A non-table object placed on the floor-plan canvas (Entry/Exit/Stage).
- *
  * @generated from protobuf message ticketspan.booking.LayoutObject
  */
 export interface LayoutObject {
@@ -161,8 +155,6 @@ export interface SaveEventLayoutRequest {
      */
     lockedIds: string[];
     /**
-     * JSON array of layout objects (Entry/Exit/Stage) to upsert/delete.
-     *
      * @generated from protobuf field: string objects_json = 6;
      */
     objectsJson: string;
@@ -186,8 +178,6 @@ export interface ListTablesResponse {
     tables: Table[];
 }
 /**
- * A table TYPE (event_tables) used as a palette item in the floor-plan builder.
- *
  * @generated from protobuf message ticketspan.booking.EventTableType
  */
 export interface EventTableType {
@@ -220,8 +210,6 @@ export interface EventTableType {
      */
     pricesId: string;
     /**
-     * Default pixel footprint used when placing this type on the floor plan.
-     *
      * @generated from protobuf field: double default_width = 8;
      */
     defaultWidth: number;
@@ -280,10 +268,6 @@ export interface CreateEventTableRequest {
      */
     tableTemplatesId: string;
     /**
-     * Table pricing mode for the linked Price. Default (is_all_inclusive=true):
-     * the price_cents covers the whole table. When false, price_cents is the table
-     * base and per_attendee_cents is added per reserved seat.
-     *
      * @generated from protobuf field: bool is_all_inclusive = 9;
      */
     isAllInclusive: boolean;
@@ -292,8 +276,6 @@ export interface CreateEventTableRequest {
      */
     perAttendeeCents: number;
     /**
-     * Pixel footprint override (0 = inherit the catalog template default).
-     *
      * @generated from protobuf field: double width = 11;
      */
     width: number;
@@ -337,7 +319,7 @@ export interface CreateEventTicketTypeRequest {
     /**
      * @generated from protobuf field: int32 capacity = 8;
      */
-    capacity: number; // seats this tier contributes to event capacity (0 = uncapped)
+    capacity: number;
 }
 /**
  * @generated from protobuf message ticketspan.booking.UpdateEventTicketTypeRequest
@@ -378,12 +360,9 @@ export interface UpdateEventTicketTypeRequest {
     /**
      * @generated from protobuf field: int32 capacity = 9;
      */
-    capacity: number; // seats this tier contributes to event capacity (0 = uncapped)
+    capacity: number;
 }
 /**
- * A catalog price rule on a table template (mirrors pricing.PriceRule, keyed by
- * table_templates_id instead of prices_id).
- *
  * @generated from protobuf message ticketspan.booking.TableTemplatePriceRule
  */
 export interface TableTemplatePriceRule {
@@ -402,11 +381,11 @@ export interface TableTemplatePriceRule {
     /**
      * @generated from protobuf field: string rule_type = 4;
      */
-    ruleType: string; // Presale | LastMinute | TimeWindow | Dynamic
+    ruleType: string;
     /**
      * @generated from protobuf field: int32 priority = 5;
      */
-    priority: number; // higher wins
+    priority: number;
     /**
      * @generated from protobuf field: int32 price_cents = 6;
      */
@@ -414,19 +393,19 @@ export interface TableTemplatePriceRule {
     /**
      * @generated from protobuf field: int64 active_from = 7;
      */
-    activeFrom: string; // unix seconds; 0 = unset
+    activeFrom: string;
     /**
      * @generated from protobuf field: int64 active_until = 8;
      */
-    activeUntil: string; // unix seconds; 0 = unset
+    activeUntil: string;
     /**
      * @generated from protobuf field: int32 min_remaining = 9;
      */
-    minRemaining: number; // -1 = unset
+    minRemaining: number;
     /**
      * @generated from protobuf field: int32 max_remaining = 10;
      */
-    maxRemaining: number; // -1 = unset
+    maxRemaining: number;
     /**
      * @generated from protobuf field: bool is_active = 11;
      */
@@ -523,9 +502,6 @@ export interface TableTemplate {
      */
     defaultHeight: number;
     /**
-     * When true the price covers everyone at the table; when false it is the
-     * per-attendee price. Snapshotted onto event prices at table-create time.
-     *
      * @generated from protobuf field: bool default_is_all_inclusive = 10;
      */
     defaultIsAllInclusive: boolean;
@@ -568,9 +544,6 @@ export interface CreateTableTemplateRequest {
     defaultIsAllInclusive: boolean;
 }
 /**
- * Edit a catalog table type. Name is intentionally absent: it is locked after
- * creation. is_active drives the enable/disable toggle.
- *
  * @generated from protobuf message ticketspan.booking.UpdateTableTemplateRequest
  */
 export interface UpdateTableTemplateRequest {

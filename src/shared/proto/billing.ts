@@ -52,7 +52,7 @@ export interface TenantBillingRow {
     /**
      * @generated from protobuf field: string subscription_status = 6;
      */
-    subscriptionStatus: string; // empty = none
+    subscriptionStatus: string;
     /**
      * @generated from protobuf field: string subscription_tier = 7;
      */
@@ -122,11 +122,11 @@ export interface SubscriptionRequest {
     /**
      * @generated from protobuf field: string tier = 2;
      */
-    tier: string; // starter|professional|business|enterprise
+    tier: string;
     /**
      * @generated from protobuf field: string reason = 3;
      */
-    reason: string; // audit note
+    reason: string;
 }
 /**
  * @generated from protobuf message ticketspan.billing.CancelSubscriptionRequest
@@ -230,7 +230,7 @@ export interface EventUpgradeRequest {
     /**
      * @generated from protobuf field: string tier = 2;
      */
-    tier: string; // starter_event|pro_event|business_event|enterprise_event
+    tier: string;
     /**
      * @generated from protobuf field: string reason = 3;
      */
@@ -247,7 +247,7 @@ export interface CancelEventUpgradeRequest {
     /**
      * @generated from protobuf field: int32 refund_cents = 2;
      */
-    refundCents: number; // 0 = no refund
+    refundCents: number;
     /**
      * @generated from protobuf field: string reason = 3;
      */
@@ -322,11 +322,11 @@ export interface ProvisionAddonRequest {
     /**
      * @generated from protobuf field: string type = 2;
      */
-    type: string; // custom_domain|advanced_analytics|sms|extra_manager
+    type: string;
     /**
      * @generated from protobuf field: string billing_period = 3;
      */
-    billingPeriod: string; // monthly|annual
+    billingPeriod: string;
     /**
      * @generated from protobuf field: int32 quantity = 4;
      */
@@ -360,7 +360,7 @@ export interface FeeOverrideRow {
     /**
      * @generated from protobuf field: string scope = 1;
      */
-    scope: string; // tenant | event
+    scope: string;
     /**
      * @generated from protobuf field: string tenants_id = 2;
      */
@@ -376,7 +376,7 @@ export interface FeeOverrideRow {
     /**
      * @generated from protobuf field: string events_id = 5;
      */
-    eventsId: string; // empty for tenant scope
+    eventsId: string;
     /**
      * @generated from protobuf field: string event_title = 6;
      */
@@ -404,7 +404,7 @@ export interface FeeOverrideRow {
     /**
      * @generated from protobuf field: int64 expires_at_epoch_seconds = 13;
      */
-    expiresAtEpochSeconds: string; // 0 = never
+    expiresAtEpochSeconds: string;
     /**
      * @generated from protobuf field: int64 updated_at_epoch_seconds = 14;
      */
@@ -438,15 +438,15 @@ export interface SetEventFeeOverrideRequest {
     /**
      * @generated from protobuf field: int32 max_fee_cents = 5;
      */
-    maxFeeCents: number; // 0 = none
+    maxFeeCents: number;
     /**
      * @generated from protobuf field: int64 expires_at_epoch_seconds = 6;
      */
-    expiresAtEpochSeconds: string; // 0 = never
+    expiresAtEpochSeconds: string;
     /**
      * @generated from protobuf field: string reason = 7;
      */
-    reason: string; // required
+    reason: string;
 }
 /**
  * @generated from protobuf message ticketspan.billing.ClearEventFeeOverrideRequest
@@ -459,7 +459,7 @@ export interface ClearEventFeeOverrideRequest {
     /**
      * @generated from protobuf field: string reason = 2;
      */
-    reason: string; // required
+    reason: string;
 }
 /**
  * @generated from protobuf message ticketspan.billing.TaxOverrideRow
@@ -484,7 +484,7 @@ export interface TaxOverrideRow {
     /**
      * @generated from protobuf field: int32 rate_bps = 5;
      */
-    rateBps: number; // manual combined rate; 0 when exempt
+    rateBps: number;
     /**
      * @generated from protobuf field: int64 updated_at_epoch_seconds = 6;
      */
@@ -510,15 +510,15 @@ export interface SetEventTaxOverrideRequest {
     /**
      * @generated from protobuf field: bool tax_exempt = 2;
      */
-    taxExempt: boolean; // true wins over rate_bps
+    taxExempt: boolean;
     /**
      * @generated from protobuf field: int32 rate_bps = 3;
      */
-    rateBps: number; // e.g. 1000 = 10%
+    rateBps: number;
     /**
      * @generated from protobuf field: string reason = 4;
      */
-    reason: string; // required
+    reason: string;
 }
 /**
  * @generated from protobuf message ticketspan.billing.TaxRateRow
@@ -563,7 +563,7 @@ export interface TaxRateRow {
     /**
      * @generated from protobuf field: string source_ref = 10;
      */
-    sourceRef: string; // API last_updated echo
+    sourceRef: string;
     /**
      * @generated from protobuf field: int64 fetched_at_epoch_seconds = 11;
      */
@@ -585,7 +585,7 @@ export interface TaxRateLookupRequest {
     /**
      * @generated from protobuf field: string zip = 1;
      */
-    zip: string; // 5-digit US zip; forces API refresh
+    zip: string;
 }
 /**
  * @generated from protobuf message ticketspan.billing.VenueTaxSummaryRow
@@ -638,7 +638,7 @@ export interface VenueTaxSummaryRow {
     /**
      * @generated from protobuf field: int64 fetched_at_epoch_seconds = 12;
      */
-    fetchedAtEpochSeconds: string; // 0 = never fetched
+    fetchedAtEpochSeconds: string;
 }
 /**
  * @generated from protobuf message ticketspan.billing.VenueTaxSummaryList
@@ -669,7 +669,7 @@ export interface RevenueSourceRow {
     /**
      * @generated from protobuf field: string source = 1;
      */
-    source: string; // service_fees|subscription|proration|pay_per_event|addon|setup_fee|refund
+    source: string;
     /**
      * @generated from protobuf field: int64 revenue_cents = 2;
      */
@@ -1134,7 +1134,7 @@ export interface TenantActivityRequest {
     /**
      * @generated from protobuf field: string tier = 4;
      */
-    tier: string; // empty = all
+    tier: string;
     /**
      * @generated from protobuf field: int32 offset = 5;
      */

@@ -35,7 +35,7 @@ export interface ReportingAccess {
     /**
      * @generated from protobuf field: string tax_collection_mode = 4;
      */
-    taxCollectionMode: string; // 'platform' | 'self'
+    taxCollectionMode: string;
 }
 /**
  * @generated from protobuf message ticketspan.reporting.TaxEventRow
@@ -126,8 +126,6 @@ export interface TimeseriesRequest {
      */
     toEpochSeconds: string;
     /**
-     * "day" | "week" | "month"; "year" requires advanced reporting.
-     *
      * @generated from protobuf field: string bucket = 3;
      */
     bucket: string;
@@ -248,8 +246,6 @@ export interface EventPerformanceRow {
      */
     attendanceRateBps: number;
     /**
-     * Advanced-only fields; zeroed for basic-tier tenants.
-     *
      * @generated from protobuf field: int32 capacity = 10;
      */
     capacity: number;
@@ -320,8 +316,6 @@ export interface TicketTypeBreakdownRow {
      */
     revenueCents: string;
     /**
-     * Advanced-only fields; zeroed for basic-tier tenants.
-     *
      * @generated from protobuf field: int32 refunded_quantity = 8;
      */
     refundedQuantity: number;
@@ -416,11 +410,11 @@ export interface TenantReportingAccessRow {
     /**
      * @generated from protobuf field: string ach_fee_formulas_id = 9;
      */
-    achFeeFormulasId: string; // empty = none assigned
+    achFeeFormulasId: string;
     /**
      * @generated from protobuf field: string tax_collection_mode = 10;
      */
-    taxCollectionMode: string; // 'platform' | 'self'
+    taxCollectionMode: string;
 }
 /**
  * @generated from protobuf message ticketspan.reporting.TenantReportingAccessList
@@ -476,7 +470,7 @@ export interface SetTenantAchRequest {
     /**
      * @generated from protobuf field: string fee_formulas_id = 3;
      */
-    feeFormulasId: string; // required when enabling
+    feeFormulasId: string;
     /**
      * @generated from protobuf field: string reason = 4;
      */
@@ -493,7 +487,7 @@ export interface SetTenantTaxModeRequest {
     /**
      * @generated from protobuf field: string mode = 2;
      */
-    mode: string; // 'platform' | 'self'
+    mode: string;
     /**
      * @generated from protobuf field: string reason = 3;
      */

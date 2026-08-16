@@ -124,9 +124,6 @@ export interface Tenant {
      */
     archived: boolean;
     /**
-     * Tenant default service-fee formula. Auto-applied to every new event price;
-     * empty = no default set. Developer-only (set via PricingService).
-     *
      * @generated from protobuf field: string default_fee_formulas_id = 10;
      */
     defaultFeeFormulasId: string;
@@ -187,20 +184,14 @@ export interface Tenant {
      */
     brandHighlight: string;
     /**
-     * Whether this tenant may offer ACH bank-transfer payments (developer-managed).
-     *
      * @generated from protobuf field: bool ach_enabled = 25;
      */
     achEnabled: boolean;
     /**
-     * JSON object of advanced theme-token overrides, e.g. {"stage":"#101010"}.
-     *
      * @generated from protobuf field: string brand_tokens_json = 26;
      */
     brandTokensJson: string;
     /**
-     * ACH fee formula assigned to this tenant; empty = none (developer-managed).
-     *
      * @generated from protobuf field: string ach_fee_formulas_id = 27;
      */
     achFeeFormulasId: string;
@@ -366,12 +357,9 @@ export interface CreateTenantRequest {
      */
     countryCode: string;
     /**
-     * Stripe Connect onboarding prefill (all optional). Used to pre-create the
-     * connected account so the Express onboarding form is pre-filled.
-     *
      * @generated from protobuf field: string business_type = 8;
      */
-    businessType: string; // "individual" | "company"
+    businessType: string;
     /**
      * @generated from protobuf field: string business_url = 9;
      */
@@ -383,7 +371,7 @@ export interface CreateTenantRequest {
     /**
      * @generated from protobuf field: string mcc = 11;
      */
-    mcc: string; // 4-digit Stripe merchant category code
+    mcc: string;
     /**
      * @generated from protobuf field: string support_email = 12;
      */

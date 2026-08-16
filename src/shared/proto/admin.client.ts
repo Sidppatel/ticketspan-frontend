@@ -30,6 +30,7 @@ import type { AddOrInviteStaffResponse } from "./admin";
 import type { AddOrInviteStaffRequest } from "./admin";
 import type { AssignStaffByEmailResponse } from "./admin";
 import type { AssignStaffByEmailRequest } from "./admin";
+import type { UpdateStaffAccessWindowRequest } from "./admin";
 import type { AckResponse } from "./common";
 import type { AssignStaffRequest } from "./admin";
 import type { ListStaffResponse } from "./admin";
@@ -150,6 +151,10 @@ export interface IStaffServiceClient {
      */
     unassignStaff(input: AssignStaffRequest, options?: RpcOptions): UnaryCall<AssignStaffRequest, AckResponse>;
     /**
+     * @generated from protobuf rpc: UpdateStaffAccessWindow(ticketspan.admin.UpdateStaffAccessWindowRequest) returns (ticketspan.common.AckResponse);
+     */
+    updateStaffAccessWindow(input: UpdateStaffAccessWindowRequest, options?: RpcOptions): UnaryCall<UpdateStaffAccessWindowRequest, AckResponse>;
+    /**
      * @generated from protobuf rpc: ListAllStaff(ticketspan.common.Empty) returns (ticketspan.admin.ListStaffResponse);
      */
     listAllStaff(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListStaffResponse>;
@@ -197,31 +202,38 @@ export class StaffServiceClient implements IStaffServiceClient, ServiceInfo {
         return stackIntercept<AssignStaffRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
+     * @generated from protobuf rpc: UpdateStaffAccessWindow(ticketspan.admin.UpdateStaffAccessWindowRequest) returns (ticketspan.common.AckResponse);
+     */
+    updateStaffAccessWindow(input: UpdateStaffAccessWindowRequest, options?: RpcOptions): UnaryCall<UpdateStaffAccessWindowRequest, AckResponse> {
+        const method = this.methods[3], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UpdateStaffAccessWindowRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: ListAllStaff(ticketspan.common.Empty) returns (ticketspan.admin.ListStaffResponse);
      */
     listAllStaff(input: Empty, options?: RpcOptions): UnaryCall<Empty, ListStaffResponse> {
-        const method = this.methods[3], opt = this._transport.mergeOptions(options);
+        const method = this.methods[4], opt = this._transport.mergeOptions(options);
         return stackIntercept<Empty, ListStaffResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: AssignStaffByEmail(ticketspan.admin.AssignStaffByEmailRequest) returns (ticketspan.admin.AssignStaffByEmailResponse);
      */
     assignStaffByEmail(input: AssignStaffByEmailRequest, options?: RpcOptions): UnaryCall<AssignStaffByEmailRequest, AssignStaffByEmailResponse> {
-        const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
         return stackIntercept<AssignStaffByEmailRequest, AssignStaffByEmailResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: AddOrInviteStaff(ticketspan.admin.AddOrInviteStaffRequest) returns (ticketspan.admin.AddOrInviteStaffResponse);
      */
     addOrInviteStaff(input: AddOrInviteStaffRequest, options?: RpcOptions): UnaryCall<AddOrInviteStaffRequest, AddOrInviteStaffResponse> {
-        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        const method = this.methods[6], opt = this._transport.mergeOptions(options);
         return stackIntercept<AddOrInviteStaffRequest, AddOrInviteStaffResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: RemoveStaffRole(ticketspan.common.UuidValue) returns (ticketspan.common.AckResponse);
      */
     removeStaffRole(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
-        const method = this.methods[6], opt = this._transport.mergeOptions(options);
+        const method = this.methods[7], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

@@ -1,145 +1,253 @@
-import { CheckCircle2, ChevronRight, Sparkles, Undo2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import {
+  Users,
+  Search,
+  CheckCircle2,
+  Ticket,
+  LogOut,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
+import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Badge } from '@/shared/ui/badge';
 import type { GuestBooking, GuestTicket } from '@/shared/proto/bookings';
+import { cn } from '@/shared/lib/cn';
 
 interface StaffGuestListProps {
-  loading: boolean;
-  error: string | null;
-  filteredBookings: GuestBooking[];
-  checkingIn: boolean;
-  setPendingBooking: (booking: GuestBooking) => void;
-  setUncheckTarget: (target: { ticketsId: string; guestName: string }) => void;
-  handleActionCheckIn: (id: string, mode: 'Ticket' | 'Booking') => void;
+  bookings: GuestBooking[];
+  onCheckInTicket: (ticket: GuestTicket) => void;
+  onCheckInBooking: (booking: GuestBooking) => void;
+  onTriggerCheckOut: (ticket: GuestTicket) => void;
+  isProcessing: boolean;
 }
 
 export function StaffGuestList({
-  loading,
-  error,
-  filteredBookings,
-  checkingIn,
-  setPendingBooking,
-  setUncheckTarget,
-  handleActionCheckIn,
+  bookings,
+  onCheckInTicket,
+  onCheckInBooking,
+  onTriggerCheckOut,
+  isProcessing,
 }: StaffGuestListProps) {
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 space-y-3">
-        <div className="size-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider animate-pulse">
-          Loading guest list...
-        </p>
-      </div>
-    );
-  }
+  const [search, setSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'checked_in'>('all');
+  const [expandedBookingIds, setExpandedBookingIds] = useState<Set<string>>(new Set());
 
-  if (error) {
-    return <p className="text-destructive text-center py-12 text-xs font-semibold">{error}</p>;
-  }
+  const toggleExpand = (id: string) => {
+    setExpandedBookingIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
-  if (filteredBookings.length === 0) {
-    return (
-      <div className="text-center py-16 text-muted-foreground space-y-3 max-w-sm mx-auto">
-        <div className="inline-flex p-3 bg-muted/40 rounded-full text-muted-foreground/60">
-          <Sparkles className="h-6 w-6" />
-        </div>
-        <div className="space-y-1">
-          <p className="text-xs font-semibold text-foreground">No matching guests found</p>
-          <p className="text-[11px] text-muted-foreground leading-normal">
-            Try modifying search tags or check in codes manually.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const filteredBookings = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return bookings
+      .map((b) => {
+        const matchesBooking =
+          !q ||
+          b.bookingNumber.toLowerCase().includes(q) ||
+          b.buyerName.toLowerCase().includes(q);
+
+        const matchingTickets = (b.tickets || []).filter((t) => {
+          const isCheckedIn = t.status === 'CheckedIn';
+          if (filterStatus === 'pending' && isCheckedIn) return false;
+          if (filterStatus === 'checked_in' && !isCheckedIn) return false;
+
+          if (!q) return true;
+          if (matchesBooking) return true;
+          return (
+            t.guestName.toLowerCase().includes(q) ||
+            t.ticketCode.toLowerCase().includes(q) ||
+            (t.seatNumber > 0 && `seat ${t.seatNumber}`.includes(q))
+          );
+        });
+
+        if (matchingTickets.length === 0 && !matchesBooking) return null;
+
+        return {
+          ...b,
+          filteredTickets: matchingTickets,
+        };
+      })
+      .filter((b): b is GuestBooking & { filteredTickets: GuestTicket[] } => b !== null);
+  }, [bookings, search, filterStatus]);
+
+  const totalAttendees = useMemo(() => {
+    return bookings.reduce((sum, b) => sum + (b.tickets?.length || 0), 0);
+  }, [bookings]);
+
+  const totalCheckedIn = useMemo(() => {
+    return bookings.reduce((sum, b) => {
+      return sum + (b.tickets?.filter((t) => t.status === 'CheckedIn').length || 0);
+    }, 0);
+  }, [bookings]);
 
   return (
-    <div className="divide-y divide-border/20 max-h-[600px] overflow-y-auto">
-      {filteredBookings.map((b) => (
-        <div key={b.bookingsId} className="p-4 space-y-3 hover:bg-muted/10 transition-colors">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b pb-2 border-dashed border-border/20">
-            <div>
-              <p className="font-bold text-sm text-foreground">{b.buyerName}</p>
-              <p className="text-[10px] text-muted-foreground">
-                Booking: <span className="font-mono text-foreground/80">{b.bookingNumber}</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className={`text-[9px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border ${
-                  b.status === 'CheckedIn'
-                    ? 'bg-success/10 text-success border-success/15'
-                    : 'bg-primary/10 text-primary border-primary/15'
-                }`}
-              >
-                {b.status === 'CheckedIn' ? 'All In' : b.status}
-              </span>
-              {b.status !== 'CheckedIn' && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setPendingBooking(b)}
-                  disabled={checkingIn}
-                  className="h-7 px-3 text-[10px] font-semibold border-border hover:bg-muted"
-                >
-                  Check In All
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="pl-2 space-y-2">
-            {b.tickets.map((t: GuestTicket) => (
-              <div key={t.ticketsId} className="flex items-center justify-between py-1 text-xs">
-                <div className="space-y-0.5">
-                  <p className="font-semibold text-foreground">
-                    Seat #{t.seatNumber} : {t.guestName}
-                  </p>
-                  <p className="text-[9px] text-muted-foreground font-mono">Ticket Code: {t.ticketCode}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {t.status === 'CheckedIn' ? (
-                    <>
-                      <span className="text-[10px] font-bold text-success flex items-center gap-1 bg-success/10 px-2 py-0.5 rounded border border-success/15">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Checked In
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setUncheckTarget({ ticketsId: t.ticketsId, guestName: t.guestName })}
-                        disabled={checkingIn}
-                        className="h-6 px-2 text-[10px] text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md"
-                      >
-                        <Undo2 className="h-3 w-3 mr-0.5" /> Undo
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <span
-                        className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                          t.status === 'Claimed'
-                            ? 'bg-marigold/10 text-marigold border-marigold/15'
-                            : 'bg-muted text-muted-foreground border-border'
-                        }`}
-                      >
-                        {t.status}
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleActionCheckIn(t.ticketsId, 'Ticket')}
-                        disabled={checkingIn}
-                        className="h-6 px-2 text-[10px] text-primary hover:bg-primary/10 rounded-md"
-                      >
-                        Check In <ChevronRight className="h-3 w-3 ml-0.5" />
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name, booking #, or ticket code…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 h-10 bg-background rounded-xl text-xs"
+          />
         </div>
-      ))}
+
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/40 border border-border/50 shrink-0">
+          <Button
+            size="sm"
+            variant={filterStatus === 'all' ? 'default' : 'ghost'}
+            onClick={() => setFilterStatus('all')}
+            className={cn('h-8 text-xs font-bold rounded-lg', filterStatus !== 'all' && 'hover:bg-background/50')}
+          >
+            All ({totalAttendees})
+          </Button>
+          <Button
+            size="sm"
+            variant={filterStatus === 'pending' ? 'default' : 'ghost'}
+            onClick={() => setFilterStatus('pending')}
+            className={cn('h-8 text-xs font-bold rounded-lg', filterStatus !== 'pending' && 'hover:bg-background/50')}
+          >
+            Pending ({totalAttendees - totalCheckedIn})
+          </Button>
+          <Button
+            size="sm"
+            variant={filterStatus === 'checked_in' ? 'default' : 'ghost'}
+            onClick={() => setFilterStatus('checked_in')}
+            className={cn('h-8 text-xs font-bold rounded-lg', filterStatus !== 'checked_in' && 'hover:bg-background/50')}
+          >
+            Checked In ({totalCheckedIn})
+          </Button>
+        </div>
+      </div>
+
+      {filteredBookings.length === 0 ? (
+        <Card className="border border-border/50 bg-card rounded-2xl p-8 text-center space-y-2">
+          <Users className="size-8 text-muted-foreground/50 mx-auto" />
+          <p className="text-xs font-bold text-muted-foreground">No attendees found matching your filter.</p>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {filteredBookings.map((b) => {
+            const isExpanded = expandedBookingIds.has(b.bookingsId) || search.trim().length > 0;
+            const tickets = b.filteredTickets;
+            const pendingCount = tickets.filter((t) => t.status !== 'CheckedIn').length;
+
+            return (
+              <Card
+                key={b.bookingsId}
+                className="border border-border/70 bg-card shadow-sm rounded-2xl overflow-hidden transition-all"
+              >
+                <div
+                  onClick={() => toggleExpand(b.bookingsId)}
+                  className="p-4 flex items-center justify-between gap-3 bg-muted/10 hover:bg-muted/25 transition-colors cursor-pointer"
+                >
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-foreground truncate">{b.buyerName}</span>
+                      <Badge variant="neutral" className="font-mono text-[10px] uppercase">
+                        #{b.bookingNumber}
+                      </Badge>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">
+                      {tickets.length} pass{tickets.length > 1 ? 'es' : ''} • {pendingCount === 0 ? 'All checked in' : `${pendingCount} pending`}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {pendingCount > 0 && (
+                      <Button
+                        size="sm"
+                        disabled={isProcessing}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onCheckInBooking(b);
+                        }}
+                        className="ticketspan-spring-btn h-8 px-3 text-xs font-bold rounded-lg shadow-sm"
+                      >
+                        Check In Group ({pendingCount})
+                      </Button>
+                    )}
+                    <button
+                      type="button"
+                      className="size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted/50 transition-colors"
+                    >
+                      {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <CardContent className="p-3 pt-0 border-t border-border/30 divide-y divide-border/30">
+                    {tickets.map((t) => {
+                      const isCheckedIn = t.status === 'CheckedIn';
+                      return (
+                        <div
+                          key={t.ticketsId}
+                          className="py-3 px-2 flex items-center justify-between gap-3 first:pt-3"
+                        >
+                          <div className="space-y-0.5 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <Ticket className={cn('size-3.5 shrink-0', isCheckedIn ? 'text-success' : 'text-muted-foreground')} />
+                              <span className="text-xs font-bold text-foreground truncate">
+                                {t.guestName || b.buyerName}
+                              </span>
+                              {t.seatNumber > 0 && (
+                                <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1.5 py-0.2 rounded shrink-0">
+                                  Seat #{t.seatNumber}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] font-mono text-muted-foreground pl-5.5">
+                              {t.ticketCode}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            {isCheckedIn ? (
+                              <>
+                                <Badge variant="success" className="text-[10px] font-bold gap-1">
+                                  <CheckCircle2 className="size-3" /> Checked In
+                                </Badge>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  disabled={isProcessing}
+                                  onClick={() => onTriggerCheckOut(t)}
+                                  className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 gap-1 rounded-lg"
+                                  title="Undo Check-In"
+                                >
+                                  <LogOut className="size-3" /> Check Out
+                                </Button>
+                              </>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={isProcessing}
+                                onClick={() => onCheckInTicket(t)}
+                                className="h-7 px-3 text-[11px] font-bold rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+                              >
+                                Check In
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -60,16 +60,10 @@ export interface IBookingServiceClient {
      */
     reserveOpenCapacity(input: ReserveOpenCapacityRequest, options?: RpcOptions): UnaryCall<ReserveOpenCapacityRequest, CreateBookingResponse>;
     /**
-     * Cart checkout: one booking aggregating many ticket/table lines, one payment.
-     *
      * @generated from protobuf rpc: CreateMultiBooking(ticketspan.booking.CreateMultiBookingRequest) returns (ticketspan.booking.CreateBookingResponse);
      */
     createMultiBooking(input: CreateMultiBookingRequest, options?: RpcOptions): UnaryCall<CreateMultiBookingRequest, CreateBookingResponse>;
     /**
-     * Preview a cart's full pricing breakdown WITHOUT reserving anything. Same engine
-     * as checkout (app.price_breakdown), so the customer checkout page and admin
-     * multi-item preview render identical numbers.
-     *
      * @generated from protobuf rpc: QuoteCart(ticketspan.booking.CreateMultiBookingRequest) returns (ticketspan.booking.CartQuote);
      */
     quoteCart(input: CreateMultiBookingRequest, options?: RpcOptions): UnaryCall<CreateMultiBookingRequest, CartQuote>;
@@ -78,9 +72,6 @@ export interface IBookingServiceClient {
      */
     createPaymentIntent(input: PaymentIntentRequest, options?: RpcOptions): UnaryCall<PaymentIntentRequest, PaymentIntentResponse>;
     /**
-     * Re-price the booking for the chosen method (card/ach) and update the Stripe
-     * intent amount server-side. Returns the new total + ACH savings.
-     *
      * @generated from protobuf rpc: UpdatePaymentIntentForMethod(ticketspan.booking.UpdatePaymentMethodRequest) returns (ticketspan.booking.UpdatePaymentMethodResponse);
      */
     updatePaymentIntentForMethod(input: UpdatePaymentMethodRequest, options?: RpcOptions): UnaryCall<UpdatePaymentMethodRequest, UpdatePaymentMethodResponse>;
@@ -89,9 +80,6 @@ export interface IBookingServiceClient {
      */
     getPaymentStatus(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, PaymentStatusResponse>;
     /**
-     * Free events (order total = 0): issue the ticket directly with no Stripe payment.
-     * Server re-checks the booking total is 0 before confirming.
-     *
      * @generated from protobuf rpc: ConfirmFreeBooking(ticketspan.common.UuidValue) returns (ticketspan.booking.PaymentStatusResponse);
      */
     confirmFreeBooking(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, PaymentStatusResponse>;
@@ -151,8 +139,6 @@ export class BookingServiceClient implements IBookingServiceClient, ServiceInfo 
         return stackIntercept<ReserveOpenCapacityRequest, CreateBookingResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Cart checkout: one booking aggregating many ticket/table lines, one payment.
-     *
      * @generated from protobuf rpc: CreateMultiBooking(ticketspan.booking.CreateMultiBookingRequest) returns (ticketspan.booking.CreateBookingResponse);
      */
     createMultiBooking(input: CreateMultiBookingRequest, options?: RpcOptions): UnaryCall<CreateMultiBookingRequest, CreateBookingResponse> {
@@ -160,10 +146,6 @@ export class BookingServiceClient implements IBookingServiceClient, ServiceInfo 
         return stackIntercept<CreateMultiBookingRequest, CreateBookingResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Preview a cart's full pricing breakdown WITHOUT reserving anything. Same engine
-     * as checkout (app.price_breakdown), so the customer checkout page and admin
-     * multi-item preview render identical numbers.
-     *
      * @generated from protobuf rpc: QuoteCart(ticketspan.booking.CreateMultiBookingRequest) returns (ticketspan.booking.CartQuote);
      */
     quoteCart(input: CreateMultiBookingRequest, options?: RpcOptions): UnaryCall<CreateMultiBookingRequest, CartQuote> {
@@ -178,9 +160,6 @@ export class BookingServiceClient implements IBookingServiceClient, ServiceInfo 
         return stackIntercept<PaymentIntentRequest, PaymentIntentResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Re-price the booking for the chosen method (card/ach) and update the Stripe
-     * intent amount server-side. Returns the new total + ACH savings.
-     *
      * @generated from protobuf rpc: UpdatePaymentIntentForMethod(ticketspan.booking.UpdatePaymentMethodRequest) returns (ticketspan.booking.UpdatePaymentMethodResponse);
      */
     updatePaymentIntentForMethod(input: UpdatePaymentMethodRequest, options?: RpcOptions): UnaryCall<UpdatePaymentMethodRequest, UpdatePaymentMethodResponse> {
@@ -195,9 +174,6 @@ export class BookingServiceClient implements IBookingServiceClient, ServiceInfo 
         return stackIntercept<UuidValue, PaymentStatusResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Free events (order total = 0): issue the ticket directly with no Stripe payment.
-     * Server re-checks the booking total is 0 before confirming.
-     *
      * @generated from protobuf rpc: ConfirmFreeBooking(ticketspan.common.UuidValue) returns (ticketspan.booking.PaymentStatusResponse);
      */
     confirmFreeBooking(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, PaymentStatusResponse> {

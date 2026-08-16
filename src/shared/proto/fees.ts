@@ -30,15 +30,15 @@ export interface FeeFormula {
     /**
      * @generated from protobuf field: int32 percent_bps = 3;
      */
-    percentBps: number; // 600 = 6.00%
+    percentBps: number;
     /**
      * @generated from protobuf field: int32 flat_cents = 4;
      */
-    flatCents: number; // 150 = $1.50
+    flatCents: number;
     /**
      * @generated from protobuf field: int32 max_fee_cents = 6;
      */
-    maxFeeCents: number; // 0 = unset
+    maxFeeCents: number;
     /**
      * @generated from protobuf field: bool is_active = 7;
      */
@@ -75,8 +75,6 @@ export interface ListFeeFormulasResponse {
     formulas: FeeFormula[];
 }
 /**
- * One priced item under an event: a ticket type or a table.
- *
  * @generated from protobuf message ticketspan.fees.FeeLineItem
  */
 export interface FeeLineItem {
@@ -87,7 +85,7 @@ export interface FeeLineItem {
     /**
      * @generated from protobuf field: string kind = 2;
      */
-    kind: string; // "ticket" | "table"
+    kind: string;
     /**
      * @generated from protobuf field: string label = 3;
      */
@@ -103,7 +101,7 @@ export interface FeeLineItem {
     /**
      * @generated from protobuf field: int32 fee_cents = 6;
      */
-    feeCents: number; // resolved platform_fee_cents
+    feeCents: number;
 }
 /**
  * @generated from protobuf message ticketspan.fees.DeveloperEvent
@@ -150,7 +148,7 @@ export interface AssignFeeFormulaRequest {
     /**
      * @generated from protobuf field: string kind = 1;
      */
-    kind: string; // "ticket" | "table"
+    kind: string;
     /**
      * @generated from protobuf field: string target_id = 2;
      */
@@ -158,11 +156,11 @@ export interface AssignFeeFormulaRequest {
     /**
      * @generated from protobuf field: string fee_formulas_id = 3;
      */
-    feeFormulasId: string; // empty clears the formula
+    feeFormulasId: string;
     /**
      * @generated from protobuf field: string reason = 4;
      */
-    reason: string; // required audit note for developer overrides
+    reason: string;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class FeeFormula$Type extends MessageType<FeeFormula> {

@@ -38,10 +38,6 @@ import type { PageRequest } from "./common";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
 /**
- * Developer-only pricing controls: subscriptions & trials, Pay Per Event,
- * add-ons, fee overrides, and platform revenue reports. Every mutation is
- * audit-logged (who/when/from/to/why) by the service.
- *
  * @generated from protobuf service ticketspan.billing.DeveloperBillingService
  */
 export interface IDeveloperBillingServiceClient {
@@ -114,10 +110,6 @@ export interface IDeveloperBillingServiceClient {
      */
     getTaxReport(input: RevenueReportRequest, options?: RpcOptions): UnaryCall<RevenueReportRequest, TaxReport>;
     /**
-     * Monthly remittance view split by who collected the tax: 'platform' months
-     * are what TicketSpan owes the tax authorities; 'self' months are informational
-     * (tenants remit those themselves). Tenant breakdown inside each month.
-     *
      * @generated from protobuf rpc: GetTaxRemittanceReport(ticketspan.billing.RevenueReportRequest) returns (ticketspan.billing.TaxRemittanceReport);
      */
     getTaxRemittanceReport(input: RevenueReportRequest, options?: RpcOptions): UnaryCall<RevenueReportRequest, TaxRemittanceReport>;
@@ -155,10 +147,6 @@ export interface IDeveloperBillingServiceClient {
     listVenueTaxSummaries(input: Empty, options?: RpcOptions): UnaryCall<Empty, VenueTaxSummaryList>;
 }
 /**
- * Developer-only pricing controls: subscriptions & trials, Pay Per Event,
- * add-ons, fee overrides, and platform revenue reports. Every mutation is
- * audit-logged (who/when/from/to/why) by the service.
- *
  * @generated from protobuf service ticketspan.billing.DeveloperBillingService
  */
 export class DeveloperBillingServiceClient implements IDeveloperBillingServiceClient, ServiceInfo {
@@ -287,10 +275,6 @@ export class DeveloperBillingServiceClient implements IDeveloperBillingServiceCl
         return stackIntercept<RevenueReportRequest, TaxReport>("unary", this._transport, method, opt, input);
     }
     /**
-     * Monthly remittance view split by who collected the tax: 'platform' months
-     * are what TicketSpan owes the tax authorities; 'self' months are informational
-     * (tenants remit those themselves). Tenant breakdown inside each month.
-     *
      * @generated from protobuf rpc: GetTaxRemittanceReport(ticketspan.billing.RevenueReportRequest) returns (ticketspan.billing.TaxRemittanceReport);
      */
     getTaxRemittanceReport(input: RevenueReportRequest, options?: RpcOptions): UnaryCall<RevenueReportRequest, TaxRemittanceReport> {

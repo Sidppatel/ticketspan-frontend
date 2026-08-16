@@ -293,7 +293,7 @@ export interface Event {
     /**
      * @generated from protobuf field: int32 total_capacity = 13;
      */
-    totalCapacity: number; // calculated: sum of ticket-type / table capacity (read-only)
+    totalCapacity: number;
     /**
      * @generated from protobuf field: string venues_id = 14;
      */
@@ -313,19 +313,19 @@ export interface Event {
     /**
      * @generated from protobuf field: string event_type = 18;
      */
-    eventType: string; // Open | Table | Both
+    eventType: string;
     /**
      * @generated from protobuf field: string primary_image_id = 19;
      */
-    primaryImageId: string; // images_id of primary thumbnail (fallback event image)
+    primaryImageId: string;
     /**
      * @generated from protobuf field: string extra_info_json = 20;
      */
-    extraInfoJson: string; // JSON array [{key,value,isPublic,sortOrder}]
+    extraInfoJson: string;
     /**
      * @generated from protobuf field: bool ach_enabled = 21;
      */
-    achEnabled: boolean; // admin opted this event in to ACH (tenant-gated)
+    achEnabled: boolean;
     /**
      * @generated from protobuf field: double venue_state_tax_rate = 22;
      */
@@ -346,12 +346,30 @@ export interface Event {
      * @generated from protobuf field: double venue_combined_tax_rate = 26;
      */
     venueCombinedTaxRate: number;
-    shortDescription?: string;
-    storyDescription?: string;
-    heroBackdropImageId?: string;
-    posterImageId?: string;
-    isVerifiedOrganizer?: boolean;
-    urgencyBadgeText?: string;
+    /**
+     * @generated from protobuf field: string short_description = 27;
+     */
+    shortDescription: string;
+    /**
+     * @generated from protobuf field: string story_description = 28;
+     */
+    storyDescription: string;
+    /**
+     * @generated from protobuf field: string hero_backdrop_image_id = 29;
+     */
+    heroBackdropImageId: string;
+    /**
+     * @generated from protobuf field: string poster_image_id = 30;
+     */
+    posterImageId: string;
+    /**
+     * @generated from protobuf field: bool is_verified_organizer = 31;
+     */
+    isVerifiedOrganizer: boolean;
+    /**
+     * @generated from protobuf field: string urgency_badge_text = 32;
+     */
+    urgencyBadgeText: string;
 }
 /**
  * @generated from protobuf message ticketspan.event.GetEventBySlugRequest
@@ -417,13 +435,31 @@ export interface CreateEventRequest {
     /**
      * @generated from protobuf field: string event_type = 16;
      */
-    eventType: string; // Open | Table | Both; default Open
-    shortDescription?: string;
-    storyDescription?: string;
-    heroBackdropImageId?: string;
-    posterImageId?: string;
-    isVerifiedOrganizer?: boolean;
-    urgencyBadgeText?: string;
+    eventType: string;
+    /**
+     * @generated from protobuf field: string short_description = 17;
+     */
+    shortDescription: string;
+    /**
+     * @generated from protobuf field: string story_description = 18;
+     */
+    storyDescription: string;
+    /**
+     * @generated from protobuf field: string hero_backdrop_image_id = 19;
+     */
+    heroBackdropImageId: string;
+    /**
+     * @generated from protobuf field: string poster_image_id = 20;
+     */
+    posterImageId: string;
+    /**
+     * @generated from protobuf field: bool is_verified_organizer = 21;
+     */
+    isVerifiedOrganizer: boolean;
+    /**
+     * @generated from protobuf field: string urgency_badge_text = 22;
+     */
+    urgencyBadgeText: string;
 }
 /**
  * @generated from protobuf message ticketspan.event.CreateEventResponse
@@ -477,17 +513,35 @@ export interface UpdateEventRequest {
     /**
      * @generated from protobuf field: string event_type = 11;
      */
-    eventType: string; // Open | Table | Both; empty = unchanged
+    eventType: string;
     /**
      * @generated from protobuf field: string extra_info_json = 12;
      */
-    extraInfoJson: string; // JSON array [{key,value,isPublic,sortOrder}]; empty = unchanged
-    shortDescription?: string;
-    storyDescription?: string;
-    heroBackdropImageId?: string;
-    posterImageId?: string;
-    isVerifiedOrganizer?: boolean;
-    urgencyBadgeText?: string;
+    extraInfoJson: string;
+    /**
+     * @generated from protobuf field: string short_description = 13;
+     */
+    shortDescription: string;
+    /**
+     * @generated from protobuf field: string story_description = 14;
+     */
+    storyDescription: string;
+    /**
+     * @generated from protobuf field: string hero_backdrop_image_id = 15;
+     */
+    heroBackdropImageId: string;
+    /**
+     * @generated from protobuf field: string poster_image_id = 16;
+     */
+    posterImageId: string;
+    /**
+     * @generated from protobuf field: bool is_verified_organizer = 17;
+     */
+    isVerifiedOrganizer: boolean;
+    /**
+     * @generated from protobuf field: string urgency_badge_text = 18;
+     */
+    urgencyBadgeText: string;
 }
 /**
  * @generated from protobuf message ticketspan.event.ChangeEventStatusRequest
@@ -1455,7 +1509,7 @@ class Event$Type extends MessageType<Event> {
         message.storyDescription = "";
         message.heroBackdropImageId = "";
         message.posterImageId = "";
-        message.isVerifiedOrganizer = true;
+        message.isVerifiedOrganizer = false;
         message.urgencyBadgeText = "";
         if (value !== undefined)
             reflectionMergePartial<Event>(this, message, value);
@@ -1653,22 +1707,22 @@ class Event$Type extends MessageType<Event> {
         if (message.venueCombinedTaxRate !== 0)
             writer.tag(26, WireType.Bit64).double(message.venueCombinedTaxRate);
         /* string short_description = 27; */
-        if (message.shortDescription !== undefined && message.shortDescription !== "")
+        if (message.shortDescription !== "")
             writer.tag(27, WireType.LengthDelimited).string(message.shortDescription);
         /* string story_description = 28; */
-        if (message.storyDescription !== undefined && message.storyDescription !== "")
+        if (message.storyDescription !== "")
             writer.tag(28, WireType.LengthDelimited).string(message.storyDescription);
         /* string hero_backdrop_image_id = 29; */
-        if (message.heroBackdropImageId !== undefined && message.heroBackdropImageId !== "")
+        if (message.heroBackdropImageId !== "")
             writer.tag(29, WireType.LengthDelimited).string(message.heroBackdropImageId);
         /* string poster_image_id = 30; */
-        if (message.posterImageId !== undefined && message.posterImageId !== "")
+        if (message.posterImageId !== "")
             writer.tag(30, WireType.LengthDelimited).string(message.posterImageId);
         /* bool is_verified_organizer = 31; */
-        if (message.isVerifiedOrganizer !== undefined && message.isVerifiedOrganizer !== true)
+        if (message.isVerifiedOrganizer !== false)
             writer.tag(31, WireType.Varint).bool(message.isVerifiedOrganizer);
         /* string urgency_badge_text = 32; */
-        if (message.urgencyBadgeText !== undefined && message.urgencyBadgeText !== "")
+        if (message.urgencyBadgeText !== "")
             writer.tag(32, WireType.LengthDelimited).string(message.urgencyBadgeText);
         let u = options.writeUnknownFields;
         if (u !== false)
@@ -1771,7 +1825,7 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         message.storyDescription = "";
         message.heroBackdropImageId = "";
         message.posterImageId = "";
-        message.isVerifiedOrganizer = true;
+        message.isVerifiedOrganizer = false;
         message.urgencyBadgeText = "";
         if (value !== undefined)
             reflectionMergePartial<CreateEventRequest>(this, message, value);
@@ -1891,22 +1945,22 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         if (message.eventType !== "")
             writer.tag(16, WireType.LengthDelimited).string(message.eventType);
         /* string short_description = 17; */
-        if (message.shortDescription !== undefined && message.shortDescription !== "")
+        if (message.shortDescription !== "")
             writer.tag(17, WireType.LengthDelimited).string(message.shortDescription);
         /* string story_description = 18; */
-        if (message.storyDescription !== undefined && message.storyDescription !== "")
+        if (message.storyDescription !== "")
             writer.tag(18, WireType.LengthDelimited).string(message.storyDescription);
         /* string hero_backdrop_image_id = 19; */
-        if (message.heroBackdropImageId !== undefined && message.heroBackdropImageId !== "")
+        if (message.heroBackdropImageId !== "")
             writer.tag(19, WireType.LengthDelimited).string(message.heroBackdropImageId);
         /* string poster_image_id = 20; */
-        if (message.posterImageId !== undefined && message.posterImageId !== "")
+        if (message.posterImageId !== "")
             writer.tag(20, WireType.LengthDelimited).string(message.posterImageId);
         /* bool is_verified_organizer = 21; */
-        if (message.isVerifiedOrganizer !== undefined && message.isVerifiedOrganizer !== true)
+        if (message.isVerifiedOrganizer !== false)
             writer.tag(21, WireType.Varint).bool(message.isVerifiedOrganizer);
         /* string urgency_badge_text = 22; */
-        if (message.urgencyBadgeText !== undefined && message.urgencyBadgeText !== "")
+        if (message.urgencyBadgeText !== "")
             writer.tag(22, WireType.LengthDelimited).string(message.urgencyBadgeText);
         let u = options.writeUnknownFields;
         if (u !== false)
@@ -2005,7 +2059,7 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         message.storyDescription = "";
         message.heroBackdropImageId = "";
         message.posterImageId = "";
-        message.isVerifiedOrganizer = true;
+        message.isVerifiedOrganizer = false;
         message.urgencyBadgeText = "";
         if (value !== undefined)
             reflectionMergePartial<UpdateEventRequest>(this, message, value);
@@ -2113,22 +2167,22 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         if (message.extraInfoJson !== "")
             writer.tag(12, WireType.LengthDelimited).string(message.extraInfoJson);
         /* string short_description = 13; */
-        if (message.shortDescription !== undefined && message.shortDescription !== "")
+        if (message.shortDescription !== "")
             writer.tag(13, WireType.LengthDelimited).string(message.shortDescription);
         /* string story_description = 14; */
-        if (message.storyDescription !== undefined && message.storyDescription !== "")
+        if (message.storyDescription !== "")
             writer.tag(14, WireType.LengthDelimited).string(message.storyDescription);
         /* string hero_backdrop_image_id = 15; */
-        if (message.heroBackdropImageId !== undefined && message.heroBackdropImageId !== "")
+        if (message.heroBackdropImageId !== "")
             writer.tag(15, WireType.LengthDelimited).string(message.heroBackdropImageId);
         /* string poster_image_id = 16; */
-        if (message.posterImageId !== undefined && message.posterImageId !== "")
+        if (message.posterImageId !== "")
             writer.tag(16, WireType.LengthDelimited).string(message.posterImageId);
         /* bool is_verified_organizer = 17; */
-        if (message.isVerifiedOrganizer !== undefined && message.isVerifiedOrganizer !== true)
+        if (message.isVerifiedOrganizer !== false)
             writer.tag(17, WireType.Varint).bool(message.isVerifiedOrganizer);
         /* string urgency_badge_text = 18; */
-        if (message.urgencyBadgeText !== undefined && message.urgencyBadgeText !== "")
+        if (message.urgencyBadgeText !== "")
             writer.tag(18, WireType.LengthDelimited).string(message.urgencyBadgeText);
         let u = options.writeUnknownFields;
         if (u !== false)

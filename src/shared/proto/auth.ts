@@ -82,9 +82,6 @@ export interface LoginRequest {
      */
     tenantSlug: string;
     /**
-     * Portal the login originates from: "public" | "admin" | "staff" | "developer".
-     * Login is rejected if the account's role is not allowed in that portal.
-     *
      * @generated from protobuf field: string portal = 4;
      */
     portal: string;
@@ -127,8 +124,6 @@ export interface GoogleSignInRequest {
      */
     tenantSlug: string;
     /**
-     * See LoginRequest.portal.
-     *
      * @generated from protobuf field: string portal = 3;
      */
     portal: string;
@@ -186,9 +181,6 @@ export interface PasswordResetRequest {
      */
     tenantSlug: string;
     /**
-     * Origin of the portal the request came from (e.g. http://admin.localhost:5173).
-     * The reset link is built on this host so it returns to the same portal.
-     *
      * @generated from protobuf field: string origin = 3;
      */
     origin: string;

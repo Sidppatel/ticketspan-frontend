@@ -62,8 +62,6 @@ export interface IAuthServiceClient {
      */
     requestPasswordReset(input: PasswordResetRequest, options?: RpcOptions): UnaryCall<PasswordResetRequest, AckResponse>;
     /**
-     * Validate a reset token without consuming it (called when the reset page loads).
-     *
      * @generated from protobuf rpc: ValidatePasswordResetToken(ticketspan.auth.ValidateResetTokenRequest) returns (ticketspan.common.AckResponse);
      */
     validatePasswordResetToken(input: ValidateResetTokenRequest, options?: RpcOptions): UnaryCall<ValidateResetTokenRequest, AckResponse>;
@@ -158,8 +156,6 @@ export class AuthServiceClient implements IAuthServiceClient, ServiceInfo {
         return stackIntercept<PasswordResetRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * Validate a reset token without consuming it (called when the reset page loads).
-     *
      * @generated from protobuf rpc: ValidatePasswordResetToken(ticketspan.auth.ValidateResetTokenRequest) returns (ticketspan.common.AckResponse);
      */
     validatePasswordResetToken(input: ValidateResetTokenRequest, options?: RpcOptions): UnaryCall<ValidateResetTokenRequest, AckResponse> {
