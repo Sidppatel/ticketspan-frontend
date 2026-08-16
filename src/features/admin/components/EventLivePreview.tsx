@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
-import { Monitor, Tablet, Smartphone, ExternalLink, Copy, Check, Sparkles } from 'lucide-react';
+import { Monitor, Tablet, Smartphone, ExternalLink, Copy, Check, Sparkles, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { EventDetailPageContent } from '@/features/public/pages/EventDetailPage';
 import type { Event } from '@/shared/proto/event';
@@ -123,24 +123,85 @@ export function EventLivePreview({ event, previewUrl }: EventLivePreviewProps) {
       </div>
 
       <div className="w-full flex justify-center overflow-x-auto py-2">
-        <div
-          className={`transition-all duration-300 overflow-hidden border border-border/60 shadow-xl bg-surface-canvas ${
-            device === 'desktop'
-              ? 'w-full rounded-2xl'
-              : device === 'tablet'
-                ? 'w-[768px] rounded-2xl max-w-full'
-                : 'w-[390px] rounded-[2.5rem] border-[8px] border-stage/90 shadow-2xl max-w-full'
-          }`}
-        >
-          {device === 'mobile' && (
-            <div className="w-full bg-stage/90 h-6 flex items-center justify-center">
-              <div className="w-20 h-3.5 bg-stage rounded-b-lg border-b border-white/10" />
+        {device === 'mobile' && (
+          <div className="w-[390px] h-[820px] max-h-[85vh] rounded-[3rem] border-[10px] border-stage/95 shadow-2xl bg-surface-canvas relative flex flex-col overflow-hidden max-w-full">
+            <div className="w-full bg-surface-canvas shrink-0 pt-2 pb-1 flex flex-col items-center justify-center z-50 select-none">
+              <div className="w-28 h-4.5 bg-stage rounded-full flex items-center justify-end px-2.5">
+                <div className="size-2 rounded-full bg-neutral-900 border border-white/20" />
+              </div>
             </div>
-          )}
-          <div className="w-full">
-            <EventDetailPageContent event={event} isPreview={true} />
+
+            <div className="flex-1 w-full relative bg-surface-canvas">
+              {previewUrl ? (
+                <iframe
+                  src={previewUrl}
+                  title="Mobile Live Preview"
+                  className="w-full h-full border-0 bg-surface-canvas"
+                />
+              ) : (
+                <div className="h-full overflow-y-auto overflow-x-hidden [transform:translateZ(0)] relative scroll-smooth bg-surface-canvas">
+                  <EventDetailPageContent event={event} isPreview={true} />
+                </div>
+              )}
+            </div>
+
+            <div className="w-full bg-surface-canvas shrink-0 py-1.5 flex items-center justify-center z-50 select-none">
+              <div className="w-32 h-1 bg-foreground/20 rounded-full" />
+            </div>
           </div>
-        </div>
+        )}
+
+        {device === 'tablet' && (
+          <div className="w-[768px] h-[840px] max-h-[85vh] rounded-[2rem] border-[8px] border-stage/90 shadow-xl bg-surface-canvas relative flex flex-col overflow-hidden max-w-full">
+            <div className="w-full bg-surface-canvas shrink-0 py-1.5 flex items-center justify-center z-50 select-none">
+              <div className="size-2 rounded-full bg-neutral-800 border border-white/10" />
+            </div>
+
+            <div className="flex-1 w-full relative bg-surface-canvas">
+              {previewUrl ? (
+                <iframe
+                  src={previewUrl}
+                  title="Tablet Live Preview"
+                  className="w-full h-full border-0 bg-surface-canvas"
+                />
+              ) : (
+                <div className="h-full overflow-y-auto overflow-x-hidden [transform:translateZ(0)] relative scroll-smooth bg-surface-canvas">
+                  <EventDetailPageContent event={event} isPreview={true} />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {device === 'desktop' && (
+          <div className="w-full h-[840px] max-h-[85vh] rounded-2xl border border-border/80 shadow-lg bg-surface-canvas relative flex flex-col overflow-hidden">
+            <div className="w-full bg-muted/60 border-b border-border/60 px-4 py-2 flex items-center gap-3 shrink-0 select-none">
+              <div className="flex items-center gap-1.5">
+                <span className="size-2.5 rounded-full bg-destructive/60" />
+                <span className="size-2.5 rounded-full bg-warning/60" />
+                <span className="size-2.5 rounded-full bg-success/60" />
+              </div>
+              <div className="flex-1 max-w-md mx-auto rounded-md bg-background/80 border border-border/50 px-3 py-1 text-xs text-muted-foreground flex items-center gap-1.5 truncate font-mono">
+                <Lock className="size-3 text-emerald-600 shrink-0" />
+                <span className="truncate">{previewUrl || `https://ticketspan.com/events/${event.slug}`}</span>
+              </div>
+            </div>
+
+            <div className="flex-1 w-full relative bg-surface-canvas">
+              {previewUrl ? (
+                <iframe
+                  src={previewUrl}
+                  title="Desktop Live Preview"
+                  className="w-full h-full border-0 bg-surface-canvas"
+                />
+              ) : (
+                <div className="h-full overflow-y-auto overflow-x-hidden [transform:translateZ(0)] relative scroll-smooth bg-surface-canvas">
+                  <EventDetailPageContent event={event} isPreview={true} />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
