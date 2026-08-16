@@ -4,9 +4,11 @@ import type { Stripe } from '@stripe/stripe-js';
 import {
   Elements,
   PaymentElement,
+  ExpressCheckoutElement,
   useElements,
   useStripe,
 } from '@stripe/react-stripe-js';
+import type { StripeExpressCheckoutElementConfirmEvent } from '@stripe/stripe-js';
 import {
   createPaymentIntent,
   getPaymentStatus,
@@ -306,6 +308,30 @@ function StripeCheckoutForm({
     onPaymentSuccess();
   }, [bookingsId, onPaymentSuccess]);
 
+  const handleExpressConfirm = async (_event: StripeExpressCheckoutElementConfirmEvent) => {
+    if (!stripe || !elements || expired) return;
+    setSubmitting(true);
+    setMessage(null);
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      clientSecret: intent.clientSecret,
+      confirmParams: { return_url: window.location.href },
+      redirect: 'if_required',
+    });
+
+    if (error) {
+      setMessage(error.message ?? 'Digital wallet transaction failed. Please retry.');
+      setSubmitting(false);
+      return;
+    }
+    if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
+      await pollUntilPaid();
+      return;
+    }
+    setSubmitting(false);
+  };
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!stripe || !elements || expired) return;
@@ -377,9 +403,32 @@ function StripeCheckoutForm({
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Express Checkout Wallets (Google Pay, Apple Pay, Samsung Pay) */}
+          <div className="rounded-2xl overflow-hidden">
+            <ExpressCheckoutElement
+              onConfirm={handleExpressConfirm}
+              options={{
+                buttonHeight: 46,
+                buttonTheme: {
+                  applePay: 'black',
+                  googlePay: 'black',
+                },
+                paymentMethods: {
+                  applePay: 'auto',
+                  googlePay: 'auto',
+                  link: 'never',
+                },
+              }}
+            />
+          </div>
+
           <PaymentElement
             options={{
-              wallets: { link: 'never' },
+              wallets: {
+                applePay: 'auto',
+                googlePay: 'auto',
+                link: 'never',
+              },
               defaultValues: {
                 billingDetails: {
                   name: buyerInfo?.name || undefined,
