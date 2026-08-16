@@ -5,6 +5,8 @@ import {
   startOfWeek,
   startOfMonth,
   startOfQuarter,
+  startOfYear,
+  subDays,
   differenceInSeconds,
 } from 'date-fns';
 import type {
@@ -17,7 +19,7 @@ import type {
   SalesByChannelList,
 } from '@/shared/proto/reporting';
 
-export type RangePreset = 'today' | 'week' | 'month' | 'quarter' | 'custom';
+export type RangePreset = 'today' | 'week' | '30days' | 'month' | 'quarter' | 'ytd' | 'custom';
 export type Bucket = 'day' | 'week' | 'month' | 'year';
 
 export interface ReportRange {
@@ -40,13 +42,19 @@ export function resolveRange(preset: RangePreset, customFrom?: string, customTo?
       from = startOfDay(now);
       break;
     case 'week':
-      from = startOfWeek(now);
+      from = startOfWeek(now, { weekStartsOn: 1 });
+      break;
+    case '30days':
+      from = subDays(now, 30);
       break;
     case 'month':
       from = startOfMonth(now);
       break;
     case 'quarter':
       from = startOfQuarter(now);
+      break;
+    case 'ytd':
+      from = startOfYear(now);
       break;
     case 'custom':
       from = customFrom ? new Date(customFrom) : startOfMonth(now);
@@ -65,7 +73,13 @@ export function resolveRange(preset: RangePreset, customFrom?: string, customTo?
 }
 
 export function defaultBucketForPreset(preset: RangePreset): Bucket {
-  return preset === 'quarter' || preset === 'custom' ? 'week' : 'day';
+  if (preset === 'quarter' || preset === 'ytd') {
+    return 'month';
+  }
+  if (preset === '30days' || preset === 'month' || preset === 'custom') {
+    return 'day';
+  }
+  return 'day';
 }
 
 export async function getReportingAccess(): Promise<ReportingAccess> {

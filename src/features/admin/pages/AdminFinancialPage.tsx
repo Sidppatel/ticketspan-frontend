@@ -1,387 +1,202 @@
-import { useState, type ReactNode } from 'react';
-import { ChevronDown } from 'lucide-react';
 import { useReports } from '@/features/admin/hooks/useReports';
-import {
-  percentChange,
-  bpsToPercentLabel,
-  salesVelocityLabel,
-  downloadCsv,
-  type RangePreset,
-  type Bucket,
-} from '@/features/admin/services/reportingService';
-import { centsToUSD, formatEpoch, formatEventDate } from '@/shared/lib/format';
-import { cn } from '@/shared/lib/cn';
+import { formatEpoch } from '@/shared/lib/format';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
-import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { RevenueLineChart, MetricCard } from '@/features/admin/components/ReportCharts';
-import type { EventPerformanceRow, TicketTypeBreakdownRow } from '@/shared/proto/reporting';
+import { RefreshCw, Calendar, Sparkles } from 'lucide-react';
+import { FinancialSummaryCards } from '@/features/admin/components/financial/FinancialSummaryCards';
+import { FinancialTimeseriesCard } from '@/features/admin/components/financial/FinancialTimeseriesCard';
+import { EventPerformanceSection } from '@/features/admin/components/financial/EventPerformanceSection';
+import { ItemBreakdownSection } from '@/features/admin/components/financial/ItemBreakdownSection';
+import { SalesChannelSection } from '@/features/admin/components/financial/SalesChannelSection';
+import { ProUpgradeBanner } from '@/features/admin/components/financial/ProUpgradeBanner';
+import type { RangePreset } from '@/features/admin/services/reportingService';
 
-function Drilldown({ open, children }: { open: boolean; children: ReactNode }) {
-  return (
-    <div
-      className={cn(
-        'grid overflow-hidden transition-all duration-300 ease-in-out',
-        open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
-      )}
-    >
-      <div className="overflow-hidden">{children}</div>
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="text-sm font-medium">{value}</p>
-    </div>
-  );
-}
-
-const PRESETS: { value: RangePreset; label: string }[] = [
+const PRESETS: { value: RangePreset; label: string; isPro?: boolean }[] = [
   { value: 'today', label: 'Today' },
-  { value: 'week', label: 'This week' },
-  { value: 'month', label: 'This month' },
-  { value: 'quarter', label: 'This quarter' },
+  { value: 'week', label: '7 Days' },
+  { value: '30days', label: '30 Days' },
+  { value: 'month', label: 'This Month' },
+  { value: 'quarter', label: 'This Quarter' },
+  { value: 'ytd', label: 'Year to Date' },
+  { value: 'custom', label: 'Custom', isPro: true },
 ];
-
-const BASIC_BUCKETS: { value: Bucket; label: string }[] = [
-  { value: 'day', label: 'Daily' },
-  { value: 'week', label: 'Weekly' },
-  { value: 'month', label: 'Monthly' },
-];
-
-const ADVANCED_BUCKETS: { value: Bucket; label: string }[] = [...BASIC_BUCKETS, { value: 'year', label: 'Yearly' }];
-
-function ProBadge() {
-  return <Badge variant="voltage">Pro</Badge>;
-}
 
 export function AdminFinancialPage() {
   const { data, loading, error, reload, controls } = useReports();
-  const advanced = data?.access.hasAdvancedReporting ?? false;
-  const buckets = advanced ? ADVANCED_BUCKETS : BASIC_BUCKETS;
-
-  function exportEventsCsv() {
-    if (!data) return;
-    downloadCsv(
-      'event-performance.csv',
-      ['Event', 'Start', 'Status', 'Revenue', 'Orders', 'Tickets', 'Checked in', 'Attendance rate'],
-      data.events.rows.map((row) => [
-        row.eventTitle,
-        formatEventDate(row.eventStartEpochSeconds),
-        row.eventStatus,
-        centsToUSD(row.revenueCents),
-        row.orders,
-        row.ticketsSold,
-        row.checkedIn,
-        bpsToPercentLabel(row.attendanceRateBps),
-      ]),
-    );
-  }
-
-  function exportTicketTypesCsv() {
-    if (!data) return;
-    downloadCsv(
-      'ticket-types.csv',
-      ['Ticket type', 'Event', 'Price', 'Quantity sold', 'Revenue'],
-      data.ticketTypes.rows.map((row) => [
-        row.label,
-        row.eventTitle,
-        centsToUSD(row.priceCents),
-        row.quantitySold,
-        centsToUSD(row.revenueCents),
-      ]),
-    );
-  }
-
-  function exportTimeseriesCsv() {
-    if (!data) return;
-    downloadCsv(
-      'revenue-over-time.csv',
-      ['Bucket start', 'Revenue', 'Orders', 'Tickets'],
-      data.timeseries.points.map((point) => [
-        formatEpoch(point.bucketStartEpochSeconds),
-        centsToUSD(point.revenueCents),
-        point.orders,
-        point.ticketsSold,
-      ]),
-    );
-  }
+  const isAdvanced = data?.access.hasAdvancedReporting ?? false;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="space-y-1.5">
+    <div className="space-y-8 pb-12">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/40 pb-5">
+        <div className="space-y-1">
           <div className="flex items-center gap-2.5">
-            <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">Financial</h1>
-            {advanced ? <ProBadge /> : null}
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Financial Overview
+            </h1>
+            {isAdvanced ? (
+              <Badge variant="voltage" className="gap-1 font-semibold">
+                <Sparkles className="h-3 w-3" />
+                Pro Analytics
+              </Badge>
+            ) : (
+              <Badge variant="neutral">Standard</Badge>
+            )}
           </div>
-          <p className="text-sm text-ink-soft">Where your money comes from — revenue, tickets, and the events driving it.</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Complete financial telemetry — revenue streams, ticket velocity, and event ledger audit trails.
+          </p>
         </div>
+
         {data ? (
-          <p className="text-xs text-muted-foreground">
-            Updated {formatEpoch(data.summary.generatedAtEpochSeconds)}
-            <Button size="sm" variant="ghost" className="ml-2" onClick={reload}>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground self-start sm:self-auto">
+            <span>Updated {formatEpoch(data.summary.generatedAtEpochSeconds)}</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 px-2 text-xs gap-1 hover:bg-muted"
+              onClick={reload}
+            >
+              <RefreshCw className="h-3 w-3" />
               Refresh
             </Button>
-          </p>
+          </div>
         ) : null}
       </div>
 
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="flex gap-1">
-          {PRESETS.map((preset) => (
-            <Button
-              key={preset.value}
-              size="sm"
-              variant={controls.preset === preset.value ? 'default' : 'outline'}
-              onClick={() => controls.setPreset(preset.value)}
-            >
-              {preset.label}
-            </Button>
-          ))}
-          {advanced ? (
-            <Button
-              size="sm"
-              variant={controls.preset === 'custom' ? 'default' : 'outline'}
-              onClick={() => controls.setPreset('custom')}
-            >
-              Custom
-            </Button>
-          ) : null}
-        </div>
-        {advanced && controls.preset === 'custom' ? (
-          <>
-            <div className="space-y-1">
-              <Label htmlFor="report-from">From</Label>
-              <Input
-                id="report-from"
-                type="date"
-                value={controls.customFrom}
-                onChange={(e) => controls.setCustomFrom(e.target.value)}
-              />
+      <div className="flex flex-wrap items-end justify-between gap-4 bg-muted/20 border border-border/60 rounded-xl p-3.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap gap-1">
+            {PRESETS.map((p) => {
+              if (p.isPro && !isAdvanced) {
+                return (
+                  <button
+                    key={p.value}
+                    type="button"
+                    disabled
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg border border-border/40 text-muted-foreground/50 cursor-not-allowed bg-muted/10"
+                  >
+                    {p.label}
+                    <Badge variant="voltage" className="text-[9px] px-1 py-0 h-3.5">
+                      Pro
+                    </Badge>
+                  </button>
+                );
+              }
+
+              return (
+                <Button
+                  key={p.value}
+                  size="sm"
+                  variant={controls.preset === p.value ? 'default' : 'outline'}
+                  className={`h-8 text-xs font-medium ${
+                    controls.preset === p.value ? 'shadow-xs' : 'bg-background hover:bg-muted/50'
+                  }`}
+                  onClick={() => controls.setPreset(p.value)}
+                >
+                  {p.label}
+                </Button>
+              );
+            })}
+          </div>
+
+          {isAdvanced && controls.preset === 'custom' && (
+            <div className="flex items-center gap-2 pl-2 border-l border-border/60">
+              <div className="space-y-1">
+                <Label htmlFor="financial-custom-from" className="text-[10px] uppercase font-bold text-muted-foreground">
+                  From
+                </Label>
+                <Input
+                  id="financial-custom-from"
+                  type="date"
+                  value={controls.customFrom}
+                  onChange={(e) => controls.setCustomFrom(e.target.value)}
+                  className="h-8 text-xs w-34 bg-background"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="financial-custom-to" className="text-[10px] uppercase font-bold text-muted-foreground">
+                  To
+                </Label>
+                <Input
+                  id="financial-custom-to"
+                  type="date"
+                  value={controls.customTo}
+                  onChange={(e) => controls.setCustomTo(e.target.value)}
+                  className="h-8 text-xs w-34 bg-background"
+                />
+              </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="report-to">To</Label>
-              <Input
-                id="report-to"
-                type="date"
-                value={controls.customTo}
-                onChange={(e) => controls.setCustomTo(e.target.value)}
-              />
-            </div>
-          </>
-        ) : null}
-        <div className="space-y-1">
-          <Label htmlFor="report-bucket">Granularity</Label>
-          <Select
-            id="report-bucket"
-            className="w-auto"
-            value={controls.bucket}
-            onChange={(e) => controls.setBucket(e.target.value as Bucket)}
-          >
-            {buckets.map((bucket) => (
-              <option key={bucket.value} value={bucket.value}>
-                {bucket.label}
-              </option>
-            ))}
-          </Select>
+          )}
         </div>
-        {advanced ? (
-          <label className="flex items-center gap-2 pb-1 text-sm">
-            <Switch checked={controls.compareEnabled} onCheckedChange={controls.setCompareEnabled} />
-            Compare with previous period
+
+        {isAdvanced && (
+          <label className="flex items-center gap-2 text-xs font-medium cursor-pointer select-none text-muted-foreground hover:text-foreground">
+            <Switch
+              checked={controls.compareEnabled}
+              onCheckedChange={controls.setCompareEnabled}
+            />
+            <span>Compare with previous period</span>
           </label>
-        ) : null}
+        )}
       </div>
 
-      {error ? <p className="text-destructive">{error}</p> : null}
+      {error ? (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-xs font-semibold text-destructive">
+          {error}
+        </div>
+      ) : null}
+
+      {!isAdvanced && <ProUpgradeBanner />}
+
       {loading || !data ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((key) => (
-            <Skeleton key={key} className="h-24 rounded-lg" />
-          ))}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((key) => (
+              <Skeleton key={key} className="h-24 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-72 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <MetricCard
-              label="Total revenue"
-              value={centsToUSD(data.summary.revenueCents)}
-              changePercent={percentChange(data.summary.revenueCents, data.previousSummary.revenueCents)}
-            />
-            <MetricCard
-              label="Tickets sold"
-              value={String(data.summary.ticketsSold)}
-              changePercent={percentChange(data.summary.ticketsSold, data.previousSummary.ticketsSold)}
-            />
-            <MetricCard
-              label="Orders"
-              value={String(data.summary.orders)}
-              changePercent={percentChange(data.summary.orders, data.previousSummary.orders)}
-            />
-            <MetricCard
-              label="Average order value"
-              value={centsToUSD(data.summary.averageOrderCents)}
-              changePercent={percentChange(data.summary.averageOrderCents, data.previousSummary.averageOrderCents)}
-            />
-            <MetricCard
-              label="Conversion rate"
-              value={bpsToPercentLabel(data.summary.conversionBps)}
-              changePercent={percentChange(data.summary.conversionBps, data.previousSummary.conversionBps)}
-              hint={`${data.summary.visits} visits`}
-            />
-            {advanced ? (
-              <MetricCard
-                label="Refunded"
-                value={centsToUSD(data.summary.refundedCents)}
-                changePercent={percentChange(data.summary.refundedCents, data.previousSummary.refundedCents)}
-                hint={`${data.summary.refundedOrders} orders`}
-              />
-            ) : (
-              <MetricCard label="Visits" value={String(data.summary.visits)} changePercent={percentChange(data.summary.visits, data.previousSummary.visits)} />
-            )}
-          </div>
+          <FinancialSummaryCards
+            summary={data.summary}
+            previousSummary={data.previousSummary}
+            access={data.access}
+          />
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                Revenue over time
-                {advanced ? <span className="text-xs font-normal text-muted-foreground">with trend line</span> : null}
-              </CardTitle>
-              {advanced ? (
-                <Button size="sm" variant="outline" onClick={exportTimeseriesCsv}>
-                  Export CSV
-                </Button>
-              ) : null}
-            </CardHeader>
-            <CardContent>
-              <RevenueLineChart
-                points={data.timeseries.points}
-                comparisonPoints={data.comparisonTimeseries?.points}
-                bucket={controls.bucket}
-                showTrendLine={advanced}
-              />
-              {data.comparisonTimeseries ? (
-                <p className="mt-1 text-xs text-muted-foreground">Dashed line: previous period</p>
-              ) : null}
-            </CardContent>
-          </Card>
+          <FinancialTimeseriesCard
+            points={data.timeseries.points}
+            comparisonPoints={data.comparisonTimeseries?.points}
+            bucket={controls.bucket}
+            setBucket={controls.setBucket}
+            isAdvanced={isAdvanced}
+            compareEnabled={controls.compareEnabled}
+          />
 
-          {advanced ? (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  Event performance <ProBadge />
-                </CardTitle>
-                <Button size="sm" variant="outline" onClick={exportEventsCsv}>
-                  Export CSV
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {data.events.rows.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-muted-foreground">No events in this period.</p>
-                ) : (
-                  <div className="divide-y">
-                    {data.events.rows.map((row) => (
-                      <EventRow key={row.eventsId} row={row} />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ) : null}
+          <EventPerformanceSection
+            events={data.events.rows}
+            ticketTypes={data.ticketTypes.rows}
+            isAdvanced={isAdvanced}
+          />
 
-          {advanced ? (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  Revenue by ticket type <ProBadge />
-                </CardTitle>
-                <Button size="sm" variant="outline" onClick={exportTicketTypesCsv}>
-                  Export CSV
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {data.ticketTypes.rows.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-muted-foreground">Nothing to show for this period.</p>
-                ) : (
-                  <div className="divide-y">
-                    {data.ticketTypes.rows.map((row) => (
-                      <TicketTypeRow key={`${row.eventTicketTypesId}-${row.eventsId}`} row={row} />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ) : null}
+          <ItemBreakdownSection
+            ticketTypes={data.ticketTypes.rows}
+            events={data.events.rows}
+            isAdvanced={isAdvanced}
+          />
+
+          <SalesChannelSection
+            salesByChannel={data.salesByChannel}
+            isAdvanced={isAdvanced}
+          />
         </>
       )}
-    </div>
-  );
-}
-
-function EventRow({ row }: { row: EventPerformanceRow }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-3 py-2 text-left text-sm hover:bg-muted/40"
-      >
-        <ChevronDown className={cn('h-4 w-4 shrink-0 transition-transform', open ? 'rotate-180' : '')} />
-        <span className="flex-1 font-medium">{row.eventTitle}</span>
-        <span className="text-muted-foreground">{formatEventDate(row.eventStartEpochSeconds)}</span>
-        <span className="w-24 text-right font-mono">{centsToUSD(row.revenueCents)}</span>
-      </button>
-      <Drilldown open={open}>
-        <div className="grid grid-cols-2 gap-3 border-l-2 border-primary/30 py-3 pl-7 sm:grid-cols-4">
-          <Stat label="Status" value={row.eventStatus} />
-          <Stat label="Orders" value={String(row.orders)} />
-          <Stat label="Tickets" value={String(row.ticketsSold)} />
-          <Stat label="Checked in" value={String(row.checkedIn)} />
-          <Stat label="Attendance" value={bpsToPercentLabel(row.attendanceRateBps)} />
-          <Stat label="Capacity used" value={bpsToPercentLabel(row.capacityUsedBps)} />
-          <Stat label="Velocity" value={salesVelocityLabel(row.salesPerDayMilli)} />
-          <Stat label="Rev / attendee" value={centsToUSD(row.revenuePerAttendeeCents)} />
-          <Stat label="Refunded" value={centsToUSD(row.refundedCents)} />
-        </div>
-      </Drilldown>
-    </div>
-  );
-}
-
-function TicketTypeRow({ row }: { row: TicketTypeBreakdownRow }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-3 py-2 text-left text-sm hover:bg-muted/40"
-      >
-        <ChevronDown className={cn('h-4 w-4 shrink-0 transition-transform', open ? 'rotate-180' : '')} />
-        <span className="flex-1 font-medium">
-          {row.label} <span className="text-muted-foreground">— {row.eventTitle}</span>
-        </span>
-        <span className="w-24 text-right font-mono">{centsToUSD(row.revenueCents)}</span>
-      </button>
-      <Drilldown open={open}>
-        <div className="grid grid-cols-2 gap-3 border-l-2 border-primary/30 py-3 pl-7 sm:grid-cols-4">
-          <Stat label="Price" value={centsToUSD(row.priceCents)} />
-          <Stat label="Quantity sold" value={String(row.quantitySold)} />
-          <Stat label="Refunded qty" value={String(row.refundedQuantity)} />
-          <Stat label="Refunded" value={centsToUSD(row.refundedCents)} />
-        </div>
-      </Drilldown>
     </div>
   );
 }

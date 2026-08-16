@@ -138,6 +138,14 @@ export interface Booking {
      * @generated from protobuf field: string payment_method_brand = 29;
      */
     paymentMethodBrand: string;
+    /**
+     * @generated from protobuf field: string user_email = 30;
+     */
+    userEmail: string;
+    /**
+     * @generated from protobuf field: string user_name = 31;
+     */
+    userName: string;
 }
 /**
  * @generated from protobuf message ticketspan.booking.BookingLine
@@ -1097,7 +1105,9 @@ class Booking$Type extends MessageType<Booking> {
             { no: 26, name: "venue_state", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 27, name: "payment_method_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 28, name: "payment_method_last4", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 29, name: "payment_method_brand", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 29, name: "payment_method_brand", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 30, name: "user_email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 31, name: "user_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Booking>): Booking {
@@ -1131,6 +1141,8 @@ class Booking$Type extends MessageType<Booking> {
         message.paymentMethodType = "";
         message.paymentMethodLast4 = "";
         message.paymentMethodBrand = "";
+        message.userEmail = "";
+        message.userName = "";
         if (value !== undefined)
             reflectionMergePartial<Booking>(this, message, value);
         return message;
@@ -1226,6 +1238,12 @@ class Booking$Type extends MessageType<Booking> {
                     break;
                 case /* string payment_method_brand */ 29:
                     message.paymentMethodBrand = reader.string();
+                    break;
+                case /* string user_email */ 30:
+                    message.userEmail = reader.string();
+                    break;
+                case /* string user_name */ 31:
+                    message.userName = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1326,6 +1344,12 @@ class Booking$Type extends MessageType<Booking> {
         /* string payment_method_brand = 29; */
         if (message.paymentMethodBrand !== "")
             writer.tag(29, WireType.LengthDelimited).string(message.paymentMethodBrand);
+        /* string user_email = 30; */
+        if (message.userEmail !== "")
+            writer.tag(30, WireType.LengthDelimited).string(message.userEmail);
+        /* string user_name = 31; */
+        if (message.userName !== "")
+            writer.tag(31, WireType.LengthDelimited).string(message.userName);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

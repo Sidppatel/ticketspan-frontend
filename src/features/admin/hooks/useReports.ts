@@ -8,6 +8,7 @@ import {
   getRevenueTimeseries,
   getEventPerformance,
   getTicketTypeBreakdown,
+  getSalesByChannel,
   type RangePreset,
   type Bucket,
 } from '@/features/admin/services/reportingService';
@@ -17,7 +18,10 @@ import type {
   RevenueTimeseries,
   EventPerformanceList,
   TicketTypeBreakdownList,
+  SalesByChannelList,
 } from '@/shared/proto/reporting';
+
+export type ItemKindFilter = 'all' | 'ticket' | 'table';
 
 export interface ReportsData {
   access: ReportingAccess;
@@ -27,6 +31,7 @@ export interface ReportsData {
   comparisonTimeseries: RevenueTimeseries | null;
   events: EventPerformanceList;
   ticketTypes: TicketTypeBreakdownList;
+  salesByChannel: SalesByChannelList | null;
 }
 
 export interface ReportsControls {
@@ -40,6 +45,12 @@ export interface ReportsControls {
   setCustomFrom: (value: string) => void;
   customTo: string;
   setCustomTo: (value: string) => void;
+  itemFilter: ItemKindFilter;
+  setItemFilter: (filter: ItemKindFilter) => void;
+  selectedEventId: string;
+  setSelectedEventId: (eventId: string) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 export function useReports() {
@@ -48,6 +59,9 @@ export function useReports() {
   const [compareEnabled, setCompareEnabled] = useState(false);
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
+  const [itemFilter, setItemFilter] = useState<ItemKindFilter>('all');
+  const [selectedEventId, setSelectedEventId] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const changePreset = useCallback((next: RangePreset) => {
     setPreset(next);
@@ -58,7 +72,8 @@ export function useReports() {
     const range = resolveRange(preset, customFrom, customTo);
     const access = await getReportingAccess();
     const wantComparison = access.hasAdvancedReporting && compareEnabled;
-    const [summary, previousSummary, timeseries, events, ticketTypes, comparisonTimeseries] =
+
+    const [summary, previousSummary, timeseries, events, ticketTypes, comparisonTimeseries, salesByChannel] =
       await Promise.all([
         getReportSummary(range.fromEpochSeconds, range.toEpochSeconds),
         getReportSummary(range.previousFromEpochSeconds, range.previousToEpochSeconds),
@@ -68,8 +83,21 @@ export function useReports() {
         wantComparison
           ? getRevenueTimeseries(range.previousFromEpochSeconds, range.previousToEpochSeconds, bucket)
           : Promise.resolve(null),
+        access.hasAdvancedReporting
+          ? getSalesByChannel(range.fromEpochSeconds, range.toEpochSeconds).catch(() => null)
+          : Promise.resolve(null),
       ]);
-    return { access, summary, previousSummary, timeseries, comparisonTimeseries, events, ticketTypes };
+
+    return {
+      access,
+      summary,
+      previousSummary,
+      timeseries,
+      comparisonTimeseries,
+      events,
+      ticketTypes,
+      salesByChannel,
+    };
   }, [preset, bucket, compareEnabled, customFrom, customTo]);
 
   const state = useAsync(loader);
@@ -86,8 +114,14 @@ export function useReports() {
       setCustomFrom,
       customTo,
       setCustomTo,
+      itemFilter,
+      setItemFilter,
+      selectedEventId,
+      setSelectedEventId,
+      searchQuery,
+      setSearchQuery,
     }),
-    [preset, changePreset, bucket, compareEnabled, customFrom, customTo],
+    [preset, changePreset, bucket, compareEnabled, customFrom, customTo, itemFilter, selectedEventId, searchQuery],
   );
 
   return { ...state, controls };

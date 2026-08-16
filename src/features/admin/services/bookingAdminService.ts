@@ -2,9 +2,9 @@ import { bookingClient, ticketClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
 import type { Booking, BookingStats, Ticket } from '@/shared/proto/bookings';
 
-export async function listBookings(eventsId: string, status: string): Promise<Booking[]> {
+export async function listBookings(eventsId: string, status: string, search: string = ''): Promise<Booking[]> {
   const response = await callRpc(() =>
-    bookingClient.listBookings({ page: { offset: 0, limit: 100, search: '' }, eventsId, status }),
+    bookingClient.listBookings({ page: { offset: 0, limit: 200, search }, eventsId, status }),
   );
   return response.bookings;
 }

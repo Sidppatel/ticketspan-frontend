@@ -170,6 +170,18 @@ export interface ReportSummary {
      * @generated from protobuf field: int64 generated_at_epoch_seconds = 9;
      */
     generatedAtEpochSeconds: string;
+    /**
+     * @generated from protobuf field: int64 service_fee_cents = 10;
+     */
+    serviceFeeCents: string;
+    /**
+     * @generated from protobuf field: int64 tax_cents = 11;
+     */
+    taxCents: string;
+    /**
+     * @generated from protobuf field: int64 net_revenue_cents = 12;
+     */
+    netRevenueCents: string;
 }
 /**
  * @generated from protobuf message ticketspan.reporting.RevenueTimeseriesPoint
@@ -323,6 +335,10 @@ export interface TicketTypeBreakdownRow {
      * @generated from protobuf field: int64 refunded_cents = 9;
      */
     refundedCents: string;
+    /**
+     * @generated from protobuf field: string item_kind = 10;
+     */
+    itemKind: string;
 }
 /**
  * @generated from protobuf message ticketspan.reporting.TicketTypeBreakdownList
@@ -907,7 +923,10 @@ class ReportSummary$Type extends MessageType<ReportSummary> {
             { no: 6, name: "conversion_bps", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 7, name: "refunded_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 8, name: "refunded_orders", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 9, name: "generated_at_epoch_seconds", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+            { no: 9, name: "generated_at_epoch_seconds", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 10, name: "service_fee_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 11, name: "tax_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 12, name: "net_revenue_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
         ]);
     }
     create(value?: PartialMessage<ReportSummary>): ReportSummary {
@@ -921,6 +940,9 @@ class ReportSummary$Type extends MessageType<ReportSummary> {
         message.refundedCents = "0";
         message.refundedOrders = 0;
         message.generatedAtEpochSeconds = "0";
+        message.serviceFeeCents = "0";
+        message.taxCents = "0";
+        message.netRevenueCents = "0";
         if (value !== undefined)
             reflectionMergePartial<ReportSummary>(this, message, value);
         return message;
@@ -956,6 +978,15 @@ class ReportSummary$Type extends MessageType<ReportSummary> {
                     break;
                 case /* int64 generated_at_epoch_seconds */ 9:
                     message.generatedAtEpochSeconds = reader.int64().toString();
+                    break;
+                case /* int64 service_fee_cents */ 10:
+                    message.serviceFeeCents = reader.int64().toString();
+                    break;
+                case /* int64 tax_cents */ 11:
+                    message.taxCents = reader.int64().toString();
+                    break;
+                case /* int64 net_revenue_cents */ 12:
+                    message.netRevenueCents = reader.int64().toString();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -996,6 +1027,15 @@ class ReportSummary$Type extends MessageType<ReportSummary> {
         /* int64 generated_at_epoch_seconds = 9; */
         if (message.generatedAtEpochSeconds !== "0")
             writer.tag(9, WireType.Varint).int64(message.generatedAtEpochSeconds);
+        /* int64 service_fee_cents = 10; */
+        if (message.serviceFeeCents !== "0")
+            writer.tag(10, WireType.Varint).int64(message.serviceFeeCents);
+        /* int64 tax_cents = 11; */
+        if (message.taxCents !== "0")
+            writer.tag(11, WireType.Varint).int64(message.taxCents);
+        /* int64 net_revenue_cents = 12; */
+        if (message.netRevenueCents !== "0")
+            writer.tag(12, WireType.Varint).int64(message.netRevenueCents);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1358,7 +1398,8 @@ class TicketTypeBreakdownRow$Type extends MessageType<TicketTypeBreakdownRow> {
             { no: 6, name: "quantity_sold", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 7, name: "revenue_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 8, name: "refunded_quantity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 9, name: "refunded_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ }
+            { no: 9, name: "refunded_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 10, name: "item_kind", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<TicketTypeBreakdownRow>): TicketTypeBreakdownRow {
@@ -1372,6 +1413,7 @@ class TicketTypeBreakdownRow$Type extends MessageType<TicketTypeBreakdownRow> {
         message.revenueCents = "0";
         message.refundedQuantity = 0;
         message.refundedCents = "0";
+        message.itemKind = "";
         if (value !== undefined)
             reflectionMergePartial<TicketTypeBreakdownRow>(this, message, value);
         return message;
@@ -1407,6 +1449,9 @@ class TicketTypeBreakdownRow$Type extends MessageType<TicketTypeBreakdownRow> {
                     break;
                 case /* int64 refunded_cents */ 9:
                     message.refundedCents = reader.int64().toString();
+                    break;
+                case /* string item_kind */ 10:
+                    message.itemKind = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1447,6 +1492,9 @@ class TicketTypeBreakdownRow$Type extends MessageType<TicketTypeBreakdownRow> {
         /* int64 refunded_cents = 9; */
         if (message.refundedCents !== "0")
             writer.tag(9, WireType.Varint).int64(message.refundedCents);
+        /* string item_kind = 10; */
+        if (message.itemKind !== "")
+            writer.tag(10, WireType.LengthDelimited).string(message.itemKind);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
