@@ -158,6 +158,10 @@ export interface MagicLinkRequest {
      * @generated from protobuf field: string tenant_slug = 2;
      */
     tenantSlug: string;
+    /**
+     * @generated from protobuf field: string origin = 3;
+     */
+    origin: string;
 }
 /**
  * @generated from protobuf message ticketspan.auth.MagicLinkVerifyRequest
@@ -794,13 +798,15 @@ class MagicLinkRequest$Type extends MessageType<MagicLinkRequest> {
     constructor() {
         super("ticketspan.auth.MagicLinkRequest", [
             { no: 1, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "tenant_slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "tenant_slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "origin", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<MagicLinkRequest>): MagicLinkRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.email = "";
         message.tenantSlug = "";
+        message.origin = "";
         if (value !== undefined)
             reflectionMergePartial<MagicLinkRequest>(this, message, value);
         return message;
@@ -815,6 +821,9 @@ class MagicLinkRequest$Type extends MessageType<MagicLinkRequest> {
                     break;
                 case /* string tenant_slug */ 2:
                     message.tenantSlug = reader.string();
+                    break;
+                case /* string origin */ 3:
+                    message.origin = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -834,6 +843,9 @@ class MagicLinkRequest$Type extends MessageType<MagicLinkRequest> {
         /* string tenant_slug = 2; */
         if (message.tenantSlug !== "")
             writer.tag(2, WireType.LengthDelimited).string(message.tenantSlug);
+        /* string origin = 3; */
+        if (message.origin !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.origin);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

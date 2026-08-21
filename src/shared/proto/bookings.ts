@@ -4339,7 +4339,8 @@ export const TicketService = new ServiceType("ticketspan.booking.TicketService",
     { name: "ListTickets", options: {}, I: UuidValue, O: ListTicketsResponse },
     { name: "ClaimTicketSelf", options: {}, I: UuidValue, O: AckResponse },
     { name: "RevokeTicket", options: {}, I: UuidValue, O: AckResponse },
-    { name: "ListMyTickets", options: {}, I: Empty, O: ListTicketsResponse }
+    { name: "ListMyTickets", options: {}, I: Empty, O: ListTicketsResponse },
+    { name: "SendTicketEmail", options: {}, I: UuidValue, O: AckResponse }
 ]);
 /**
  * @generated ServiceType for protobuf service ticketspan.booking.CheckInService

@@ -57,7 +57,15 @@ export async function loginWithGoogle(googleToken: string): Promise<AuthResponse
 }
 
 export async function requestMagicLink(email: string): Promise<void> {
-  await callRpc(() => authClient.requestMagicLink({ email, tenantSlug: currentTenantSlug() }), true);
+  await callRpc(
+    () =>
+      authClient.requestMagicLink({
+        email,
+        tenantSlug: currentTenantSlug(),
+        origin: typeof window !== 'undefined' ? window.location.origin : '',
+      }),
+    true,
+  );
 }
 
 export async function verifyMagicLink(token: string): Promise<AuthResponse> {

@@ -620,6 +620,89 @@ export interface EventStats {
      */
     checkedIn: number;
 }
+/**
+ * @generated from protobuf message ticketspan.event.EventReminderSettings
+ */
+export interface EventReminderSettings {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: bool reminders_enabled = 2;
+     */
+    remindersEnabled: boolean;
+    /**
+     * @generated from protobuf field: bool reminder_7d_sent = 3 [json_name = "reminder7dSent"];
+     */
+    reminder7DSent: boolean;
+    /**
+     * @generated from protobuf field: bool reminder_48h_sent = 4 [json_name = "reminder48hSent"];
+     */
+    reminder48HSent: boolean;
+    /**
+     * @generated from protobuf field: int64 last_manual_reminder_at = 5;
+     */
+    lastManualReminderAt: string;
+    /**
+     * @generated from protobuf field: int32 manual_reminder_count = 6;
+     */
+    manualReminderCount: number;
+    /**
+     * @generated from protobuf field: int32 reminder_1_hours = 7;
+     */
+    reminder1Hours: number;
+    /**
+     * @generated from protobuf field: int32 reminder_2_hours = 8;
+     */
+    reminder2Hours: number;
+    /**
+     * @generated from protobuf field: int32 default_reminder_1_hours = 9;
+     */
+    defaultReminder1Hours: number;
+    /**
+     * @generated from protobuf field: int32 default_reminder_2_hours = 10;
+     */
+    defaultReminder2Hours: number;
+}
+/**
+ * @generated from protobuf message ticketspan.event.UpdateEventReminderSettingsRequest
+ */
+export interface UpdateEventReminderSettingsRequest {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: bool reminders_enabled = 2;
+     */
+    remindersEnabled: boolean;
+    /**
+     * @generated from protobuf field: int32 reminder_1_hours = 3;
+     */
+    reminder1Hours: number;
+    /**
+     * @generated from protobuf field: int32 reminder_2_hours = 4;
+     */
+    reminder2Hours: number;
+}
+/**
+ * @generated from protobuf message ticketspan.event.TriggerManualEventReminderResponse
+ */
+export interface TriggerManualEventReminderResponse {
+    /**
+     * @generated from protobuf field: bool success = 1;
+     */
+    success: boolean;
+    /**
+     * @generated from protobuf field: string message = 2;
+     */
+    message: string;
+    /**
+     * @generated from protobuf field: int32 recipients_count = 3;
+     */
+    recipientsCount: number;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class EventImage$Type extends MessageType<EventImage> {
     constructor() {
@@ -2491,6 +2574,259 @@ class EventStats$Type extends MessageType<EventStats> {
  * @generated MessageType for protobuf message ticketspan.event.EventStats
  */
 export const EventStats = new EventStats$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class EventReminderSettings$Type extends MessageType<EventReminderSettings> {
+    constructor() {
+        super("ticketspan.event.EventReminderSettings", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "reminders_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 3, name: "reminder_7d_sent", kind: "scalar", jsonName: "reminder7dSent", T: 8 /*ScalarType.BOOL*/ },
+            { no: 4, name: "reminder_48h_sent", kind: "scalar", jsonName: "reminder48hSent", T: 8 /*ScalarType.BOOL*/ },
+            { no: 5, name: "last_manual_reminder_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
+            { no: 6, name: "manual_reminder_count", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 7, name: "reminder_1_hours", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 8, name: "reminder_2_hours", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 9, name: "default_reminder_1_hours", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 10, name: "default_reminder_2_hours", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<EventReminderSettings>): EventReminderSettings {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.remindersEnabled = false;
+        message.reminder7DSent = false;
+        message.reminder48HSent = false;
+        message.lastManualReminderAt = "0";
+        message.manualReminderCount = 0;
+        message.reminder1Hours = 0;
+        message.reminder2Hours = 0;
+        message.defaultReminder1Hours = 0;
+        message.defaultReminder2Hours = 0;
+        if (value !== undefined)
+            reflectionMergePartial<EventReminderSettings>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: EventReminderSettings): EventReminderSettings {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* bool reminders_enabled */ 2:
+                    message.remindersEnabled = reader.bool();
+                    break;
+                case /* bool reminder_7d_sent = 3 [json_name = "reminder7dSent"];*/ 3:
+                    message.reminder7DSent = reader.bool();
+                    break;
+                case /* bool reminder_48h_sent = 4 [json_name = "reminder48hSent"];*/ 4:
+                    message.reminder48HSent = reader.bool();
+                    break;
+                case /* int64 last_manual_reminder_at */ 5:
+                    message.lastManualReminderAt = reader.int64().toString();
+                    break;
+                case /* int32 manual_reminder_count */ 6:
+                    message.manualReminderCount = reader.int32();
+                    break;
+                case /* int32 reminder_1_hours */ 7:
+                    message.reminder1Hours = reader.int32();
+                    break;
+                case /* int32 reminder_2_hours */ 8:
+                    message.reminder2Hours = reader.int32();
+                    break;
+                case /* int32 default_reminder_1_hours */ 9:
+                    message.defaultReminder1Hours = reader.int32();
+                    break;
+                case /* int32 default_reminder_2_hours */ 10:
+                    message.defaultReminder2Hours = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: EventReminderSettings, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* bool reminders_enabled = 2; */
+        if (message.remindersEnabled !== false)
+            writer.tag(2, WireType.Varint).bool(message.remindersEnabled);
+        /* bool reminder_7d_sent = 3 [json_name = "reminder7dSent"]; */
+        if (message.reminder7DSent !== false)
+            writer.tag(3, WireType.Varint).bool(message.reminder7DSent);
+        /* bool reminder_48h_sent = 4 [json_name = "reminder48hSent"]; */
+        if (message.reminder48HSent !== false)
+            writer.tag(4, WireType.Varint).bool(message.reminder48HSent);
+        /* int64 last_manual_reminder_at = 5; */
+        if (message.lastManualReminderAt !== "0")
+            writer.tag(5, WireType.Varint).int64(message.lastManualReminderAt);
+        /* int32 manual_reminder_count = 6; */
+        if (message.manualReminderCount !== 0)
+            writer.tag(6, WireType.Varint).int32(message.manualReminderCount);
+        /* int32 reminder_1_hours = 7; */
+        if (message.reminder1Hours !== 0)
+            writer.tag(7, WireType.Varint).int32(message.reminder1Hours);
+        /* int32 reminder_2_hours = 8; */
+        if (message.reminder2Hours !== 0)
+            writer.tag(8, WireType.Varint).int32(message.reminder2Hours);
+        /* int32 default_reminder_1_hours = 9; */
+        if (message.defaultReminder1Hours !== 0)
+            writer.tag(9, WireType.Varint).int32(message.defaultReminder1Hours);
+        /* int32 default_reminder_2_hours = 10; */
+        if (message.defaultReminder2Hours !== 0)
+            writer.tag(10, WireType.Varint).int32(message.defaultReminder2Hours);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.event.EventReminderSettings
+ */
+export const EventReminderSettings = new EventReminderSettings$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class UpdateEventReminderSettingsRequest$Type extends MessageType<UpdateEventReminderSettingsRequest> {
+    constructor() {
+        super("ticketspan.event.UpdateEventReminderSettingsRequest", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "reminders_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 3, name: "reminder_1_hours", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 4, name: "reminder_2_hours", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<UpdateEventReminderSettingsRequest>): UpdateEventReminderSettingsRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.remindersEnabled = false;
+        message.reminder1Hours = 0;
+        message.reminder2Hours = 0;
+        if (value !== undefined)
+            reflectionMergePartial<UpdateEventReminderSettingsRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateEventReminderSettingsRequest): UpdateEventReminderSettingsRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* bool reminders_enabled */ 2:
+                    message.remindersEnabled = reader.bool();
+                    break;
+                case /* int32 reminder_1_hours */ 3:
+                    message.reminder1Hours = reader.int32();
+                    break;
+                case /* int32 reminder_2_hours */ 4:
+                    message.reminder2Hours = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: UpdateEventReminderSettingsRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* bool reminders_enabled = 2; */
+        if (message.remindersEnabled !== false)
+            writer.tag(2, WireType.Varint).bool(message.remindersEnabled);
+        /* int32 reminder_1_hours = 3; */
+        if (message.reminder1Hours !== 0)
+            writer.tag(3, WireType.Varint).int32(message.reminder1Hours);
+        /* int32 reminder_2_hours = 4; */
+        if (message.reminder2Hours !== 0)
+            writer.tag(4, WireType.Varint).int32(message.reminder2Hours);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.event.UpdateEventReminderSettingsRequest
+ */
+export const UpdateEventReminderSettingsRequest = new UpdateEventReminderSettingsRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class TriggerManualEventReminderResponse$Type extends MessageType<TriggerManualEventReminderResponse> {
+    constructor() {
+        super("ticketspan.event.TriggerManualEventReminderResponse", [
+            { no: 1, name: "success", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 2, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "recipients_count", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<TriggerManualEventReminderResponse>): TriggerManualEventReminderResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.success = false;
+        message.message = "";
+        message.recipientsCount = 0;
+        if (value !== undefined)
+            reflectionMergePartial<TriggerManualEventReminderResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TriggerManualEventReminderResponse): TriggerManualEventReminderResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* bool success */ 1:
+                    message.success = reader.bool();
+                    break;
+                case /* string message */ 2:
+                    message.message = reader.string();
+                    break;
+                case /* int32 recipients_count */ 3:
+                    message.recipientsCount = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: TriggerManualEventReminderResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* bool success = 1; */
+        if (message.success !== false)
+            writer.tag(1, WireType.Varint).bool(message.success);
+        /* string message = 2; */
+        if (message.message !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.message);
+        /* int32 recipients_count = 3; */
+        if (message.recipientsCount !== 0)
+            writer.tag(3, WireType.Varint).int32(message.recipientsCount);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.event.TriggerManualEventReminderResponse
+ */
+export const TriggerManualEventReminderResponse = new TriggerManualEventReminderResponse$Type();
 /**
  * @generated ServiceType for protobuf service ticketspan.event.EventService
  */
@@ -2515,5 +2851,8 @@ export const EventService = new ServiceType("ticketspan.event.EventService", [
     { name: "RemoveEventImage", options: {}, I: RemoveEventImageRequest, O: AckResponse },
     { name: "SetPrimaryEventImage", options: {}, I: RemoveEventImageRequest, O: AckResponse },
     { name: "ReorderEventImages", options: {}, I: ReorderEventImagesRequest, O: AckResponse },
-    { name: "GetMediaSettings", options: {}, I: Empty, O: MediaSettings }
+    { name: "GetMediaSettings", options: {}, I: Empty, O: MediaSettings },
+    { name: "GetEventReminderSettings", options: {}, I: UuidValue, O: EventReminderSettings },
+    { name: "UpdateEventReminderSettings", options: {}, I: UpdateEventReminderSettingsRequest, O: AckResponse },
+    { name: "TriggerManualEventReminder", options: {}, I: UuidValue, O: TriggerManualEventReminderResponse }
 ]);

@@ -24,6 +24,7 @@ import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Badge } from '@/shared/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { EventReminderControl } from '@/features/developer/components/EventReminderControl';
 import type { Event } from '@/shared/proto/event';
 import type { EventPerformanceRow } from '@/shared/proto/reporting';
 
@@ -552,6 +553,8 @@ export function DeveloperEventsPage() {
                           </div>
                         </div>
                       </div>
+
+                      <EventReminderControl eventsId={ev.eventsId} eventTitle={ev.title} />
                     </div>
                   ) : null}
                 </CardContent>

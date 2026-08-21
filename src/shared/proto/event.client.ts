@@ -5,6 +5,9 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { EventService } from "./event";
+import type { TriggerManualEventReminderResponse } from "./event";
+import type { UpdateEventReminderSettingsRequest } from "./event";
+import type { EventReminderSettings } from "./event";
 import type { MediaSettings } from "./event";
 import type { Empty } from "./common";
 import type { ReorderEventImagesRequest } from "./event";
@@ -121,6 +124,18 @@ export interface IEventServiceClient {
      * @generated from protobuf rpc: GetMediaSettings(ticketspan.common.Empty) returns (ticketspan.event.MediaSettings);
      */
     getMediaSettings(input: Empty, options?: RpcOptions): UnaryCall<Empty, MediaSettings>;
+    /**
+     * @generated from protobuf rpc: GetEventReminderSettings(ticketspan.common.UuidValue) returns (ticketspan.event.EventReminderSettings);
+     */
+    getEventReminderSettings(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, EventReminderSettings>;
+    /**
+     * @generated from protobuf rpc: UpdateEventReminderSettings(ticketspan.event.UpdateEventReminderSettingsRequest) returns (ticketspan.common.AckResponse);
+     */
+    updateEventReminderSettings(input: UpdateEventReminderSettingsRequest, options?: RpcOptions): UnaryCall<UpdateEventReminderSettingsRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: TriggerManualEventReminder(ticketspan.common.UuidValue) returns (ticketspan.event.TriggerManualEventReminderResponse);
+     */
+    triggerManualEventReminder(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, TriggerManualEventReminderResponse>;
 }
 /**
  * @generated from protobuf service ticketspan.event.EventService
@@ -277,5 +292,26 @@ export class EventServiceClient implements IEventServiceClient, ServiceInfo {
     getMediaSettings(input: Empty, options?: RpcOptions): UnaryCall<Empty, MediaSettings> {
         const method = this.methods[20], opt = this._transport.mergeOptions(options);
         return stackIntercept<Empty, MediaSettings>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: GetEventReminderSettings(ticketspan.common.UuidValue) returns (ticketspan.event.EventReminderSettings);
+     */
+    getEventReminderSettings(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, EventReminderSettings> {
+        const method = this.methods[21], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, EventReminderSettings>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: UpdateEventReminderSettings(ticketspan.event.UpdateEventReminderSettingsRequest) returns (ticketspan.common.AckResponse);
+     */
+    updateEventReminderSettings(input: UpdateEventReminderSettingsRequest, options?: RpcOptions): UnaryCall<UpdateEventReminderSettingsRequest, AckResponse> {
+        const method = this.methods[22], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UpdateEventReminderSettingsRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: TriggerManualEventReminder(ticketspan.common.UuidValue) returns (ticketspan.event.TriggerManualEventReminderResponse);
+     */
+    triggerManualEventReminder(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, TriggerManualEventReminderResponse> {
+        const method = this.methods[23], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, TriggerManualEventReminderResponse>("unary", this._transport, method, opt, input);
     }
 }

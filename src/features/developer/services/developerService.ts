@@ -1,5 +1,6 @@
-import { tenantClient, logClient, dashboardClient, tenantTierClient, maintenanceClient } from '@/shared/apiClient';
+import { tenantClient, logClient, dashboardClient, tenantTierClient, maintenanceClient, eventClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
+import type { EventReminderSettings, TriggerManualEventReminderResponse } from '@/shared/proto/event';
 import type {
   Tenant,
   CreateTenantResponse,
@@ -234,4 +235,28 @@ export async function getDeveloperLogs(): Promise<LogEntry[]> {
     }),
   );
   return response.entries;
+}
+
+export async function getEventReminderSettings(eventsId: string): Promise<EventReminderSettings> {
+  return callRpc(() => eventClient.getEventReminderSettings({ value: eventsId }));
+}
+
+export async function updateEventReminderSettings(
+  eventsId: string,
+  remindersEnabled: boolean,
+  reminder1Hours?: number,
+  reminder2Hours?: number,
+): Promise<void> {
+  await callRpc(() =>
+    eventClient.updateEventReminderSettings({
+      eventsId,
+      remindersEnabled,
+      reminder1Hours: reminder1Hours ?? 0,
+      reminder2Hours: reminder2Hours ?? 0,
+    }),
+  );
+}
+
+export async function triggerManualEventReminder(eventsId: string): Promise<TriggerManualEventReminderResponse> {
+  return callRpc(() => eventClient.triggerManualEventReminder({ value: eventsId }));
 }
