@@ -34,36 +34,7 @@
 </head>
 
 <body>
-  <div id="hero-flash"
-    style="position:absolute;top:0;left:0;right:0;height:96vh;z-index:1;overflow:hidden;pointer-events:none;background:#f5f1e8">
-    <div id="hero-flash-copy" style="max-width:80rem;margin:0 auto;padding:7.5rem 1.25rem 0">
-      <p
-        style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#1F3D2B">
-        White-label box office — built in Chickasaw, Alabama</p>
-      <h1
-        style="margin:1.75rem 0 0;font-family:'Fraunces Variable','Fraunces',Georgia,serif;font-weight:500;line-height:1.05;font-size:clamp(3rem,6.5vw,4.6rem);color:#191714">
-        Ticketing, tailored <em style="color:#1F3D2B">to the house.</em></h1>
-    </div>
-  </div>
-  <script>
-    (function () {
-      var sub = window.location.hostname.split('.')[0];
-      var portalParam = new URLSearchParams(window.location.search).get('portal');
-      var portalSub = sub === 'admin' || sub === 'staff' || sub === 'developer';
-      var storedPortal = portalParam || window.localStorage.getItem('ticketspan-portal');
-      var flash = document.getElementById('hero-flash');
-      if (portalSub || (storedPortal && storedPortal !== 'public')) {
-        flash.style.cssText = 'position:fixed;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;background:var(--color-charcoal-ink);pointer-events:none';
-        flash.innerHTML = '<span style="font-family:system-ui,sans-serif;font-size:clamp(44px,13vw,80px);font-weight:600;letter-spacing:-0.03em;color:#fff">ticketspan</span>';
-      }
-      var themeColor = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim();
-      if (themeColor) {
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
-      }
-    })();
-  </script>
   <div id="root"></div>
-  <noscript>TicketSpan Events requires JavaScript to browse and book events.</noscript>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

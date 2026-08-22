@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from '@/App';
 import { ThemeProvider } from '@/shared/theme/ThemeContext';
@@ -43,7 +43,7 @@ if (!container) {
   throw new Error('Root container missing');
 }
 
-createRoot(container).render(
+const rootApp = (
   <StrictMode>
     <ErrorBoundary>
       <BrowserRouter>
@@ -52,5 +52,17 @@ createRoot(container).render(
         </ThemeProvider>
       </BrowserRouter>
     </ErrorBoundary>
-  </StrictMode>,
+  </StrictMode>
 );
+
+const isPrerenderedLanding =
+  container.hasChildNodes() &&
+  window.location.pathname === '/' &&
+  resolvePortalContext().portal === 'public' &&
+  !resolvePortalContext().tenantSlug;
+
+if (isPrerenderedLanding) {
+  hydrateRoot(container, rootApp);
+} else {
+  createRoot(container).render(rootApp);
+}

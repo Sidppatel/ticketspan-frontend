@@ -24,7 +24,9 @@ export function TenantLandingPage() {
   const scopeRef = useRef<HTMLDivElement>(null);
   useLandingReveal(scopeRef);
   const [backdrop] = useState(() =>
-    window.matchMedia('(min-width: 768px) and (prefers-reduced-motion: no-preference)').matches,
+    typeof window !== 'undefined'
+      ? window.matchMedia('(min-width: 768px) and (prefers-reduced-motion: no-preference)').matches
+      : false,
   );
   return (
     <div ref={scopeRef} className="landing-ivory">
