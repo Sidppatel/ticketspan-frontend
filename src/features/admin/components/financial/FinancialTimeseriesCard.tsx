@@ -78,9 +78,9 @@ export function FinancialTimeseriesCard({
   const innerW = chartWidth - paddingX * 2;
   const innerH = chartHeight - paddingY * 2;
 
-  const getX = (index: number, total: number) => {
-    if (total <= 1) return paddingX + innerW / 2;
-    return paddingX + (index / (total - 1)) * innerW;
+  const getX = (index: number, len: number) => {
+    if (len <= 1) return paddingX + innerW / 2;
+    return paddingX + (index / (len - 1)) * innerW;
   };
 
   const getY = (val: number) => {

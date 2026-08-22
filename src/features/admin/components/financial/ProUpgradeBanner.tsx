@@ -1,4 +1,4 @@
-import { Sparkles, ShieldCheck, FileSpreadsheet, Layers, Filter } from 'lucide-react';
+import { ShieldCheck, FileSpreadsheet, Layers, Filter } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 
 export function ProUpgradeBanner() {

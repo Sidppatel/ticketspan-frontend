@@ -55,7 +55,7 @@ function at(daysFromNow: number, durationDays = 1): { startsAt: number; endsAt: 
   return { startsAt, endsAt: startsAt + durationDays * DAY };
 }
 
-export const demoOrganizers: DemoOrganizer[] = [
+const demoOrganizers: DemoOrganizer[] = [
   {
     slug: 'zen-yoga-studio',
     name: 'Zen Yoga Studio',

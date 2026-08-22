@@ -66,11 +66,3 @@ export function initials(firstName: string, lastName: string, email: string): st
   }
   return (email.trim().charAt(0) || '?').toUpperCase();
 }
-
-export function toEpochString(value: string): string {
-  if (!value) {
-    return '0';
-  }
-  const ms = new Date(value).getTime();
-  return Number.isFinite(ms) ? String(Math.floor(ms / 1000)) : '0';
-}

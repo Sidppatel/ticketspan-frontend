@@ -6,7 +6,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Switch } from '@/shared/ui/switch';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { RefreshCw, Calendar, Sparkles } from 'lucide-react';
+import { RefreshCw, Sparkles } from 'lucide-react';
 import { FinancialSummaryCards } from '@/features/admin/components/financial/FinancialSummaryCards';
 import { FinancialTimeseriesCard } from '@/features/admin/components/financial/FinancialTimeseriesCard';
 import { EventPerformanceSection } from '@/features/admin/components/financial/EventPerformanceSection';

@@ -9,9 +9,6 @@ import {
   Calendar,
   Layers,
   Search,
-  CheckCircle2,
-  Users,
-  DollarSign,
   Loader2,
   FileSpreadsheet,
 } from 'lucide-react';
