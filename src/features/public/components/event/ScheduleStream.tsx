@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, type ComponentType } from 'react';
-import { Clock, Flame, Coffee, Radio, Award, HelpCircle, Layers } from 'lucide-react';
+import { Clock, Flame, Coffee, Radio, Award, CircleHelp, Layers } from 'lucide-react';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { listScheduleItems } from '@/features/public/services/publicEventService';
 import { formatEpoch } from '@/shared/lib/format';
@@ -15,7 +15,7 @@ const CATEGORY_ICONS: Record<string, ComponentType<{ className?: string }>> = {
   Break: Coffee,
   Intermission: Coffee,
   Networking: Award,
-  Other: HelpCircle,
+  Other: CircleHelp,
 };
 
 export function ScheduleStream({ eventsId }: ScheduleStreamProps) {
@@ -96,7 +96,7 @@ export function ScheduleStream({ eventsId }: ScheduleStreamProps) {
       <div className="relative overflow-hidden rounded-3xl border border-border-strong bg-surface-card p-4 sm:p-6 shadow-lg">
         <div className="relative space-y-3">
           {filteredItems.map((item, index) => {
-            const Icon = CATEGORY_ICONS[item.typeCategory] || HelpCircle;
+            const Icon = CATEGORY_ICONS[item.typeCategory] || CircleHelp;
             const startTimeStr = formatEpoch(item.startTime);
             const endTimeStr = formatEpoch(item.endTime);
 

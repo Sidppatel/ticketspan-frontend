@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LogOut, AlertTriangle } from 'lucide-react';
+import { LogOut, TriangleAlert } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/shared/ui/dialog';
 import { Button } from '@/shared/ui/button';
 import { Label } from '@/shared/ui/label';
@@ -59,7 +59,7 @@ export function CheckOutGuestModal({
         </div>
 
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 flex items-start gap-2.5 text-xs text-amber-700 dark:text-amber-300">
-          <AlertTriangle className="size-4 shrink-0 mt-0.5" />
+          <TriangleAlert className="size-4 shrink-0 mt-0.5" />
           <span>
             This action will restore the attendee pass status and record an audit log with your reason.
           </span>

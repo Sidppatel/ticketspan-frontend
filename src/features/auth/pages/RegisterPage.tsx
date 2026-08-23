@@ -8,7 +8,7 @@ import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
 import { GoogleSignInButton } from '@/features/auth/components/GoogleSignInButton';
 import { currentTenantSlug } from '@/shared/subdomain';
 import { AuthShell } from '@/features/auth/components/AuthShell';
-import { Mail, Lock, UserPlus, Sparkles, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, UserPlus, Sparkles, ArrowRight, CircleAlert, CheckCircle2 } from 'lucide-react';
 
 export function RegisterPage() {
   const { register, magicLink, google, loading, error, notice } = useAuthFlow();
@@ -58,7 +58,7 @@ export function RegisterPage() {
         >
           {error ? (
             <div className="flex items-start gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive animate-in fade-in">
-              <AlertCircle className="mt-0.5 size-4 shrink-0" />
+              <CircleAlert className="mt-0.5 size-4 shrink-0" />
               <div className="space-y-0.5">
                 <p className="font-medium">Sign up failed</p>
                 <p className="text-xs text-destructive/90">{error}</p>

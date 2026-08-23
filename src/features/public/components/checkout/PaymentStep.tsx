@@ -22,7 +22,7 @@ import { Button } from '@/shared/ui/button';
 import {
   Clock,
   ShieldCheck,
-  AlertCircle,
+  CircleAlert,
   Ticket,
   Lock,
   ArrowLeft,
@@ -104,7 +104,7 @@ export function PaymentStep({
     return (
       <div className="space-y-5 pt-4 text-center">
         <div className="size-12 rounded-2xl bg-danger/10 border border-danger/20 flex items-center justify-center mx-auto text-danger">
-          <AlertCircle className="size-6" />
+          <CircleAlert className="size-6" />
         </div>
         <div className="space-y-1">
           <h4 className="font-sans text-base font-bold text-white uppercase tracking-wider">
@@ -285,7 +285,7 @@ function FreeConfirm({
 
       {error && (
         <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-danger/10 border border-danger/20 text-danger text-[11.5px] leading-relaxed">
-          <AlertCircle className="size-4 shrink-0 mt-0.5" />
+          <CircleAlert className="size-4 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}
@@ -563,7 +563,7 @@ function StripeCheckoutForm({
 
       {expired ? (
         <div className="space-y-4 py-8 text-center rounded-2xl border border-danger/20 bg-danger/10 p-6">
-          <AlertCircle className="size-8 mx-auto text-danger" />
+          <CircleAlert className="size-8 mx-auto text-danger" />
           <div className="space-y-1">
             <p className="font-sans text-sm font-bold uppercase tracking-wider text-danger">
               Booking Hold Expired
@@ -764,7 +764,7 @@ function StripeCheckoutForm({
 
           {message && (
             <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-danger/10 border border-danger/20 text-danger text-xs leading-relaxed animate-in fade-in-50">
-              <AlertCircle className="size-4 shrink-0 mt-0.5" />
+              <CircleAlert className="size-4 shrink-0 mt-0.5" />
               <span>{message}</span>
             </div>
           )}

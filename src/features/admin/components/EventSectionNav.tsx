@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, type LucideIcon } from 'lucide-react';
+import { CircleAlert, CheckCircle2, type LucideIcon } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
 import type { SectionId } from '@/features/admin/lib/eventInsights';
 
@@ -52,7 +52,7 @@ export function EventSectionNav({
               <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
                 {section.label}
                 {needsAttention ? (
-                  <AlertCircle className="size-3.5 text-amber-foreground" />
+                  <CircleAlert className="size-3.5 text-amber-foreground" />
                 ) : allDone ? (
                   <CheckCircle2 className="size-3.5 text-success" />
                 ) : null}

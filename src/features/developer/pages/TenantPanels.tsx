@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, CircleX } from 'lucide-react';
 import { useAsync } from '@/shared/hooks/useAsync';
 import {
   listTenantMembers,
@@ -348,5 +348,5 @@ function StatusIcon({ enabled }: { enabled: boolean }) {
   if (enabled) {
     return <CheckCircle2 className="h-4 w-4 text-success" />;
   }
-  return <XCircle className="h-4 w-4 text-destructive" />;
+  return <CircleX className="h-4 w-4 text-destructive" />;
 }

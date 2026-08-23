@@ -15,7 +15,7 @@ import { Switch } from '@/shared/ui/switch';
 import { Select } from '@/shared/ui/select';
 import { CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { cn } from '@/shared/lib/cn';
-import { Palette, Edit3, X } from 'lucide-react';
+import { Palette, SquarePen, X } from 'lucide-react';
 import type { TableTemplate } from '@/shared/proto/booking';
 
 const SHAPES = ['Round', 'Rectangle', 'Square', 'Cocktail'];
@@ -326,7 +326,7 @@ function TableTypeRow({ template, onChanged }: { template: TableTemplate; onChan
               onClick={() => { playTap('click'); setEditing((v) => !v); }}
               className="h-8 text-xs font-semibold hover:bg-muted/40"
             >
-              {editing ? <X className="h-3.5 w-3.5 mr-1" /> : <Edit3 className="h-3.5 w-3.5 mr-1" />}
+              {editing ? <X className="h-3.5 w-3.5 mr-1" /> : <SquarePen className="h-3.5 w-3.5 mr-1" />}
               {editing ? 'Close' : 'Edit'}
             </Button>
           </div>

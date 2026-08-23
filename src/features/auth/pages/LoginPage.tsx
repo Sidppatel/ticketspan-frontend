@@ -7,7 +7,7 @@ import { Label } from '@/shared/ui/label';
 import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
 import { GoogleSignInButton } from '@/features/auth/components/GoogleSignInButton';
 import { AuthShell } from '@/features/auth/components/AuthShell';
-import { Mail, Lock, LogIn, Sparkles, ArrowRight, AlertCircle } from 'lucide-react';
+import { Mail, Lock, LogIn, Sparkles, ArrowRight, CircleAlert } from 'lucide-react';
 
 export function LoginPage() {
   const { login, google, loading, error } = useAuthFlow();
@@ -68,7 +68,7 @@ export function LoginPage() {
         >
           {error ? (
             <div className="flex items-start gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive animate-in fade-in">
-              <AlertCircle className="mt-0.5 size-4 shrink-0" />
+              <CircleAlert className="mt-0.5 size-4 shrink-0" />
               <div className="space-y-0.5">
                 <p className="font-medium">Sign in failed</p>
                 <p className="text-xs text-destructive/90">{error}</p>

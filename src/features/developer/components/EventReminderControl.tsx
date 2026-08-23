@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Bell, Send, Clock, Sliders, Check, RotateCcw } from 'lucide-react';
+import { Bell, Send, Clock, SlidersHorizontal, Check, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAsync } from '@/shared/hooks/useAsync';
 import {
@@ -109,7 +109,7 @@ export function EventReminderControl({ eventsId, eventTitle }: EventReminderCont
             onClick={() => setShowConfig(!showConfig)}
             className="h-6 px-2 text-[11px] gap-1 text-muted-foreground hover:text-foreground"
           >
-            <Sliders className="h-3 w-3" />
+            <SlidersHorizontal className="h-3 w-3" />
             {showConfig ? 'Close Timing' : 'Customize Timing'}
           </Button>
           <div className="flex items-center gap-2">

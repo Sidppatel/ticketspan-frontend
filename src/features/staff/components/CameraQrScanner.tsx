@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import jsQR from 'jsqr';
-import { Camera, Flashlight, FlipHorizontal, AlertCircle, RefreshCw } from 'lucide-react';
+import { Camera, Flashlight, FlipHorizontal, CircleAlert, RefreshCw } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/cn';
 
@@ -200,7 +200,7 @@ export function CameraQrScanner({ onScan, isPaused = false, className }: CameraQ
       {errorMsg && (
         <div className="absolute inset-0 bg-background/95 p-6 flex flex-col items-center justify-center text-center space-y-4">
           <div className="size-12 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center">
-            <AlertCircle className="size-6" />
+            <CircleAlert className="size-6" />
           </div>
           <div className="space-y-1">
             <p className="text-sm font-bold text-foreground">Camera Unavailable</p>

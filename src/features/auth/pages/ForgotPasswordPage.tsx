@@ -5,7 +5,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
 import { AuthShell } from '@/features/auth/components/AuthShell';
-import { Mail, ArrowLeft, KeyRound, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, ArrowLeft, KeyRound, CircleAlert, CheckCircle2 } from 'lucide-react';
 
 export function ForgotPasswordPage() {
   const { forgotPassword, loading, error, notice } = useAuthFlow();
@@ -41,7 +41,7 @@ export function ForgotPasswordPage() {
         >
           {error ? (
             <div className="flex items-start gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive animate-in fade-in">
-              <AlertCircle className="mt-0.5 size-4 shrink-0" />
+              <CircleAlert className="mt-0.5 size-4 shrink-0" />
               <p className="text-xs text-destructive/90">{error}</p>
             </div>
           ) : null}

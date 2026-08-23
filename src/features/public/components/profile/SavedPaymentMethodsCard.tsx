@@ -19,7 +19,7 @@ import {
   Trash2,
   ShieldCheck,
   Loader2,
-  AlertCircle,
+  CircleAlert,
   CheckCircle2,
   Lock,
 } from 'lucide-react';
@@ -365,7 +365,7 @@ function AddCardSetupForm({
 
       {errorMessage && (
         <div className="flex items-start gap-2 p-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-[11.5px] leading-relaxed">
-          <AlertCircle className="size-4 shrink-0 mt-0.5" />
+          <CircleAlert className="size-4 shrink-0 mt-0.5" />
           <span>{errorMessage}</span>
         </div>
       )}

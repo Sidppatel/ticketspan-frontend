@@ -23,7 +23,7 @@ import {
   Users,
   CheckCircle2,
   ArrowLeft,
-  XCircle,
+  CircleX,
   RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
@@ -316,7 +316,7 @@ export function StaffCheckInPage() {
           {feedback.success ? (
             <CheckCircle2 className="size-6 text-success shrink-0" />
           ) : (
-            <XCircle className="size-6 text-destructive shrink-0" />
+            <CircleX className="size-6 text-destructive shrink-0" />
           )}
           <div className="space-y-0.5">
             <p className="font-extrabold">{feedback.message}</p>

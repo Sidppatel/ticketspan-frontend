@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Sparkles, HelpCircle, Lock, Calendar, Star, Compass, ShieldCheck } from 'lucide-react';
+import { Sparkles, CircleHelp, Lock, Calendar, Star, Compass, ShieldCheck } from 'lucide-react';
 import { parseMeta, publicMeta } from './catalogJson';
 
 function humanize(key: string): string {
@@ -17,7 +17,7 @@ function getMetaIcon(key: string) {
   if (k.includes('parking') || k.includes('transport')) return Compass;
   if (k.includes('refund') || k.includes('cancel')) return Star;
   if (k.includes('date') || k.includes('time')) return Calendar;
-  return HelpCircle;
+  return CircleHelp;
 }
 
 export function EventExtraInfo({ extraInfoJson }: { extraInfoJson: string }) {
