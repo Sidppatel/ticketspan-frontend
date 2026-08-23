@@ -55,6 +55,34 @@ export interface UpdateProfileRequest {
      * @generated from protobuf field: string zip = 7;
      */
     zip: string;
+    /**
+     * @generated from protobuf field: string bio = 8;
+     */
+    bio: string;
+    /**
+     * @generated from protobuf field: string pronouns = 9;
+     */
+    pronouns: string;
+    /**
+     * @generated from protobuf field: string preferences_json = 10;
+     */
+    preferencesJson: string;
+    /**
+     * @generated from protobuf field: string billing_address_line = 11;
+     */
+    billingAddressLine: string;
+    /**
+     * @generated from protobuf field: string billing_city = 12;
+     */
+    billingCity: string;
+    /**
+     * @generated from protobuf field: string billing_state = 13;
+     */
+    billingState: string;
+    /**
+     * @generated from protobuf field: string billing_zip = 14;
+     */
+    billingZip: string;
 }
 /**
  * @generated from protobuf message ticketspan.auth.SetAvatarRequest
@@ -296,6 +324,34 @@ export interface UserProfile {
      * @generated from protobuf field: bool google_connected = 15;
      */
     googleConnected: boolean;
+    /**
+     * @generated from protobuf field: string bio = 16;
+     */
+    bio: string;
+    /**
+     * @generated from protobuf field: string pronouns = 17;
+     */
+    pronouns: string;
+    /**
+     * @generated from protobuf field: string preferences_json = 18;
+     */
+    preferencesJson: string;
+    /**
+     * @generated from protobuf field: string billing_address_line = 19;
+     */
+    billingAddressLine: string;
+    /**
+     * @generated from protobuf field: string billing_city = 20;
+     */
+    billingCity: string;
+    /**
+     * @generated from protobuf field: string billing_state = 21;
+     */
+    billingState: string;
+    /**
+     * @generated from protobuf field: string billing_zip = 22;
+     */
+    billingZip: string;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class LinkGoogleRequest$Type extends MessageType<LinkGoogleRequest> {
@@ -354,7 +410,14 @@ class UpdateProfileRequest$Type extends MessageType<UpdateProfileRequest> {
             { no: 4, name: "address_line", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "city", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 6, name: "state", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 7, name: "zip", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 7, name: "zip", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "bio", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 9, name: "pronouns", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 10, name: "preferences_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 11, name: "billing_address_line", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 12, name: "billing_city", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 13, name: "billing_state", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 14, name: "billing_zip", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<UpdateProfileRequest>): UpdateProfileRequest {
@@ -366,6 +429,13 @@ class UpdateProfileRequest$Type extends MessageType<UpdateProfileRequest> {
         message.city = "";
         message.state = "";
         message.zip = "";
+        message.bio = "";
+        message.pronouns = "";
+        message.preferencesJson = "";
+        message.billingAddressLine = "";
+        message.billingCity = "";
+        message.billingState = "";
+        message.billingZip = "";
         if (value !== undefined)
             reflectionMergePartial<UpdateProfileRequest>(this, message, value);
         return message;
@@ -395,6 +465,27 @@ class UpdateProfileRequest$Type extends MessageType<UpdateProfileRequest> {
                     break;
                 case /* string zip */ 7:
                     message.zip = reader.string();
+                    break;
+                case /* string bio */ 8:
+                    message.bio = reader.string();
+                    break;
+                case /* string pronouns */ 9:
+                    message.pronouns = reader.string();
+                    break;
+                case /* string preferences_json */ 10:
+                    message.preferencesJson = reader.string();
+                    break;
+                case /* string billing_address_line */ 11:
+                    message.billingAddressLine = reader.string();
+                    break;
+                case /* string billing_city */ 12:
+                    message.billingCity = reader.string();
+                    break;
+                case /* string billing_state */ 13:
+                    message.billingState = reader.string();
+                    break;
+                case /* string billing_zip */ 14:
+                    message.billingZip = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -429,6 +520,27 @@ class UpdateProfileRequest$Type extends MessageType<UpdateProfileRequest> {
         /* string zip = 7; */
         if (message.zip !== "")
             writer.tag(7, WireType.LengthDelimited).string(message.zip);
+        /* string bio = 8; */
+        if (message.bio !== "")
+            writer.tag(8, WireType.LengthDelimited).string(message.bio);
+        /* string pronouns = 9; */
+        if (message.pronouns !== "")
+            writer.tag(9, WireType.LengthDelimited).string(message.pronouns);
+        /* string preferences_json = 10; */
+        if (message.preferencesJson !== "")
+            writer.tag(10, WireType.LengthDelimited).string(message.preferencesJson);
+        /* string billing_address_line = 11; */
+        if (message.billingAddressLine !== "")
+            writer.tag(11, WireType.LengthDelimited).string(message.billingAddressLine);
+        /* string billing_city = 12; */
+        if (message.billingCity !== "")
+            writer.tag(12, WireType.LengthDelimited).string(message.billingCity);
+        /* string billing_state = 13; */
+        if (message.billingState !== "")
+            writer.tag(13, WireType.LengthDelimited).string(message.billingState);
+        /* string billing_zip = 14; */
+        if (message.billingZip !== "")
+            writer.tag(14, WireType.LengthDelimited).string(message.billingZip);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1156,7 +1268,14 @@ class UserProfile$Type extends MessageType<UserProfile> {
             { no: 12, name: "city", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 13, name: "state", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 14, name: "zip", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 15, name: "google_connected", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 15, name: "google_connected", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 16, name: "bio", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 17, name: "pronouns", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 18, name: "preferences_json", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 19, name: "billing_address_line", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 20, name: "billing_city", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 21, name: "billing_state", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 22, name: "billing_zip", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<UserProfile>): UserProfile {
@@ -1176,6 +1295,13 @@ class UserProfile$Type extends MessageType<UserProfile> {
         message.state = "";
         message.zip = "";
         message.googleConnected = false;
+        message.bio = "";
+        message.pronouns = "";
+        message.preferencesJson = "";
+        message.billingAddressLine = "";
+        message.billingCity = "";
+        message.billingState = "";
+        message.billingZip = "";
         if (value !== undefined)
             reflectionMergePartial<UserProfile>(this, message, value);
         return message;
@@ -1229,6 +1355,27 @@ class UserProfile$Type extends MessageType<UserProfile> {
                     break;
                 case /* bool google_connected */ 15:
                     message.googleConnected = reader.bool();
+                    break;
+                case /* string bio */ 16:
+                    message.bio = reader.string();
+                    break;
+                case /* string pronouns */ 17:
+                    message.pronouns = reader.string();
+                    break;
+                case /* string preferences_json */ 18:
+                    message.preferencesJson = reader.string();
+                    break;
+                case /* string billing_address_line */ 19:
+                    message.billingAddressLine = reader.string();
+                    break;
+                case /* string billing_city */ 20:
+                    message.billingCity = reader.string();
+                    break;
+                case /* string billing_state */ 21:
+                    message.billingState = reader.string();
+                    break;
+                case /* string billing_zip */ 22:
+                    message.billingZip = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1287,6 +1434,27 @@ class UserProfile$Type extends MessageType<UserProfile> {
         /* bool google_connected = 15; */
         if (message.googleConnected !== false)
             writer.tag(15, WireType.Varint).bool(message.googleConnected);
+        /* string bio = 16; */
+        if (message.bio !== "")
+            writer.tag(16, WireType.LengthDelimited).string(message.bio);
+        /* string pronouns = 17; */
+        if (message.pronouns !== "")
+            writer.tag(17, WireType.LengthDelimited).string(message.pronouns);
+        /* string preferences_json = 18; */
+        if (message.preferencesJson !== "")
+            writer.tag(18, WireType.LengthDelimited).string(message.preferencesJson);
+        /* string billing_address_line = 19; */
+        if (message.billingAddressLine !== "")
+            writer.tag(19, WireType.LengthDelimited).string(message.billingAddressLine);
+        /* string billing_city = 20; */
+        if (message.billingCity !== "")
+            writer.tag(20, WireType.LengthDelimited).string(message.billingCity);
+        /* string billing_state = 21; */
+        if (message.billingState !== "")
+            writer.tag(21, WireType.LengthDelimited).string(message.billingState);
+        /* string billing_zip = 22; */
+        if (message.billingZip !== "")
+            writer.tag(22, WireType.LengthDelimited).string(message.billingZip);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

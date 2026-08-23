@@ -1,19 +1,22 @@
 import { cn } from '@/shared/lib/cn';
 
 interface SwitchProps {
+  id?: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   disabled?: boolean;
   label?: string;
+  className?: string;
 }
 
-export function Switch({ checked, onCheckedChange, disabled, label }: SwitchProps) {
+export function Switch({ id, checked, onCheckedChange, disabled, label, className }: SwitchProps) {
   const handleClick = () => {
     onCheckedChange(!checked);
   };
 
   return (
     <button
+      id={id}
       type="button"
       role="switch"
       aria-checked={checked}
@@ -24,6 +27,7 @@ export function Switch({ checked, onCheckedChange, disabled, label }: SwitchProp
         'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-all duration-300 active:scale-90',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
         checked ? 'bg-primary' : 'bg-muted-foreground/30',
+        className,
       )}
     >
       <span

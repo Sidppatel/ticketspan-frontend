@@ -108,10 +108,34 @@ export interface ProfileInput {
   city: string;
   state: string;
   zip: string;
+  bio?: string;
+  pronouns?: string;
+  preferencesJson?: string;
+  billingAddressLine?: string;
+  billingCity?: string;
+  billingState?: string;
+  billingZip?: string;
 }
 
 export async function updateProfile(input: ProfileInput): Promise<void> {
-  const profile = await callRpc(() => authClient.updateProfile(input));
+  const profile = await callRpc(() =>
+    authClient.updateProfile({
+      firstName: input.firstName || '',
+      lastName: input.lastName || '',
+      phone: input.phone || '',
+      addressLine: input.addressLine || '',
+      city: input.city || '',
+      state: input.state || '',
+      zip: input.zip || '',
+      bio: input.bio || '',
+      pronouns: input.pronouns || '',
+      preferencesJson: input.preferencesJson || '',
+      billingAddressLine: input.billingAddressLine || '',
+      billingCity: input.billingCity || '',
+      billingState: input.billingState || '',
+      billingZip: input.billingZip || '',
+    }),
+  );
   useAuthStore.getState().setUser(profile);
 }
 

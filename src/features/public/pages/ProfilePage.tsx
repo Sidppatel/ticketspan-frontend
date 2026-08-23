@@ -1,18 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { loadProfile, updateProfile, setAvatar, type ProfileInput } from '@/features/auth/services/authService';
 import { uploadImage } from '@/shared/upload';
 import { useAuth } from '@/shared/auth/useAuth';
-import { roleLabel } from '@/shared/roles';
 import { rpcErrorMessage } from '@/shared/session';
-import { displayUsPhone, formatUsPhone } from '@/shared/lib/validation';
-import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
-import { Badge } from '@/shared/ui/badge';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Camera, Mail, Phone, MapPin, Pencil, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useProfilePreferencesStore } from '@/features/public/store/profilePreferencesStore';
+import { ProfileHeroCard } from '@/features/public/components/profile/ProfileHeroCard';
+import { PersonalInfoTab } from '@/features/public/components/profile/PersonalInfoTab';
+import { PreferencesTab } from '@/features/public/components/profile/PreferencesTab';
+import { SecurityTab } from '@/features/public/components/profile/SecurityTab';
+import { ActivityTab } from '@/features/public/components/profile/ActivityTab';
+import { DigitalPassModal } from '@/features/public/components/profile/DigitalPassModal';
+import { User, Compass, ShieldCheck, Ticket } from 'lucide-react';
 
-const EMPTY: ProfileInput = {
+const EMPTY_PROFILE: ProfileInput = {
   firstName: '',
   lastName: '',
   phone: '',
@@ -20,222 +23,245 @@ const EMPTY: ProfileInput = {
   city: '',
   state: '',
   zip: '',
+  bio: '',
+  pronouns: '',
+  preferencesJson: '',
+  billingAddressLine: '',
+  billingCity: '',
+  billingState: '',
+  billingZip: '',
 };
 
+type ProfileTab = 'identity' | 'preferences' | 'security' | 'activity';
+
 export function ProfilePage() {
-  const { user, role } = useAuth();
-  const [profile, setProfile] = useState<ProfileInput>(EMPTY);
-  const [form, setForm] = useState<ProfileInput>(EMPTY);
+  const { user, role, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const [profile, setProfile] = useState<ProfileInput>(EMPTY_PROFILE);
+  const [form, setForm] = useState<ProfileInput>(EMPTY_PROFILE);
+  const [activeTab, setActiveTab] = useState<ProfileTab>('identity');
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [digitalPassOpen, setDigitalPassOpen] = useState(false);
 
-  useEffect(() => {
-    loadProfile()
-      .then((loaded) => {
-        const next: ProfileInput = {
-          firstName: loaded.firstName,
-          lastName: loaded.lastName,
-          phone: loaded.phone,
-          addressLine: loaded.addressLine,
-          city: loaded.city,
-          state: loaded.state,
-          zip: loaded.zip,
-        };
-        setProfile(next);
-        setForm(next);
-      })
-      .catch((caught) => setError(rpcErrorMessage(caught)))
-      .finally(() => setLoading(false));
+  const interestsCount = useProfilePreferencesStore((s) => s.interests.length);
+
+  const fetchProfileData = useCallback(async () => {
+    try {
+      const loaded = await loadProfile();
+      const next: ProfileInput = {
+        firstName: loaded.firstName || '',
+        lastName: loaded.lastName || '',
+        phone: loaded.phone || '',
+        addressLine: loaded.addressLine || '',
+        city: loaded.city || '',
+        state: loaded.state || '',
+        zip: loaded.zip || '',
+        bio: loaded.bio || '',
+        pronouns: loaded.pronouns || '',
+        preferencesJson: loaded.preferencesJson || '',
+        billingAddressLine: loaded.billingAddressLine || '',
+        billingCity: loaded.billingCity || '',
+        billingState: loaded.billingState || '',
+        billingZip: loaded.billingZip || '',
+      };
+      setProfile(next);
+      setForm(next);
+
+      if (loaded.preferencesJson) {
+        try {
+          const parsed = JSON.parse(loaded.preferencesJson);
+          if (parsed && typeof parsed === 'object') {
+            useProfilePreferencesStore.getState().updatePreferences(parsed);
+          }
+        } catch {
+          // ignore malformed JSON
+        }
+      }
+    } catch (err) {
+      toast.error(rpcErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  function field(key: keyof ProfileInput) {
-    return (value: string) => setForm((prev) => ({ ...prev, [key]: value }));
-  }
+  useEffect(() => {
+    const init = async () => {
+      await fetchProfileData();
+    };
+    init();
+  }, [fetchProfileData]);
 
-  function startEditing() {
+  const handleFieldChange = (key: keyof ProfileInput, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleStartEditing = () => {
     setForm(profile);
-    setNotice(null);
+    setActiveTab('identity');
     setEditing(true);
-  }
+  };
 
-  function cancelEditing() {
+  const handleCancelEditing = () => {
     setForm(profile);
-    setError(null);
     setEditing(false);
-  }
+  };
 
-  async function save() {
+  const handleSave = async () => {
     setSaving(true);
-    setError(null);
-    setNotice(null);
     try {
       await updateProfile(form);
       setProfile(form);
       setEditing(false);
-      setNotice('Profile saved.');
-    } catch (caught) {
-      setError(rpcErrorMessage(caught));
+      toast.success('Universal profile successfully updated in database.');
+    } catch (err) {
+      toast.error(rpcErrorMessage(err));
     } finally {
       setSaving(false);
     }
-  }
+  };
 
-  async function onAvatar(file: File | undefined) {
-    if (!file || !user) {
-      return;
-    }
+  const handleSavePreferences = async (prefsJson: string) => {
+    const updated = { ...profile, preferencesJson: prefsJson };
+    await updateProfile(updated);
+    setProfile(updated);
+    setForm(updated);
+  };
+
+  const handleAvatarUpload = async (file: File | undefined) => {
+    if (!file || !user) return;
     setUploading(true);
-    setError(null);
     try {
       const result = await uploadImage(file, 'user', user.usersId);
       await setAvatar(result.imagesId);
-    } catch (caught) {
-      setError(rpcErrorMessage(caught));
+      toast.success('Profile avatar updated.');
+      await fetchProfileData();
+    } catch (err) {
+      toast.error(rpcErrorMessage(err));
     } finally {
       setUploading(false);
     }
-  }
+  };
+
+  const handleLogout = async () => {
+    const { logout: authLogout } = await import('@/features/auth/services/authService');
+    await authLogout();
+    logout();
+    navigate('/login');
+  };
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <Skeleton className="h-40 w-full rounded-xl" />
-        <Skeleton className="h-64 w-full rounded-xl" />
+      <div className="mx-auto max-w-4xl space-y-8 animate-pulse">
+        <Skeleton className="h-72 w-full rounded-[2.25rem]" />
+        <div className="flex gap-2">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-10 w-32 rounded-full" />
+          ))}
+        </div>
+        <Skeleton className="h-96 w-full rounded-[2rem]" />
       </div>
     );
   }
 
-  const displayName =
-    [profile.firstName, profile.lastName].filter(Boolean).join(' ') || 'Your profile';
-  const addressParts = [profile.addressLine, profile.city, profile.state, profile.zip]
-    .filter(Boolean)
-    .join(', ');
+  const tabItems: { id: ProfileTab; label: string; icon: typeof User; badge?: number }[] = [
+    { id: 'identity', label: 'Identity & Details', icon: User },
+    { id: 'preferences', label: 'Event Preferences', icon: Compass, badge: interestsCount },
+    { id: 'security', label: 'Security & Access', icon: ShieldCheck },
+    { id: 'activity', label: 'Wallet & Activity', icon: Ticket },
+  ];
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="overflow-hidden rounded-xl border border-hairline bg-surface shadow-[var(--shadow-e1)]">
-        <div className="h-24 bg-stage" />
-        <div className="flex flex-col gap-4 px-6 pb-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex items-end gap-4">
+    <div className="mx-auto max-w-5xl space-y-10 pb-20">
+      {/* 1. VIP Executive Credential Hero Card */}
+      <ProfileHeroCard
+        user={user}
+        role={role}
+        profile={profile}
+        uploading={uploading}
+        onAvatarUpload={handleAvatarUpload}
+        onOpenDigitalPass={() => setDigitalPassOpen(true)}
+        onStartEditing={handleStartEditing}
+        onLogout={handleLogout}
+        interestsCount={interestsCount}
+      />
+
+      {/* 2. Interactive Navigation Tabs (Fluid Island Style) */}
+      <div className="flex overflow-x-auto no-scrollbar gap-2 p-1.5 rounded-full border border-hairline bg-surface/80 shadow-[var(--shadow-e1)] backdrop-blur-md">
+        {tabItems.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
             <button
+              key={tab.id}
               type="button"
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-              className="group relative -mt-10 size-24 shrink-0 cursor-pointer overflow-hidden rounded-full border-4 border-surface bg-surface-sunken shadow-[var(--shadow-e1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label="Change profile picture"
+              onClick={() => {
+                if (editing && tab.id !== 'identity') {
+                  setEditing(false);
+                }
+                setActiveTab(tab.id);
+              }}
+              className={`flex items-center gap-2 rounded-full px-5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 ${
+                isActive
+                  ? 'bg-brand text-brand-ink shadow-md'
+                  : 'text-ink-soft hover:bg-surface-sunken hover:text-ink'
+              }`}
             >
-              {user?.avatarUrl ? (
-                <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
-              ) : (
-                <span className="flex h-full w-full items-center justify-center font-display text-2xl font-semibold text-ink-faint">
-                  {(profile.firstName[0] || user?.email?.[0] || '?').toUpperCase()}
+              <Icon className="size-4" />
+              <span>{tab.label}</span>
+              {tab.badge !== undefined && tab.badge > 0 ? (
+                <span
+                  className={`rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'
+                  }`}
+                >
+                  {tab.badge}
                 </span>
-              )}
-              <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                {uploading ? (
-                  <Loader2 className="size-5 animate-spin text-white" />
-                ) : (
-                  <Camera className="size-5 text-white" />
-                )}
-              </span>
+              ) : null}
             </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => onAvatar(e.target.files?.[0])}
+          );
+        })}
+      </div>
+
+      {/* 3. Tab Contents with Concentric Double-Bezel Enclosure */}
+      <div className="rounded-[2.25rem] bg-black/5 p-2 ring-1 ring-black/5 dark:bg-white/5 dark:ring-white/10">
+        <div className="rounded-[calc(2.25rem-0.5rem)] border border-hairline bg-surface p-6 sm:p-8 md:p-10 shadow-[var(--shadow-e1)]">
+          {activeTab === 'identity' && (
+            <PersonalInfoTab
+              user={user}
+              profile={profile}
+              form={form}
+              editing={editing}
+              saving={saving}
+              onFieldChange={handleFieldChange}
+              onStartEditing={handleStartEditing}
+              onCancelEditing={handleCancelEditing}
+              onSave={handleSave}
             />
-            <div className="space-y-1 pb-1">
-              <h1 className="font-display text-2xl font-semibold text-ink">{displayName}</h1>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="voltage">{roleLabel(role)}</Badge>
-                {user?.tenantSlug ? <Badge variant="neutral">{user.tenantSlug}</Badge> : null}
-              </div>
-            </div>
-          </div>
-          {!editing ? (
-            <Button variant="outline" size="sm" onClick={startEditing} className="shrink-0">
-              <Pencil className="mr-1.5 size-3.5" /> Edit profile
-            </Button>
-          ) : null}
+          )}
+
+          {activeTab === 'preferences' && (
+            <PreferencesTab onSavePreferences={handleSavePreferences} />
+          )}
+
+          {activeTab === 'security' && (
+            <SecurityTab user={user} onRefreshUser={fetchProfileData} />
+          )}
+
+          {activeTab === 'activity' && <ActivityTab />}
         </div>
       </div>
 
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
-      {notice ? <p className="text-sm text-success">{notice}</p> : null}
-
-      {!editing ? (
-        <div className="divide-y divide-hairline rounded-xl border border-hairline bg-surface shadow-[var(--shadow-e1)]">
-          <DetailRow icon={Mail} label="Email" value={user?.email || '—'} />
-          <DetailRow icon={Phone} label="Phone" value={profile.phone ? displayUsPhone(profile.phone) : '—'} />
-          <DetailRow icon={MapPin} label="Address" value={addressParts || '—'} />
-        </div>
-      ) : (
-        <div className="space-y-4 rounded-xl border border-hairline bg-surface p-6 shadow-[var(--shadow-e1)]">
-          <div className="grid grid-cols-2 gap-3">
-            <Labeled label="First name" value={form.firstName} onChange={field('firstName')} />
-            <Labeled label="Last name" value={form.lastName} onChange={field('lastName')} />
-          </div>
-          <Labeled label="Phone (optional)" value={form.phone} onChange={(v) => field('phone')(formatUsPhone(v))} />
-          <Labeled label="Address (optional)" value={form.addressLine} onChange={field('addressLine')} />
-          <div className="grid grid-cols-3 gap-3">
-            <Labeled label="City" value={form.city} onChange={field('city')} />
-            <Labeled label="State" value={form.state} onChange={field('state')} />
-            <Labeled label="Zip" value={form.zip} onChange={field('zip')} />
-          </div>
-          <div className="flex gap-2 pt-2">
-            <Button onClick={save} disabled={saving}>
-              {saving ? 'Saving…' : 'Save changes'}
-            </Button>
-            <Button variant="outline" onClick={cancelEditing} disabled={saving}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function DetailRow({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Mail;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center gap-4 px-6 py-4">
-      <Icon className="size-4 shrink-0 text-ink-faint" />
-      <span className="w-20 shrink-0 text-xs font-medium uppercase tracking-wider text-ink-faint">
-        {label}
-      </span>
-      <span className="min-w-0 flex-1 truncate text-sm text-ink">{value}</span>
-    </div>
-  );
-}
-
-function Labeled({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div className="space-y-1">
-      <Label>{label}</Label>
-      <Input value={value} onChange={(e) => onChange(e.target.value)} />
+      {/* 4. Apple Wallet Style Digital Pass Modal */}
+      <DigitalPassModal
+        open={digitalPassOpen}
+        onOpenChange={setDigitalPassOpen}
+        user={user}
+        role={role}
+      />
     </div>
   );
 }
