@@ -18,6 +18,7 @@ import { EventFooter } from '@/features/public/components/EventFooter';
 import { CheckoutDrawer } from '@/features/public/components/checkout/CheckoutDrawer';
 import { PersuasionBand } from '@/features/public/components/event/PersuasionBand';
 import { DeltaStrip } from '@/features/public/components/event/DeltaStrip';
+import { isTenantSubdomain, getUniversalLoginUrl } from '@/shared/subdomain';
 import { buildPersuasion } from '@/features/public/lib/persuasion';
 import { rememberEventVisit } from '@/features/public/lib/eventMemory';
 import { GroupDiscountBanner } from '@/features/public/components/GroupDiscountBanner';
@@ -146,6 +147,10 @@ export function EventDetailPageContent({
     if (!isAuthenticated) {
       savePendingCart(event.eventsId, cart, holdSeconds);
       setReturnTo(location.pathname + location.search);
+      if (isTenantSubdomain()) {
+        window.location.href = getUniversalLoginUrl(window.location.href);
+        return;
+      }
       navigate('/login');
       return;
     }

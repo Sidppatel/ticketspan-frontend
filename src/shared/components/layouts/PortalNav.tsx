@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
-import { Menu, ChevronDown, LayoutDashboard, Calendar, Ticket, User, Settings, ShieldAlert, HeartHandshake, LogOut, Landmark, Users2, MapPin, Palette, Brush } from 'lucide-react';
+import { Menu, ChevronDown, LayoutDashboard, Calendar, Ticket, User, Settings, ShieldAlert, HeartHandshake, LogOut, Landmark, Users2, MapPin, Palette, Brush, ExternalLink } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/shared/ui/sheet';
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
@@ -9,6 +9,8 @@ import { BrandLockup } from '@/shared/brand/BrandMark';
 import { useTenantBranding } from '@/shared/theme/ThemeContext';
 import { roleLabel } from '@/shared/roles';
 import { cn } from '@/shared/lib/cn';
+import { isTenantSubdomain, getUniversalLoginUrl, getRootDomainUrl } from '@/shared/subdomain';
+import { UserAvatarMenu } from '@/shared/components/UserAvatarMenu';
 
 export interface NavLink {
   to: string;
@@ -77,25 +79,43 @@ function groupLinks(links: NavLink[], section?: string): LinkGroup[] {
 
 function Brand({ section, className, onStage }: { section?: string; className?: string; onStage?: boolean }) {
   const { branding, tenantSlug } = useTenantBranding();
-  const showTenantBrand = !section && tenantSlug !== '' && (branding.logoUrl !== null || branding.tenantName !== '');
-  if (showTenantBrand) {
+  const onTenant = isTenantSubdomain() || (Boolean(tenantSlug) && !section);
+
+  if (onTenant) {
+    const tenantName = branding.tenantName || (tenantSlug ? `${tenantSlug}` : 'Box Office');
+    const tenantInitial = tenantName.slice(0, 2).toUpperCase();
+
     return (
-      <span className={cn('font-semibold tracking-tight font-display text-lg flex items-center gap-2', className)}>
+      <RouterNavLink to="/" className={cn('flex items-center gap-2.5 transition-opacity hover:opacity-90', className)}>
         {branding.logoUrl ? (
-          <img src={branding.logoUrl} alt={branding.tenantName || 'Logo'} className="h-7 w-7 rounded object-contain" />
-        ) : null}
-        <span className={cn('transition-opacity hover:opacity-80', onStage ? 'text-on-stage' : 'text-foreground')}>
-          {branding.tenantName || tenantSlug}
+          <img
+            src={branding.logoUrl}
+            alt={tenantName}
+            className="h-8 w-8 rounded-xl border border-white/20 object-contain shadow-sm bg-card/80 p-0.5"
+          />
+        ) : (
+          <div className={cn(
+            'flex size-8 shrink-0 items-center justify-center rounded-xl font-display text-xs font-black shadow-sm border',
+            onStage ? 'border-white/30 bg-white/15 text-white' : 'border-primary/30 bg-primary/15 text-primary'
+          )}>
+            {tenantInitial}
+          </div>
+        )}
+        <span className={cn('font-display text-base font-bold tracking-tight sm:text-lg', onStage ? 'text-white' : 'text-foreground')}>
+          {tenantName}
         </span>
-      </span>
+      </RouterNavLink>
     );
   }
+
   return (
-    <BrandLockup
-      size="sm"
-      section={section}
-      className={cn('transition-opacity hover:opacity-80', onStage ? 'text-on-stage' : 'text-foreground', className)}
-    />
+    <RouterNavLink to="/" className="flex items-center">
+      <BrandLockup
+        size="sm"
+        section={section}
+        className={cn('transition-opacity hover:opacity-90', onStage ? 'text-white' : 'text-foreground', className)}
+      />
+    </RouterNavLink>
   );
 }
 
@@ -108,6 +128,14 @@ export function PortalNav({ section, links, transparent, hideAuth }: { section?:
   async function handleLogout() {
     const { logout } = await import('@/features/auth/services/authService');
     await logout();
+    navigate('/login');
+  }
+
+  function handleSignIn() {
+    if (isTenantSubdomain()) {
+      window.location.href = getUniversalLoginUrl(window.location.href);
+      return;
+    }
     navigate('/login');
   }
 
@@ -253,11 +281,13 @@ export function PortalNav({ section, links, transparent, hideAuth }: { section?:
                     to={link.to}
                     end={link.to === '/'}
                     className={({ isActive }) => cn(
-                      'rounded-md px-3 py-1.5 text-xs font-medium transition-all',
+                      'rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all',
                       isActive
-                        ? cn('rounded-none border-b-2 border-brand px-1 py-1', isHeaderTransparent ? 'border-voltage text-on-stage' : 'text-ink')
+                        ? isHeaderTransparent
+                          ? 'bg-white/15 text-white font-bold border border-white/25 shadow-sm backdrop-blur-md'
+                          : 'bg-primary/10 text-primary font-bold'
                         : isHeaderTransparent
-                          ? 'text-on-stage-soft hover:text-on-stage'
+                          ? 'text-white/80 hover:text-white hover:bg-white/10'
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                     )}
                   >
@@ -269,7 +299,12 @@ export function PortalNav({ section, links, transparent, hideAuth }: { section?:
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="gap-1 font-medium text-xs h-8 px-2 text-muted-foreground hover:bg-muted/30 hover:text-foreground"
+                      className={cn(
+                        'gap-1 font-medium text-xs h-8 px-2',
+                        isHeaderTransparent
+                          ? 'text-white/80 hover:bg-white/10 hover:text-white'
+                          : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground'
+                      )}
                     >
                       More <ChevronDown className="h-3 w-3" />
                     </Button>
@@ -299,11 +334,13 @@ export function PortalNav({ section, links, transparent, hideAuth }: { section?:
                   to={link.to}
                   end={link.to === '/'}
                   className={({ isActive }) => cn(
-                    'rounded-md px-3 py-1.5 text-xs font-medium transition-all',
+                    'rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all',
                     isActive
-                      ? cn('rounded-none border-b-2 border-brand px-1 py-1', isHeaderTransparent ? 'border-voltage text-on-stage' : 'text-ink')
+                      ? isHeaderTransparent
+                        ? 'bg-white/15 text-white font-bold border border-white/25 shadow-sm backdrop-blur-md'
+                        : 'bg-primary/10 text-primary font-bold'
                       : isHeaderTransparent
-                        ? 'text-on-stage-soft hover:text-on-stage'
+                        ? 'text-white/80 hover:text-white hover:bg-white/10'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                   )}
                 >
@@ -316,19 +353,33 @@ export function PortalNav({ section, links, transparent, hideAuth }: { section?:
 
         <div className="flex items-center gap-2">
           {hideAuth ? null : isAuthenticated ? (
-            <Button variant="outline" size="sm" className="hidden md:inline-flex text-xs h-8" onClick={handleLogout}>
-              Sign Out
-            </Button>
+            <div className="hidden md:flex items-center gap-2">
+              <UserAvatarMenu tone={isHeaderTransparent ? 'on-stage' : 'default'} />
+            </div>
           ) : (
-            <Button size="sm" className="hidden md:inline-flex text-xs h-8" onClick={() => navigate('/login')}>
+            <Button
+              size="sm"
+              className={cn(
+                'hidden md:inline-flex text-xs h-8 font-semibold',
+                isHeaderTransparent
+                  ? 'bg-white/15 text-white border border-white/30 hover:bg-white/25'
+                  : ''
+              )}
+              onClick={handleSignIn}
+            >
               Sign in
             </Button>
           )}
 
-          {}
+          {/* Mobile hamburger */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn('md:hidden', isHeaderTransparent ? 'text-white hover:bg-white/10' : 'text-foreground')}
+                aria-label="Open menu"
+              >
                 <Menu />
               </Button>
             </SheetTrigger>
@@ -355,15 +406,38 @@ export function PortalNav({ section, links, transparent, hideAuth }: { section?:
               <div className="mt-auto border-t border-border pt-4">
                 {hideAuth ? null : isAuthenticated ? (
                   <div className="space-y-3">
-                    <p className="truncate text-xs font-semibold text-foreground">
-                      {user?.email}
-                    </p>
+                    <div className="space-y-0.5">
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Universal Account</p>
+                      <p className="truncate text-xs font-semibold text-foreground">
+                        {user?.email}
+                      </p>
+                    </div>
+                    {isTenantSubdomain() ? (
+                      <div className="space-y-1.5">
+                        <a
+                          href={getRootDomainUrl('/tickets')}
+                          className="flex items-center justify-between rounded-lg border border-primary/30 bg-primary/10 p-2.5 font-mono text-xs font-semibold text-primary transition-all hover:bg-primary/20"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Ticket className="size-4" /> My Passes
+                          </span>
+                          <ExternalLink className="size-3.5 opacity-70" />
+                        </a>
+                        <a
+                          href={getRootDomainUrl('/hub')}
+                          className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/60 p-2.5 font-mono text-xs font-medium text-foreground transition-all hover:bg-muted"
+                        >
+                          <span>Attendee Hub</span>
+                          <ExternalLink className="size-3.5 opacity-70" />
+                        </a>
+                      </div>
+                    ) : null}
                     <Button variant="outline" size="sm" className="w-full text-xs h-8" onClick={handleLogout}>
                       Sign Out
                     </Button>
                   </div>
                 ) : (
-                  <Button size="sm" className="w-full text-xs h-8" onClick={() => navigate('/login')}>
+                  <Button size="sm" className="w-full text-xs h-8" onClick={handleSignIn}>
                     Sign in
                   </Button>
                 )}

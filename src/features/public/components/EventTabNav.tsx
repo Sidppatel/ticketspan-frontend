@@ -73,10 +73,10 @@ export function EventTabNav({
                 type="button"
                 onClick={() => handleTabClick(t.targetId, t.id)}
                 className={cn(
-                  'flex shrink-0 cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
+                  'flex shrink-0 cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand border',
                   isActive
-                    ? 'bg-foreground text-background shadow-sm'
-                    : 'text-ink-soft hover:bg-surface-card hover:text-foreground',
+                    ? 'bg-foreground text-background shadow-sm border-transparent'
+                    : 'border-transparent text-ink/80 hover:bg-surface-card hover:text-ink hover:border-border-soft',
                 )}
               >
                 <Icon className={cn('size-3.5', isActive ? 'text-background' : 'text-brand')} />

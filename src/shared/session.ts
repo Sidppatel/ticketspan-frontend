@@ -2,6 +2,7 @@ import { RpcError, type UnaryCall } from '@protobuf-ts/runtime-rpc';
 import { authClient } from '@/shared/apiClient';
 import { useAuthStore } from '@/shared/auth/store';
 import { reportRpcFailure } from '@/shared/errorReporter';
+import { isTenantSubdomain, getUniversalLoginUrl } from '@/shared/subdomain';
 
 const REPORTABLE_RPC_CODES = ['INTERNAL', 'UNKNOWN', 'UNAVAILABLE', 'DEADLINE_EXCEEDED'];
 
@@ -47,6 +48,10 @@ export async function callRpc<I extends object, O extends object>(
           return await invoke().response;
         }
         useAuthStore.getState().clear();
+        if (isTenantSubdomain()) {
+          window.location.href = getUniversalLoginUrl(window.location.href);
+          return await new Promise(() => {});
+        }
         redirect('/login');
       }
       if (error.code === 'PERMISSION_DENIED') {

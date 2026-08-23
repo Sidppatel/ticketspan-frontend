@@ -46,7 +46,7 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
   const showVerified = event.isVerifiedOrganizer !== false;
 
   return (
-    <section aria-label="Event Hero Section" className="relative w-full overflow-hidden bg-stage pb-12 pt-20 text-on-stage md:pb-16 md:pt-24">
+    <section aria-label="Event Hero Section" className="relative w-full overflow-hidden bg-[#0d1017] pb-12 pt-20 text-white md:pb-16 md:pt-24">
       <div className="absolute inset-0 select-none overflow-hidden">
         <AuroraBackground className="absolute inset-0 h-full w-full" />
         {backdropImageId && (
@@ -55,32 +55,32 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
             alt=""
             fetchPriority="high"
             decoding="async"
-            className="h-[110%] w-full object-cover opacity-65 filter blur-[1px] scale-105 transition-all duration-700"
+            className="h-[110%] w-full object-cover opacity-60 filter blur-[1px] scale-105 transition-all duration-700"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-stage/40 via-stage/75 to-surface-canvas" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0d1017]/70 via-[#0d1017]/85 to-[#0d1017]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 md:px-8 space-y-8">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/15 pb-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-voltage/20 px-3.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-voltage border border-voltage/40 backdrop-blur-md shadow-sm">
-              <Flame className="size-3.5 text-voltage animate-pulse" /> {urgencyLabel}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-amber-300 border border-amber-500/40 backdrop-blur-md shadow-sm">
+              <Flame className="size-3.5 text-amber-400 animate-pulse" /> {urgencyLabel}
             </span>
             {event.category && (
-              <span className="rounded-full bg-white/10 px-3.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-white border border-white/15 backdrop-blur-md">
+              <span className="rounded-full bg-white/15 px-3.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-white border border-white/25 backdrop-blur-md shadow-sm">
                 {event.category}
               </span>
             )}
             {showVerified && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/80 px-3.5 py-1 font-sans text-[11px] font-bold text-emerald-400 border border-emerald-500/40 backdrop-blur-md">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 px-3.5 py-1 font-sans text-[11px] font-bold text-emerald-400 border border-emerald-500/50 backdrop-blur-md shadow-sm">
                 <ShieldCheck className="size-3.5 text-emerald-400" /> Verified Organizer
               </span>
             )}
           </div>
 
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-voltage">
-            <Sparkles className="size-3.5 text-voltage" /> Official Event Pass
+          <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-amber-300">
+            <Sparkles className="size-3.5 text-amber-400" /> Official Event Pass
           </span>
         </div>
 
@@ -97,26 +97,38 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
                   <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white font-mono text-xs">
-                    <span className="rounded-xl bg-black/80 px-3 py-1.5 backdrop-blur-md border border-white/20 font-bold">
+                    <span className="rounded-xl bg-black/85 px-3 py-1.5 backdrop-blur-md border border-white/20 font-bold">
                       {EVENT_TYPE_LABEL[event.eventType] || EVENT_TYPE_LABEL.Open}
                     </span>
-                    <span className="rounded-xl bg-voltage/90 px-3 py-1.5 backdrop-blur-md text-black font-extrabold uppercase">
+                    <span className="rounded-xl bg-amber-400 px-3 py-1.5 backdrop-blur-md text-black font-extrabold uppercase">
                       Live Pass
                     </span>
                   </div>
                 </div>
               ) : (
-                <div className="flex aspect-[4/3] w-full items-center justify-center rounded-2xl bg-gradient-to-br from-stage via-surface-card to-surface-sunken p-6 text-center">
-                  <Ticket className="size-16 text-voltage/40" />
+                <div className="relative flex aspect-[4/3] w-full flex-col items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/90 via-zinc-900/80 to-black/95 p-6 text-center shadow-inner overflow-hidden">
+                  <div className="pointer-events-none absolute -right-8 -top-8 size-32 rounded-full bg-amber-500/10 blur-2xl" />
+                  <div className="pointer-events-none absolute -left-8 -bottom-8 size-32 rounded-full bg-primary/10 blur-2xl" />
+                  <div className="relative z-10 flex flex-col items-center gap-3">
+                    <div className="flex size-16 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/10 shadow-lg">
+                      <Ticket className="size-8 text-amber-300" />
+                    </div>
+                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-amber-300/90">
+                      {EVENT_TYPE_LABEL[event.eventType] || 'Live Event Pass'}
+                    </span>
+                    <span className="font-display text-base font-bold text-white max-w-[260px] line-clamp-1">
+                      {event.title}
+                    </span>
+                  </div>
                 </div>
               )}
 
               <div className="mt-3 rounded-2xl bg-black/80 p-4 border border-white/15 backdrop-blur-xl">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-voltage flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-amber-300 flex items-center gap-1">
                     <Clock className="size-3" /> Time Remaining
                   </span>
-                  <span className="text-[10px] font-mono text-white/60 uppercase">Starts Soon</span>
+                  <span className="text-[10px] font-mono text-white/70 uppercase">Starts Soon</span>
                 </div>
                 <Countdown startEpoch={event.startDate} endEpoch={event.endDate} />
               </div>
@@ -130,7 +142,7 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
               </h1>
 
               {heroDescription && (
-                <p className="max-w-xl text-sm leading-relaxed text-white/80 md:text-base font-normal line-clamp-3">
+                <p className="max-w-xl text-sm leading-relaxed text-slate-200 md:text-base font-normal line-clamp-3">
                   {heroDescription}
                 </p>
               )}
@@ -139,7 +151,7 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
             <div className="flex flex-wrap items-center gap-3 font-semibold text-xs text-white">
               {dateStr && (
                 <div className="flex items-center gap-2.5 rounded-2xl bg-black/80 px-4 py-3 backdrop-blur-xl border border-white/25 shadow-md">
-                  <CalendarDays className="size-4 text-voltage shrink-0" />
+                  <CalendarDays className="size-4 text-amber-400 shrink-0" />
                   <span className="font-bold tracking-wide text-white">{dateStr}</span>
                 </div>
               )}
@@ -148,9 +160,9 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
                   href={mapsSearchUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 rounded-2xl bg-black/80 px-4 py-3 backdrop-blur-xl border border-white/25 shadow-md hover:bg-black/95 hover:border-voltage transition-all text-white"
+                  className="flex items-center gap-2.5 rounded-2xl bg-black/80 px-4 py-3 backdrop-blur-xl border border-white/25 shadow-md hover:bg-black/95 hover:border-amber-400 transition-all text-white"
                 >
-                  <MapPin className="size-4 text-voltage shrink-0" />
+                  <MapPin className="size-4 text-amber-400 shrink-0" />
                   <span className="font-bold tracking-wide text-white">{venue.name}</span>
                 </a>
               )}
@@ -159,7 +171,7 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
             <div className="rounded-3xl border border-white/20 bg-black/85 p-6 backdrop-blur-2xl shadow-2xl space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="block text-[11px] uppercase font-mono tracking-wider text-white/70">Passes starting from</span>
+                  <span className="block text-[11px] uppercase font-mono tracking-wider text-slate-300">Passes starting from</span>
                   {minPriceCents !== undefined ? (
                     <PriceBadge priceCents={minPriceCents} className="font-mono text-3xl font-black text-white" />
                   ) : (
@@ -168,10 +180,10 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
                 </div>
 
                 <div className="text-right">
-                  <span className="inline-flex items-center gap-1 text-[11px] text-voltage font-mono font-bold">
+                  <span className="inline-flex items-center gap-1 text-[11px] text-amber-300 font-mono font-bold">
                     <Clock className="size-3" /> Live Inventory
                   </span>
-                  <span className="block text-[10px] text-white/60 font-sans">Instant Mobile Delivery</span>
+                  <span className="block text-[10px] text-slate-300 font-sans">Instant Mobile Delivery</span>
                 </div>
               </div>
 

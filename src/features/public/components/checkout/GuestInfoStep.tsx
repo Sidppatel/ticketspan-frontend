@@ -4,6 +4,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { useAuth } from '@/shared/auth/useAuth';
 import { formatUsPhone } from '@/shared/lib/validation';
+import { getUniversalLoginUrl } from '@/shared/subdomain';
 
 export interface BuyerInfo {
   name: string;
@@ -78,7 +79,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
             <Button
               type="button"
               onClick={() => {
-                window.location.href = `/login?returnTo=${encodeURIComponent(window.location.pathname)}`;
+                window.location.href = getUniversalLoginUrl(window.location.href);
               }}
               className="bg-accent-gold hover:bg-accent-gold/90 text-voltage-ink text-[10px] font-black uppercase tracking-wider py-2 h-auto px-3 rounded-lg"
             >

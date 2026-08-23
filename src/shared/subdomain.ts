@@ -89,3 +89,59 @@ export function tenantUrl(slug: string): string {
   const portSuffix = port ? `:${port}` : '';
   return `${protocol}//${slug}.${baseHost}${portSuffix}/`;
 }
+
+export function getRootDomainUrl(path: string = '/'): string {
+  if (typeof window === 'undefined') return path;
+  const { protocol, hostname, port } = window.location;
+  let baseHost: string;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    baseHost = hostname;
+  } else if (hostname.endsWith('.localhost')) {
+    baseHost = hostname.slice(hostname.indexOf('.') + 1);
+  } else {
+    const parts = hostname.split('.');
+    baseHost = parts.length > 2 ? parts.slice(-2).join('.') : hostname;
+  }
+  const portSuffix = port ? `:${port}` : '';
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${protocol}//${baseHost}${portSuffix}${normalizedPath}`;
+}
+
+export function isTenantSubdomain(): boolean {
+  const { portal, tenantSlug } = resolvePortalContext();
+  return portal === 'public' && Boolean(tenantSlug);
+}
+
+export function getUniversalLoginUrl(returnUrl?: string): string {
+  if (typeof window === 'undefined') return '/login';
+  const targetReturn = returnUrl || window.location.href;
+  const rootUrl = getRootDomainUrl('/login');
+  const url = new URL(rootUrl);
+  if (targetReturn && !targetReturn.includes('/login') && !targetReturn.includes('/register')) {
+    url.searchParams.set('returnUrl', targetReturn);
+  }
+  return url.toString();
+}
+
+export function getUniversalRegisterUrl(returnUrl?: string): string {
+  if (typeof window === 'undefined') return '/register';
+  const targetReturn = returnUrl || window.location.href;
+  const rootUrl = getRootDomainUrl('/register');
+  const url = new URL(rootUrl);
+  if (targetReturn && !targetReturn.includes('/login') && !targetReturn.includes('/register')) {
+    url.searchParams.set('returnUrl', targetReturn);
+  }
+  return url.toString();
+}
+
+export function getRootCookieDomain(): string {
+  if (typeof window === 'undefined') return '';
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') return '';
+  if (hostname.endsWith('.localhost')) return '';
+  const parts = hostname.split('.');
+  if (parts.length >= 2) {
+    return '.' + parts.slice(-2).join('.');
+  }
+  return '';
+}

@@ -13,16 +13,58 @@ import { rpcErrorMessage } from '@/shared/session';
 import { homePathForRole } from '@/shared/roles';
 import { takeReturnTo } from '@/shared/auth/returnTo';
 
+import { useAuthStore, type PersistedAuthPayload } from '@/shared/auth/store';
+
 export function useAuthFlow() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  
-  
   const goAfterAuth = useCallback(
-    (role: number) => navigate(takeReturnTo() ?? homePathForRole(role)),
+    (role: number) => {
+      const currentAuth = useAuthStore.getState();
+      const payload: PersistedAuthPayload = {
+        accessToken: currentAuth.accessToken,
+        refreshToken: currentAuth.refreshToken,
+        expiresAtSeconds: currentAuth.expiresAtSeconds,
+        user: currentAuth.user,
+      };
+      const authSyncHash = `auth_sync=${encodeURIComponent(JSON.stringify(payload))}`;
+
+      const attachSyncToUrl = (targetUrl: string) => {
+        try {
+          const parsed = new URL(targetUrl, typeof window !== 'undefined' ? window.location.href : undefined);
+          parsed.hash = parsed.hash ? `${parsed.hash}&${authSyncHash}` : authSyncHash;
+          return parsed.toString();
+        } catch {
+          return targetUrl;
+        }
+      };
+
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryReturn = urlParams.get('returnUrl') || urlParams.get('returnTo');
+        if (queryReturn) {
+          if (queryReturn.startsWith('http://') || queryReturn.startsWith('https://')) {
+            window.location.href = attachSyncToUrl(queryReturn);
+            return;
+          }
+          navigate(queryReturn);
+          return;
+        }
+      }
+      const storedReturn = takeReturnTo();
+      if (storedReturn) {
+        if (storedReturn.startsWith('http://') || storedReturn.startsWith('https://')) {
+          window.location.href = attachSyncToUrl(storedReturn);
+          return;
+        }
+        navigate(storedReturn);
+        return;
+      }
+      navigate(homePathForRole(role));
+    },
     [navigate],
   );
 

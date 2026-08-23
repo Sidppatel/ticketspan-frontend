@@ -4,9 +4,6 @@ import { Outlet, useLocation } from 'react-router-dom';
 const PortalNav = lazy(() =>
   import('@/shared/components/layouts/PortalNav').then((m) => ({ default: m.PortalNav })),
 );
-const MobileTabBar = lazy(() =>
-  import('@/shared/components/layouts/MobileTabBar').then((m) => ({ default: m.MobileTabBar })),
-);
 import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 import { useAuth } from '@/shared/auth/useAuth';
 import { cn } from '@/shared/lib/cn';
@@ -22,17 +19,16 @@ export function PublicLayout() {
 
   const onRootDomain = !currentTenantSlug();
 
+  // On tenant domain, only show Events catalog and Staff check-in if staff
   const links = onRootDomain
-    ? [{ to: '/', label: 'Home' }]
-    : [
-        { to: '/', label: 'Events' },
-        { to: '/tickets', label: 'Tickets' },
-        { to: '/bookings', label: 'Bookings' },
-        { to: '/profile', label: 'Profile' },
-      ];
+    ? [
+        { to: '/', label: 'Home' },
+        ...(isAuthenticated ? [{ to: '/hub', label: 'Attendee Hub' }] : []),
+      ]
+    : [{ to: '/', label: 'Events' }];
 
   if (!onRootDomain && isAuthenticated && (role === 2 || role === 1 || role === 3)) {
-    links.push({ to: '/staff', label: 'Check-In' });
+    links.push({ to: '/staff', label: 'Staff Check-In' });
   }
 
   const isPlatformLanding = pathname === '/' && onRootDomain;
@@ -42,7 +38,7 @@ export function PublicLayout() {
     <div className={cn('min-h-screen bg-background', onRootDomain && 'landing-ivory')}>
       {!isPlatformLanding && (
         <Suspense fallback={<div className="h-16" />}>
-          <PortalNav links={links} transparent={isFullBleedPage} hideAuth={onRootDomain} />
+          <PortalNav links={links} transparent={isFullBleedPage} hideAuth={false} />
         </Suspense>
       )}
       <main
@@ -55,11 +51,6 @@ export function PublicLayout() {
       >
         <Outlet />
       </main>
-      {!isFullBleedPage && !onRootDomain && (
-        <Suspense fallback={null}>
-          <MobileTabBar />
-        </Suspense>
-      )}
     </div>
   );
 }

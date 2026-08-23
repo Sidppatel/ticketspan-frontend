@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/shared/lib/cn';
 import { BrandLockup } from '@/shared/brand/BrandMark';
+import { useAuth } from '@/shared/auth/useAuth';
+import { UserAvatarMenu } from '@/shared/components/UserAvatarMenu';
+import { LayoutGrid } from 'lucide-react';
 
 const sections = [
   { href: '#platform', label: 'Platform' },
@@ -12,6 +15,7 @@ const sections = [
 
 export function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -31,19 +35,53 @@ export function LandingNav() {
         <Link to="/" className="flex items-center text-(--lp-ink)" aria-label="TicketSpan home">
           <BrandLockup size="md" tone="ink" />
         </Link>
-        <div className="hidden items-center gap-9 md:flex">
+        <div className="hidden items-center gap-7 md:flex">
           {sections.map((s) => (
             <a key={s.href} href={s.href} className="lp-link text-sm">
               {s.label}
             </a>
           ))}
-          <a href="#start" data-magnet className="lp-cta !h-11 !px-6 !text-xs">
-            Open your box office
-          </a>
+
+          {isAuthenticated ? (
+            <div className="flex items-center gap-4 border-l border-(--lp-line-soft) pl-5">
+              <Link
+                to="/hub"
+                className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-(--lp-ink) hover:text-(--lp-green) transition-colors"
+              >
+                <LayoutGrid className="size-3.5" />
+                Attendee Hub
+              </Link>
+              <UserAvatarMenu tone="landing" />
+            </div>
+          ) : (
+            <div className="flex items-center gap-4 border-l border-(--lp-line-soft) pl-5">
+              <Link
+                to="/login"
+                className="font-mono text-xs font-medium uppercase tracking-wider text-(--lp-ink) hover:text-(--lp-green)"
+              >
+                Sign In
+              </Link>
+              <a href="#start" data-magnet className="lp-cta !h-10 !px-5 !text-xs">
+                Open box office
+              </a>
+            </div>
+          )}
         </div>
-        <a href="#start" className="lp-cta !h-10 shrink-0 whitespace-nowrap !px-4 !text-xs md:!hidden">
-          Start
-        </a>
+
+        <div className="flex items-center gap-2 md:hidden">
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <Link to="/hub" className="lp-cta !h-9 !px-3 !text-[11px]">
+                Hub
+              </Link>
+              <UserAvatarMenu tone="landing" />
+            </div>
+          ) : (
+            <Link to="/login" className="lp-cta !h-9 !px-3 !text-[11px]">
+              Sign In
+            </Link>
+          )}
+        </div>
       </nav>
     </header>
   );

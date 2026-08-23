@@ -48,7 +48,7 @@ export function homePathForRole(role: number): string {
   if (isStaff(role)) {
     return '/staff';
   }
-  return '/';
+  return '/hub';
 }
 
 export function roleLabel(role: number): string {

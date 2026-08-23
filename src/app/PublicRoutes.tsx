@@ -1,11 +1,12 @@
-import { lazy } from 'react';
+import { lazy, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 import { NotFoundPage } from '@/shared/components/StatusPages';
 import { PublicLayout } from '@/shared/components/layouts/PublicLayout';
 import { authRoutes, authenticated } from '@/app/authRoutes';
 import { TenantLandingPage } from '@/features/public/pages/TenantLandingPage';
-import { currentTenantSlug } from '@/shared/subdomain';
+import { currentTenantSlug, isTenantSubdomain, getRootDomainUrl } from '@/shared/subdomain';
+
 
 const EventListPage = lazy(() =>
   import('@/features/public/pages/EventListPage').then((m) => ({ default: m.EventListPage })),
@@ -58,14 +59,56 @@ const ContactSupportPage = lazy(() =>
 const GetStartedPage = lazy(() =>
   import('@/features/public/pages/GetStartedPage').then((m) => ({ default: m.GetStartedPage })),
 );
+const AttendeeHubPage = lazy(() =>
+  import('@/features/public/pages/AttendeeHubPage').then((m) => ({ default: m.AttendeeHubPage })),
+);
+
+function RootLandingOrHub() {
+  const slug = currentTenantSlug();
+  if (slug) {
+    return <EventListPage />;
+  }
+  return <TenantLandingPage />;
+}
+
+function TenantUniversalRedirect({ path }: { path: string }) {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.location.replace(getRootDomainUrl(path));
+    }
+  }, [path]);
+
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center p-4">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <p className="font-mono text-xs text-muted-foreground">Redirecting to Universal Attendee Hub...</p>
+      </div>
+    </div>
+  );
+}
 
 export default function PublicRoutes() {
+  const onTenant = isTenantSubdomain();
+
   return (
     <Routes>
       {authRoutes({ allowRegister: true })}
       <Route path="get-started" element={<GetStartedPage />} />
       <Route element={<PublicLayout />}>
-        <Route index element={currentTenantSlug() ? <EventListPage /> : <TenantLandingPage />} />
+        <Route index element={<RootLandingOrHub />} />
+        <Route
+          path="hub"
+          element={
+            onTenant ? (
+              <TenantUniversalRedirect path="/hub" />
+            ) : (
+              <ProtectedRoute allow={authenticated}>
+                <AttendeeHubPage />
+              </ProtectedRoute>
+            )
+          }
+        />
         <Route path="events/:slug" element={<EventDetailPage />} />
         <Route path="performers/:slug" element={<PerformerProfilePage />} />
         <Route path="sponsors/:slug" element={<SponsorProfilePage />} />
@@ -79,17 +122,25 @@ export default function PublicRoutes() {
         <Route
           path="tickets"
           element={
-            <ProtectedRoute allow={authenticated}>
-              <TicketsPage />
-            </ProtectedRoute>
+            onTenant ? (
+              <TenantUniversalRedirect path="/tickets" />
+            ) : (
+              <ProtectedRoute allow={authenticated}>
+                <TicketsPage />
+              </ProtectedRoute>
+            )
           }
         />
         <Route
           path="bookings"
           element={
-            <ProtectedRoute allow={authenticated}>
-              <BookingsPage />
-            </ProtectedRoute>
+            onTenant ? (
+              <TenantUniversalRedirect path="/bookings" />
+            ) : (
+              <ProtectedRoute allow={authenticated}>
+                <BookingsPage />
+              </ProtectedRoute>
+            )
           }
         />
         <Route path="my-bookings" element={<Navigate to="/bookings" replace />} />
@@ -113,17 +164,25 @@ export default function PublicRoutes() {
         <Route
           path="feedback"
           element={
-            <ProtectedRoute allow={authenticated}>
-              <FeedbackPage />
-            </ProtectedRoute>
+            onTenant ? (
+              <TenantUniversalRedirect path="/feedback" />
+            ) : (
+              <ProtectedRoute allow={authenticated}>
+                <FeedbackPage />
+              </ProtectedRoute>
+            )
           }
         />
         <Route
           path="profile"
           element={
-            <ProtectedRoute allow={authenticated}>
-              <ProfilePage />
-            </ProtectedRoute>
+            onTenant ? (
+              <TenantUniversalRedirect path="/profile" />
+            ) : (
+              <ProtectedRoute allow={authenticated}>
+                <ProfilePage />
+              </ProtectedRoute>
+            )
           }
         />
       </Route>

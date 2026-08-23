@@ -38,6 +38,68 @@ export function relativeLuminance(hex: string): number {
   );
 }
 
+export function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+export function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  h /= 360;
+  s /= 100;
+  l /= 100;
+  let r: number, g: number, b: number;
+
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p: number, q: number, t: number) => {
+      let val = t;
+      if (val < 0) val += 1;
+      if (val > 1) val -= 1;
+      if (val < 1 / 6) return p + (q - p) * 6 * val;
+      if (val < 1 / 2) return q;
+      if (val < 2 / 3) return p + (q - p) * (2 / 3 - val) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
+export function hslToHex(h: number, s: number, l: number): string {
+  const [r, g, b] = hslToRgb(h, s, l);
+  const toHex = (n: number) => n.toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
 export function mixHex(hexA: string, hexB: string, weightA: number): string {
   const a = hexToRgb(hexA);
   const b = hexToRgb(hexB);
@@ -75,7 +137,57 @@ export function contrastGrade(hexA: string, hexB: string): ContrastGrade {
   return 'Fail';
 }
 
+export function ensureAccessibleContrast(
+  fgHex: string,
+  bgHex: string,
+  minRatio = 4.5,
+): string {
+  if (!isHexColor(fgHex) || !isHexColor(bgHex)) return fgHex;
+  const currentRatio = contrastRatio(fgHex, bgHex);
+  if (currentRatio >= minRatio) return fgHex;
+
+  const bgLum = relativeLuminance(bgHex);
+  const shouldLighten = bgLum < 0.45;
+
+  const rgb = hexToRgb(fgHex);
+  if (!rgb) return shouldLighten ? '#ffffff' : '#0a0d14';
+  const [h, s, initialL] = rgbToHsl(rgb[0], rgb[1], rgb[2]);
+
+  let bestRatio = currentRatio;
+
+  if (shouldLighten) {
+    for (let l = Math.max(initialL, 45); l <= 100; l += 2) {
+      const candidate = hslToHex(h, s, l);
+      const ratio = contrastRatio(candidate, bgHex);
+      if (ratio >= minRatio) return candidate;
+      if (ratio > bestRatio) {
+        bestRatio = ratio;
+      }
+    }
+    for (let curS = s; curS >= 0; curS -= 15) {
+      const candidate = hslToHex(h, curS, 98);
+      if (contrastRatio(candidate, bgHex) >= minRatio) return candidate;
+    }
+    return '#ffffff';
+  } else {
+    for (let l = Math.min(initialL, 55); l >= 0; l -= 2) {
+      const candidate = hslToHex(h, s, l);
+      const ratio = contrastRatio(candidate, bgHex);
+      if (ratio >= minRatio) return candidate;
+      if (ratio > bestRatio) {
+        bestRatio = ratio;
+      }
+    }
+    for (let curS = s; curS >= 0; curS -= 15) {
+      const candidate = hslToHex(h, curS, 6);
+      if (contrastRatio(candidate, bgHex) >= minRatio) return candidate;
+    }
+    return '#0a0d14';
+  }
+}
+
 export function resolveCssColor(varName: string, alpha?: number): string {
+  if (typeof document === 'undefined') return '#000000';
   const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
   if (alpha === undefined) {
     return value;
@@ -85,11 +197,10 @@ export function resolveCssColor(varName: string, alpha?: number): string {
 }
 
 export function readableTextOn(backgroundHex: string): string {
-  const darkCandidate = resolveCssColor('--branding-contrast-dark-candidate');
-  const lightCandidate = resolveCssColor('--branding-contrast-light-candidate');
-  return contrastRatio(backgroundHex, darkCandidate) >= contrastRatio(backgroundHex, lightCandidate)
-    ? darkCandidate
-    : lightCandidate;
+  if (!isHexColor(backgroundHex)) return '#ffffff';
+  const whiteRatio = contrastRatio('#ffffff', backgroundHex);
+  const blackRatio = contrastRatio('#0b0f19', backgroundHex);
+  return whiteRatio >= blackRatio ? '#ffffff' : '#0b0f19';
 }
 
 export interface TenantBranding {
@@ -222,76 +333,75 @@ export function brandingPresets(): BrandingPreset[] {
 export function brandingCssVars(branding: TenantBranding): Record<string, string> {
   const vars: Record<string, string> = {};
   const fallback = defaultBranding();
-  const shadeMixTarget = resolveCssColor('--branding-shade-mix-target');
+  const shadeMixTarget = resolveCssColor('--branding-shade-mix-target') || '#000000';
   const set = (name: string, value: string) => {
     vars[name] = value;
   };
-  if (isHexColor(branding.primary)) {
-    set('--brand', branding.primary);
-    set('--brand-hover', `color-mix(in srgb, ${branding.primary} 85%, ${shadeMixTarget})`);
-    set('--brand-ink', readableTextOn(branding.primary));
-    set('--ring', branding.primary);
-    set('--brand-primary', branding.primary);
-  }
-  if (isHexColor(branding.secondary)) {
-    set('--brand-secondary', branding.secondary);
-    set('--secondary', branding.secondary);
-    set('--secondary-foreground', readableTextOn(branding.secondary));
-  }
-  if (isHexColor(branding.accent)) {
-    set('--voltage-accent', branding.accent);
-    set('--voltage-accent-ink', readableTextOn(branding.accent));
-    set('--brand-accent', branding.accent);
-  }
-  if (isHexColor(branding.background)) {
-    set('--canvas', branding.background);
-    set('--surface-sunken', `color-mix(in srgb, ${branding.background} 92%, ${branding.text || fallback.text})`);
-  }
-  if (isHexColor(branding.text)) {
-    set('--ink', branding.text);
-    set('--ink-soft', `color-mix(in srgb, ${branding.text} 72%, ${branding.background || fallback.background})`);
-    set('--ink-faint', `color-mix(in srgb, ${branding.text} 62%, ${branding.background || fallback.background})`);
-  }
-  if (isHexColor(branding.text) && isHexColor(branding.background)) {
-    set('--hairline', `color-mix(in srgb, ${branding.text} 10%, ${branding.background})`);
-    set('--hairline-strong', `color-mix(in srgb, ${branding.text} 22%, ${branding.background})`);
-    set('--stage', branding.text);
-    set('--stage-elevated', `color-mix(in srgb, ${branding.text} 92%, ${branding.background})`);
-    set('--on-stage', branding.background);
-    set('--on-stage-soft', `color-mix(in srgb, ${branding.background} 70%, ${branding.text})`);
-  }
-  if (isHexColor(branding.button)) {
-    set('--primary', branding.button);
-    set('--primary-foreground', readableTextOn(branding.button));
-  }
-  if (isHexColor(branding.highlight)) {
-    set('--marigold', branding.highlight);
-    set('--marigold-foreground', readableTextOn(branding.highlight));
-  }
+
+  const primaryHex = isHexColor(branding.primary) ? branding.primary : fallback.primary;
+  const secondaryHex = isHexColor(branding.secondary) ? branding.secondary : fallback.secondary;
+  const accentHex = isHexColor(branding.accent) ? branding.accent : fallback.accent;
+  const canvasHex = isHexColor(branding.background) ? branding.background : (fallback.background || '#ffffff');
+  const textHex = isHexColor(branding.text) ? branding.text : (fallback.text || '#0f172a');
+  const buttonHex = isHexColor(branding.button) ? branding.button : primaryHex;
+  const highlightHex = isHexColor(branding.highlight) ? branding.highlight : '#f59e0b';
+
+  // Primary / Brand tokens
+  set('--brand', primaryHex);
+  set('--brand-hover', `color-mix(in srgb, ${primaryHex} 85%, ${shadeMixTarget})`);
+  set('--brand-ink', readableTextOn(primaryHex));
+  set('--ring', primaryHex);
+  set('--brand-primary', primaryHex);
+
+  // Secondary
+  set('--brand-secondary', secondaryHex);
+  set('--secondary', secondaryHex);
+  set('--secondary-foreground', readableTextOn(secondaryHex));
+
+  // Accent / Voltage
+  set('--voltage-accent', accentHex);
+  set('--voltage-accent-ink', readableTextOn(accentHex));
+  set('--brand-accent', accentHex);
+
+  // Canvas & Light Surfaces
+  set('--canvas', canvasHex);
+  set('--surface-sunken', `color-mix(in srgb, ${canvasHex} 92%, ${textHex})`);
+
+  // Ink / Text with guaranteed contrast on canvas
+  const safeInk = ensureAccessibleContrast(textHex, canvasHex, 7.0);
+  const safeInkSoft = ensureAccessibleContrast(mixHex(textHex, canvasHex, 0.72), canvasHex, 4.5);
+  const safeInkFaint = ensureAccessibleContrast(mixHex(textHex, canvasHex, 0.55), canvasHex, 3.0);
+
+  set('--ink', safeInk);
+  set('--ink-soft', safeInkSoft);
+  set('--ink-faint', safeInkFaint);
+
+  // Borders
+  set('--hairline', `color-mix(in srgb, ${textHex} 10%, ${canvasHex})`);
+  set('--hairline-strong', `color-mix(in srgb, ${textHex} 22%, ${canvasHex})`);
+
+  // Stage (Dark surfaces like Hero, Footers, and Checkout)
+  const stageHex = '#0d1017';
+  set('--stage', stageHex);
+  set('--stage-elevated', '#161b26');
+  set('--on-stage', '#ffffff');
+  set('--on-stage-soft', '#cbd5e1');
+
+  // Buttons & Highlights with contrast verification
+  set('--primary', buttonHex);
+  set('--primary-foreground', readableTextOn(buttonHex));
+  set('--marigold', highlightHex);
+  set('--marigold-foreground', readableTextOn(highlightHex));
+
+  // Custom Token overrides with contrast verification
   const customTokens = branding.tokens ?? {};
-  const tokenHex = (token: string) =>
-    isHexColor(customTokens[token] ?? '') ? customTokens[token] : null;
-  const backgroundHex = isHexColor(branding.background) ? branding.background : fallback.background;
-  const textHex = isHexColor(branding.text) ? branding.text : fallback.text;
-  const onStageSoftHex = tokenHex('on-stage-soft') ?? mixHex(backgroundHex, textHex, 0.7);
-  const inkSoftHex = tokenHex('ink-soft') ?? mixHex(textHex, backgroundHex, 0.72);
-  const MIN_SURFACE_CONTRAST = 3;
-  const SURFACE_TOKEN_TEXT: Record<string, string> = {
-    stage: onStageSoftHex,
-    'stage-elevated': onStageSoftHex,
-    surface: inkSoftHex,
-    'surface-sunken': inkSoftHex,
-  };
   for (const [token, value] of Object.entries(customTokens)) {
     if (!ADVANCED_TOKEN_SET.has(token) || !isHexColor(value)) {
       continue;
     }
-    const pairedText = SURFACE_TOKEN_TEXT[token];
-    if (pairedText && contrastRatio(value, pairedText) < MIN_SURFACE_CONTRAST) {
-      continue;
-    }
     set(`--${token}`, value);
   }
+
   return vars;
 }
 
