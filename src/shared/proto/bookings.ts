@@ -583,6 +583,10 @@ export interface PaymentIntentResponse {
      * @generated from protobuf field: bool ach_allowed = 7;
      */
     achAllowed: boolean;
+    /**
+     * @generated from protobuf field: string customer_session_client_secret = 8;
+     */
+    customerSessionClientSecret: string;
 }
 /**
  * @generated from protobuf message ticketspan.booking.UpdatePaymentMethodRequest
@@ -2524,7 +2528,8 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
             { no: 4, name: "status", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "amount_cents", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
             { no: 6, name: "hold_expires_at", kind: "scalar", T: 3 /*ScalarType.INT64*/ },
-            { no: 7, name: "ach_allowed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 7, name: "ach_allowed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 8, name: "customer_session_client_secret", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<PaymentIntentResponse>): PaymentIntentResponse {
@@ -2536,6 +2541,7 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
         message.amountCents = "0";
         message.holdExpiresAt = "0";
         message.achAllowed = false;
+        message.customerSessionClientSecret = "";
         if (value !== undefined)
             reflectionMergePartial<PaymentIntentResponse>(this, message, value);
         return message;
@@ -2565,6 +2571,9 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
                     break;
                 case /* bool ach_allowed */ 7:
                     message.achAllowed = reader.bool();
+                    break;
+                case /* string customer_session_client_secret */ 8:
+                    message.customerSessionClientSecret = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2599,6 +2608,9 @@ class PaymentIntentResponse$Type extends MessageType<PaymentIntentResponse> {
         /* bool ach_allowed = 7; */
         if (message.achAllowed !== false)
             writer.tag(7, WireType.Varint).bool(message.achAllowed);
+        /* string customer_session_client_secret = 8; */
+        if (message.customerSessionClientSecret !== "")
+            writer.tag(8, WireType.LengthDelimited).string(message.customerSessionClientSecret);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -4340,7 +4352,8 @@ export const TicketService = new ServiceType("ticketspan.booking.TicketService",
     { name: "ClaimTicketSelf", options: {}, I: UuidValue, O: AckResponse },
     { name: "RevokeTicket", options: {}, I: UuidValue, O: AckResponse },
     { name: "ListMyTickets", options: {}, I: Empty, O: ListTicketsResponse },
-    { name: "SendTicketEmail", options: {}, I: UuidValue, O: AckResponse }
+    { name: "SendTicketEmail", options: {}, I: UuidValue, O: AckResponse },
+    { name: "SelfCheckInTicket", options: {}, I: UuidValue, O: ScanResponse }
 ]);
 /**
  * @generated ServiceType for protobuf service ticketspan.booking.CheckInService

@@ -21,6 +21,7 @@ import {
   Compass,
 } from 'lucide-react';
 import type { Ticket } from '@/shared/proto/bookings';
+import { SavedPaymentMethodsCard } from './SavedPaymentMethodsCard';
 
 interface ActiveQr {
   qrToken: string;
@@ -183,6 +184,11 @@ export function ActivityTab() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Saved Payment Methods & Vaulted Cards Section */}
+      <section className="space-y-4">
+        <SavedPaymentMethodsCard />
       </section>
 
       {/* QR Zoom Modal */}

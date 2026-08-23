@@ -470,3 +470,18 @@ export interface TimeseriesPointDto {
   orders: number;
   ticketsSold: number;
 }
+
+export interface SavedPaymentMethodDto {
+  id: string;
+  brand: string;
+  last4: string;
+  expMonth: number;
+  expYear: number;
+  funding: string;
+}
+
+export interface SetupIntentApiResponse {
+  clientSecret: string;
+  publishableKey: string;
+  customerId: string;
+}

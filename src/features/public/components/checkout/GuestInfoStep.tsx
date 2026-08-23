@@ -5,11 +5,27 @@ import { Label } from '@/shared/ui/label';
 import { useAuth } from '@/shared/auth/useAuth';
 import { formatUsPhone } from '@/shared/lib/validation';
 import { getUniversalLoginUrl } from '@/shared/subdomain';
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  ShieldCheck,
+  Sparkles,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+} from 'lucide-react';
+import { cn } from '@/shared/lib/cn';
 
 export interface BuyerInfo {
   name: string;
   email: string;
   phone: string;
+  billingZip?: string;
+  billingAddressLine?: string;
+  billingCity?: string;
+  billingState?: string;
 }
 
 interface GuestInfoStepProps {
@@ -22,19 +38,29 @@ interface GuestInfoStepProps {
 export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfoStepProps) {
   const { isAuthenticated, user } = useAuth();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const initRef = useRef(false);
 
   useEffect(() => {
     if (isAuthenticated && user && !initRef.current) {
       initRef.current = true;
+      const bZip = user.billingZip || user.zip || '';
+      const bLine = user.billingAddressLine || user.addressLine || '';
+      const bCity = user.billingCity || user.city || '';
+      const bState = user.billingState || user.state || '';
+
       onChange({
         name: [user.firstName, user.lastName].filter(Boolean).join(' ') || buyerInfo.name,
         email: user.email || buyerInfo.email,
         phone: user.phone || buyerInfo.phone,
+        billingZip: bZip || buyerInfo.billingZip,
+        billingAddressLine: bLine || buyerInfo.billingAddressLine,
+        billingCity: bCity || buyerInfo.billingCity,
+        billingState: bState || buyerInfo.billingState,
       });
     }
-  }, [isAuthenticated, user, buyerInfo.name, buyerInfo.email, buyerInfo.phone, onChange]);
+  }, [isAuthenticated, user, buyerInfo, onChange]);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -47,11 +73,20 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
     if (!buyerInfo.phone.trim()) {
       errs.phone = 'Phone number is required';
     } else if (buyerInfo.phone.replace(/\D/g, '').length < 10) {
-      errs.phone = 'Please enter a valid phone number';
+      errs.phone = 'Please enter a valid 10-digit phone number';
+    }
+    if (!buyerInfo.billingZip?.trim()) {
+      errs.billingZip = 'Billing ZIP / Postal code is required';
+    } else if (buyerInfo.billingZip.trim().length < 4) {
+      errs.billingZip = 'Please enter a valid ZIP code';
     }
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -62,98 +97,187 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 pt-2">
-      <div>
-        <h3 className="text-lg font-black text-white font-display uppercase tracking-tight">Attendee Information</h3>
-        <p className="text-xs text-white/50">Enter delivery and billing details for your digital entry passes</p>
+    <form onSubmit={handleSubmit} className="space-y-6 pt-1">
+      {/* Header Info */}
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <span className="flex size-6 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold font-mono">
+            1
+          </span>
+          <h3 className="font-sans text-base font-bold text-white tracking-tight">
+            Attendee & Delivery Details
+          </h3>
+        </div>
+        <p className="text-xs text-white/60 pl-8">
+          Digital entry passes and booking receipts will be dispatched instantly to this email.
+        </p>
       </div>
 
-      { }
-      {!isAuthenticated && (
-        <div className="bg-accent-gold/10 border border-accent-gold/20 p-4 rounded-xl space-y-2 text-xs">
-          <p className="font-bold text-accent-gold">Secure your TicketSpan Profile</p>
-          <p className="text-white/70 leading-relaxed text-[11px]">
-            Create an account to manage your tickets in one place. Guests must enter a valid email to receive entry codes.
-          </p>
-          <div className="flex gap-2 pt-1">
+      {/* Authenticated Fast Fill Badge or Guest Notice */}
+      {isAuthenticated && user ? (
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 px-4 py-3 text-xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+            <div className="min-w-0">
+              <p className="font-bold text-white truncate">Profile autofill active</p>
+              <p className="text-[11px] text-white/60 truncate font-mono">{user.email}</p>
+            </div>
+          </div>
+          <span className="shrink-0 rounded-full bg-emerald-500/20 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+            Verified
+          </span>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 space-y-2.5 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-bold text-amber-300">
+              <Sparkles className="size-3.5" /> Have a TicketSpan Account?
+            </span>
             <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => {
                 window.location.href = getUniversalLoginUrl(window.location.href);
               }}
-              className="bg-accent-gold hover:bg-accent-gold/90 text-voltage-ink text-[10px] font-black uppercase tracking-wider py-2 h-auto px-3 rounded-lg"
+              className="h-7 rounded-lg border-amber-500/40 bg-amber-500/20 text-amber-300 hover:bg-amber-400 hover:text-slate-950 text-[10px] font-mono font-bold uppercase tracking-wider"
             >
-              Sign In / Sign Up
+              Sign In
             </Button>
           </div>
+          <p className="text-[11px] text-white/70 leading-relaxed">
+            Signing in automatically saves tickets to your Universal Pass for 1-click door entry.
+          </p>
         </div>
       )}
 
-      <div className="space-y-4">
-        { }
+      {/* Form Fields Card */}
+      <div className="rounded-2xl border border-white/10 bg-[#131722] p-4 sm:p-5 space-y-4 shadow-inner">
+        {/* Full Name */}
         <div className="space-y-1.5">
-          <Label htmlFor="buyer_name" className="text-xs font-bold text-white/80 uppercase tracking-wide">Full Name</Label>
-          <Input
-            id="buyer_name"
-            placeholder="John Doe"
-            value={buyerInfo.name}
-            onChange={(e) => onChange({ ...buyerInfo, name: e.target.value })}
-            className="bg-white/5 border-white/10 text-white rounded-xl py-5 focus:border-accent-burgundy"
-            aria-invalid={!!errors.name}
-            aria-describedby={errors.name ? 'name_err' : undefined}
-          />
-          {errors.name && (
-            <p id="name_err" className="text-[10px] font-bold text-danger animate-pulse">{errors.name}</p>
+          <Label htmlFor="buyer_name" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
+            <User className="size-3.5 text-amber-400" /> Full Name
+          </Label>
+          <div className="relative">
+            <Input
+              id="buyer_name"
+              placeholder="e.g. Eleanor Vance"
+              value={buyerInfo.name}
+              onChange={(e) => onChange({ ...buyerInfo, name: e.target.value })}
+              onBlur={() => handleBlur('name')}
+              className={cn(
+                'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400',
+                errors.name && touched.name && 'border-danger/80 focus:border-danger focus:ring-danger',
+              )}
+              aria-invalid={!!errors.name}
+            />
+          </div>
+          {errors.name && touched.name && (
+            <p className="text-[11px] font-bold text-danger animate-in fade-in-50">{errors.name}</p>
           )}
         </div>
 
-        { }
+        {/* Email Address */}
         <div className="space-y-1.5">
-          <Label htmlFor="buyer_email" className="text-xs font-bold text-white/80 uppercase tracking-wide">Email Address</Label>
-          <Input
-            id="buyer_email"
-            type="email"
-            placeholder="john@example.com"
-            value={buyerInfo.email}
-            onChange={(e) => onChange({ ...buyerInfo, email: e.target.value })}
-            className="bg-white/5 border-white/10 text-white rounded-xl py-5 focus:border-accent-burgundy"
-            aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? 'email_err' : undefined}
-          />
-          {errors.email && (
-            <p id="email_err" className="text-[10px] font-bold text-danger animate-pulse">{errors.email}</p>
+          <Label htmlFor="buyer_email" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
+            <Mail className="size-3.5 text-amber-400" /> Email Address
+          </Label>
+          <div className="relative">
+            <Input
+              id="buyer_email"
+              type="email"
+              placeholder="eleanor@example.com"
+              value={buyerInfo.email}
+              onChange={(e) => onChange({ ...buyerInfo, email: e.target.value })}
+              onBlur={() => handleBlur('email')}
+              className={cn(
+                'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
+                errors.email && touched.email && 'border-danger/80 focus:border-danger focus:ring-danger',
+              )}
+              aria-invalid={!!errors.email}
+            />
+          </div>
+          {errors.email && touched.email && (
+            <p className="text-[11px] font-bold text-danger animate-in fade-in-50">{errors.email}</p>
           )}
         </div>
 
-        { }
-        <div className="space-y-1.5">
-          <Label htmlFor="buyer_phone" className="text-xs font-bold text-white/80 uppercase tracking-wide">Phone Number</Label>
-          <Input
-            id="buyer_phone"
-            type="tel"
-            placeholder="(555) 555-5555"
-            value={buyerInfo.phone}
-            onChange={(e) => onChange({ ...buyerInfo, phone: formatUsPhone(e.target.value) })}
-            className="bg-white/5 border-white/10 text-white rounded-xl py-5 focus:border-accent-burgundy"
-            aria-invalid={!!errors.phone}
-            aria-describedby={errors.phone ? 'phone_err' : undefined}
-          />
-          {errors.phone && (
-            <p id="phone_err" className="text-[10px] font-bold text-danger animate-pulse">{errors.phone}</p>
-          )}
+        {/* Phone & Billing ZIP 2-Column Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* Phone Number */}
+          <div className="space-y-1.5">
+            <Label htmlFor="buyer_phone" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
+              <Phone className="size-3.5 text-amber-400" /> Phone Number
+            </Label>
+            <Input
+              id="buyer_phone"
+              type="tel"
+              placeholder="(555) 000-0000"
+              value={buyerInfo.phone}
+              onChange={(e) => onChange({ ...buyerInfo, phone: formatUsPhone(e.target.value) })}
+              onBlur={() => handleBlur('phone')}
+              className={cn(
+                'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
+                errors.phone && touched.phone && 'border-danger/80 focus:border-danger focus:ring-danger',
+              )}
+              aria-invalid={!!errors.phone}
+            />
+            {errors.phone && touched.phone && (
+              <p className="text-[11px] font-bold text-danger animate-in fade-in-50">{errors.phone}</p>
+            )}
+          </div>
+
+          {/* Billing ZIP Code */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="buyer_zip" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
+                <MapPin className="size-3.5 text-amber-400" /> Billing ZIP
+              </Label>
+              <span className="text-[10px] text-slate-400 font-mono">Editable</span>
+            </div>
+            <Input
+              id="buyer_zip"
+              type="text"
+              maxLength={10}
+              placeholder="e.g. 90210"
+              value={buyerInfo.billingZip || ''}
+              onChange={(e) => onChange({ ...buyerInfo, billingZip: e.target.value })}
+              onBlur={() => handleBlur('billingZip')}
+              className={cn(
+                'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
+                errors.billingZip && touched.billingZip && 'border-danger/80 focus:border-danger focus:ring-danger',
+              )}
+              aria-invalid={!!errors.billingZip}
+            />
+            {errors.billingZip && touched.billingZip && (
+              <p className="text-[11px] font-bold text-danger animate-in fade-in-50">{errors.billingZip}</p>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="flex gap-2 pt-4">
+      {/* Security Assurance Callout */}
+      <div className="flex items-center gap-2 px-1 text-[11.5px] text-white/60">
+        <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
+        <span>Your information is encrypted and never sold or shared with 3rd parties.</span>
+      </div>
+
+      {/* Bottom Step Actions */}
+      <div className="flex items-center gap-3 pt-2">
         <Button
           type="button"
+          variant="outline"
           onClick={onBack}
-          className="flex-1 bg-white/5 hover:bg-white/10 text-white border border-white/10 py-5 hover:text-white"
+          className="h-12 px-5 rounded-2xl border-white/10 bg-white/5 text-white hover:bg-white/10 text-xs font-bold"
         >
-          Back
+          <ArrowLeft className="size-4 mr-1" /> Back
         </Button>
-        <Button type="submit" className="flex-1 bg-accent-burgundy hover:bg-accent-burgundy/95 text-white py-5 shadow-lg">
-          Proceed to Payment
+
+        <Button
+          type="submit"
+          className="flex-1 ticketspan-spring-btn h-12 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 gap-2"
+        >
+          Continue to Payment <ArrowRight className="size-4" />
         </Button>
       </div>
     </form>

@@ -80,9 +80,25 @@ export function StaffCheckInPage() {
     }, 2800);
   };
 
+  const extractLookupToken = (raw: string): string => {
+    const clean = raw.trim();
+    if (!clean) return '';
+    if (clean.startsWith('{') && clean.endsWith('}')) {
+      try {
+        const parsed = JSON.parse(clean);
+        if (parsed?.uid) return parsed.uid;
+        if (parsed?.passId) return parsed.passId;
+        if (parsed?.email) return parsed.email;
+      } catch {
+        // Fallback to original string
+      }
+    }
+    return clean;
+  };
+
   const handleQrScan = useCallback(
     async (code: string) => {
-      const clean = code.trim();
+      const clean = extractLookupToken(code);
       if (!clean || isProcessing) return;
 
       setIsProcessing(true);
@@ -111,8 +127,9 @@ export function StaffCheckInPage() {
 
   async function handleManualSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const code = manualCode.trim();
-    if (!code) return;
+    const raw = manualCode.trim();
+    if (!raw) return;
+    const code = extractLookupToken(raw);
 
     setIsProcessing(true);
     try {

@@ -294,6 +294,7 @@ export function EventDetailPageContent({
         bookingsId={checkoutBookingsId}
         cartTotalCents={checkoutMethod === 'ach' ? achTotal : total}
         preferredMethod={checkoutMethod}
+        event={event}
       />
 
       <EventFooter />

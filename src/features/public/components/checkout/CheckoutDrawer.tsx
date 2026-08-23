@@ -1,13 +1,29 @@
 import { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTitle } from '@/shared/ui/sheet';
 import { GuestInfoStep, type BuyerInfo } from './GuestInfoStep';
 import { PaymentStep } from './PaymentStep';
-import { PriceBadge } from '../PriceBadge';
 import { useAsync } from '@/shared/hooks/useAsync';
-import { listTickets, getBooking } from '@/features/public/services/ticketService';
+import { listTickets, getBooking, selfCheckInTicket } from '@/features/public/services/ticketService';
 import { QrImage } from '@/features/public/components/wallet/QrImage';
-import { CheckCircle2, Share2 } from 'lucide-react';
+import {
+  CheckCircle2,
+  Share2,
+  Printer,
+  Calendar,
+  ShieldCheck,
+  Smartphone,
+  X,
+  Loader2,
+  ArrowRight,
+} from 'lucide-react';
 import { Button } from '@/shared/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { BrandMark } from '@/shared/brand/BrandMark';
+import { formatEventDate, centsToUSD } from '@/shared/lib/format';
+import type { Event } from '@/shared/proto/event';
+import type { Ticket } from '@/shared/proto/bookings';
+import { toast } from 'sonner';
 import { cn } from '@/shared/lib/cn';
 
 interface CheckoutDrawerProps {
@@ -16,6 +32,7 @@ interface CheckoutDrawerProps {
   bookingsId: string;
   cartTotalCents: number;
   preferredMethod?: 'card' | 'ach';
+  event?: Event;
 }
 
 export function CheckoutDrawer({
@@ -24,59 +41,129 @@ export function CheckoutDrawer({
   bookingsId,
   cartTotalCents,
   preferredMethod = 'card',
+  event,
 }: CheckoutDrawerProps) {
-  const [step, setStep] = useState<3 | 4 | 5>(3);
-  const [buyerInfo, setBuyerInfo] = useState<BuyerInfo>({ name: '', email: '', phone: '' });
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [buyerInfo, setBuyerInfo] = useState<BuyerInfo>({ name: '', email: '', phone: '', billingZip: '' });
 
   const grandTotalCents = cartTotalCents;
 
   const handleBack = () => {
-    if (step === 3) {
+    if (step === 1) {
       handleClose(false);
     }
-    if (step === 4) setStep(3);
+    if (step === 2) setStep(1);
   };
 
   const handleNext = () => {
-    if (step === 3) {
-      console.log('[Telemetry]: checkout_step_completed', { step: 3 });
-      setStep(4);
+    if (step === 1) {
+      setStep(2);
     }
   };
 
   const handleClose = (completed = false) => {
-    if (step < 5) {
-      console.log('[Telemetry]: checkout_abandoned', { bookingsId, step });
-    }
-    setStep(3);
-    setBuyerInfo({ name: '', email: '', phone: '' });
+    setStep(1);
+    setBuyerInfo({ name: '', email: '', phone: '', billingZip: '' });
     onClose(completed);
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => { if (!open) handleClose(step === 5); }}>
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleClose(step === 3);
+      }}
+    >
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md bg-stage border-l border-white/5 text-white flex flex-col p-6"
+        hideCloseButton={true}
+        className="w-full sm:max-w-xl bg-[#0c0f17] border-l border-white/10 text-white flex flex-col p-0 shadow-2xl overflow-hidden backdrop-blur-2xl h-full max-h-screen"
       >
-        <SheetTitle className="sr-only">Checkout Process</SheetTitle>
+        <SheetTitle className="sr-only">Express Event Checkout</SheetTitle>
 
-        {}
-        {step < 5 && (
-          <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-accent-gold">
-              Step {step - 2} of 2
-            </span>
-            <div className="flex items-center gap-1.5">
-              <span className={cn('size-2 rounded-full', step >= 3 ? 'bg-accent-gold' : 'bg-white/20')} />
-              <span className={cn('size-2 rounded-full', step >= 4 ? 'bg-accent-gold' : 'bg-white/20')} />
+        {/* Ambient Top Glows */}
+        <div
+          className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-amber-500/15 blur-3xl"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute -left-24 top-1/3 size-64 rounded-full bg-blue-500/10 blur-3xl"
+          aria-hidden="true"
+        />
+
+        {/* Fixed Header Bar */}
+        <div className="relative z-10 shrink-0 border-b border-white/10 bg-[#131722]/95 px-6 py-4 backdrop-blur-xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <BrandMark className="size-6 text-amber-400" />
+              <span className="font-sans text-base font-bold text-white tracking-tight">
+                TicketSpan Checkout
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-[10.5px] font-mono font-bold text-emerald-400">
+                <ShieldCheck className="size-3" /> 256-Bit SSL
+              </span>
+              <button
+                type="button"
+                onClick={() => handleClose(step === 3)}
+                className="flex size-7 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                aria-label="Close checkout"
+              >
+                <X className="size-4" />
+              </button>
             </div>
           </div>
-        )}
 
-        {}
-        <div className="flex-1 flex flex-col min-h-0 overflow-y-auto -mx-6 px-6 pb-6">
-          {step === 3 && (
+          {/* Event Context Strip */}
+          {event && (
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#181d2a] p-3 shadow-inner">
+              <div className="min-w-0 flex-1">
+                <h4 className="truncate font-sans text-sm font-bold text-white tracking-tight">
+                  {event.title}
+                </h4>
+                <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono mt-0.5">
+                  <span className="truncate flex items-center gap-1">
+                    <Calendar className="size-3 text-amber-400" />
+                    {formatEventDate(event.startDate)}
+                  </span>
+                </div>
+              </div>
+              <span className="text-base font-bold text-amber-400 font-mono shrink-0">
+                {centsToUSD(grandTotalCents)}
+              </span>
+            </div>
+          )}
+
+          {/* Progress Indicator */}
+          {step < 3 && (
+            <div className="mt-3 flex items-center gap-2">
+              <div
+                className={cn(
+                  'flex-1 h-1.5 rounded-full transition-all duration-300',
+                  step >= 1 ? 'bg-amber-400' : 'bg-white/10',
+                )}
+              />
+              <div
+                className={cn(
+                  'flex-1 h-1.5 rounded-full transition-all duration-300',
+                  step >= 2 ? 'bg-amber-400' : 'bg-white/10',
+                )}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Scrollable Step Body with Guaranteed Lenis & Mouse Wheel Scrolling */}
+        <div
+          data-lenis-prevent
+          data-lenis-prevent-wheel
+          data-lenis-prevent-touch
+          onWheel={(e) => e.stopPropagation()}
+          className="relative z-10 flex-1 min-h-0 overflow-y-auto px-6 py-5 overscroll-contain touch-pan-y pointer-events-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-track]:bg-transparent"
+        >
+          {step === 1 && (
             <GuestInfoStep
               buyerInfo={buyerInfo}
               onChange={setBuyerInfo}
@@ -85,7 +172,7 @@ export function CheckoutDrawer({
             />
           )}
 
-          {step === 4 && (
+          {step === 2 && (
             <PaymentStep
               bookingsId={bookingsId}
               totalCents={grandTotalCents}
@@ -93,16 +180,16 @@ export function CheckoutDrawer({
               buyerInfo={buyerInfo}
               onBack={handleBack}
               onPaymentSuccess={() => {
-                console.log('[Telemetry]: checkout_purchase_completed', { bookingsId });
-                setStep(5);
+                setStep(3);
               }}
             />
           )}
 
-          {step === 5 && (
+          {step === 3 && (
             <ConfirmationReceipt
               bookingsId={bookingsId}
               grandTotalCents={grandTotalCents}
+              event={event}
               onClose={() => handleClose(true)}
             />
           )}
@@ -116,7 +203,7 @@ function ShareEventButton({ eventLabel }: { eventLabel?: string }) {
   const [copied, setCopied] = useState(false);
   const share = async () => {
     const url = window.location.origin + window.location.pathname;
-    const text = eventLabel ? `I'm going to ${eventLabel}!` : "I'm going!";
+    const text = eventLabel ? `I'm attending ${eventLabel}!` : "I'm attending!";
     if (navigator.share) {
       try {
         await navigator.share({ title: text, text, url });
@@ -135,11 +222,12 @@ function ShareEventButton({ eventLabel }: { eventLabel?: string }) {
   };
   return (
     <Button
+      variant="outline"
       onClick={share}
-      className="bg-accent-gold/10 hover:bg-accent-gold/20 text-accent-gold border border-accent-gold/20 py-4 w-full"
+      className="h-11 rounded-xl border-white/15 bg-white/5 text-white hover:bg-white/10 text-xs font-bold w-full"
     >
-      <Share2 className="size-4 mr-2" />
-      {copied ? 'Link copied!' : "Share: I'm going"}
+      <Share2 className="size-4 mr-2 text-amber-400" />
+      {copied ? 'Link Copied to Clipboard!' : 'Share Event Link'}
     </Button>
   );
 }
@@ -147,91 +235,193 @@ function ShareEventButton({ eventLabel }: { eventLabel?: string }) {
 function ConfirmationReceipt({
   bookingsId,
   grandTotalCents,
+  event,
   onClose,
 }: {
   bookingsId: string;
   grandTotalCents: number;
+  event?: Event;
   onClose: () => void;
 }) {
   const ticketsLoader = useCallback(() => listTickets(bookingsId), [bookingsId]);
   const bookingLoader = useCallback(() => getBooking(bookingsId), [bookingsId]);
   const tickets = useAsync(ticketsLoader);
   const booking = useAsync(bookingLoader);
+  const [checkingInId, setCheckingInId] = useState<string | null>(null);
+
+  const handleSelfCheckIn = async (ticket: Ticket) => {
+    if (checkingInId) return;
+    setCheckingInId(ticket.ticketsId);
+
+    try {
+      const res = await selfCheckInTicket(ticket.ticketsId);
+      if (res.valid) {
+        toast.success(res.message || 'Admission verified for entrance!');
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          navigator.vibrate([40, 30, 40]);
+        }
+        tickets.reload();
+      } else {
+        toast.error(res.message || 'Check-in could not be completed.');
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Check-in failed. Please show pass at door.';
+      toast.error(msg);
+    } finally {
+      setCheckingInId(null);
+    }
+  };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 space-y-6 pt-4 text-center pb-6">
-        <div className="space-y-2">
-          <CheckCircle2 className="size-12 mx-auto text-success animate-[ticketspan-fade-up_0.5s_ease-out]" />
-          <h3 className="text-xl font-black text-white font-display uppercase tracking-tight">Booking Confirmed</h3>
-          <p className="text-xs text-white/50">Your secure entries are verified and issued</p>
+    <div className="flex flex-col space-y-6 text-center animate-in fade-in zoom-in-95 duration-300 pb-6">
+      {/* Confirmation Icon & Heading */}
+      <div className="space-y-2 pt-2">
+        <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-950/40">
+          <CheckCircle2 className="size-8" />
         </div>
+        <h3 className="font-sans text-2xl font-bold text-white tracking-tight">
+          Payment Confirmed!
+        </h3>
+        <p className="text-xs text-white/60 max-w-sm mx-auto">
+          Your reservation is verified. Digital passes have been issued and synced to your Universal Pass.
+        </p>
+      </div>
 
-      {}
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-stage-elevated text-left shadow-2xl">
-        <div className="p-5 space-y-3">
+      {/* Ticket Pass Receipt Card */}
+      <div className="overflow-hidden rounded-3xl border border-white/15 bg-[#131722] text-left shadow-2xl">
+        {/* Pass Top Header */}
+        <div className="p-5 border-b border-white/10 space-y-2">
           <div className="flex justify-between items-center text-xs">
-            <span className="text-white/40 uppercase tracking-wider font-bold">Entry Pass receipt</span>
-            <span className="font-mono text-accent-gold font-bold">#{booking.data?.bookingNumber || 'HOLD'}</span>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 font-mono">
+              Official Entry Pass
+            </span>
+            <span className="font-mono text-xs text-amber-400 font-bold">
+              #{booking.data?.bookingNumber || 'VERIFIED'}
+            </span>
           </div>
           <div>
-            <h4 className="font-black font-display text-base text-white uppercase tracking-tight">
-              {booking.data?.lines?.[0]?.label || 'General Entry'}
+            <h4 className="font-sans text-base font-bold text-white">
+              {event?.title || booking.data?.lines?.[0]?.label || 'Event Admission'}
             </h4>
-            <p className="text-[10px] text-white/40 font-mono mt-0.5">Booking Reference: {bookingsId.substring(0, 8)}...</p>
+            <p className="text-[11px] text-white/50 font-mono mt-0.5">
+              Ref: {bookingsId.substring(0, 12)}…
+            </p>
           </div>
         </div>
 
-        {}
-        <div className="ticketspan-ticket-edge mx-4" style={{ '--ticketspan-notch': 'var(--background)' } as React.CSSProperties} />
+        {/* Perforation Divider */}
+        <div
+          className="ticketspan-ticket-edge mx-3"
+          style={{ '--ticketspan-notch': '#0c0f17' } as React.CSSProperties}
+        />
 
+        {/* Pass Body & QR Items */}
         <div className="p-5 space-y-4">
-          {}
           {tickets.loading ? (
-            <div className="py-4 text-center text-white/50 text-[10px] uppercase font-bold tracking-widest animate-pulse">
-              Generating secure barcodes…
+            <div className="py-8 text-center text-white/60 text-xs font-mono flex items-center justify-center gap-2 animate-pulse">
+              <Loader2 className="size-4 animate-spin text-amber-400" /> Generating secure passes…
             </div>
           ) : (
             <div className="space-y-3">
-              {(tickets.data || []).map((t) => (
-                <div key={t.ticketsId} className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
-                  {t.qrToken && (
-                    <div className="shrink-0 rounded border bg-white p-1">
-                      <QrImage value={t.qrToken} size={40} className="h-10 w-10 object-contain" />
+              {(tickets.data || []).map((t) => {
+                const isCheckedIn = t.status === 'CheckedIn';
+                const isChecking = checkingInId === t.ticketsId;
+
+                return (
+                  <div
+                    key={t.ticketsId}
+                    className={cn(
+                      'p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-center gap-4',
+                      isCheckedIn
+                        ? 'border-emerald-500/40 bg-emerald-950/20'
+                        : 'border-white/10 bg-white/5',
+                    )}
+                  >
+                    {t.qrToken && (
+                      <div className="shrink-0 rounded-xl bg-white p-2 shadow-md">
+                        <QrImage value={t.qrToken} size={70} className="size-[70px] object-contain" />
+                      </div>
+                    )}
+
+                    <div className="text-xs min-w-0 flex-1 space-y-1 text-center sm:text-left">
+                      <div className="flex items-center justify-center sm:justify-start gap-2">
+                        <p className="font-mono font-bold text-sm text-white tracking-wider">
+                          #{t.ticketCode}
+                        </p>
+                        <Badge variant="voltage" className="text-[9px] font-mono uppercase">
+                          {t.ticketTypeLabel || 'Admission'}
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-white/60 font-mono">
+                        {t.seatNumber > 0 ? `Seat #${t.seatNumber}` : 'General Entry'}
+                      </p>
                     </div>
-                  )}
-                  <div className="text-xs min-w-0 flex-1">
-                    <p className="font-mono font-bold text-white tracking-wide">{t.ticketCode}</p>
-                    <p className="text-[10px] font-bold text-accent-gold uppercase mt-0.5">{t.ticketTypeLabel || 'General Entry'}</p>
-                    <p className="text-[9px] text-white/40 mt-0.5">Pass #{t.seatNumber}</p>
+
+                    <div className="shrink-0">
+                      {isCheckedIn ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-500/30">
+                          <CheckCircle2 className="size-3.5" /> Checked In
+                        </span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => handleSelfCheckIn(t)}
+                          disabled={isChecking}
+                          className="h-8 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold ticketspan-spring-btn shadow-sm"
+                        >
+                          {isChecking ? (
+                            <>
+                              <Loader2 className="size-3 animate-spin mr-1" /> Checking In…
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle2 className="size-3 mr-1" /> Check In Now
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                  <span className="rounded-md border border-success/20 bg-success/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-success">
-                    Verified
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
-          <div className="border-t border-white/5 pt-4 flex justify-between items-center text-xs">
-            <span className="text-white/40 font-bold uppercase tracking-wider">Total Charge</span>
-            {grandTotalCents === 0 ? (
-              <span className="text-base font-extrabold text-accent-gold">Free</span>
-            ) : (
-              <PriceBadge priceCents={grandTotalCents} className="text-base font-extrabold text-accent-gold" />
-            )}
+          {/* Paid Total Summary */}
+          <div className="border-t border-white/10 pt-3 flex justify-between items-center text-xs">
+            <span className="text-white/50 uppercase font-bold font-mono tracking-wider">Total Paid</span>
+            <span className="text-lg font-bold text-amber-400 font-mono">
+              {centsToUSD(grandTotalCents)}
+            </span>
           </div>
         </div>
       </div>
-      </div>
 
-      <div className="flex flex-col gap-2 pt-4 mt-auto border-t border-white/5 shrink-0 bg-stage sticky bottom-0 z-10 pb-2">
-        <ShareEventButton eventLabel={booking.data?.lines?.[0]?.label} />
-        <Button onClick={() => window.print()} className="bg-white/5 hover:bg-white/10 text-white border border-white/10 py-4 w-full hover:text-white">
-          Print Entry Passes
-        </Button>
-        <Button onClick={onClose} className="bg-accent-burgundy hover:bg-accent-burgundy/95 text-white py-4 w-full">
-          Close Checkout
+      {/* Action Buttons */}
+      <div className="space-y-2.5 pt-2">
+        <Link to="/tickets" onClick={onClose} className="block">
+          <Button className="ticketspan-spring-btn h-12 w-full rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 gap-2">
+            <Smartphone className="size-4" /> Open Passes in Wallet <ArrowRight className="size-4" />
+          </Button>
+        </Link>
+
+        <div className="grid grid-cols-2 gap-2">
+          <ShareEventButton eventLabel={event?.title || booking.data?.lines?.[0]?.label} />
+          <Button
+            variant="outline"
+            onClick={() => window.print()}
+            className="h-11 rounded-xl border-white/15 bg-white/5 text-white hover:bg-white/10 text-xs font-bold"
+          >
+            <Printer className="size-4 mr-1.5" /> Print Passes
+          </Button>
+        </div>
+
+        <Button
+          variant="ghost"
+          onClick={onClose}
+          className="h-10 text-xs text-white/50 hover:text-white"
+        >
+          Close
         </Button>
       </div>
     </div>

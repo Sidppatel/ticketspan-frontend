@@ -259,6 +259,10 @@ export interface ITicketServiceClient {
      * @generated from protobuf rpc: SendTicketEmail(ticketspan.common.UuidValue) returns (ticketspan.common.AckResponse);
      */
     sendTicketEmail(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse>;
+    /**
+     * @generated from protobuf rpc: SelfCheckInTicket(ticketspan.common.UuidValue) returns (ticketspan.booking.ScanResponse);
+     */
+    selfCheckInTicket(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ScanResponse>;
 }
 /**
  * @generated from protobuf service ticketspan.booking.TicketService
@@ -324,6 +328,13 @@ export class TicketServiceClient implements ITicketServiceClient, ServiceInfo {
     sendTicketEmail(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
         const method = this.methods[7], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: SelfCheckInTicket(ticketspan.common.UuidValue) returns (ticketspan.booking.ScanResponse);
+     */
+    selfCheckInTicket(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ScanResponse> {
+        const method = this.methods[8], opt = this._transport.mergeOptions(options);
+        return stackIntercept<UuidValue, ScanResponse>("unary", this._transport, method, opt, input);
     }
 }
 /**

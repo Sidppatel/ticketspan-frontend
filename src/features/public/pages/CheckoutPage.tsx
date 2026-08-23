@@ -20,11 +20,14 @@ import { Lock, ShieldCheck, Ticket, Calendar, Clock, ArrowLeft, Loader2, Info } 
 import type { Booking } from '@/shared/proto/bookings';
 import type { Event } from '@/shared/proto/event';
 
+import { useAuth } from '@/shared/auth/useAuth';
+
 interface IntentState {
   clientSecret: string;
   publishableKey: string;
   amountCents: number;
   holdExpiresAt: number;
+  customerSessionClientSecret?: string;
 }
 
 const NOTCH = { ['--ticketspan-notch' as string]: 'var(--background)' } as CSSProperties;
@@ -33,6 +36,7 @@ const URGENT_HOLD_SECONDS = 120;
 export function CheckoutPage() {
   const { bookingsId = '' } = useParams();
   const navigate = useNavigate();
+  useAuth();
   const [intent, setIntent] = useState<IntentState | null>(null);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [eventData, setEventData] = useState<Event | null>(null);
@@ -51,6 +55,7 @@ export function CheckoutPage() {
           publishableKey: res.publishableKey,
           amountCents: Number(res.amountCents),
           holdExpiresAt: Number(res.holdExpiresAt),
+          customerSessionClientSecret: res.customerSessionClientSecret || '',
         });
         const key = res.publishableKey || import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
         setStripePromise(loadStripe(key));
@@ -223,9 +228,13 @@ export function CheckoutPage() {
         <div className="lg:col-span-7">
           <Elements
             stripe={stripePromise}
-            options={{ clientSecret: intent.clientSecret, appearance: { theme: 'stripe' } }}
+            options={{
+              clientSecret: intent.clientSecret,
+              customerSessionClientSecret: intent.customerSessionClientSecret || undefined,
+              appearance: { theme: 'stripe' },
+            }}
           >
-            <CheckoutForm bookingsId={bookingsId} intent={intent} />
+            <CheckoutForm bookingsId={bookingsId} intent={intent} booking={booking} />
           </Elements>
         </div>
       </div>
@@ -233,10 +242,19 @@ export function CheckoutPage() {
   );
 }
 
-function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: IntentState }) {
+function CheckoutForm({
+  bookingsId,
+  intent,
+  booking,
+}: {
+  bookingsId: string;
+  intent: IntentState;
+  booking: Booking | null;
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [polling, setPolling] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -353,7 +371,24 @@ function CheckoutForm({ bookingsId, intent }: { bookingsId: string; intent: Inte
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
-            <PaymentElement />
+            <PaymentElement
+              options={{
+                defaultValues: {
+                  billingDetails: {
+                    name: [user?.firstName, user?.lastName].filter(Boolean).join(' ') || booking?.userName || undefined,
+                    email: user?.email || booking?.userEmail || undefined,
+                    phone: user?.phone || undefined,
+                    address: {
+                      postal_code: user?.billingZip || user?.zip || booking?.venueZip || undefined,
+                      line1: user?.billingAddressLine || user?.addressLine || undefined,
+                      city: user?.billingCity || user?.city || undefined,
+                      state: user?.billingState || user?.state || undefined,
+                      country: 'US',
+                    },
+                  },
+                },
+              }}
+            />
 
             {message ? (
               <p className="rounded-md border border-destructive/20 bg-destructive/5 p-3 text-sm leading-relaxed text-destructive">

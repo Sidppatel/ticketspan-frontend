@@ -4,6 +4,7 @@ import type {
   ApiEnvelope,
   DigitalTicketDto,
   InviteTicketApiRequest,
+  ScanTicketApiResponse,
 } from './types';
 
 export const ticketsApi = {
@@ -21,5 +22,9 @@ export const ticketsApi = {
 
   inviteGuest(payload: InviteTicketApiRequest): Promise<AckEnvelope> {
     return httpPost<AckEnvelope, InviteTicketApiRequest>('/api/v1/tickets/invite', payload);
+  },
+
+  selfCheckInTicket(ticketId: string): Promise<ApiEnvelope<ScanTicketApiResponse>> {
+    return httpPost<ApiEnvelope<ScanTicketApiResponse>>(`/api/v1/tickets/${ticketId}/checkin`);
   },
 };
