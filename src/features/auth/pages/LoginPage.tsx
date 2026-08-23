@@ -14,12 +14,6 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
-
-  const fillDemoAccount = () => {
-    setEmail('psiddh1408@gmail.com');
-    setPassword('Password123!');
-  };
-
   const returnUrl = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('returnUrl') || new URLSearchParams(window.location.search).get('returnTo')
     : null;
@@ -32,19 +26,6 @@ export function LoginPage() {
     >
       <div className="rounded-2xl border border-hairline/80 bg-surface/90 p-8 shadow-[var(--shadow-e3)] backdrop-blur-xl sm:p-10">
         <div className="space-y-2 pb-6">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-primary">
-              <Sparkles className="size-3" /> Universal Sign In
-            </span>
-            <button
-              type="button"
-              onClick={fillDemoAccount}
-              className="font-mono text-[11px] text-ink-soft transition-colors hover:text-brand hover:underline"
-              title="Click to fill test credentials"
-            >
-              Fill Demo Login
-            </button>
-          </div>
           <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Welcome back
           </h2>
