@@ -6,7 +6,6 @@ import {
   MapPin,
   Calendar,
   CreditCard,
-  AlertCircle,
   Sparkles,
   Copy,
   Check,
@@ -38,8 +37,6 @@ import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
 import { toast } from 'sonner';
-import { cn } from '@/shared/lib/cn';
-import type { Ticket } from '@/shared/proto/bookings';
 
 export function BookingDetailPage() {
   const { bookingsId = '' } = useParams();
@@ -86,7 +83,7 @@ export function BookingDetailPage() {
 
     setInvitingId(ticketId);
     try {
-      const token = await inviteTicket(ticketId, emailToInvite);
+      await inviteTicket(ticketId, emailToInvite);
       toast.success(`Invitation email sent to ${emailToInvite}!`);
       setEmails((prev) => ({ ...prev, [ticketId]: '' }));
       await tickets.reload();
@@ -355,7 +352,6 @@ export function BookingDetailPage() {
                 const isClaimedByMe = ticket.guestUsersId === user?.usersId && (ticket.status === 'Claimed' || ticket.status === 'CheckedIn');
                 const isClaimedByGuest = ticket.status === 'Claimed' && ticket.guestUsersId !== user?.usersId;
                 const isInvited = ticket.status === 'Invited';
-                const isUnassigned = ticket.status === 'Unassigned' || (!ticket.guestUsersId && !ticket.invitedEmail && ticket.status !== 'Claimed');
                 const isCheckedIn = ticket.status === 'CheckedIn';
 
                 const isInvitingThis = invitingId === ticket.ticketsId;

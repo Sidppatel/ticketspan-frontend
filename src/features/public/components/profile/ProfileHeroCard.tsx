@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { roleLabel } from '@/shared/roles';
-import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import {
   Camera,
@@ -16,7 +15,6 @@ import {
   Phone,
   Trash2,
   ArrowUpRight,
-  ShieldCheck,
 } from 'lucide-react';
 import type { UserProfile } from '@/shared/proto/auth';
 import type { ProfileInput } from '@/features/auth/services/authService';

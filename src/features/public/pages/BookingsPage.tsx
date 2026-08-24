@@ -78,7 +78,7 @@ export function BookingsPage() {
     }
   };
 
-  const allBookings = bookings ?? [];
+  const allBookings = useMemo(() => bookings ?? [], [bookings]);
   const unclaimedCount = useMemo(
     () => allBookings.filter((b) => b.ticketsTotal > 0 && b.ticketsClaimed < b.ticketsTotal).length,
     [allBookings],
@@ -212,7 +212,6 @@ export function BookingsPage() {
         <div className="space-y-4">
           {filteredBookings.map((booking) => {
             const hasUnclaimed = booking.ticketsTotal > 0 && booking.ticketsClaimed < booking.ticketsTotal;
-            const unclaimedCount = booking.ticketsTotal - booking.ticketsClaimed;
             const isClaiming = claimingBookingId === booking.bookingsId;
 
             return (
@@ -265,7 +264,7 @@ export function BookingsPage() {
                       {hasUnclaimed ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-surface-sunken border border-hairline px-3 py-1 font-mono text-xs font-medium text-ink-soft">
                           <AlertCircle className="size-3 text-stone-500" />
-                          {unclaimedCount} of {booking.ticketsTotal} Unclaimed
+                          Passes Available to Claim
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full bg-surface-sunken border border-hairline px-3 py-1 font-mono text-xs font-medium text-ink-soft">

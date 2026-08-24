@@ -6,7 +6,6 @@ import { listMyBookings } from '@/features/public/services/publicEventService';
 import { formatEventDate } from '@/shared/lib/format';
 import { createGoogleCalendarUrl } from '@/shared/lib/calendar';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
 import { QrImage } from '@/features/public/components/wallet/QrImage';
@@ -179,7 +178,6 @@ export function TicketsPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             {unclaimedBookings.map((b) => {
-              const unclaimedCount = b.ticketsTotal - b.ticketsClaimed;
               const isClaiming = claimingBookingId === b.bookingsId;
 
               return (
@@ -198,7 +196,7 @@ export function TicketsPage() {
                         </h3>
                       </div>
                       <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-300 px-3 py-1 font-mono text-[11px] font-bold text-amber-900 shadow-2xs">
-                        ⚠️ {unclaimedCount} of {b.ticketsTotal} Unclaimed
+                        ⚠️ Passes Available to Claim
                       </span>
                     </div>
 
