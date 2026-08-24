@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loadProfile, updateProfile, setAvatar, type ProfileInput } from '@/features/auth/services/authService';
+import { loadProfile, updateProfile, setAvatar, removeAvatar, type ProfileInput } from '@/features/auth/services/authService';
 import { uploadImage } from '@/shared/upload';
 import { useAuth } from '@/shared/auth/useAuth';
 import { rpcErrorMessage } from '@/shared/session';
@@ -146,6 +146,19 @@ export function ProfilePage() {
     }
   };
 
+  const handleRemoveAvatar = async () => {
+    setUploading(true);
+    try {
+      await removeAvatar();
+      toast.success('Profile avatar removed.');
+      await fetchProfileData();
+    } catch (err) {
+      toast.error(rpcErrorMessage(err));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleLogout = async () => {
     const { logout: authLogout } = await import('@/features/auth/services/authService');
     await authLogout();
@@ -183,6 +196,7 @@ export function ProfilePage() {
         profile={profile}
         uploading={uploading}
         onAvatarUpload={handleAvatarUpload}
+        onRemoveAvatar={handleRemoveAvatar}
         onOpenDigitalPass={() => setDigitalPassOpen(true)}
         onStartEditing={handleStartEditing}
         onLogout={handleLogout}

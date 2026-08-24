@@ -144,6 +144,11 @@ export async function setAvatar(imagesId: string): Promise<void> {
   useAuthStore.getState().setUser(profile);
 }
 
+export async function removeAvatar(): Promise<void> {
+  const profile = await callRpc(() => authClient.setAvatar({ imagesId: '' }));
+  useAuthStore.getState().setUser(profile);
+}
+
 export async function linkGoogle(googleToken: string): Promise<void> {
   const profile = await callRpc(() => authClient.linkGoogle({ googleToken }));
   useAuthStore.getState().setUser(profile);

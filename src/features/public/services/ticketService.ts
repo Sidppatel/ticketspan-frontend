@@ -18,8 +18,17 @@ export async function listTickets(bookingsId: string): Promise<Ticket[]> {
   return response.tickets;
 }
 
-export async function inviteTicket(ticketsId: string, email: string): Promise<void> {
-  requireAck(await callRpc(() => ticketClient.inviteTicket({ ticketsId, email })));
+export async function inviteTicket(ticketsId: string, email: string): Promise<string> {
+  const ack = await callRpc(() => ticketClient.inviteTicket({ ticketsId, email }));
+  requireAck(ack);
+  return ack.message;
+}
+
+export function getClaimUrl(token: string): string {
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/claim?token=${encodeURIComponent(token)}`;
+  }
+  return `/claim?token=${encodeURIComponent(token)}`;
 }
 
 export async function claimTicket(token: string): Promise<void> {
