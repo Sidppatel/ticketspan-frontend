@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
 import { StaticPageShell } from '@/features/public/components/StaticPageShell';
+import { Input } from '@/shared/ui/input';
 
 interface FaqItem {
   q: string;
@@ -74,7 +75,7 @@ const faqGroups: FaqGroup[] = [
     ],
   },
   {
-    title: 'Account',
+    title: 'Account & Universal Passes',
     items: [
       {
         q: 'How do I change my name or email?',
@@ -95,17 +96,21 @@ const faqGroups: FaqGroup[] = [
 function FaqRow({ item }: { item: FaqItem }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border border-hairline-strong bg-surface">
+    <div className="rounded-xl border border-border bg-card overflow-hidden transition-colors">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between gap-4 px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-surface-sunken/60 transition-colors"
+        className="w-full flex items-center justify-between gap-4 p-4 text-left text-sm font-semibold text-foreground hover:bg-muted/40 transition-colors"
         aria-expanded={open}
       >
-        {item.q}
-        <ChevronDown className={cn('size-4 shrink-0 text-brand transition-transform', open && 'rotate-180')} />
+        <span>{item.q}</span>
+        <ChevronDown className={cn('size-4 shrink-0 text-primary transition-transform duration-200', open && 'rotate-180')} />
       </button>
-      {open ? <p className="px-4 pb-4 text-sm leading-relaxed text-muted-foreground">{item.a}</p> : null}
+      {open && (
+        <div className="px-4 pb-4 text-xs leading-relaxed text-muted-foreground border-t border-border/40 pt-3">
+          {item.a}
+        </div>
+      )}
     </div>
   );
 }
@@ -115,11 +120,11 @@ export function HelpCenterPage() {
   const normalized = query.trim().toLowerCase();
   const groups = normalized
     ? faqGroups
-      .map((g) => ({
-        ...g,
-        items: g.items.filter((i) => `${i.q} ${i.a}`.toLowerCase().includes(normalized)),
-      }))
-      .filter((g) => g.items.length > 0)
+        .map((g) => ({
+          ...g,
+          items: g.items.filter((i) => `${i.q} ${i.a}`.toLowerCase().includes(normalized)),
+        }))
+        .filter((g) => g.items.length > 0)
     : faqGroups;
 
   return (
@@ -128,41 +133,43 @@ export function HelpCenterPage() {
       title="Help Center"
       intro="Answers to the most common questions about tickets, tables, payments, and getting into the event."
     >
-      <input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search help topics…"
-        className="w-full border border-hairline-strong bg-surface px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
-      />
-      {groups.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No results for “{query}”. Try different words or <a href="/contact" className="text-accent-burgundy underline">contact support</a>.
-        </p>
-      ) : (
-        groups.map((group) => (
-          <section key={group.title} className="space-y-3">
-            <h2 className="font-mono text-[10.5px] font-medium uppercase tracking-[0.3em] text-brand">{group.title}</h2>
-            <div className="space-y-2">
-              {group.items.map((item) => (
-                <FaqRow key={item.q} item={item} />
-              ))}
-            </div>
-          </section>
-        ))
-      )}
-      <div className="border-[1.5px] border-ink bg-surface p-6 text-center space-y-2">
-        <p className="font-display text-2xl text-foreground">Still stuck?</p>
-        <p className="text-sm text-muted-foreground">
-          Our team is happy to help with anything not covered here.
-        </p>
-        <a
-          href="/contact"
-          className="mt-2 inline-flex h-11 items-center justify-center bg-brand px-6 text-[13px] font-medium uppercase tracking-[0.1em] text-(--brand-ink) transition-colors hover:bg-brand-hover"
-        >
-          Contact Support
-        </a>
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search help topics, tickets, entry requirements…"
+          className="h-11 pl-10 text-sm"
+        />
       </div>
+
+      {groups.length === 0 ? (
+        <div className="p-8 text-center rounded-2xl border border-dashed border-border bg-card/40 space-y-2">
+          <p className="text-sm text-foreground font-semibold">No results for “{query}”</p>
+          <p className="text-xs text-muted-foreground">
+            Try different keywords or{' '}
+            <a href="/contact" className="text-primary hover:underline underline-offset-2">
+              contact customer support
+            </a>.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {groups.map((group) => (
+            <div key={group.title} className="space-y-3">
+              <h2 className="font-display text-lg font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+                {group.title}
+              </h2>
+              <div className="space-y-2.5">
+                {group.items.map((item) => (
+                  <FaqRow key={item.q} item={item} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </StaticPageShell>
   );
 }

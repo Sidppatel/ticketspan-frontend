@@ -6,6 +6,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Switch } from '@/shared/ui/switch';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { RefreshCw, Sparkles } from 'lucide-react';
 import { FinancialSummaryCards } from '@/features/admin/components/financial/FinancialSummaryCards';
 import { FinancialTimeseriesCard } from '@/features/admin/components/financial/FinancialTimeseriesCard';
@@ -144,11 +145,11 @@ export function AdminFinancialPage() {
         )}
       </div>
 
-      {error ? (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-xs font-semibold text-destructive">
-          {error}
-        </div>
-      ) : null}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {!isAdvanced && <ProUpgradeBanner />}
 

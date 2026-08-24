@@ -1,5 +1,6 @@
-import { Mail, MessageSquareText, LifeBuoy, Ticket } from 'lucide-react';
+import { Mail, MessageSquareText, LifeBuoy, Ticket, ArrowRight } from 'lucide-react';
 import { StaticPageShell } from '@/features/public/components/StaticPageShell';
+import { Card, CardContent } from '@/shared/ui/card';
 
 const channels = [
   {
@@ -37,26 +38,33 @@ export function ContactSupportPage() {
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {channels.map((channel) => (
-          <div key={channel.title} className="flex flex-col gap-3 border border-hairline-strong bg-surface p-5">
-            <channel.icon className="size-5 text-brand" />
-            <h2 className="font-display text-xl text-foreground">{channel.title}</h2>
-            <p className="flex-1 text-sm leading-relaxed text-muted-foreground">{channel.body}</p>
-            <a href={channel.action.href} className="text-sm font-medium text-brand hover:underline underline-offset-2">
-              {channel.action.label} →
-            </a>
-          </div>
+          <Card key={channel.title} className="hover:border-primary/40 transition-colors">
+            <CardContent className="flex flex-col gap-3 p-6 h-full">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <channel.icon className="size-5" />
+              </div>
+              <h2 className="font-display text-lg font-bold text-foreground">{channel.title}</h2>
+              <p className="flex-1 text-xs sm:text-sm leading-relaxed text-muted-foreground">{channel.body}</p>
+              <a
+                href={channel.action.href}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline underline-offset-2 pt-2"
+              >
+                {channel.action.label} <ArrowRight className="size-3" />
+              </a>
+            </CardContent>
+          </Card>
         ))}
       </div>
-      <div className="border border-dashed border-hairline-strong p-5 text-sm text-muted-foreground space-y-2">
-        <p className="font-display text-lg text-foreground">Before you write in</p>
-        <ul className="list-disc pl-5 space-y-1.5">
+
+      <div className="rounded-2xl border border-dashed border-border bg-card/40 p-6 text-xs sm:text-sm text-muted-foreground space-y-3">
+        <h3 className="font-display text-base font-bold text-foreground">Before You Write In</h3>
+        <ul className="list-disc pl-5 space-y-1.5 leading-relaxed">
           <li>Include the email address used for the booking.</li>
           <li>Add the event name and date, plus a booking reference if you have one.</li>
           <li>For payment issues, include the charge date and amount (never send full card numbers).</li>
         </ul>
-        <p className="pt-1">
-          Remember: all sales are final. Support can help with
-          billing errors, ticket sharing, and account problems.
+        <p className="pt-2 text-xs border-t border-border/40">
+          Remember: all sales are final. Support can assist with billing discrepancies, ticket sharing, and account recovery.
         </p>
       </div>
     </StaticPageShell>

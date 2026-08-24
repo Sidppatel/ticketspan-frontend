@@ -16,7 +16,10 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Select } from '@/shared/ui/select';
 import { Badge } from '@/shared/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 
 const INVITABLE_ROLES = [Roles.Admin, Roles.Staff, Roles.SubTenant, Roles.EventManager];
 
@@ -37,6 +40,7 @@ export function AdminInvitationsPage() {
   const { data, loading, error, reload } = useAsync(loader);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<number>(Roles.Staff);
+  const [sending, setSending] = useState(false);
 
   const invitations = useMemo(() => data?.invitations ?? [], [data]);
   const members = useMemo(() => data?.members ?? [], [data]);
@@ -50,97 +54,135 @@ export function AdminInvitationsPage() {
     }
   }
 
+  async function handleSendInvite() {
+    if (!email.trim()) return;
+    setSending(true);
+    try {
+      await createInvitation(email.trim(), role);
+      toast.success(`Invitation sent to ${email.trim()}.`);
+      setEmail('');
+      reload();
+    } catch (caught) {
+      toast.error(rpcErrorMessage(caught));
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
-    <div className="space-y-8 pb-4">
-      <section className="space-y-1.5">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">Invitations</h1>
-        <p className="text-sm text-ink-soft">Bring people onto your team — send an invite and they’ll get a link to join.</p>
-      </section>
+    <div className="space-y-8 pb-8">
+      <div className="space-y-1 border-b border-border/40 pb-5">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Team & Invitations
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Manage organizers, check-in staff, and event managers with role-based access control.
+        </p>
+      </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center gap-2">
-          <UserPlus className="h-4.5 w-4.5 text-brand" />
-          <CardTitle>Invite a member</CardTitle>
+        <CardHeader className="border-b border-border/40 pb-4">
+          <CardTitle className="flex items-center gap-2">
+            <UserPlus className="size-4 text-primary" />
+            Invite a Team Member
+          </CardTitle>
+          <CardDescription>
+            Send an onboarding link with pre-assigned role permissions.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap items-end gap-3">
-          <div className="min-w-56 flex-1 space-y-1">
-            <Label htmlFor="invite-email">Email</Label>
-            <Input id="invite-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com" />
+        <CardContent className="pt-5">
+          <div className="flex flex-col sm:flex-row items-end gap-3">
+            <div className="w-full sm:flex-1 space-y-1.5">
+              <Label htmlFor="invite-email" className="text-xs">Email Address</Label>
+              <Input
+                id="invite-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="colleague@organization.com"
+                className="h-9 text-xs"
+              />
+            </div>
+            <div className="w-full sm:w-48 space-y-1.5">
+              <Label htmlFor="invite-role" className="text-xs">Role</Label>
+              <Select
+                id="invite-role"
+                className="h-9 text-xs"
+                value={role}
+                onChange={(e) => setRole(Number(e.target.value))}
+              >
+                {INVITABLE_ROLES.map((value) => (
+                  <option key={value} value={value}>
+                    {roleLabel(value)}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <Button
+              disabled={!email.trim() || sending}
+              onClick={handleSendInvite}
+              className="h-9 text-xs gap-1.5 w-full sm:w-auto"
+            >
+              <Send className="size-3.5" />
+              {sending ? 'Sending…' : 'Send Invitation'}
+            </Button>
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="invite-role">Role</Label>
-            <Select id="invite-role" className="w-auto" value={role} onChange={(e) => setRole(Number(e.target.value))}>
-              {INVITABLE_ROLES.map((value) => (
-                <option key={value} value={value}>
-                  {roleLabel(value)}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <Button
-            disabled={!email.trim()}
-            onClick={() =>
-              guard(async () => {
-                await createInvitation(email, role);
-                toast.success(`Invitation sent to ${email}.`);
-                setEmail('');
-              })
-            }
-          >
-            <Send className="h-4 w-4" /> Send invitation
-          </Button>
         </CardContent>
       </Card>
 
-      {error ? (
-        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error}</div>
-      ) : null}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {loading ? (
-        <div className="space-y-3">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
-          ))}
+        <div className="space-y-4">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-48 w-full rounded-xl" />
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Active Members */}
           <Card className="overflow-hidden">
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Users className="h-4.5 w-4.5 text-brand" />
-              <CardTitle>Active Members</CardTitle>
+            <CardHeader className="border-b border-border/40 pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Users className="size-4 text-primary" />
+                Active Team Members ({members.length})
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               {members.length > 0 ? (
-                <ul className="divide-y divide-hairline">
+                <ul className="divide-y divide-border/50">
                   {members.map((member) => {
                     const isSelf = member.email.toLowerCase() === user?.email?.toLowerCase();
                     return (
-                      <li key={member.usersId} className="flex items-center justify-between gap-3 px-5 py-3.5">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-foreground">
+                      <li key={member.usersId} className="flex items-center justify-between gap-3 p-4 hover:bg-muted/30 transition-colors">
+                        <div className="min-w-0 space-y-0.5">
+                          <p className="truncate text-sm font-semibold text-foreground flex items-center gap-2">
                             {member.firstName || member.lastName ? `${member.firstName} ${member.lastName}`.trim() : member.email}
-                            {isSelf && <span className="ml-1.5 rounded bg-brand/10 px-1.5 py-0.5 text-3xs font-semibold uppercase tracking-wider text-brand">You</span>}
+                            {isSelf && <Badge variant="secondary" className="text-[10px]">You</Badge>}
                           </p>
-                          <p className="text-xs text-ink-soft">
-                            {member.email} • {roleLabel(member.role)}
+                          <p className="text-xs text-muted-foreground">
+                            {member.email} · <span className="font-medium text-foreground">{roleLabel(member.role)}</span>
                           </p>
                         </div>
-                        <div className="flex shrink-0 items-center gap-3">
+                        <div className="shrink-0">
                           <Button
                             size="sm"
                             variant="ghost"
                             disabled={isSelf}
                             onClick={() =>
                               guard(async () => {
-                                if (confirm(`Are you sure you want to remove ${member.firstName || member.lastName || member.email} from the team?`)) {
+                                if (window.confirm(`Are you sure you want to remove ${member.firstName || member.lastName || member.email} from the team?`)) {
                                   await removeStaffRole(member.usersId);
                                   toast.success('Member removed successfully.');
                                 }
                               })
                             }
-                            className="h-8 text-xs text-destructive hover:bg-destructive/10 disabled:opacity-35"
+                            className="h-8 text-xs text-destructive hover:bg-destructive/10 disabled:opacity-30"
                           >
-                            <UserMinus className="mr-1 h-3.5 w-3.5" /> Remove
+                            <UserMinus className="mr-1 size-3.5" /> Remove
                           </Button>
                         </div>
                       </li>
@@ -148,28 +190,35 @@ export function AdminInvitationsPage() {
                   })}
                 </ul>
               ) : (
-                <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
-                  <p className="text-sm text-ink-soft">No active members found</p>
+                <div className="p-6">
+                  <EmptyState
+                    icon={<Users className="size-5 text-muted-foreground" />}
+                    title="No Active Members"
+                    description="No additional team members have been configured."
+                  />
                 </div>
               )}
             </CardContent>
           </Card>
 
+          {/* Pending Invitations */}
           <Card className="overflow-hidden">
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Mail className="h-4.5 w-4.5 text-brand" />
-              <CardTitle>Pending Invitations</CardTitle>
+            <CardHeader className="border-b border-border/40 pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="size-4 text-primary" />
+                Pending Invitations ({invitations.length})
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               {invitations.length > 0 ? (
-                <ul className="divide-y divide-hairline">
+                <ul className="divide-y divide-border/50">
                   {invitations.map((invitation) => (
-                    <li key={invitation.invitationsId} className="flex items-center justify-between gap-3 px-5 py-3.5">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-foreground">{invitation.email}</p>
-                        <p className="text-xs text-ink-soft">{roleLabel(invitation.role)}</p>
+                    <li key={invitation.invitationsId} className="flex items-center justify-between gap-3 p-4 hover:bg-muted/30 transition-colors">
+                      <div className="min-w-0 space-y-0.5">
+                        <p className="truncate text-sm font-semibold text-foreground">{invitation.email}</p>
+                        <p className="text-xs text-muted-foreground">{roleLabel(invitation.role)}</p>
                       </div>
-                      <div className="flex shrink-0 items-center gap-3">
+                      <div className="flex shrink-0 items-center gap-2">
                         <Badge variant={statusVariant(invitation.status)}>{invitation.status}</Badge>
                         <Button
                           size="sm"
@@ -184,8 +233,12 @@ export function AdminInvitationsPage() {
                   ))}
                 </ul>
               ) : (
-                <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
-                  <p className="text-sm text-ink-soft">No pending invitations</p>
+                <div className="p-6">
+                  <EmptyState
+                    icon={<Mail className="size-5 text-muted-foreground" />}
+                    title="No Pending Invites"
+                    description="All sent invitations have been accepted or no invites are active."
+                  />
                 </div>
               )}
             </CardContent>

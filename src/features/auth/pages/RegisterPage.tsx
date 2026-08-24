@@ -4,6 +4,8 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { PasswordInput } from '@/shared/ui/password-input';
 import { Label } from '@/shared/ui/label';
+import { Badge } from '@/shared/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
 import { GoogleSignInButton } from '@/features/auth/components/GoogleSignInButton';
 import { currentTenantSlug } from '@/shared/subdomain';
@@ -28,25 +30,25 @@ export function RegisterPage() {
       title="Create your Universal Pass."
       blurb="One account gives you seamless entry, QR tickets, and reservations across all venues."
     >
-      <div className="rounded-2xl border border-hairline/80 bg-surface/90 p-8 shadow-[var(--shadow-e3)] backdrop-blur-xl sm:p-10">
+      <div className="rounded-3xl border border-border bg-card p-8 shadow-xl sm:p-10">
         <div className="space-y-2 pb-6">
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-primary">
+            <Badge variant="voltage" className="font-mono text-xs">
               <Sparkles className="size-3" /> {tenantSlug ? `@${tenantSlug}` : 'Universal Attendee'}
-            </span>
+            </Badge>
           </div>
-          <h2 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Create account
           </h2>
           <p className="text-sm text-muted-foreground">
             Sign up once to access all partner box offices and tickets.
           </p>
-          {returnUrl ? (
-            <div className="mt-2 flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs text-primary">
+          {returnUrl && (
+            <div className="mt-2 flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-medium text-primary">
               <Sparkles className="size-3.5 shrink-0" />
               <span>You will return to your selected event after registration.</span>
             </div>
-          ) : null}
+          )}
         </div>
 
         <form
@@ -56,27 +58,27 @@ export function RegisterPage() {
             register({ email, password, firstName, lastName });
           }}
         >
-          {error ? (
-            <div className="flex items-start gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive animate-in fade-in">
-              <CircleAlert className="mt-0.5 size-4 shrink-0" />
-              <div className="space-y-0.5">
-                <p className="font-medium">Sign up failed</p>
-                <p className="text-xs text-destructive/90">{error}</p>
+          {error && (
+            <Alert variant="destructive">
+              <CircleAlert className="size-4" />
+              <div>
+                <AlertTitle className="text-xs">Sign up failed</AlertTitle>
+                <AlertDescription className="text-xs">{error}</AlertDescription>
               </div>
-            </div>
-          ) : null}
+            </Alert>
+          )}
 
-          {notice ? (
-            <div className="flex items-start gap-3 rounded-xl border border-success/20 bg-success/5 p-4 text-sm text-success animate-in fade-in">
-              <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
-              <p className="text-xs text-success">{notice}</p>
-            </div>
-          ) : null}
+          {notice && (
+            <Alert variant="success">
+              <CheckCircle2 className="size-4" />
+              <AlertDescription className="text-xs">{notice}</AlertDescription>
+            </Alert>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="firstName" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                First name
+              <Label htmlFor="firstName" className="text-xs">
+                First Name
               </Label>
               <Input
                 id="firstName"
@@ -88,8 +90,8 @@ export function RegisterPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="lastName" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Last name
+              <Label htmlFor="lastName" className="text-xs">
+                Last Name
               </Label>
               <Input
                 id="lastName"
@@ -103,7 +105,7 @@ export function RegisterPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <Label htmlFor="email" className="text-xs">
               Email Address
             </Label>
             <div className="relative">
@@ -121,7 +123,7 @@ export function RegisterPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <Label htmlFor="password" className="text-xs">
               Password
             </Label>
             <div className="relative">
@@ -140,7 +142,7 @@ export function RegisterPage() {
 
           <Button
             type="submit"
-            className="h-11 w-full gap-2 text-sm font-medium shadow-md transition-transform active:scale-[0.99] mt-2"
+            className="h-10 w-full gap-2 text-sm font-semibold mt-2"
             disabled={loading}
           >
             {loading ? (
@@ -155,10 +157,10 @@ export function RegisterPage() {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-hairline" />
+            <span className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="bg-surface px-3 font-mono text-[10.5px] uppercase tracking-widest text-muted-foreground">
+            <span className="bg-card px-3 font-mono text-[10.5px] uppercase tracking-widest text-muted-foreground">
               or continue with
             </span>
           </div>
@@ -177,7 +179,7 @@ export function RegisterPage() {
             Email me a magic sign-in link
           </Button>
 
-          <div className="rounded-xl border border-hairline bg-surface-sunken/40 p-4 text-center">
+          <div className="rounded-2xl border border-border bg-muted/30 p-4 text-center">
             <p className="text-xs text-muted-foreground">
               Already have an account?{' '}
               <Link

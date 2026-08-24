@@ -4,11 +4,22 @@ import { rpcErrorMessage } from '@/shared/session';
 import { Badge } from '@/shared/ui/badge';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { EmptyState } from '@/shared/ui/empty-state';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/shared/ui/table';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import {
   listTenantReportingAccess,
   setTenantTaxMode,
 } from '@/features/developer/services/developerService';
+import { Building2, Search } from 'lucide-react';
 
 const TAX_MODE_PLATFORM = 'platform';
 const TAX_MODE_SELF = 'self';
@@ -47,73 +58,100 @@ export function TenantTaxModePanel() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-base">Tax collection by tenant</CardTitle>
-        <Input
-          placeholder="Search tenants…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => (e.key === 'Enter' ? setSubmittedSearch(search) : undefined)}
-          className="h-8 w-56"
-        />
+      <CardHeader className="border-b border-border/40 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <CardTitle>Tax Collection by Tenant</CardTitle>
+            <CardDescription>
+              Control whether TicketSpan or the tenant remits sales tax to state tax authorities.
+            </CardDescription>
+          </div>
+          <div className="relative w-full sm:w-64">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search tenants…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => (e.key === 'Enter' ? setSubmittedSearch(search) : undefined)}
+              className="pl-9 h-9 text-xs"
+            />
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-sm text-ink-soft">
-          Platform mode: TicketSpan keeps the tax inside its application fee and remits it for the
-          tenant. Self mode: the tax line is still charged at checkout but flows into the tenant
-          payout, and the tenant remits it themselves. Changes require a reason and are
-          audit-logged.
-        </p>
-        {actionMessage ? <p className="text-sm text-success">{actionMessage}</p> : null}
-        {actionError ? <p className="text-sm text-destructive">{actionError}</p> : null}
-        {loading ? <p className="text-sm text-ink-soft">Loading tenants…</p> : null}
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-ink-soft">
-              <th className="pb-2">Tenant</th>
-              <th className="pb-2">Collected by</th>
-              <th className="pb-2">Mode</th>
-              <th className="pb-2 text-right">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(data ?? []).map((tenant) => (
-              <tr key={tenant.tenantsId} className="border-t border-hairline">
-                <td className="py-1.5">
-                  <span className="font-medium">{tenant.name}</span>{' '}
-                  <span className="text-ink-soft">/{tenant.slug}</span>
-                </td>
-                <td className="py-1.5">
-                  {tenant.taxCollectionMode === TAX_MODE_SELF ? (
-                    <Badge variant="warn">Tenant self-collects</Badge>
-                  ) : (
-                    <Badge variant="success">TicketSpan (platform)</Badge>
-                  )}
-                </td>
-                <td className="py-1.5">
-                  <Select
-                    className="h-8 w-44"
-                    value={tenant.taxCollectionMode || TAX_MODE_PLATFORM}
-                    disabled={busyTenantId === tenant.tenantsId}
-                    onChange={(e) =>
-                      void changeMode(tenant.tenantsId, tenant.name, e.target.value as 'platform' | 'self')
-                    }
-                  >
-                    <option value={TAX_MODE_PLATFORM}>Platform (TicketSpan)</option>
-                    <option value={TAX_MODE_SELF}>Tenant self-collects</option>
-                  </Select>
-                </td>
-                <td className="py-1.5 text-right">
-                  {tenant.archived ? <Badge variant="warn">Archived</Badge> : <Badge variant="neutral">Active</Badge>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {data && data.length === 0 ? (
-          <p className="text-sm text-ink-soft">No tenants match this search.</p>
-        ) : null}
+      <CardContent className="space-y-4 pt-4">
+        {actionMessage && (
+          <Alert variant="success">
+            <AlertDescription>{actionMessage}</AlertDescription>
+          </Alert>
+        )}
+        {actionError && (
+          <Alert variant="destructive">
+            <AlertDescription>{actionError}</AlertDescription>
+          </Alert>
+        )}
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <div className="rounded-xl border border-border overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">Loading tenants…</div>
+          ) : data && data.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tenant</TableHead>
+                  <TableHead>Remittance Authority</TableHead>
+                  <TableHead>Change Collection Mode</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.map((tenant) => (
+                  <TableRow key={tenant.tenantsId}>
+                    <TableCell>
+                      <div className="font-medium text-foreground">{tenant.name}</div>
+                      <div className="text-xs text-muted-foreground font-mono">/{tenant.slug}</div>
+                    </TableCell>
+                    <TableCell>
+                      {tenant.taxCollectionMode === TAX_MODE_SELF ? (
+                        <Badge variant="warn">Tenant Self-Collects</Badge>
+                      ) : (
+                        <Badge variant="success">TicketSpan (Platform)</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        className="h-8 w-48 text-xs"
+                        value={tenant.taxCollectionMode || TAX_MODE_PLATFORM}
+                        disabled={busyTenantId === tenant.tenantsId}
+                        onChange={(e) =>
+                          void changeMode(tenant.tenantsId, tenant.name, e.target.value as 'platform' | 'self')
+                        }
+                      >
+                        <option value={TAX_MODE_PLATFORM}>Platform (TicketSpan)</option>
+                        <option value={TAX_MODE_SELF}>Tenant Self-Collects</option>
+                      </Select>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {tenant.archived ? <Badge variant="warn">Archived</Badge> : <Badge variant="neutral">Active</Badge>}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="p-8">
+              <EmptyState
+                icon={<Building2 className="size-6 text-muted-foreground" />}
+                title="No Tenants Found"
+                description="No tenant records matched the search query."
+              />
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

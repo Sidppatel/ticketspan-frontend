@@ -6,6 +6,9 @@ import { getAdminLogs } from '@/features/admin/services/logAdminService';
 import { formatEpoch, formatEventDate } from '@/shared/lib/format';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { Skeleton } from '@/shared/ui/skeleton';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { cn } from '@/shared/lib/cn';
@@ -59,120 +62,128 @@ export function AdminLogsPage() {
   }
 
   return (
-    <div className="space-y-8 pb-4">
-      <section className="space-y-1.5">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">Activity logs</h1>
-        <p className="text-sm text-ink-soft">Pick an event to see everything that happened behind it — newest first.</p>
-      </section>
+    <div className="space-y-8 pb-8">
+      <div className="space-y-1 border-b border-border/40 pb-5">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Activity Logs
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Audit timeline of actions, configuration changes, and operations per event.
+        </p>
+      </div>
 
-      <section className="max-w-md space-y-1.5">
-        <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Event</label>
+      <div className="max-w-md space-y-1.5">
+        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Select Event
+        </label>
         <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
           <PopoverTrigger asChild>
             <button
-              className="flex w-full items-center justify-between gap-2 rounded-lg border border-hairline-strong bg-surface px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-surface-sunken"
+              className="flex w-full items-center justify-between gap-2 rounded-xl border border-input bg-surface px-3.5 py-2.5 text-left text-sm shadow-xs transition-colors hover:bg-muted/40"
               disabled={eventsLoading || allEvents.length === 0}
             >
               <span className="flex min-w-0 items-center gap-2">
-                <Calendar className="h-4 w-4 shrink-0 text-brand" />
+                <Calendar className="size-4 shrink-0 text-primary" />
                 <span className="truncate font-medium text-foreground">
-                  {eventsLoading ? 'Loading events…' : selectedEvent ? selectedEvent.title : 'No events yet'}
+                  {eventsLoading ? 'Loading events…' : selectedEvent ? selectedEvent.title : 'No events available'}
                 </span>
               </span>
-              <ChevronsUpDown className="h-4 w-4 shrink-0 text-ink-faint" />
+              <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-            <div className="relative border-b border-hairline p-2">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" />
-              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search events…" className="border-0 pl-8 shadow-none focus-visible:ring-0" autoFocus />
+          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-1" align="start">
+            <div className="relative border-b border-border p-1.5">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Filter events…"
+                className="h-8 border-0 pl-8 text-xs shadow-none focus-visible:ring-0"
+                autoFocus
+              />
             </div>
-            <div className="max-h-72 overflow-y-auto p-1">
+            <div className="max-h-64 overflow-y-auto p-1">
               {filteredEvents.length > 0 ? (
                 filteredEvents.map((e) => (
                   <button
                     key={e.eventsId}
                     onClick={() => choose(e.eventsId)}
                     className={cn(
-                      'flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-2 text-left text-sm transition-colors hover:bg-surface-sunken',
-                      e.eventsId === selected ? 'text-brand' : 'text-foreground',
+                      'flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors hover:bg-muted',
+                      e.eventsId === selected ? 'bg-primary/10 text-primary font-semibold' : 'text-foreground',
                     )}
                   >
-                    <span className="min-w-0">
+                    <div className="min-w-0">
                       <span className="block truncate font-medium">{e.title}</span>
-                      <span className="block text-xs text-ink-faint">{formatEventDate(e.startDate)}</span>
-                    </span>
-                    {e.eventsId === selected ? <Check className="h-4 w-4 shrink-0" /> : null}
+                      <span className="block text-[10px] text-muted-foreground">{formatEventDate(e.startDate)}</span>
+                    </div>
+                    {e.eventsId === selected && <Check className="size-3.5 shrink-0 text-primary" />}
                   </button>
                 ))
               ) : (
-                <p className="px-2.5 py-6 text-center text-sm text-ink-soft">No events match “{query}”.</p>
+                <p className="px-3 py-4 text-center text-xs text-muted-foreground">No events match "{query}".</p>
               )}
             </div>
           </PopoverContent>
         </Popover>
-      </section>
+      </div>
 
-      {error ? (
-        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error}</div>
-      ) : null}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {logsLoading ? (
         <div className="space-y-3">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
+            <Skeleton key={i} className="h-16 w-full rounded-xl" />
           ))}
         </div>
       ) : entries.length > 0 ? (
-        <>
+        <div className="space-y-4">
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <ul className="divide-y divide-hairline">
+              <ul className="divide-y divide-border/40">
                 {entries.map((entry) => (
-                  <li key={entry.id} className="flex gap-4 px-5 py-4">
-                    <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand/60" />
-                    <div className="min-w-0 flex-1">
+                  <li key={entry.id} className="flex gap-4 p-4 hover:bg-muted/20 transition-colors">
+                    <div className="mt-1.5 size-2 shrink-0 rounded-full bg-primary" />
+                    <div className="min-w-0 flex-1 space-y-0.5">
                       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                        <p className="text-sm font-medium text-foreground">
+                        <p className="text-xs sm:text-sm font-semibold text-foreground">
                           <span className="capitalize">{entry.action}</span>{' '}
-                          <span className="text-ink-soft">· {entry.entityType}</span>
+                          <span className="text-muted-foreground font-normal">· {entry.entityType}</span>
                         </p>
-                        <p className="text-xs tabular-nums text-ink-faint">{formatEpoch(entry.timestamp)}</p>
+                        <span className="font-mono text-[11px] text-muted-foreground">{formatEpoch(entry.timestamp)}</span>
                       </div>
-                      {entry.detail ? <p className="mt-0.5 text-sm text-ink-soft">{entry.detail}</p> : null}
-                      {entry.actorEmail ? <p className="mt-0.5 text-xs text-ink-faint">{entry.actorEmail}</p> : null}
+                      {entry.detail && <p className="text-xs text-muted-foreground">{entry.detail}</p>}
+                      {entry.actorEmail && (
+                        <p className="text-[11px] text-muted-foreground font-mono">By: {entry.actorEmail}</p>
+                      )}
                     </div>
                   </li>
                 ))}
               </ul>
             </CardContent>
           </Card>
-          {shown < total ? (
-            <div className="flex justify-center">
-              <Button variant="outline" size="lg" onClick={() => setShown((n) => n + PAGE_SIZE)}>
-                Load more
+          {shown < total && (
+            <div className="flex justify-center pt-2">
+              <Button variant="outline" size="sm" onClick={() => setShown((n) => n + PAGE_SIZE)}>
+                Load Older Activity
               </Button>
             </div>
-          ) : null}
-        </>
+          )}
+        </div>
       ) : (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center gap-5 px-6 py-14 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand/10 text-brand">
-              <ScrollText className="h-7 w-7" />
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-display text-xl font-semibold tracking-tight text-foreground">
-                {allEvents.length === 0 ? 'No events yet' : 'Nothing logged for this event'}
-              </h3>
-              <p className="max-w-md text-sm text-ink-soft">
-                {allEvents.length === 0
-                  ? 'Once you create events and start working on them, their activity trail shows up here.'
-                  : 'No recorded actions for this event yet — pricing changes and edits will appear here as they happen.'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<ScrollText className="size-6 text-muted-foreground" />}
+          title={allEvents.length === 0 ? 'No Events Created' : 'No Activity Logged'}
+          description={
+            allEvents.length === 0
+              ? 'Create an event in your admin portal to start recording activity and sales logs.'
+              : 'No recorded actions for this event yet. Actions and configuration changes will appear in this timeline.'
+          }
+        />
       )}
     </div>
   );

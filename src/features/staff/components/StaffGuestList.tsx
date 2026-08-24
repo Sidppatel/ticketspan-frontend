@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
+import { EmptyState } from '@/shared/ui/empty-state';
 import type { GuestBooking, GuestTicket } from '@/shared/proto/bookings';
 import { cn } from '@/shared/lib/cn';
 
@@ -90,21 +91,21 @@ export function StaffGuestList({
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             placeholder="Search by name, booking #, or ticket code…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 h-10 bg-background rounded-xl text-xs"
+            className="pl-9 h-9 text-xs"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/40 border border-border/50 shrink-0">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/40 border border-border shrink-0">
           <Button
             size="sm"
             variant={filterStatus === 'all' ? 'default' : 'ghost'}
             onClick={() => setFilterStatus('all')}
-            className={cn('h-8 text-xs font-bold rounded-lg', filterStatus !== 'all' && 'hover:bg-background/50')}
+            className="h-7 text-xs font-semibold"
           >
             All ({totalAttendees})
           </Button>
@@ -112,7 +113,7 @@ export function StaffGuestList({
             size="sm"
             variant={filterStatus === 'pending' ? 'default' : 'ghost'}
             onClick={() => setFilterStatus('pending')}
-            className={cn('h-8 text-xs font-bold rounded-lg', filterStatus !== 'pending' && 'hover:bg-background/50')}
+            className="h-7 text-xs font-semibold"
           >
             Pending ({totalAttendees - totalCheckedIn})
           </Button>
@@ -120,7 +121,7 @@ export function StaffGuestList({
             size="sm"
             variant={filterStatus === 'checked_in' ? 'default' : 'ghost'}
             onClick={() => setFilterStatus('checked_in')}
-            className={cn('h-8 text-xs font-bold rounded-lg', filterStatus !== 'checked_in' && 'hover:bg-background/50')}
+            className="h-7 text-xs font-semibold"
           >
             Checked In ({totalCheckedIn})
           </Button>
@@ -128,10 +129,11 @@ export function StaffGuestList({
       </div>
 
       {filteredBookings.length === 0 ? (
-        <Card className="border border-border/50 bg-card rounded-2xl p-8 text-center space-y-2">
-          <Users className="size-8 text-muted-foreground/50 mx-auto" />
-          <p className="text-xs font-bold text-muted-foreground">No attendees found matching your filter.</p>
-        </Card>
+        <EmptyState
+          icon={<Users className="size-6 text-muted-foreground" />}
+          title="No Attendees Found"
+          description="No guest records matched your filter or search query."
+        />
       ) : (
         <div className="space-y-3">
           {filteredBookings.map((b) => {
@@ -142,21 +144,21 @@ export function StaffGuestList({
             return (
               <Card
                 key={b.bookingsId}
-                className="border border-border/70 bg-card shadow-sm rounded-2xl overflow-hidden transition-all"
+                className="overflow-hidden transition-all"
               >
                 <div
                   onClick={() => toggleExpand(b.bookingsId)}
-                  className="p-4 flex items-center justify-between gap-3 bg-muted/10 hover:bg-muted/25 transition-colors cursor-pointer"
+                  className="p-4 flex items-center justify-between gap-3 bg-muted/10 hover:bg-muted/30 transition-colors cursor-pointer"
                 >
                   <div className="space-y-0.5 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-sm text-foreground truncate">{b.buyerName}</span>
-                      <Badge variant="neutral" className="font-mono text-[10px] uppercase">
+                      <Badge variant="neutral" className="font-mono text-[10px]">
                         #{b.bookingNumber}
                       </Badge>
                     </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      {tickets.length} pass{tickets.length > 1 ? 'es' : ''} • {pendingCount === 0 ? 'All checked in' : `${pendingCount} pending`}
+                    <p className="text-xs text-muted-foreground">
+                      {tickets.length} pass{tickets.length > 1 ? 'es' : ''} · {pendingCount === 0 ? 'All checked in' : `${pendingCount} pending`}
                     </p>
                   </div>
 
@@ -169,7 +171,7 @@ export function StaffGuestList({
                           e.stopPropagation();
                           onCheckInBooking(b);
                         }}
-                        className="ticketspan-spring-btn h-8 px-3 text-xs font-bold rounded-lg shadow-sm"
+                        className="h-8 px-3 text-xs font-semibold"
                       >
                         Check In Group ({pendingCount})
                       </Button>
@@ -184,7 +186,7 @@ export function StaffGuestList({
                 </div>
 
                 {isExpanded && (
-                  <CardContent className="p-3 pt-0 border-t border-border/30 divide-y divide-border/30">
+                  <CardContent className="p-3 pt-0 border-t border-border/40 divide-y divide-border/40">
                     {tickets.map((t) => {
                       const isCheckedIn = t.status === 'CheckedIn';
                       return (
@@ -195,11 +197,11 @@ export function StaffGuestList({
                           <div className="space-y-0.5 min-w-0">
                             <div className="flex items-center gap-2">
                               <Ticket className={cn('size-3.5 shrink-0', isCheckedIn ? 'text-success' : 'text-muted-foreground')} />
-                              <span className="text-xs font-bold text-foreground truncate">
+                              <span className="text-xs font-semibold text-foreground truncate">
                                 {t.guestName || b.buyerName}
                               </span>
                               {t.seatNumber > 0 && (
-                                <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1.5 py-0.2 rounded shrink-0">
+                                <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">
                                   Seat #{t.seatNumber}
                                 </span>
                               )}
@@ -212,7 +214,7 @@ export function StaffGuestList({
                           <div className="flex items-center gap-2 shrink-0">
                             {isCheckedIn ? (
                               <>
-                                <Badge variant="success" className="text-[10px] font-bold gap-1">
+                                <Badge variant="success" className="text-[10px] font-semibold gap-1">
                                   <CheckCircle2 className="size-3" /> Checked In
                                 </Badge>
                                 <Button
@@ -220,7 +222,7 @@ export function StaffGuestList({
                                   variant="ghost"
                                   disabled={isProcessing}
                                   onClick={() => onTriggerCheckOut(t)}
-                                  className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 gap-1 rounded-lg"
+                                  className="h-7 px-2 text-[10px] text-muted-foreground hover:text-warning hover:bg-warning/10 gap-1 rounded-lg"
                                   title="Undo Check-In"
                                 >
                                   <LogOut className="size-3" /> Check Out
@@ -232,7 +234,7 @@ export function StaffGuestList({
                                 variant="outline"
                                 disabled={isProcessing}
                                 onClick={() => onCheckInTicket(t)}
-                                className="h-7 px-3 text-[11px] font-bold rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+                                className="h-7 px-3 text-xs font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
                               >
                                 Check In
                               </Button>

@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/shared/
 import { Button } from '@/shared/ui/button';
 import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
 
 const PRESET_REASONS = [
   'Left venue early',
@@ -50,29 +51,29 @@ export function CheckOutGuestModal({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md w-full p-6 space-y-4 border border-border shadow-2xl rounded-3xl">
         <div className="space-y-1.5">
-          <DialogTitle className="text-lg font-extrabold font-display text-foreground tracking-tight flex items-center gap-2">
-            <LogOut className="size-5 text-amber-500" /> Undo Check-In / Check Out
+          <DialogTitle className="text-lg font-bold font-display text-foreground tracking-tight flex items-center gap-2">
+            <LogOut className="size-5 text-warning" /> Undo Check-In / Check Out
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Guest: <span className="font-bold text-foreground">{guestName}</span> ({ticketCode})
+            Guest: <span className="font-semibold text-foreground">{guestName}</span> ({ticketCode})
           </DialogDescription>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 flex items-start gap-2.5 text-xs text-amber-700 dark:text-amber-300">
-          <TriangleAlert className="size-4 shrink-0 mt-0.5" />
-          <span>
-            This action will restore the attendee pass status and record an audit log with your reason.
-          </span>
-        </div>
+        <Alert variant="warning">
+          <TriangleAlert className="size-4" />
+          <AlertDescription className="text-xs">
+            This action will restore the attendee pass status and record an audit log with your specified reason.
+          </AlertDescription>
+        </Alert>
 
         {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-xs font-bold text-destructive">
-            {error}
-          </div>
+          <Alert variant="destructive">
+            <AlertDescription className="text-xs">{error}</AlertDescription>
+          </Alert>
         )}
 
         <div className="space-y-3">
-          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Reason for check-out *
           </Label>
 
@@ -120,7 +121,7 @@ export function CheckOutGuestModal({
                   setCustomReason(e.target.value);
                   setError(null);
                 }}
-                className="text-xs bg-background min-h-[70px]"
+                className="text-xs min-h-[70px]"
               />
             </div>
           )}
@@ -132,7 +133,7 @@ export function CheckOutGuestModal({
             variant="ghost"
             onClick={() => onOpenChange(false)}
             disabled={isProcessing}
-            className="h-9 text-xs font-bold"
+            className="h-8 text-xs"
           >
             Cancel
           </Button>
@@ -142,7 +143,7 @@ export function CheckOutGuestModal({
             variant="outline"
             disabled={isProcessing || !effectiveReason}
             onClick={handleConfirm}
-            className="h-9 px-4 text-xs font-bold rounded-xl border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+            className="h-8 px-4 text-xs font-semibold text-warning border-warning/40 hover:bg-warning/10"
           >
             Confirm Check Out
           </Button>

@@ -6,10 +6,14 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Switch } from '@/shared/ui/switch';
-import { CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { UnifiedImageUploader } from '@/shared/components/upload/UnifiedImageUploader';
 import { cn } from '@/shared/lib/cn';
-import { Plus, Search, Sparkles, Building2, Globe, Trash2 } from 'lucide-react';
+import { Plus, Search, Sparkles, Building2, Globe, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import type { NamedDraft } from '@/features/admin/services/catalogService';
 
@@ -106,126 +110,138 @@ export function CatalogEntityManager<T extends CatalogEntity>(props: ManagerProp
   const activeCount = items.filter((i) => i.isActive).length;
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto py-4">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border/40 pb-6">
+    <div className="space-y-8 max-w-6xl mx-auto py-2 pb-12">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/40 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black tracking-tight font-display text-foreground md:text-4xl">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               {props.title}
             </h1>
-            <span className="rounded-full bg-primary/10 px-3 py-1 font-mono text-xs font-bold text-primary border border-primary/20">
+            <Badge variant="voltage" className="font-mono text-xs">
               {items.length} total ({activeCount} active)
-            </span>
+            </Badge>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Manage {props.title.toLowerCase()} logos, branding tiers, website links, and catalog visibility.
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Manage {props.title.toLowerCase()} artwork, branding tiers, web links, and catalog visibility.
           </p>
         </div>
 
         <Button
           onClick={() => setIsAdding((v) => !v)}
-          className="h-11 px-6 rounded-2xl font-bold uppercase tracking-wider text-xs shadow-lg shadow-primary/25 gap-2"
+          className="gap-1.5 self-start sm:self-auto text-xs font-semibold"
         >
-          <Plus className="size-4" /> {isAdding ? 'Close Builder' : `Add ${props.title.slice(0, -1)}`}
+          {isAdding ? <X className="size-4" /> : <Plus className="size-4" />}
+          {isAdding ? 'Close Builder' : `Add ${props.title.slice(0, -1)}`}
         </Button>
       </div>
 
       {isAdding && (
-        <div className="border border-border/60 bg-card shadow-xl rounded-3xl overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
-          <CardHeader className="border-b border-border/20 px-6 py-4 bg-muted/20">
-            <CardTitle className="text-base font-bold font-display text-foreground flex items-center gap-2">
+        <Card className="animate-in fade-in slide-in-from-top-4 duration-200">
+          <CardHeader className="border-b border-border/40 pb-4">
+            <CardTitle className="flex items-center gap-2">
               <Sparkles className="size-4 text-primary" /> New {props.title.slice(0, -1)} Registration
             </CardTitle>
+            <CardDescription>
+              Add a new catalog entity with artwork and metadata.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            {notice ? (
-              <p className="text-xs font-semibold text-destructive bg-destructive/10 border border-destructive/20 rounded-xl p-3 leading-normal animate-shake">
-                {notice}
-              </p>
-            ) : null}
+          <CardContent className="space-y-6 pt-5">
+            {notice && (
+              <Alert variant="destructive">
+                <AlertDescription>{notice}</AlertDescription>
+              </Alert>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
               <div className="md:col-span-7 space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    Name
-                  </Label>
+                  <Label htmlFor="catalog-entity-name" className="text-xs">Name</Label>
                   <Input
-                    placeholder="e.g. Acme Corporation"
+                    id="catalog-entity-name"
+                    placeholder="e.g. Headliner or Sponsor Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="h-11 bg-background border-border text-sm font-semibold rounded-xl"
+                    className="h-9 text-xs"
                   />
                 </div>
 
                 <MetaEditor rows={meta} onChange={setMeta} suggestedKeys={props.suggestedKeys} />
               </div>
 
-              <div className="md:col-span-5 border-l border-border/20 pl-0 md:pl-6">
+              <div className="md:col-span-5 md:border-l md:border-border/40 md:pl-6">
                 <UnifiedImageUploader
                   entityType={props.entityType}
                   imagesId={imagesId}
                   onChange={setImagesId}
                   aspectRatio={props.aspectRatio ?? '1:1'}
                   label="Official Logo / Artwork"
-                  hint="PNG or SVG with transparent background recommended"
+                  hint="PNG or SVG recommended"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 border-t border-border/20 pt-4">
+            <div className="flex items-center justify-end gap-2 border-t border-border/40 pt-4">
               <Button
-                variant="ghost"
+                variant="outline"
+                size="sm"
                 onClick={() => setIsAdding(false)}
-                className="h-10 px-5 text-xs font-bold rounded-xl"
+                className="text-xs font-semibold"
               >
                 Cancel
               </Button>
               <Button
+                size="sm"
                 onClick={add}
                 disabled={!name.trim()}
-                className={cn(
-                  'h-10 px-7 rounded-xl font-bold uppercase tracking-wider text-xs shadow-md shadow-primary/20',
-                  !name.trim() && 'opacity-40 cursor-not-allowed',
-                )}
+                className="text-xs font-semibold"
               >
                 Save {props.title.slice(0, -1)}
               </Button>
             </div>
           </CardContent>
-        </div>
+        </Card>
       )}
 
-      <div className="flex items-center gap-3 bg-card p-2 rounded-2xl border border-border/40 shadow-sm">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-3 size-4 text-muted-foreground" />
-          <Input
-            placeholder={`Search ${props.title.toLowerCase()} by name or slug...`}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 h-10 border-none bg-transparent text-sm"
-          />
-        </div>
+      <div className="relative w-full max-w-md">
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder={`Search ${props.title.toLowerCase()} by name or slug…`}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 h-9 text-xs"
+        />
       </div>
 
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="size-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Skeleton className="h-36 rounded-xl" />
+          <Skeleton className="h-36 rounded-xl" />
+          <Skeleton className="h-36 rounded-xl" />
+          <Skeleton className="h-36 rounded-xl" />
         </div>
-      ) : null}
-
-      {error ? <p className="text-destructive font-bold text-sm bg-destructive/10 p-4 rounded-2xl">{error}</p> : null}
-
-      {!loading && filteredItems.length === 0 ? (
-        <div className="text-center py-16 bg-muted/20 border border-dashed border-border/60 rounded-3xl space-y-3">
-          <Building2 className="size-10 mx-auto text-muted-foreground/50" />
-          <p className="text-sm font-bold text-muted-foreground">No {props.title.toLowerCase()} found.</p>
-          <Button size="sm" onClick={() => setIsAdding(true)} className="rounded-xl font-bold">
-            Create First {props.title.slice(0, -1)}
-          </Button>
-        </div>
+      ) : filteredItems.length === 0 ? (
+        <EmptyState
+          icon={<Building2 className="size-6 text-muted-foreground" />}
+          title={`No ${props.title} Found`}
+          description={
+            items.length === 0
+              ? `Your ${props.title.toLowerCase()} directory is currently empty.`
+              : `No ${props.title.toLowerCase()} match your search query.`
+          }
+          action={
+            <Button size="sm" onClick={() => setIsAdding(true)} className="gap-1.5">
+              <Plus className="size-4" /> Add First {props.title.slice(0, -1)}
+            </Button>
+          }
+        />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredItems.map((item) => (
             <EntityRow
               key={props.idOf(item)}
@@ -294,35 +310,28 @@ function EntityRow<T extends CatalogEntity>({
   }
 
   return (
-    <div
-      className={cn(
-        'rounded-3xl border bg-card transition-all duration-300 overflow-hidden flex flex-col',
-        item.isActive
-          ? 'border-border/60 shadow-md hover:border-primary/40'
-          : 'border-border-soft opacity-60 bg-muted/20 shadow-none scale-[0.99]',
-      )}
-    >
-      <CardContent className="p-6 space-y-4">
+    <Card className={cn('transition-all', !item.isActive && 'opacity-60 bg-muted/20')}>
+      <CardContent className="space-y-4 p-5">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-4 min-w-0">
+          <div className="flex items-center gap-3.5 min-w-0">
             {item.primaryImagePath ? (
               <img
                 src={imageUrl(item.primaryImagePath)}
                 alt={item.name}
-                className="size-14 rounded-2xl object-cover shadow-md border border-border/40 shrink-0 bg-background"
+                className="size-12 rounded-xl object-cover shadow-xs border border-border shrink-0 bg-background"
               />
             ) : (
-              <div className="size-14 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground text-xs font-bold uppercase shrink-0">
+              <div className="size-12 rounded-xl bg-muted border border-border flex items-center justify-center text-muted-foreground text-[10px] font-bold uppercase shrink-0">
                 Logo
               </div>
             )}
-            <div className="min-w-0">
+            <div className="min-w-0 space-y-0.5">
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-base text-foreground font-display truncate">{item.name}</h3>
+                <h3 className="font-display font-bold text-sm text-foreground truncate">{item.name}</h3>
                 {tier && (
-                  <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+                  <Badge variant="voltage" className="text-[9px] px-1.5 py-0">
                     {tier}
-                  </span>
+                  </Badge>
                 )}
               </div>
               <span className="font-mono text-[11px] text-muted-foreground block truncate">/{item.slug}</span>
@@ -331,7 +340,7 @@ function EntityRow<T extends CatalogEntity>({
                   href={websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline mt-0.5"
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline"
                 >
                   <Globe className="size-3" /> {websiteUrl.replace(/^https?:\/\//, '')}
                 </a>
@@ -345,27 +354,27 @@ function EntityRow<T extends CatalogEntity>({
               size="sm"
               variant="outline"
               onClick={() => setEditing((v) => !v)}
-              className="h-8 px-3 text-xs font-bold rounded-xl"
+              className="h-8 px-2.5 text-xs font-semibold"
             >
               {editing ? 'Close' : 'Edit'}
             </Button>
           </div>
         </div>
 
-        {notice ? (
-          <p className="text-[10px] font-bold text-destructive bg-destructive/10 border border-destructive/20 rounded-xl p-2.5 leading-normal animate-shake">
-            {notice}
-          </p>
-        ) : null}
+        {notice && (
+          <Alert variant="destructive">
+            <AlertDescription>{notice}</AlertDescription>
+          </Alert>
+        )}
 
         {editing && (
-          <div className="space-y-4 pt-4 border-t border-border/20 animate-in fade-in duration-200">
+          <div className="space-y-4 pt-4 border-t border-border/40 animate-in fade-in duration-200">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Name</Label>
+              <Label className="text-xs">Display Name</Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="h-10 bg-background text-sm font-semibold rounded-xl"
+                className="h-9 text-xs"
               />
             </div>
 
@@ -379,19 +388,19 @@ function EntityRow<T extends CatalogEntity>({
 
             <MetaEditor rows={meta} onChange={setMeta} suggestedKeys={suggestedKeys} />
 
-            <div className="flex items-center justify-between border-t border-border/10 pt-3">
+            <div className="flex items-center justify-between border-t border-border/40 pt-3">
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => guard(onRemove)}
-                className="h-8 text-xs font-bold text-destructive hover:bg-destructive/10 rounded-xl"
+                className="h-8 text-xs text-destructive hover:bg-destructive/10"
               >
                 <Trash2 className="size-3.5 mr-1" /> Delete
               </Button>
               <Button
                 size="sm"
                 onClick={() => persist(item.isActive)}
-                className="h-9 px-5 rounded-xl font-bold text-xs shadow-sm"
+                className="h-8 px-4 text-xs font-semibold"
               >
                 Save Changes
               </Button>
@@ -399,7 +408,7 @@ function EntityRow<T extends CatalogEntity>({
           </div>
         )}
       </CardContent>
-    </div>
+    </Card>
   );
 }
 
@@ -417,29 +426,27 @@ function MetaEditor({
   }
 
   return (
-    <div className="space-y-2.5">
-      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        Metadata, Tiers &amp; Social Links
-      </Label>
+    <div className="space-y-2">
+      <Label className="text-xs">Metadata &amp; Social Links</Label>
       {rows.map((row, index) => (
         <div key={index} className="flex items-center gap-2">
           <Input
-            className="w-36 h-9 text-xs bg-background rounded-xl font-mono font-bold"
+            className="w-32 h-8 text-xs font-mono"
             placeholder="key (e.g. tier)"
             list="catalog-meta-keys"
             value={row.key}
             onChange={(e) => update(index, { key: e.target.value })}
           />
           <Input
-            className="flex-1 h-9 text-xs bg-background rounded-xl font-medium"
-            placeholder="value (e.g. Headline Sponsor)"
+            className="flex-1 h-8 text-xs"
+            placeholder="value"
             value={row.value}
             onChange={(e) => update(index, { value: e.target.value })}
           />
           <Button
             size="icon"
             variant="ghost"
-            className="h-9 w-9 text-muted-foreground hover:text-destructive rounded-xl shrink-0"
+            className="size-8 text-muted-foreground hover:text-destructive shrink-0"
             onClick={() => onChange(rows.filter((_, i) => i !== index))}
           >
             ✕
@@ -455,7 +462,7 @@ function MetaEditor({
         type="button"
         size="sm"
         variant="outline"
-        className="h-8 text-xs w-full border-dashed rounded-xl font-bold"
+        className="h-8 text-xs w-full border-dashed"
         onClick={() => onChange([...rows, { key: '', value: '' }])}
       >
         + Add Metadata Field

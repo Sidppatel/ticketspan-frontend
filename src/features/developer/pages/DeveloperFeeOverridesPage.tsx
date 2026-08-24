@@ -3,9 +3,20 @@ import { useAsync } from '@/shared/hooks/useAsync';
 import { rpcErrorMessage } from '@/shared/session';
 import { formatEpoch, usdToCents } from '@/shared/lib/format';
 import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { EmptyState } from '@/shared/ui/empty-state';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/shared/ui/table';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import {
   percentToBps,
   dateToEpochSeconds,
@@ -16,6 +27,7 @@ import {
   downloadCsv,
   type FeeOverrideRow,
 } from '@/features/developer/services/developerBillingService';
+import { Download, Layers, Sparkles } from 'lucide-react';
 
 export function DeveloperFeeOverridesPage() {
   const [eventsId, setEventsId] = useState('');
@@ -80,129 +92,177 @@ export function DeveloperFeeOverridesPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Fee overrides</h1>
-      <p className="text-sm text-muted-foreground">
-        Silent per-order fee overrides for non-profits, fundraisers and promotions. Event-level
-        beats tenant-level; tenants never see these. Tenant-level overrides are managed on the Fees
-        page (custom default formula).
-      </p>
+    <div className="space-y-8 pb-8">
+      <div className="space-y-1">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Fee Overrides
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Silent per-order fee overrides for non-profits, fundraisers, and platform partnerships. Event-level overrides take precedence.
+        </p>
+      </div>
 
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Set event override</CardTitle>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="size-4 text-marigold" />
+            Set Event Override
+          </CardTitle>
+          <CardDescription>
+            Configure custom platform take-rates for a specific event.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="flex flex-wrap items-end gap-2" onSubmit={onApply}>
-            <label className="text-sm">
-              Event ID
+          <form className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 items-end" onSubmit={onApply}>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="override-eventId" className="text-xs">Event ID</Label>
               <Input
-                className="mt-1 w-80"
+                id="override-eventId"
                 value={eventsId}
                 onChange={(event) => setEventsId(event.target.value)}
-                placeholder="uuid"
+                placeholder="UUID or Event ID"
                 required
               />
-            </label>
-            <label className="text-sm">
-              Percent %
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="override-percent" className="text-xs">Percent (%)</Label>
               <Input
-                className="mt-1 w-24"
+                id="override-percent"
                 value={percent}
                 onChange={(event) => setPercent(event.target.value)}
                 inputMode="decimal"
                 required
               />
-            </label>
-            <label className="text-sm">
-              Flat $
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="override-flat" className="text-xs">Flat ($)</Label>
               <Input
-                className="mt-1 w-24"
+                id="override-flat"
                 value={flat}
                 onChange={(event) => setFlat(event.target.value)}
                 inputMode="decimal"
                 required
               />
-            </label>
-            <label className="text-sm">
-              Expires (optional)
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="override-expires" className="text-xs">Expires (Optional)</Label>
               <Input
-                className="mt-1 w-44"
+                id="override-expires"
                 type="date"
                 value={expires}
                 onChange={(event) => setExpires(event.target.value)}
               />
-            </label>
-            <label className="text-sm">
-              Reason (required)
+            </div>
+            <div className="space-y-1.5 sm:col-span-2 lg:col-span-4">
+              <Label htmlFor="override-reason" className="text-xs">Reason (Audit Trail Required)</Label>
               <Input
-                className="mt-1 w-64"
+                id="override-reason"
                 value={reason}
                 onChange={(event) => setReason(event.target.value)}
-                placeholder="e.g. Non-profit fundraiser"
+                placeholder="e.g. 501(c)(3) charity partnership discount"
                 required
               />
-            </label>
-            <Button type="submit" disabled={busy}>
-              Apply override
-            </Button>
+            </div>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <Button type="submit" disabled={busy} className="w-full">
+                {busy ? 'Applying…' : 'Apply Override'}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
 
-      {actionMessage ? <p className="text-sm text-success">{actionMessage}</p> : null}
-      {actionError ? <p className="text-sm text-destructive">{actionError}</p> : null}
-      {error ? <p className="text-sm text-destructive">{rpcErrorMessage(error)}</p> : null}
-      {loading ? <p className="text-sm text-muted-foreground">Loading…</p> : null}
+      {actionMessage && (
+        <Alert variant="success">
+          <AlertDescription>{actionMessage}</AlertDescription>
+        </Alert>
+      )}
+      {actionError && (
+        <Alert variant="destructive">
+          <AlertDescription>{actionError}</AlertDescription>
+        </Alert>
+      )}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{rpcErrorMessage(error)}</AlertDescription>
+        </Alert>
+      )}
 
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium">Active overrides</h2>
-        <Button size="sm" variant="outline" onClick={onExport} disabled={!data || data.length === 0}>
-          Export CSV
-        </Button>
-      </div>
-
-      <div className="overflow-x-auto rounded-md border">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 text-left">
-            <tr>
-              <th className="p-2">Scope</th>
-              <th className="p-2">Tenant</th>
-              <th className="p-2">Event</th>
-              <th className="p-2">Standard → Override</th>
-              <th className="p-2">Expires</th>
-              <th className="p-2">Updated</th>
-              <th className="p-2" />
-            </tr>
-          </thead>
-          <tbody>
-            {(data ?? []).map((row) => (
-              <tr key={`${row.scope}-${row.eventsId || row.tenantsId}`} className="border-t">
-                <td className="p-2">
-                  <Badge variant="neutral">{row.scope}</Badge>
-                </td>
-                <td className="p-2">{row.tenantName}</td>
-                <td className="p-2 text-muted-foreground">{row.eventTitle || '—'}</td>
-                <td className="p-2">{overrideDiscount(row)}</td>
-                <td className="p-2 text-muted-foreground">
-                  {row.expiresAtEpochSeconds === '0' ? 'never' : formatEpoch(row.expiresAtEpochSeconds)}
-                </td>
-                <td className="p-2 text-muted-foreground">{formatEpoch(row.updatedAtEpochSeconds)}</td>
-                <td className="p-2">
-                  {row.scope === 'event' ? (
-                    <Button size="sm" variant="ghost" disabled={busy} onClick={() => onClear(row)}>
-                      Clear
-                    </Button>
-                  ) : null}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {data && data.length === 0 && !loading ? (
-          <p className="p-3 text-sm text-muted-foreground">No fee overrides.</p>
-        ) : null}
-      </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between border-b border-border/40 pb-4">
+          <div>
+            <CardTitle>Active Overrides</CardTitle>
+            <CardDescription>
+              {(data ?? []).length} active fee override rules in effect.
+            </CardDescription>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onExport}
+            disabled={!data || data.length === 0}
+            className="gap-1.5 text-xs"
+          >
+            <Download className="size-3.5" /> Export CSV
+          </Button>
+        </CardHeader>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">Loading fee overrides…</div>
+          ) : data && data.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Scope</TableHead>
+                  <TableHead>Tenant</TableHead>
+                  <TableHead>Event</TableHead>
+                  <TableHead>Rate Delta</TableHead>
+                  <TableHead>Expires</TableHead>
+                  <TableHead>Last Updated</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.map((row) => (
+                  <TableRow key={`${row.scope}-${row.eventsId || row.tenantsId}`}>
+                    <TableCell>
+                      <Badge variant="neutral">{row.scope}</Badge>
+                    </TableCell>
+                    <TableCell className="font-medium text-foreground">{row.tenantName}</TableCell>
+                    <TableCell className="text-muted-foreground">{row.eventTitle || '—'}</TableCell>
+                    <TableCell className="font-mono text-xs">{overrideDiscount(row)}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {row.expiresAtEpochSeconds === '0' ? 'Never' : formatEpoch(row.expiresAtEpochSeconds)}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{formatEpoch(row.updatedAtEpochSeconds)}</TableCell>
+                    <TableCell className="text-right">
+                      {row.scope === 'event' ? (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={busy}
+                          onClick={() => onClear(row)}
+                          className="h-8 text-xs text-destructive hover:bg-destructive/10"
+                        >
+                          Clear
+                        </Button>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="p-8">
+              <EmptyState
+                icon={<Layers className="size-6 text-muted-foreground" />}
+                title="No Fee Overrides"
+                description="No active event or tenant fee overrides are configured. Standard rates apply across all bookings."
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

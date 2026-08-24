@@ -18,7 +18,10 @@ import { Label } from '@/shared/ui/label';
 import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
 import { Badge } from '@/shared/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Building2, Search, Plus, CreditCard, X } from 'lucide-react';
 
 const EMPTY_FORM = {
   slug: '',
@@ -38,7 +41,7 @@ const EMPTY_FORM = {
 type AchFilter = 'all' | 'enabled' | 'disabled';
 
 const ACH_FILTERS: { value: AchFilter; label: string }[] = [
-  { value: 'all', label: 'All' },
+  { value: 'all', label: 'All Tenants' },
   { value: 'enabled', label: 'ACH Enabled' },
   { value: 'disabled', label: 'ACH Disabled' },
 ];
@@ -140,219 +143,329 @@ export function DeveloperTenantsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-2xl font-semibold tracking-tight">Every team on your platform</h1>
-        <p className="text-sm text-muted-foreground">
-          Each one is an organizer trusting your infrastructure to run their events.
-        </p>
-      </header>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search tenants…"
-          className="h-9 w-56"
-          aria-label="Search tenants"
-        />
-        <div className="flex gap-1">
-          {ACH_FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setAchFilter(f.value)}
-              className={`h-9 rounded-md border px-3 text-sm ${
-                achFilter === f.value
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-hairline-strong text-muted-foreground hover:bg-surface-sunken'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
+    <div className="space-y-8 pb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/40 pb-5">
+        <div className="space-y-1">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Tenants Directory
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            {tenants.length} event organizer teams · {enabledCount} with ACH bank transfers enabled.
+          </p>
         </div>
-        <Button size="sm" className="ml-auto" onClick={() => setShowCreate((v) => !v)}>
-          {showCreate ? 'Close' : '+ New Tenant'}
+        <Button
+          onClick={() => setShowCreate((v) => !v)}
+          className="gap-1.5 self-start sm:self-auto"
+        >
+          {showCreate ? <X className="size-4" /> : <Plus className="size-4" />}
+          {showCreate ? 'Close Builder' : 'New Tenant'}
         </Button>
       </div>
 
-      <p className="text-sm text-muted-foreground">
-        {visible.length} {visible.length === 1 ? 'team' : 'teams'} shown · {enabledCount} can take bank transfers
-      </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="relative w-full sm:w-72">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search tenant name or slug…"
+            className="pl-9 h-9 text-xs"
+            aria-label="Search tenants"
+          />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {ACH_FILTERS.map((f) => (
+            <Button
+              key={f.value}
+              size="sm"
+              variant={achFilter === f.value ? 'default' : 'outline'}
+              onClick={() => setAchFilter(f.value)}
+              className="h-8 text-xs font-semibold"
+            >
+              {f.label}
+            </Button>
+          ))}
+        </div>
+      </div>
 
-      {formError ? <p className="text-sm text-destructive">{formError}</p> : null}
+      {formError && (
+        <Alert variant="destructive">
+          <AlertDescription>{formError}</AlertDescription>
+        </Alert>
+      )}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-      {showCreate ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Create tenant</CardTitle>
+      {showCreate && (
+        <Card className="animate-in fade-in slide-in-from-top-4 duration-200">
+          <CardHeader className="border-b border-border/40 pb-4">
+            <CardTitle className="flex items-center gap-2">
+              <Building2 className="size-4 text-primary" />
+              Register New Tenant
+            </CardTitle>
+            <CardDescription>
+              Create an isolated organization tenant with dedicated subdomain and Stripe profile.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {(
-              [
-                ['slug', 'Slug'],
-                ['name', 'Name'],
-                ['adminEmail', 'Admin email'],
-                ['adminFirstName', 'Admin first name'],
-                ['adminLastName', 'Admin last name'],
-              ] as const
-            ).map(([key, label]) => (
-              <div key={key} className="space-y-1">
-                <Label htmlFor={key}>{label}</Label>
+          <CardContent className="space-y-6 pt-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="tenant-slug" className="text-xs">Subdomain Slug</Label>
                 <Input
-                  id={key}
-                  value={form[key]}
-                  onChange={(e) => setForm((prev) => ({ ...prev, [key]: e.target.value }))}
+                  id="tenant-slug"
+                  className="h-9 text-xs font-mono"
+                  placeholder="e.g. downtown-jazz"
+                  value={form.slug}
+                  onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
                 />
               </div>
-            ))}
-            <div className="md:col-span-2 mt-2 border-t pt-3">
-              <p className="text-sm font-medium text-foreground">Stripe onboarding prefill (optional)</p>
-              <p className="text-xs text-muted-foreground">Pre-fills the seller's Stripe Express onboarding form.</p>
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="businessType">Business type</Label>
-              <select
-                id="businessType"
-                className="h-9 w-full rounded-md border border-input px-2 text-sm"
-                value={form.businessType}
-                onChange={(e) => setForm((prev) => ({ ...prev, businessType: e.target.value }))}
-              >
-                <option value="individual">Individual / sole proprietorship</option>
-                <option value="company">Company</option>
-              </select>
-            </div>
-
-            {(
-              [
-                ['countryCode', 'Country code (e.g. US)'],
-                ['legalName', 'Legal / business name'],
-                ['businessUrl', 'Business website URL'],
-                ['mcc', 'Industry MCC (4-digit code)'],
-                ['supportEmail', 'Support email'],
-                ['productDescription', 'Product description'],
-              ] as const
-            ).map(([key, label]) => (
-              <div key={key} className="space-y-1">
-                <Label htmlFor={key}>{label}</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="tenant-name" className="text-xs">Display Name</Label>
                 <Input
-                  id={key}
-                  value={form[key]}
-                  onChange={(e) => setForm((prev) => ({ ...prev, [key]: e.target.value }))}
+                  id="tenant-name"
+                  className="h-9 text-xs"
+                  placeholder="e.g. Downtown Jazz Society"
+                  value={form.name}
+                  onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
-            ))}
+              <div className="space-y-1.5">
+                <Label htmlFor="tenant-adminEmail" className="text-xs">Admin Email</Label>
+                <Input
+                  id="tenant-adminEmail"
+                  type="email"
+                  className="h-9 text-xs"
+                  placeholder="admin@organization.com"
+                  value={form.adminEmail}
+                  onChange={(e) => setForm((prev) => ({ ...prev, adminEmail: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="tenant-adminFirstName" className="text-xs">Admin First Name</Label>
+                <Input
+                  id="tenant-adminFirstName"
+                  className="h-9 text-xs"
+                  placeholder="Jane"
+                  value={form.adminFirstName}
+                  onChange={(e) => setForm((prev) => ({ ...prev, adminFirstName: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="tenant-adminLastName" className="text-xs">Admin Last Name</Label>
+                <Input
+                  id="tenant-adminLastName"
+                  className="h-9 text-xs"
+                  placeholder="Doe"
+                  value={form.adminLastName}
+                  onChange={(e) => setForm((prev) => ({ ...prev, adminLastName: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="tenant-businessType" className="text-xs">Business Type</Label>
+                <Select
+                  id="tenant-businessType"
+                  className="h-9 text-xs"
+                  value={form.businessType}
+                  onChange={(e) => setForm((prev) => ({ ...prev, businessType: e.target.value }))}
+                >
+                  <option value="individual">Individual / Sole Proprietorship</option>
+                  <option value="company">Corporation / LLC / Non-Profit</option>
+                </Select>
+              </div>
+            </div>
 
-            <div className="md:col-span-2">
-              <Button onClick={submit} disabled={submitting}>
-                {submitting ? 'Creating…' : 'Create tenant'}
+            <div className="border-t border-border/40 pt-4">
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-3">
+                Stripe Onboarding Details (Optional)
+              </p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="tenant-legalName" className="text-xs">Legal Business Name</Label>
+                  <Input
+                    id="tenant-legalName"
+                    className="h-9 text-xs"
+                    placeholder="Downtown Jazz LLC"
+                    value={form.legalName}
+                    onChange={(e) => setForm((prev) => ({ ...prev, legalName: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="tenant-businessUrl" className="text-xs">Business Website URL</Label>
+                  <Input
+                    id="tenant-businessUrl"
+                    className="h-9 text-xs"
+                    placeholder="https://downtownjazz.org"
+                    value={form.businessUrl}
+                    onChange={(e) => setForm((prev) => ({ ...prev, businessUrl: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="tenant-mcc" className="text-xs">Industry MCC (4-digit code)</Label>
+                  <Input
+                    id="tenant-mcc"
+                    className="h-9 text-xs font-mono"
+                    placeholder="7922"
+                    value={form.mcc}
+                    onChange={(e) => setForm((prev) => ({ ...prev, mcc: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 border-t border-border/40 pt-4">
+              <Button variant="outline" size="sm" onClick={() => setShowCreate(false)}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={submit} disabled={submitting || !form.slug || !form.name}>
+                {submitting ? 'Creating Tenant…' : 'Confirm Registration'}
               </Button>
             </div>
           </CardContent>
         </Card>
-      ) : null}
+      )}
 
-      {loading ? <p className="text-muted-foreground">Loading…</p> : null}
-      {error ? <p className="text-destructive">{error}</p> : null}
+      {loading ? (
+        <div className="p-12 text-center text-sm text-muted-foreground">Loading tenants directory…</div>
+      ) : visible.length > 0 ? (
+        <div className="grid gap-3">
+          {visible.map((tenant) => (
+            <Card key={tenant.tenantsId} className="hover:border-primary/40 transition-colors">
+              <CardContent className="space-y-4 p-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <Link
+                      to={`/tenants/${tenant.tenantsId}`}
+                      className="font-display text-base font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                    >
+                      {tenant.name}
+                      <span className="font-mono text-xs font-normal text-muted-foreground">
+                        /{tenant.slug}
+                      </span>
+                    </Link>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <span className="font-mono font-semibold text-foreground">
+                        {centsToUSD(tenant.totalRevenueCents)} Total Volume
+                      </span>
+                      <span>·</span>
+                      <span>{tenant.memberCount} Team Members</span>
+                      <span>·</span>
+                      <span>{tenant.eventCount} Events</span>
+                    </div>
+                  </div>
 
-      <div className="space-y-2">
-        {visible.map((tenant) => (
-          <Card key={tenant.tenantsId}>
-            <CardContent className="space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <Link to={`/tenants/${tenant.tenantsId}`} className="font-medium text-primary">
-                  {tenant.name} <span className="text-muted-foreground">/{tenant.slug}</span>
-                </Link>
-                <span className="text-sm text-muted-foreground">
-                  {centsToUSD(tenant.totalRevenueCents)} revenue · {tenant.memberCount} members · {tenant.eventCount} events
-                </span>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 border-t pt-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Pricing</span>
-                  <Select
-                    className="h-8 w-44"
-                    value={tenant.defaultFeeFormulasId}
-                    disabled={busyTenantId === tenant.tenantsId}
-                    onChange={(e) => {
-                      const select = e.target;
-                      changeDefaultFormula(tenant.tenantsId, select.value, () => {
-                        select.value = tenant.defaultFeeFormulasId;
-                      });
-                    }}
-                    aria-label={`Default pricing formula for ${tenant.name}`}
-                  >
-                    <option value="">Platform default</option>
-                    {(feeFormulas ?? []).map((f) => (
-                      <option key={f.feeFormulasId} value={f.feeFormulasId}>
-                        {f.name}
-                      </option>
-                    ))}
-                  </Select>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link
+                      to={`/tenants/${tenant.tenantsId}`}
+                      className="inline-flex items-center rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted"
+                    >
+                      View Details
+                    </Link>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 text-xs font-semibold"
+                      onClick={() => {
+                        setActingTenant(tenant.tenantsId, tenant.name);
+                        navigate('/events');
+                      }}
+                    >
+                      Enter Console
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 text-xs text-destructive hover:bg-destructive/10"
+                      onClick={() =>
+                        busyTenantId
+                          ? undefined
+                          : archiveTenant(tenant.tenantsId)
+                              .then(reload)
+                              .catch((caught) => setFormError(rpcErrorMessage(caught)))
+                      }
+                    >
+                      Archive
+                    </Button>
+                  </div>
                 </div>
-                {tenant.achEnabled ? (
-                  <Badge variant="success">💳 ACH: ON</Badge>
-                ) : (
-                  <Badge variant="neutral">💳 ACH: OFF</Badge>
-                )}
-                <Select
-                  className="h-8 w-44"
-                  value={achFormulaByTenant[tenant.tenantsId] ?? tenant.achFeeFormulasId ?? ''}
-                  disabled={busyTenantId === tenant.tenantsId}
-                  onChange={(e) => changeAchFormula(tenant, e.target.value)}
-                  aria-label={`ACH fee formula for ${tenant.name}`}
-                >
-                  <option value="">— ACH fee formula —</option>
-                  {(feeFormulas ?? []).map((f) => (
-                    <option key={f.feeFormulasId} value={f.feeFormulasId}>
-                      {f.name}
-                    </option>
-                  ))}
-                </Select>
-                <Switch
-                  checked={tenant.achEnabled}
-                  disabled={busyTenantId === tenant.tenantsId}
-                  label={`ACH payments for ${tenant.name}`}
-                  onCheckedChange={(enabled) => toggleAch(tenant, enabled)}
-                />
-                <div className="ml-auto flex items-center gap-3">
-                  <Link to={`/tenants/${tenant.tenantsId}`} className="text-sm text-primary">
-                    View Events
-                  </Link>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setActingTenant(tenant.tenantsId, tenant.name);
-                      navigate('/events');
-                    }}
-                  >
-                    Manage Events
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() =>
-                      busyTenantId
-                        ? undefined
-                        : archiveTenant(tenant.tenantsId).then(reload).catch((caught) => setFormError(rpcErrorMessage(caught)))
-                    }
-                  >
-                    Archive
-                  </Button>
+
+                <div className="flex flex-wrap items-center gap-4 border-t border-border/40 pt-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold uppercase tracking-wider text-muted-foreground text-[10px]">
+                      Pricing Tier:
+                    </span>
+                    <Select
+                      className="h-7 w-44 text-xs"
+                      value={tenant.defaultFeeFormulasId}
+                      disabled={busyTenantId === tenant.tenantsId}
+                      onChange={(e) => {
+                        const select = e.target;
+                        changeDefaultFormula(tenant.tenantsId, select.value, () => {
+                          select.value = tenant.defaultFeeFormulasId;
+                        });
+                      }}
+                      aria-label={`Default pricing formula for ${tenant.name}`}
+                    >
+                      <option value="">Platform Default</option>
+                      {(feeFormulas ?? []).map((f) => (
+                        <option key={f.feeFormulasId} value={f.feeFormulasId}>
+                          {f.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold uppercase tracking-wider text-muted-foreground text-[10px]">
+                      ACH Formula:
+                    </span>
+                    <Select
+                      className="h-7 w-40 text-xs"
+                      value={achFormulaByTenant[tenant.tenantsId] ?? tenant.achFeeFormulasId ?? ''}
+                      disabled={busyTenantId === tenant.tenantsId}
+                      onChange={(e) => changeAchFormula(tenant, e.target.value)}
+                      aria-label={`ACH fee formula for ${tenant.name}`}
+                    >
+                      <option value="">— Select Formula —</option>
+                      {(feeFormulas ?? []).map((f) => (
+                        <option key={f.feeFormulasId} value={f.feeFormulasId}>
+                          {f.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={tenant.achEnabled}
+                      disabled={busyTenantId === tenant.tenantsId}
+                      label={`ACH payments for ${tenant.name}`}
+                      onCheckedChange={(enabled) => toggleAch(tenant, enabled)}
+                    />
+                    <Badge variant={tenant.achEnabled ? 'success' : 'neutral'}>
+                      <CreditCard className="size-3" />
+                      {tenant.achEnabled ? 'ACH Active' : 'ACH Inactive'}
+                    </Badge>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-        {!loading && visible.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No teams match that filter. Clear the search or invite a new tenant — the platform has room.
-          </p>
-        ) : null}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          icon={<Building2 className="size-6 text-muted-foreground" />}
+          title="No Tenants Found"
+          description="No organizer teams match your search or ACH filter. Adjust the search filter or register a new tenant."
+          action={
+            <Button size="sm" onClick={() => setShowCreate(true)} className="gap-1.5">
+              <Plus className="size-4" /> Register New Tenant
+            </Button>
+          }
+        />
+      )}
     </div>
   );
 }

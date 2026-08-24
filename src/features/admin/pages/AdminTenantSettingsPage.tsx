@@ -15,7 +15,11 @@ import type { StripeStatus } from '@/shared/proto/admin';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
-
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Building2, CreditCard, Palette, ExternalLink, Save } from 'lucide-react';
+import { toast } from 'sonner';
 
 const EMPTY: TenantContactInput = {
   phone: '',
@@ -57,21 +61,16 @@ export function AdminTenantSettingsPage() {
   }, []);
 
   useEffect(() => {
-    if (!tenantsId) {
-      return;
-    }
+    if (!tenantsId) return;
     getStripeStatus(tenantsId).then(setStripe).catch(() => undefined);
     getTenantStripeProfile(tenantsId).then(setStripeProfile).catch(() => undefined);
   }, [tenantsId]);
 
   useEffect(() => {
-    if (!stripeReturn || !tenantsId) {
-      return;
-    }
+    if (!stripeReturn || !tenantsId) return;
     getStripeStatus(tenantsId).then(setStripe).catch((caught) => setError(rpcErrorMessage(caught)));
     searchParams.delete('stripe');
     setSearchParams(searchParams, { replace: true });
-    
   }, [stripeReturn, tenantsId, searchParams, setSearchParams]);
 
   function field(key: keyof TenantContactInput) {
@@ -84,7 +83,8 @@ export function AdminTenantSettingsPage() {
     setNotice(null);
     try {
       await updateMyTenantContact(form);
-      setNotice('Settings saved.');
+      setNotice('Settings saved successfully.');
+      toast.success('Organization settings saved.');
     } catch (caught) {
       setError(rpcErrorMessage(caught));
     } finally {
@@ -103,113 +103,197 @@ export function AdminTenantSettingsPage() {
   }
 
   if (loading) {
-    return <p className="text-muted-foreground">Loading…</p>;
+    return (
+      <div className="mx-auto max-w-3xl space-y-6">
+        <Skeleton className="h-64 rounded-xl" />
+        <Skeleton className="h-32 rounded-xl" />
+      </div>
+    );
   }
 
   const hasAccount = stripeProfile?.hasAccount ?? false;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="space-y-1">
-        <h1 className="font-display text-2xl font-semibold text-ink">Tenant Settings</h1>
-      </div>
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
-
-      <div className="overflow-hidden rounded-xl border border-hairline bg-surface shadow-[var(--shadow-e1)]">
-        <div className="border-b border-hairline px-6 py-4">
-          <h2 className="font-display text-lg font-semibold text-ink">Business profile</h2>
-        </div>
-        <div className="p-6 space-y-4">
-          <div className="grid grid-cols-3 gap-3">
-            <ReadOnly label="Slug" value={tenant?.slug ?? ''} />
-            <ReadOnly label="Company name" value={tenant?.name ?? ''} />
-            <ReadOnly label="Legal name" value={tenant?.legalName ?? ''} />
-          </div>
-
-          <Labeled label="Company phone" value={form.phone} onChange={(v) => field('phone')(formatUsPhone(v))} />
-          <Labeled label="Address line 1" value={form.addressLine1} onChange={field('addressLine1')} />
-          <Labeled label="Address line 2" value={form.addressLine2} onChange={field('addressLine2')} />
-          <div className="grid grid-cols-3 gap-3">
-            <Labeled label="City" value={form.city} onChange={field('city')} />
-            <Labeled label="State" value={form.state} onChange={field('state')} />
-            <Labeled label="Zip code" value={form.zip} onChange={field('zip')} />
-          </div>
-
-          {notice ? <p className="text-sm text-success">{notice}</p> : null}
-          <Button onClick={save} disabled={saving}>
-            {saving ? 'Saving…' : 'Save changes'}
-          </Button>
-        </div>
+    <div className="mx-auto max-w-3xl space-y-8 pb-12">
+      <div className="space-y-1 border-b border-border/40 pb-5">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Organization Settings
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Manage your organization profile, physical address, and Stripe payout connections.
+        </p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-hairline bg-surface shadow-[var(--shadow-e1)]">
-        <div className="border-b border-hairline px-6 py-4">
-          <h2 className="font-display text-lg font-semibold text-ink">Branding</h2>
-        </div>
-        <div className="flex items-center justify-between gap-4 p-6">
-          <p className="text-sm text-muted-foreground">
-            Logo, color palette, and the live preview of your public pages now live in the branding
-            studio.
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {notice && (
+        <Alert variant="success">
+          <AlertDescription>{notice}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Business Profile */}
+      <Card>
+        <CardHeader className="border-b border-border/40 pb-4">
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="size-4 text-primary" />
+            Business Profile & Contact
+          </CardTitle>
+          <CardDescription>
+            Official contact and location information shown on customer receipts and claim passes.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Subdomain Slug</Label>
+              <Input value={tenant?.slug ?? ''} disabled className="h-9 text-xs font-mono bg-muted/30" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Display Name</Label>
+              <Input value={tenant?.name ?? ''} disabled className="h-9 text-xs bg-muted/30" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Legal Name</Label>
+              <Input value={tenant?.legalName ?? ''} disabled className="h-9 text-xs bg-muted/30" />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="company-phone" className="text-xs">Company Phone</Label>
+            <Input
+              id="company-phone"
+              className="h-9 text-xs"
+              placeholder="(555) 000-0000"
+              value={form.phone}
+              onChange={(e) => field('phone')(formatUsPhone(e.target.value))}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="address-1" className="text-xs">Street Address Line 1</Label>
+            <Input
+              id="address-1"
+              className="h-9 text-xs"
+              value={form.addressLine1}
+              onChange={(e) => field('addressLine1')(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="address-2" className="text-xs">Street Address Line 2 (Suite, Unit, etc.)</Label>
+            <Input
+              id="address-2"
+              className="h-9 text-xs"
+              value={form.addressLine2}
+              onChange={(e) => field('addressLine2')(e.target.value)}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="space-y-1">
+              <Label htmlFor="city" className="text-xs">City</Label>
+              <Input
+                id="city"
+                className="h-9 text-xs"
+                value={form.city}
+                onChange={(e) => field('city')(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="state" className="text-xs">State</Label>
+              <Input
+                id="state"
+                className="h-9 text-xs"
+                value={form.state}
+                onChange={(e) => field('state')(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="zip" className="text-xs">ZIP Code</Label>
+              <Input
+                id="zip"
+                className="h-9 text-xs font-mono"
+                value={form.zip}
+                onChange={(e) => field('zip')(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="pt-2 flex justify-end">
+            <Button onClick={save} disabled={saving} className="gap-1.5 h-9 text-xs font-semibold">
+              <Save className="size-3.5" />
+              {saving ? 'Saving…' : 'Save Changes'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Branding Studio Card */}
+      <Card>
+        <CardHeader className="border-b border-border/40 pb-4">
+          <CardTitle className="flex items-center gap-2">
+            <Palette className="size-4 text-primary" />
+            Branding Studio
+          </CardTitle>
+          <CardDescription>
+            Customize your brand colors, custom logos, hero themes, and live event storefront previews.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-5">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Manage your high-resolution logos, primary brand colors, and preview live customer views.
           </p>
           <Link
             to="/branding"
-            className="shrink-0 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-e1)] hover:bg-brand-hover"
+            className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-border px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted transition-colors"
           >
-            Open branding studio
+            Open Branding Studio <ExternalLink className="size-3.5" />
           </Link>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div className="overflow-hidden rounded-xl border border-hairline bg-surface shadow-[var(--shadow-e1)]">
-        <div className="border-b border-hairline px-6 py-4">
-          <h2 className="font-display text-lg font-semibold text-ink">Stripe</h2>
-        </div>
-        <div className="p-6 space-y-3">
+      {/* Stripe Connect Card */}
+      <Card>
+        <CardHeader className="border-b border-border/40 pb-4">
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="size-4 text-primary" />
+            Stripe Payouts & Connect
+          </CardTitle>
+          <CardDescription>
+            Direct daily bank payouts and automated card payment processing.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-5">
           {hasAccount ? (
-            <div className="text-sm text-muted-foreground">
-              <p>Account: {stripeProfile?.businessName || '—'}</p>
-              {stripe?.bankLast4 ? <p>Payout bank: •••• {stripe.bankLast4}</p> : null}
-              {stripe ? (
-                <p>
-                  charges: {String(stripe.chargesEnabled)} · payouts: {String(stripe.payoutsEnabled)} · details:{' '}
-                  {String(stripe.detailsSubmitted)}
+            <div className="rounded-xl border border-border bg-muted/20 p-4 text-xs space-y-1.5 font-mono">
+              <p className="text-foreground font-semibold font-sans text-sm">
+                Connected Account: {stripeProfile?.businessName || 'Active'}
+              </p>
+              {stripe?.bankLast4 && (
+                <p className="text-muted-foreground">Payout Bank: •••• {stripe.bankLast4}</p>
+              )}
+              {stripe && (
+                <p className="text-muted-foreground">
+                  Charges Enabled: {String(stripe.chargesEnabled)} · Payouts Enabled: {String(stripe.payoutsEnabled)} · Onboarding: {String(stripe.detailsSubmitted)}
                 </p>
-              ) : null}
+              )}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No Stripe account connected yet.</p>
+            <p className="text-xs text-muted-foreground">
+              No Stripe Express account connected. Connect a bank account to receive direct payouts from ticket sales.
+            </p>
           )}
-          <Button size="sm" onClick={openStripe}>
-            {hasAccount ? 'Manage on Stripe' : 'Connect Stripe account'}
+
+          <Button size="sm" onClick={openStripe} className="text-xs font-semibold">
+            {hasAccount ? 'Manage on Stripe' : 'Connect Stripe Account'}
           </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Labeled({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div className="space-y-1">
-      <Label>{label}</Label>
-      <Input value={value} onChange={(e) => onChange(e.target.value)} />
-    </div>
-  );
-}
-
-function ReadOnly({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="space-y-1">
-      <Label>{label}</Label>
-      <Input value={value} disabled readOnly />
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -36,9 +36,9 @@ export function Card({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        'rounded-lg border border-hairline bg-card text-card-foreground',
+        'rounded-xl border border-border bg-card text-card-foreground shadow-xs transition-[border-color,box-shadow]',
         interactive
-          ? 'cursor-pointer shadow-[var(--shadow-e1)] transition-[transform,box-shadow] duration-[280ms] ease-[var(--ease-spring)]'
+          ? 'cursor-pointer shadow-[var(--shadow-e1)] hover:border-primary/40 hover:shadow-[var(--shadow-e2)] transition-[transform,box-shadow,border-color] duration-[280ms] ease-[var(--ease-spring)]'
           : '',
         className,
       )}
@@ -48,13 +48,40 @@ export function Card({
 }
 
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('border-b border-hairline p-4', className)} {...props} />;
+  return <div className={cn('flex flex-col space-y-1.5 p-5 sm:p-6', className)} {...props} />;
 }
 
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn('font-display text-lg font-semibold leading-tight tracking-tight text-card-foreground', className)} {...props} />;
+  return (
+    <h3
+      className={cn(
+        'font-display text-lg font-bold leading-tight tracking-tight text-card-foreground sm:text-xl',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn('text-xs text-muted-foreground leading-relaxed sm:text-sm', className)}
+      {...props}
+    />
+  );
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('p-4', className)} {...props} />;
+  return <div className={cn('p-5 sm:p-6 pt-0', className)} {...props} />;
 }
+
+export function CardFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn('flex items-center p-5 sm:p-6 pt-0 border-t border-border/40 mt-auto', className)}
+      {...props}
+    />
+  );
+}
+

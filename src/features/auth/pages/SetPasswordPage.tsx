@@ -3,9 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/shared/ui/button';
 import { PasswordInput } from '@/shared/ui/password-input';
 import { Label } from '@/shared/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
 import { validateResetToken } from '@/features/auth/services/authService';
+import { AuthShell } from '@/features/auth/components/AuthShell';
+import { Lock, CircleAlert, CheckCircle2 } from 'lucide-react';
 
 type TokenState = 'checking' | 'valid' | 'invalid';
 
@@ -18,12 +20,8 @@ export function SetPasswordPage() {
   const [tokenState, setTokenState] = useState<TokenState>(token ? 'checking' : 'invalid');
   const [tokenError, setTokenError] = useState(token ? '' : 'Missing token in link.');
 
-  
-  
   useEffect(() => {
-    if (!token) {
-      return;
-    }
+    if (!token) return;
     let active = true;
     validateResetToken(token)
       .then(() => {
@@ -44,56 +42,86 @@ export function SetPasswordPage() {
   }, [token]);
 
   return (
-    <div className="mx-auto mt-16 max-w-sm">
-      <Card>
-        <CardHeader>
-          <CardTitle>Set your password</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {tokenState === 'checking' ? (
-            <p className="text-sm text-muted-foreground">Validating link…</p>
-          ) : null}
+    <AuthShell
+      eyebrow="Security Credentials"
+      title="Set your password."
+      blurb="Choose a strong, secure password for your Universal Account."
+    >
+      <div className="rounded-3xl border border-border bg-card p-8 shadow-xl sm:p-10">
+        <div className="space-y-2 pb-6">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Create new password
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Enter your new account password below.
+          </p>
+        </div>
 
-          {tokenState === 'invalid' ? (
-            <div className="space-y-2">
-              <p className="text-sm text-destructive">{tokenError}</p>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => navigate('/forgot-password')}
-              >
-                Request a new reset link
-              </Button>
-            </div>
-          ) : null}
+        {tokenState === 'checking' && (
+          <p className="text-sm text-muted-foreground">Validating security token…</p>
+        )}
 
-          {tokenState === 'valid' ? (
-            <form
-              className="space-y-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                submitNewPassword(token, password);
-              }}
+        {tokenState === 'invalid' && (
+          <div className="space-y-4">
+            <Alert variant="destructive">
+              <CircleAlert className="size-4" />
+              <AlertDescription className="text-xs">{tokenError}</AlertDescription>
+            </Alert>
+            <Button
+              variant="outline"
+              className="w-full text-xs font-semibold"
+              onClick={() => navigate('/forgot-password')}
             >
-              <div className="space-y-1">
-                <Label htmlFor="password">New password</Label>
+              Request a new reset link
+            </Button>
+          </div>
+        )}
+
+        {tokenState === 'valid' && (
+          <form
+            className="space-y-5"
+            onSubmit={(event) => {
+              event.preventDefault();
+              submitNewPassword(token, password);
+            }}
+          >
+            {error && (
+              <Alert variant="destructive">
+                <CircleAlert className="size-4" />
+                <AlertDescription className="text-xs">{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {notice && (
+              <Alert variant="success">
+                <CheckCircle2 className="size-4" />
+                <AlertDescription className="text-xs">{notice}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs">
+                New Password
+              </Label>
+              <div className="relative">
+                <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <PasswordInput
                   id="password"
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="h-10 pl-10 text-sm"
                 />
               </div>
-              {error ? <p className="text-sm text-destructive">{error}</p> : null}
-              {notice ? <p className="text-sm text-success">{notice}</p> : null}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Saving…' : 'Set password'}
-              </Button>
-            </form>
-          ) : null}
-        </CardContent>
-      </Card>
-    </div>
+            </div>
+
+            <Button type="submit" className="h-10 w-full text-sm font-semibold" disabled={loading}>
+              {loading ? 'Saving…' : 'Set New Password'}
+            </Button>
+          </form>
+        )}
+      </div>
+    </AuthShell>
   );
 }
