@@ -111,8 +111,10 @@ export function TicketPassDeck({
                     ) : (
                       <PriceBadge priceCents={displayPrice} className="font-mono text-xl font-black text-foreground" />
                     )}
-                    {feesIncluded && (
+                    {feesIncluded ? (
                       <span className="text-[10px] text-muted-foreground font-medium block">Fees included</span>
+                    ) : (
+                      <span className="text-[10px] text-muted-foreground font-medium block">+ fees & tax at checkout</span>
                     )}
                     {achAvailable && (
                       <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-500 mt-1">

@@ -22,7 +22,9 @@ import { Badge } from '@/shared/ui/badge';
 import { BrandMark } from '@/shared/brand/BrandMark';
 import { formatEventDate, centsToUSD } from '@/shared/lib/format';
 import type { Event } from '@/shared/proto/event';
-import type { Ticket } from '@/shared/proto/bookings';
+import type { CartQuote, CartQuoteLine, Ticket } from '@/shared/proto/bookings';
+import { cartServiceFeeCents, lineAllInExclTaxCents } from '@/features/public/services/paymentService';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/shared/lib/cn';
 
@@ -33,6 +35,8 @@ interface CheckoutDrawerProps {
   cartTotalCents: number;
   preferredMethod?: 'card' | 'ach';
   event?: Event;
+  quote?: CartQuote | null;
+  feesIncluded?: boolean;
 }
 
 export function CheckoutDrawer({
@@ -42,11 +46,17 @@ export function CheckoutDrawer({
   cartTotalCents,
   preferredMethod = 'card',
   event,
+  quote,
+  feesIncluded = false,
 }: CheckoutDrawerProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [buyerInfo, setBuyerInfo] = useState<BuyerInfo>({ name: '', email: '', phone: '', billingZip: '' });
+  const [showBreakdown, setShowBreakdown] = useState(false);
 
   const grandTotalCents = cartTotalCents;
+  const subtotal = quote?.subtotalCents ?? 0;
+  const serviceFee = quote ? cartServiceFeeCents(quote) : 0;
+  const tax = quote?.taxCents ?? 0;
 
   const handleBack = () => {
     if (step === 1) {
@@ -64,6 +74,7 @@ export function CheckoutDrawer({
   const handleClose = (completed = false) => {
     setStep(1);
     setBuyerInfo({ name: '', email: '', phone: '', billingZip: '' });
+    setShowBreakdown(false);
     onClose(completed);
   };
 
@@ -116,23 +127,92 @@ export function CheckoutDrawer({
             </div>
           </div>
 
-          {/* Event Context Strip */}
+          {/* Event Context Strip & Expandable Price Breakdown */}
           {event && (
-            <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#181d2a] p-3 shadow-inner">
-              <div className="min-w-0 flex-1">
-                <h4 className="truncate font-sans text-sm font-bold text-white tracking-tight">
-                  {event.title}
-                </h4>
-                <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono mt-0.5">
-                  <span className="truncate flex items-center gap-1">
-                    <Calendar className="size-3 text-amber-400" />
-                    {formatEventDate(event.startDate)}
-                  </span>
+            <div className="mt-3 rounded-xl border border-white/10 bg-[#181d2a] p-3 shadow-inner space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h4 className="truncate font-sans text-sm font-bold text-white tracking-tight">
+                    {event.title}
+                  </h4>
+                  <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono mt-0.5">
+                    <span className="truncate flex items-center gap-1">
+                      <Calendar className="size-3 text-amber-400" />
+                      {formatEventDate(event.startDate)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowBreakdown((prev) => !prev)}
+                    className="flex items-center gap-1.5 text-right group focus:outline-none"
+                  >
+                    <div className="flex flex-col items-end">
+                      <span className="text-base font-bold text-amber-400 font-mono">
+                        {centsToUSD(grandTotalCents)}
+                      </span>
+                      <span className="text-[10px] text-amber-400/80 font-mono flex items-center gap-0.5 group-hover:underline">
+                        {showBreakdown ? 'Hide details' : 'View details'}
+                        {showBreakdown ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />}
+                      </span>
+                    </div>
+                  </button>
                 </div>
               </div>
-              <span className="text-base font-bold text-amber-400 font-mono shrink-0">
-                {centsToUSD(grandTotalCents)}
-              </span>
+
+              {/* Collapsible Itemized Breakdown */}
+              {showBreakdown && (
+                <div className="border-t border-white/10 pt-2.5 space-y-2 text-xs animate-in fade-in-50 duration-200">
+                  {quote?.lines && quote.lines.length > 0 && (
+                    <div className="space-y-1 divide-y divide-white/5 pb-1">
+                      {quote.lines.map((line: CartQuoteLine) => {
+                        const linePrice = feesIncluded
+                          ? (lineAllInExclTaxCents(line) ?? 0)
+                          : (line.breakdown?.sellingPriceCents ?? 0);
+                        return (
+                          <div key={`${line.kind}:${line.refId}`} className="flex justify-between text-[11px] pt-1 text-slate-300">
+                            <span className="truncate pr-2">
+                              {line.label} (x{line.seats})
+                            </span>
+                            <span className="font-mono">{centsToUSD(linePrice)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div className="space-y-1 text-[11px]">
+                    {!feesIncluded && (
+                      <>
+                        {subtotal > 0 && (
+                          <div className="flex justify-between text-slate-400">
+                            <span>Subtotal</span>
+                            <span className="font-mono">{centsToUSD(subtotal)}</span>
+                          </div>
+                        )}
+                        {serviceFee > 0 && (
+                          <div className="flex justify-between text-slate-400">
+                            <span>Service fee</span>
+                            <span className="font-mono">{centsToUSD(serviceFee)}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    {tax > 0 && (
+                      <div className="flex justify-between text-slate-400">
+                        <span>Tax</span>
+                        <span className="font-mono">{centsToUSD(tax)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-bold text-white pt-1 border-t border-white/10 text-xs">
+                      <span>Total Charge</span>
+                      <span className="font-mono text-amber-400">{centsToUSD(grandTotalCents)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

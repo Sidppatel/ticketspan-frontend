@@ -31,7 +31,7 @@ export function SheetContent({
   hideCloseButton = false,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  side?: 'left' | 'right';
+  side?: 'left' | 'right' | 'bottom';
   hideCloseButton?: boolean;
 }) {
   return (
@@ -40,8 +40,10 @@ export function SheetContent({
       <DialogPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          'fixed inset-y-0 z-50 flex h-full w-3/4 max-w-xs flex-col border-border bg-card p-6 shadow-2xl focus:outline-none',
-          side === 'left' ? 'ticketspan-sheet-left left-0 border-r' : 'ticketspan-sheet-right right-0 border-l',
+          'fixed z-50 flex flex-col border-border bg-card p-6 shadow-2xl focus:outline-none',
+          side === 'left' && 'ticketspan-sheet-left inset-y-0 left-0 h-full w-3/4 max-w-xs border-r',
+          side === 'right' && 'ticketspan-sheet-right inset-y-0 right-0 h-full w-full sm:max-w-xl border-l',
+          side === 'bottom' && 'ticketspan-sheet-bottom inset-x-0 bottom-0 max-h-[90vh] rounded-t-3xl border-t',
           className,
         )}
         {...props}

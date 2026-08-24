@@ -286,6 +286,10 @@ export function EventDetailPageContent({
         busy={busy}
         onGetTickets={scrollToBooking}
         onCheckout={() => handleCheckout('card')}
+        cart={cart}
+        quote={quote}
+        feesIncluded={event.feesIncluded}
+        onRemoveKey={removeKey}
       />
 
       <CheckoutDrawer
@@ -295,6 +299,8 @@ export function EventDetailPageContent({
         cartTotalCents={checkoutMethod === 'ach' ? achTotal : total}
         preferredMethod={checkoutMethod}
         event={event}
+        quote={quote}
+        feesIncluded={event.feesIncluded}
       />
 
       <EventFooter />
