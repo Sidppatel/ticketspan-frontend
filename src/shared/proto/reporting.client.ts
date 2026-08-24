@@ -3,6 +3,7 @@
 // @generated from protobuf file "reporting.proto" (package "ticketspan.reporting", syntax proto3)
 // tslint:disable
 import { TenantTierService } from "./reporting";
+import type { SetTenantTaxDefaultRequest } from "./reporting";
 import type { SetTenantTaxModeRequest } from "./reporting";
 import type { SetTenantAchRequest } from "./reporting";
 import type { SetTenantAdvancedReportingRequest } from "./reporting";
@@ -142,6 +143,10 @@ export interface ITenantTierServiceClient {
      * @generated from protobuf rpc: SetTenantTaxMode(ticketspan.reporting.SetTenantTaxModeRequest) returns (ticketspan.common.AckResponse);
      */
     setTenantTaxMode(input: SetTenantTaxModeRequest, options?: RpcOptions): UnaryCall<SetTenantTaxModeRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: SetTenantTaxDefault(ticketspan.reporting.SetTenantTaxDefaultRequest) returns (ticketspan.common.AckResponse);
+     */
+    setTenantTaxDefault(input: SetTenantTaxDefaultRequest, options?: RpcOptions): UnaryCall<SetTenantTaxDefaultRequest, AckResponse>;
 }
 /**
  * @generated from protobuf service ticketspan.reporting.TenantTierService
@@ -186,5 +191,12 @@ export class TenantTierServiceClient implements ITenantTierServiceClient, Servic
     setTenantTaxMode(input: SetTenantTaxModeRequest, options?: RpcOptions): UnaryCall<SetTenantTaxModeRequest, AckResponse> {
         const method = this.methods[4], opt = this._transport.mergeOptions(options);
         return stackIntercept<SetTenantTaxModeRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: SetTenantTaxDefault(ticketspan.reporting.SetTenantTaxDefaultRequest) returns (ticketspan.common.AckResponse);
+     */
+    setTenantTaxDefault(input: SetTenantTaxDefaultRequest, options?: RpcOptions): UnaryCall<SetTenantTaxDefaultRequest, AckResponse> {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept<SetTenantTaxDefaultRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
 }

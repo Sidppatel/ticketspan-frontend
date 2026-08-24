@@ -239,6 +239,19 @@ export interface SetEventAchRequest {
     achEnabled: boolean;
 }
 /**
+ * @generated from protobuf message ticketspan.event.SetEventTaxExemptRequest
+ */
+export interface SetEventTaxExemptRequest {
+    /**
+     * @generated from protobuf field: string events_id = 1;
+     */
+    eventsId: string;
+    /**
+     * @generated from protobuf field: bool tax_exempt = 2;
+     */
+    taxExempt: boolean;
+}
+/**
  * @generated from protobuf message ticketspan.event.Event
  */
 export interface Event {
@@ -370,6 +383,10 @@ export interface Event {
      * @generated from protobuf field: string urgency_badge_text = 32;
      */
     urgencyBadgeText: string;
+    /**
+     * @generated from protobuf field: bool tax_exempt = 33;
+     */
+    taxExempt: boolean;
 }
 /**
  * @generated from protobuf message ticketspan.event.GetEventBySlugRequest
@@ -460,6 +477,10 @@ export interface CreateEventRequest {
      * @generated from protobuf field: string urgency_badge_text = 22;
      */
     urgencyBadgeText: string;
+    /**
+     * @generated from protobuf field: bool tax_exempt = 23;
+     */
+    taxExempt: boolean;
 }
 /**
  * @generated from protobuf message ticketspan.event.CreateEventResponse
@@ -542,6 +563,10 @@ export interface UpdateEventRequest {
      * @generated from protobuf field: string urgency_badge_text = 18;
      */
     urgencyBadgeText: string;
+    /**
+     * @generated from protobuf field: bool tax_exempt = 19;
+     */
+    taxExempt: boolean;
 }
 /**
  * @generated from protobuf message ticketspan.event.ChangeEventStatusRequest
@@ -1523,6 +1548,61 @@ class SetEventAchRequest$Type extends MessageType<SetEventAchRequest> {
  */
 export const SetEventAchRequest = new SetEventAchRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class SetEventTaxExemptRequest$Type extends MessageType<SetEventTaxExemptRequest> {
+    constructor() {
+        super("ticketspan.event.SetEventTaxExemptRequest", [
+            { no: 1, name: "events_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "tax_exempt", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SetEventTaxExemptRequest>): SetEventTaxExemptRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.eventsId = "";
+        message.taxExempt = false;
+        if (value !== undefined)
+            reflectionMergePartial<SetEventTaxExemptRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SetEventTaxExemptRequest): SetEventTaxExemptRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string events_id */ 1:
+                    message.eventsId = reader.string();
+                    break;
+                case /* bool tax_exempt */ 2:
+                    message.taxExempt = reader.bool();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SetEventTaxExemptRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string events_id = 1; */
+        if (message.eventsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.eventsId);
+        /* bool tax_exempt = 2; */
+        if (message.taxExempt !== false)
+            writer.tag(2, WireType.Varint).bool(message.taxExempt);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.event.SetEventTaxExemptRequest
+ */
+export const SetEventTaxExemptRequest = new SetEventTaxExemptRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class Event$Type extends MessageType<Event> {
     constructor() {
         super("ticketspan.event.Event", [
@@ -1557,7 +1637,8 @@ class Event$Type extends MessageType<Event> {
             { no: 29, name: "hero_backdrop_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 30, name: "poster_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 31, name: "is_verified_organizer", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 32, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 32, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 33, name: "tax_exempt", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<Event>): Event {
@@ -1594,6 +1675,7 @@ class Event$Type extends MessageType<Event> {
         message.posterImageId = "";
         message.isVerifiedOrganizer = false;
         message.urgencyBadgeText = "";
+        message.taxExempt = false;
         if (value !== undefined)
             reflectionMergePartial<Event>(this, message, value);
         return message;
@@ -1698,6 +1780,9 @@ class Event$Type extends MessageType<Event> {
                     break;
                 case /* string urgency_badge_text */ 32:
                     message.urgencyBadgeText = reader.string();
+                    break;
+                case /* bool tax_exempt */ 33:
+                    message.taxExempt = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1807,6 +1892,9 @@ class Event$Type extends MessageType<Event> {
         /* string urgency_badge_text = 32; */
         if (message.urgencyBadgeText !== "")
             writer.tag(32, WireType.LengthDelimited).string(message.urgencyBadgeText);
+        /* bool tax_exempt = 33; */
+        if (message.taxExempt !== false)
+            writer.tag(33, WireType.Varint).bool(message.taxExempt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1886,7 +1974,8 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
             { no: 19, name: "hero_backdrop_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 20, name: "poster_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 21, name: "is_verified_organizer", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 22, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 22, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 23, name: "tax_exempt", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<CreateEventRequest>): CreateEventRequest {
@@ -1910,6 +1999,7 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         message.posterImageId = "";
         message.isVerifiedOrganizer = false;
         message.urgencyBadgeText = "";
+        message.taxExempt = false;
         if (value !== undefined)
             reflectionMergePartial<CreateEventRequest>(this, message, value);
         return message;
@@ -1975,6 +2065,9 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
                     break;
                 case /* string urgency_badge_text */ 22:
                     message.urgencyBadgeText = reader.string();
+                    break;
+                case /* bool tax_exempt */ 23:
+                    message.taxExempt = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2045,6 +2138,9 @@ class CreateEventRequest$Type extends MessageType<CreateEventRequest> {
         /* string urgency_badge_text = 22; */
         if (message.urgencyBadgeText !== "")
             writer.tag(22, WireType.LengthDelimited).string(message.urgencyBadgeText);
+        /* bool tax_exempt = 23; */
+        if (message.taxExempt !== false)
+            writer.tag(23, WireType.Varint).bool(message.taxExempt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2122,7 +2218,8 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
             { no: 15, name: "hero_backdrop_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 16, name: "poster_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 17, name: "is_verified_organizer", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 18, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 18, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 19, name: "tax_exempt", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<UpdateEventRequest>): UpdateEventRequest {
@@ -2144,6 +2241,7 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         message.posterImageId = "";
         message.isVerifiedOrganizer = false;
         message.urgencyBadgeText = "";
+        message.taxExempt = false;
         if (value !== undefined)
             reflectionMergePartial<UpdateEventRequest>(this, message, value);
         return message;
@@ -2203,6 +2301,9 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
                     break;
                 case /* string urgency_badge_text */ 18:
                     message.urgencyBadgeText = reader.string();
+                    break;
+                case /* bool tax_exempt */ 19:
+                    message.taxExempt = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2267,6 +2368,9 @@ class UpdateEventRequest$Type extends MessageType<UpdateEventRequest> {
         /* string urgency_badge_text = 18; */
         if (message.urgencyBadgeText !== "")
             writer.tag(18, WireType.LengthDelimited).string(message.urgencyBadgeText);
+        /* bool tax_exempt = 19; */
+        if (message.taxExempt !== false)
+            writer.tag(19, WireType.Varint).bool(message.taxExempt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2842,6 +2946,7 @@ export const EventService = new ServiceType("ticketspan.event.EventService", [
     { name: "GetEventStats", options: {}, I: UuidValue, O: EventStats },
     { name: "SetEventFeesIncluded", options: {}, I: SetEventFeesIncludedRequest, O: AckResponse },
     { name: "SetEventAch", options: {}, I: SetEventAchRequest, O: AckResponse },
+    { name: "SetEventTaxExempt", options: {}, I: SetEventTaxExemptRequest, O: AckResponse },
     { name: "ListScheduleItems", options: {}, I: UuidValue, O: ListScheduleItemsResponse },
     { name: "CreateScheduleItem", options: {}, I: CreateScheduleItemRequest, O: UuidValue },
     { name: "UpdateScheduleItem", options: {}, I: UpdateScheduleItemRequest, O: AckResponse },

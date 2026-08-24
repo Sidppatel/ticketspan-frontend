@@ -30,6 +30,7 @@ import { cn } from '@/shared/lib/cn';
 import {
   setEventFeesIncluded,
   setEventAch,
+  setEventTaxExempt,
   updateEvent,
 } from '@/features/admin/services/eventAdminService';
 import { listVenues } from '@/features/admin/services/catalogService';
@@ -174,6 +175,7 @@ export function EditSection({
   const [endInput, setEndInput] = useState(() => epochToZonedInput(event.endDate, timeZone));
   const [feesIncluded, setFeesIncluded] = useState(event.feesIncluded);
   const [achEnabled, setAchEnabled] = useState(event.achEnabled);
+  const [taxExempt, setTaxExempt] = useState(event.taxExempt);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -205,6 +207,7 @@ export function EditSection({
         storyDescription,
         urgencyBadgeText,
         isVerifiedOrganizer,
+        taxExempt,
       });
 
       toast.success('Event details saved');
@@ -236,6 +239,19 @@ export function EditSection({
       onSaved();
     } catch (caught) {
       setAchEnabled(!next);
+      toast.error(rpcErrorMessage(caught));
+    }
+  }
+
+  async function toggleChargeTax(chargeTax: boolean) {
+    const nextTaxExempt = !chargeTax;
+    setTaxExempt(nextTaxExempt);
+    try {
+      await setEventTaxExempt(event.eventsId, nextTaxExempt);
+      toast.success(chargeTax ? 'Sales tax enabled for event' : 'Event set to tax-exempt');
+      onSaved();
+    } catch (caught) {
+      setTaxExempt(!nextTaxExempt);
       toast.error(rpcErrorMessage(caught));
     }
   }
@@ -463,6 +479,20 @@ export function EditSection({
                 <span className="font-bold text-sm block">Show fees included in price</span>
                 <span className="block text-xs text-muted-foreground mt-0.5 leading-relaxed">
                   On = buyers see one all-in total upfront. Off = base price + fee breakdown shown at checkout.
+                </span>
+              </span>
+            </label>
+            <label className="flex items-start gap-3 text-sm cursor-pointer border-t border-border/20 pt-3">
+              <input
+                type="checkbox"
+                className="mt-1 size-4 accent-primary"
+                checked={!taxExempt}
+                onChange={(e) => toggleChargeTax(e.target.checked)}
+              />
+              <span>
+                <span className="font-bold text-sm block">Charge sales tax on ticket orders</span>
+                <span className="block text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  Sales tax is automatically computed based on venue ZIP code. Disable this if your organization is tax-exempt or if ticket sales for this event are exempt from sales tax.
                 </span>
               </span>
             </label>

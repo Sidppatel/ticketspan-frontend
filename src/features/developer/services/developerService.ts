@@ -48,6 +48,11 @@ export async function setTenantTaxMode(tenantsId: string, mode: 'platform' | 'se
   return response.message;
 }
 
+export async function setTenantTaxDefault(tenantsId: string, chargeTaxByDefault: boolean, reason: string): Promise<string> {
+  const response = await callRpc(() => tenantTierClient.setTenantTaxDefault({ tenantsId, chargeTaxByDefault, reason }));
+  return response.message;
+}
+
 export async function getDeveloperDashboard(): Promise<DeveloperDashboard> {
   return callRpc(() => dashboardClient.getDeveloperDashboard({}));
 }

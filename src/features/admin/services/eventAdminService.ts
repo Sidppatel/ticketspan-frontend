@@ -23,6 +23,7 @@ export interface EventDraft {
   posterImageId?: string;
   isVerifiedOrganizer?: boolean;
   urgencyBadgeText?: string;
+  taxExempt?: boolean;
 }
 
 export async function createEvent(draft: EventDraft): Promise<string> {
@@ -47,6 +48,7 @@ export async function createEvent(draft: EventDraft): Promise<string> {
       posterImageId: draft.posterImageId ?? '',
       isVerifiedOrganizer: draft.isVerifiedOrganizer ?? true,
       urgencyBadgeText: draft.urgencyBadgeText ?? '',
+      taxExempt: draft.taxExempt ?? false,
     }),
   );
   return response.eventsId;
@@ -72,6 +74,7 @@ export async function updateEvent(eventsId: string, draft: EventDraft): Promise<
       posterImageId: draft.posterImageId ?? '',
       isVerifiedOrganizer: draft.isVerifiedOrganizer ?? true,
       urgencyBadgeText: draft.urgencyBadgeText ?? '',
+      taxExempt: draft.taxExempt ?? false,
     }),
   );
 }
@@ -96,6 +99,7 @@ export async function setEventExtraInfo(event: Event, extraInfoJson: string): Pr
       posterImageId: event.posterImageId ?? '',
       isVerifiedOrganizer: event.isVerifiedOrganizer ?? true,
       urgencyBadgeText: event.urgencyBadgeText ?? '',
+      taxExempt: event.taxExempt,
     }),
   );
 }
@@ -271,6 +275,11 @@ export async function setEventFeesIncluded(eventsId: string, feesIncluded: boole
 
 export async function setEventAch(eventsId: string, achEnabled: boolean): Promise<void> {
   await callRpc(() => eventClient.setEventAch({ eventsId, achEnabled }));
+}
+
+export async function setEventTaxExempt(eventsId: string, taxExempt: boolean): Promise<string> {
+  const response = await callRpc(() => eventClient.setEventTaxExempt({ eventsId, taxExempt }));
+  return response.message;
 }
 
 export async function listEventTableTypes(eventsId: string) {

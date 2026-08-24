@@ -6,6 +6,7 @@ import {
   setTenantAdvancedReporting,
   setTenantAch,
   setTenantTaxMode,
+  setTenantTaxDefault,
   TENANT_TIERS,
   type TenantTier,
 } from '@/features/developer/services/developerService';
@@ -96,6 +97,18 @@ export function DeveloperReportingAccessPage() {
     void runAction(tenant.tenantsId, () => setTenantTaxMode(tenant.tenantsId, mode, reason.trim()));
   }
 
+  function changeDefaultTax(tenant: { tenantsId: string; name: string }, chargeTax: boolean) {
+    const reason = window.prompt(
+      chargeTax
+        ? `New events for "${tenant.name}" will charge sales tax by default. Reason:`
+        : `New events for "${tenant.name}" will be tax-exempt by default. Reason:`,
+    );
+    if (!reason || !reason.trim()) {
+      return;
+    }
+    void runAction(tenant.tenantsId, () => setTenantTaxDefault(tenant.tenantsId, chargeTax, reason.trim()));
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Reporting access</h1>
@@ -134,6 +147,7 @@ export function DeveloperReportingAccessPage() {
                 <th className="py-2 pr-3">Developer override</th>
                 <th className="py-2 pr-3">ACH fee</th>
                 <th className="py-2 pr-3">ACH enabled</th>
+                <th className="py-2 pr-3">Default Tax</th>
                 <th className="py-2 pr-3">Tax collection</th>
                 <th className="py-2">Status</th>
               </tr>
@@ -203,6 +217,17 @@ export function DeveloperReportingAccessPage() {
                       label={`ACH for ${tenant.name}`}
                       onCheckedChange={(enabled) => toggleAch(tenant, enabled)}
                     />
+                  </td>
+                  <td className="py-2 pr-3">
+                    <Select
+                      className="h-8 w-36"
+                      value={tenant.chargeTaxByDefault ? 'charge' : 'exempt'}
+                      disabled={busyTenantId === tenant.tenantsId}
+                      onChange={(e) => changeDefaultTax(tenant, e.target.value === 'charge')}
+                    >
+                      <option value="charge">Charge tax</option>
+                      <option value="exempt">Tax-exempt</option>
+                    </Select>
                   </td>
                   <td className="py-2 pr-3">
                     <Select

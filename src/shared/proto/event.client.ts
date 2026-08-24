@@ -19,6 +19,7 @@ import type { ListEventImagesRequest } from "./event";
 import type { UpdateScheduleItemRequest } from "./event";
 import type { CreateScheduleItemRequest } from "./event";
 import type { ListScheduleItemsResponse } from "./event";
+import type { SetEventTaxExemptRequest } from "./event";
 import type { SetEventAchRequest } from "./event";
 import type { SetEventFeesIncludedRequest } from "./event";
 import type { EventStats } from "./event";
@@ -84,6 +85,10 @@ export interface IEventServiceClient {
      * @generated from protobuf rpc: SetEventAch(ticketspan.event.SetEventAchRequest) returns (ticketspan.common.AckResponse);
      */
     setEventAch(input: SetEventAchRequest, options?: RpcOptions): UnaryCall<SetEventAchRequest, AckResponse>;
+    /**
+     * @generated from protobuf rpc: SetEventTaxExempt(ticketspan.event.SetEventTaxExemptRequest) returns (ticketspan.common.AckResponse);
+     */
+    setEventTaxExempt(input: SetEventTaxExemptRequest, options?: RpcOptions): UnaryCall<SetEventTaxExemptRequest, AckResponse>;
     /**
      * @generated from protobuf rpc: ListScheduleItems(ticketspan.common.UuidValue) returns (ticketspan.event.ListScheduleItemsResponse);
      */
@@ -224,94 +229,101 @@ export class EventServiceClient implements IEventServiceClient, ServiceInfo {
         return stackIntercept<SetEventAchRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
+     * @generated from protobuf rpc: SetEventTaxExempt(ticketspan.event.SetEventTaxExemptRequest) returns (ticketspan.common.AckResponse);
+     */
+    setEventTaxExempt(input: SetEventTaxExemptRequest, options?: RpcOptions): UnaryCall<SetEventTaxExemptRequest, AckResponse> {
+        const method = this.methods[11], opt = this._transport.mergeOptions(options);
+        return stackIntercept<SetEventTaxExemptRequest, AckResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: ListScheduleItems(ticketspan.common.UuidValue) returns (ticketspan.event.ListScheduleItemsResponse);
      */
     listScheduleItems(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, ListScheduleItemsResponse> {
-        const method = this.methods[11], opt = this._transport.mergeOptions(options);
+        const method = this.methods[12], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, ListScheduleItemsResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: CreateScheduleItem(ticketspan.event.CreateScheduleItemRequest) returns (ticketspan.common.UuidValue);
      */
     createScheduleItem(input: CreateScheduleItemRequest, options?: RpcOptions): UnaryCall<CreateScheduleItemRequest, UuidValue> {
-        const method = this.methods[12], opt = this._transport.mergeOptions(options);
+        const method = this.methods[13], opt = this._transport.mergeOptions(options);
         return stackIntercept<CreateScheduleItemRequest, UuidValue>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: UpdateScheduleItem(ticketspan.event.UpdateScheduleItemRequest) returns (ticketspan.common.AckResponse);
      */
     updateScheduleItem(input: UpdateScheduleItemRequest, options?: RpcOptions): UnaryCall<UpdateScheduleItemRequest, AckResponse> {
-        const method = this.methods[13], opt = this._transport.mergeOptions(options);
+        const method = this.methods[14], opt = this._transport.mergeOptions(options);
         return stackIntercept<UpdateScheduleItemRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: DeleteScheduleItem(ticketspan.common.UuidValue) returns (ticketspan.common.AckResponse);
      */
     deleteScheduleItem(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, AckResponse> {
-        const method = this.methods[14], opt = this._transport.mergeOptions(options);
+        const method = this.methods[15], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ListEventImages(ticketspan.event.ListEventImagesRequest) returns (ticketspan.event.ListEventImagesResponse);
      */
     listEventImages(input: ListEventImagesRequest, options?: RpcOptions): UnaryCall<ListEventImagesRequest, ListEventImagesResponse> {
-        const method = this.methods[15], opt = this._transport.mergeOptions(options);
+        const method = this.methods[16], opt = this._transport.mergeOptions(options);
         return stackIntercept<ListEventImagesRequest, ListEventImagesResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: AddEventImage(ticketspan.event.AddEventImageRequest) returns (ticketspan.event.EventImage);
      */
     addEventImage(input: AddEventImageRequest, options?: RpcOptions): UnaryCall<AddEventImageRequest, EventImage> {
-        const method = this.methods[16], opt = this._transport.mergeOptions(options);
+        const method = this.methods[17], opt = this._transport.mergeOptions(options);
         return stackIntercept<AddEventImageRequest, EventImage>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: RemoveEventImage(ticketspan.event.RemoveEventImageRequest) returns (ticketspan.common.AckResponse);
      */
     removeEventImage(input: RemoveEventImageRequest, options?: RpcOptions): UnaryCall<RemoveEventImageRequest, AckResponse> {
-        const method = this.methods[17], opt = this._transport.mergeOptions(options);
+        const method = this.methods[18], opt = this._transport.mergeOptions(options);
         return stackIntercept<RemoveEventImageRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SetPrimaryEventImage(ticketspan.event.RemoveEventImageRequest) returns (ticketspan.common.AckResponse);
      */
     setPrimaryEventImage(input: RemoveEventImageRequest, options?: RpcOptions): UnaryCall<RemoveEventImageRequest, AckResponse> {
-        const method = this.methods[18], opt = this._transport.mergeOptions(options);
+        const method = this.methods[19], opt = this._transport.mergeOptions(options);
         return stackIntercept<RemoveEventImageRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ReorderEventImages(ticketspan.event.ReorderEventImagesRequest) returns (ticketspan.common.AckResponse);
      */
     reorderEventImages(input: ReorderEventImagesRequest, options?: RpcOptions): UnaryCall<ReorderEventImagesRequest, AckResponse> {
-        const method = this.methods[19], opt = this._transport.mergeOptions(options);
+        const method = this.methods[20], opt = this._transport.mergeOptions(options);
         return stackIntercept<ReorderEventImagesRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetMediaSettings(ticketspan.common.Empty) returns (ticketspan.event.MediaSettings);
      */
     getMediaSettings(input: Empty, options?: RpcOptions): UnaryCall<Empty, MediaSettings> {
-        const method = this.methods[20], opt = this._transport.mergeOptions(options);
+        const method = this.methods[21], opt = this._transport.mergeOptions(options);
         return stackIntercept<Empty, MediaSettings>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetEventReminderSettings(ticketspan.common.UuidValue) returns (ticketspan.event.EventReminderSettings);
      */
     getEventReminderSettings(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, EventReminderSettings> {
-        const method = this.methods[21], opt = this._transport.mergeOptions(options);
+        const method = this.methods[22], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, EventReminderSettings>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: UpdateEventReminderSettings(ticketspan.event.UpdateEventReminderSettingsRequest) returns (ticketspan.common.AckResponse);
      */
     updateEventReminderSettings(input: UpdateEventReminderSettingsRequest, options?: RpcOptions): UnaryCall<UpdateEventReminderSettingsRequest, AckResponse> {
-        const method = this.methods[22], opt = this._transport.mergeOptions(options);
+        const method = this.methods[23], opt = this._transport.mergeOptions(options);
         return stackIntercept<UpdateEventReminderSettingsRequest, AckResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: TriggerManualEventReminder(ticketspan.common.UuidValue) returns (ticketspan.event.TriggerManualEventReminderResponse);
      */
     triggerManualEventReminder(input: UuidValue, options?: RpcOptions): UnaryCall<UuidValue, TriggerManualEventReminderResponse> {
-        const method = this.methods[23], opt = this._transport.mergeOptions(options);
+        const method = this.methods[24], opt = this._transport.mergeOptions(options);
         return stackIntercept<UuidValue, TriggerManualEventReminderResponse>("unary", this._transport, method, opt, input);
     }
 }

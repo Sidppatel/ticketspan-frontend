@@ -2,7 +2,7 @@ import { ShieldCheck, Ticket } from 'lucide-react';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { centsToUSD } from '@/shared/lib/format';
-import { lineAllInExclTaxCents } from '@/features/public/services/paymentService';
+import { lineAllInExclTaxCents, cartServiceFeeCents } from '@/features/public/services/paymentService';
 import type { CartQuote, CartQuoteLine } from '@/shared/proto/bookings';
 import type { CartItem } from '@/features/public/services/pendingCart';
 
@@ -26,6 +26,7 @@ export function BentoOrderSummary({
   onCheckout,
 }: BentoOrderSummaryProps) {
   const subtotal = quote?.subtotalCents ?? 0;
+  const serviceFee = quote ? cartServiceFeeCents(quote) : 0;
   const tax = quote?.taxCents ?? 0;
   const total = quote?.totalCents ?? 0;
   const discount = quote?.discountCents ?? 0;
@@ -99,10 +100,18 @@ export function BentoOrderSummary({
                     </div>
                   )}
                   {!feesIncluded && (
-                    <div className="flex justify-between text-muted-foreground">
-                      <span>Subtotal</span>
-                      <span className="font-mono">{centsToUSD(subtotal)}</span>
-                    </div>
+                    <>
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Subtotal</span>
+                        <span className="font-mono">{centsToUSD(subtotal)}</span>
+                      </div>
+                      {serviceFee > 0 && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Service fee</span>
+                          <span className="font-mono">{centsToUSD(serviceFee)}</span>
+                        </div>
+                      )}
+                    </>
                   )}
                   {tax > 0 && (
                     <div className="flex justify-between text-muted-foreground">

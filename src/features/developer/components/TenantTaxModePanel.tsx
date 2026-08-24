@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/sha
 import {
   listTenantReportingAccess,
   setTenantTaxMode,
+  setTenantTaxDefault,
 } from '@/features/developer/services/developerService';
 import { Building2, Search } from 'lucide-react';
 
@@ -48,6 +49,28 @@ export function TenantTaxModePanel() {
     setActionMessage(null);
     try {
       setActionMessage(await setTenantTaxMode(tenantsId, mode, reason.trim()));
+      reload();
+    } catch (caught) {
+      setActionError(rpcErrorMessage(caught));
+    } finally {
+      setBusyTenantId(null);
+    }
+  }
+
+  async function changeDefaultTax(tenantsId: string, name: string, chargeTax: boolean) {
+    const reason = window.prompt(
+      chargeTax
+        ? `New events for "${name}" will charge sales tax by default. Reason:`
+        : `New events for "${name}" will be tax-exempt by default. Reason:`,
+    );
+    if (!reason || !reason.trim()) {
+      return;
+    }
+    setBusyTenantId(tenantsId);
+    setActionError(null);
+    setActionMessage(null);
+    try {
+      setActionMessage(await setTenantTaxDefault(tenantsId, chargeTax, reason.trim()));
       reload();
     } catch (caught) {
       setActionError(rpcErrorMessage(caught));
@@ -104,6 +127,7 @@ export function TenantTaxModePanel() {
                 <TableRow>
                   <TableHead>Tenant</TableHead>
                   <TableHead>Remittance Authority</TableHead>
+                  <TableHead>Default Tax Policy</TableHead>
                   <TableHead>Change Collection Mode</TableHead>
                   <TableHead className="text-right">Status</TableHead>
                 </TableRow>
@@ -124,7 +148,20 @@ export function TenantTaxModePanel() {
                     </TableCell>
                     <TableCell>
                       <Select
-                        className="h-8 w-48 text-xs"
+                        className="h-8 w-44 text-xs"
+                        value={tenant.chargeTaxByDefault ? 'charge' : 'exempt'}
+                        disabled={busyTenantId === tenant.tenantsId}
+                        onChange={(e) =>
+                          void changeDefaultTax(tenant.tenantsId, tenant.name, e.target.value === 'charge')
+                        }
+                      >
+                        <option value="charge">Charge Tax (Default)</option>
+                        <option value="exempt">Tax-Exempt by Default</option>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        className="h-8 w-44 text-xs"
                         value={tenant.taxCollectionMode || TAX_MODE_PLATFORM}
                         disabled={busyTenantId === tenant.tenantsId}
                         onChange={(e) =>

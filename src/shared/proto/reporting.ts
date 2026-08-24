@@ -431,6 +431,10 @@ export interface TenantReportingAccessRow {
      * @generated from protobuf field: string tax_collection_mode = 10;
      */
     taxCollectionMode: string;
+    /**
+     * @generated from protobuf field: bool charge_tax_by_default = 11;
+     */
+    chargeTaxByDefault: boolean;
 }
 /**
  * @generated from protobuf message ticketspan.reporting.TenantReportingAccessList
@@ -504,6 +508,23 @@ export interface SetTenantTaxModeRequest {
      * @generated from protobuf field: string mode = 2;
      */
     mode: string;
+    /**
+     * @generated from protobuf field: string reason = 3;
+     */
+    reason: string;
+}
+/**
+ * @generated from protobuf message ticketspan.reporting.SetTenantTaxDefaultRequest
+ */
+export interface SetTenantTaxDefaultRequest {
+    /**
+     * @generated from protobuf field: string tenants_id = 1;
+     */
+    tenantsId: string;
+    /**
+     * @generated from protobuf field: bool charge_tax_by_default = 2;
+     */
+    chargeTaxByDefault: boolean;
     /**
      * @generated from protobuf field: string reason = 3;
      */
@@ -1699,7 +1720,8 @@ class TenantReportingAccessRow$Type extends MessageType<TenantReportingAccessRow
             { no: 7, name: "archived", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 8, name: "ach_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 9, name: "ach_fee_formulas_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 10, name: "tax_collection_mode", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 10, name: "tax_collection_mode", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 11, name: "charge_tax_by_default", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<TenantReportingAccessRow>): TenantReportingAccessRow {
@@ -1714,6 +1736,7 @@ class TenantReportingAccessRow$Type extends MessageType<TenantReportingAccessRow
         message.achEnabled = false;
         message.achFeeFormulasId = "";
         message.taxCollectionMode = "";
+        message.chargeTaxByDefault = false;
         if (value !== undefined)
             reflectionMergePartial<TenantReportingAccessRow>(this, message, value);
         return message;
@@ -1752,6 +1775,9 @@ class TenantReportingAccessRow$Type extends MessageType<TenantReportingAccessRow
                     break;
                 case /* string tax_collection_mode */ 10:
                     message.taxCollectionMode = reader.string();
+                    break;
+                case /* bool charge_tax_by_default */ 11:
+                    message.chargeTaxByDefault = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1795,6 +1821,9 @@ class TenantReportingAccessRow$Type extends MessageType<TenantReportingAccessRow
         /* string tax_collection_mode = 10; */
         if (message.taxCollectionMode !== "")
             writer.tag(10, WireType.LengthDelimited).string(message.taxCollectionMode);
+        /* bool charge_tax_by_default = 11; */
+        if (message.chargeTaxByDefault !== false)
+            writer.tag(11, WireType.Varint).bool(message.chargeTaxByDefault);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2103,6 +2132,69 @@ class SetTenantTaxModeRequest$Type extends MessageType<SetTenantTaxModeRequest> 
  * @generated MessageType for protobuf message ticketspan.reporting.SetTenantTaxModeRequest
  */
 export const SetTenantTaxModeRequest = new SetTenantTaxModeRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class SetTenantTaxDefaultRequest$Type extends MessageType<SetTenantTaxDefaultRequest> {
+    constructor() {
+        super("ticketspan.reporting.SetTenantTaxDefaultRequest", [
+            { no: 1, name: "tenants_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "charge_tax_by_default", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 3, name: "reason", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SetTenantTaxDefaultRequest>): SetTenantTaxDefaultRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.tenantsId = "";
+        message.chargeTaxByDefault = false;
+        message.reason = "";
+        if (value !== undefined)
+            reflectionMergePartial<SetTenantTaxDefaultRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SetTenantTaxDefaultRequest): SetTenantTaxDefaultRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string tenants_id */ 1:
+                    message.tenantsId = reader.string();
+                    break;
+                case /* bool charge_tax_by_default */ 2:
+                    message.chargeTaxByDefault = reader.bool();
+                    break;
+                case /* string reason */ 3:
+                    message.reason = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SetTenantTaxDefaultRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string tenants_id = 1; */
+        if (message.tenantsId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.tenantsId);
+        /* bool charge_tax_by_default = 2; */
+        if (message.chargeTaxByDefault !== false)
+            writer.tag(2, WireType.Varint).bool(message.chargeTaxByDefault);
+        /* string reason = 3; */
+        if (message.reason !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.reason);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.reporting.SetTenantTaxDefaultRequest
+ */
+export const SetTenantTaxDefaultRequest = new SetTenantTaxDefaultRequest$Type();
 /**
  * @generated ServiceType for protobuf service ticketspan.reporting.ReportingService
  */
@@ -2123,5 +2215,6 @@ export const TenantTierService = new ServiceType("ticketspan.reporting.TenantTie
     { name: "SetTenantTier", options: {}, I: SetTenantTierRequest, O: AckResponse },
     { name: "SetTenantAdvancedReporting", options: {}, I: SetTenantAdvancedReportingRequest, O: AckResponse },
     { name: "SetTenantAch", options: {}, I: SetTenantAchRequest, O: AckResponse },
-    { name: "SetTenantTaxMode", options: {}, I: SetTenantTaxModeRequest, O: AckResponse }
+    { name: "SetTenantTaxMode", options: {}, I: SetTenantTaxModeRequest, O: AckResponse },
+    { name: "SetTenantTaxDefault", options: {}, I: SetTenantTaxDefaultRequest, O: AckResponse }
 ]);
