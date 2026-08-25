@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect, useMemo, useState, useRef } from 'react';
-import { Users, ZoomIn, ZoomOut, RotateCcw, Check } from 'lucide-react';
+import { Users, ZoomIn, ZoomOut, RotateCcw, Check, CheckCircle2 } from 'lucide-react';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { getEventLayout, listEventTableTypes } from '@/features/public/services/publicEventService';
 import { quoteCart } from '@/features/public/services/paymentService';
@@ -125,17 +125,8 @@ export function EventSeatingMap({
     return [`${table.label} ${capacity} PAX`, price, status].filter(Boolean).join(', ');
   }
 
-  async function toggleTable(table: Table) {
+  async function addToOrder(table: Table) {
     const key = `Table:${table.tablesId}`;
-    if (inCart(key)) {
-      removeKey(key);
-      return;
-    }
-    if (isFirstTouchTap.current || hoveredTable?.tablesId !== table.tablesId) {
-      isFirstTouchTap.current = false;
-      inspectTable(table);
-      return;
-    }
     const cap = capacityOf(table);
     setPending(table.tablesId);
     setError(null);
@@ -148,13 +139,40 @@ export function EventSeatingMap({
     }
   }
 
+  async function toggleTable(table: Table) {
+    const key = `Table:${table.tablesId}`;
+    if (inCart(key)) {
+      removeKey(key);
+      return;
+    }
+    if (isFirstTouchTap.current || hoveredTable?.tablesId !== table.tablesId) {
+      isFirstTouchTap.current = false;
+      inspectTable(table);
+      return;
+    }
+    await addToOrder(table);
+  }
+
+  const containerHeight = useMemo(() => {
+    if (!containerWidth || !canvas.w || !canvas.h) return 500;
+    const aspectHeight = containerWidth * (canvas.h / canvas.w);
+    const isMobile = containerWidth < 640;
+    if (isMobile) {
+      return Math.max(200, Math.min(450, aspectHeight));
+    }
+    return 500;
+  }, [containerWidth, canvas.w, canvas.h]);
+
   const fitView = useCallback(() => {
     const el = containerRef.current;
     if (!el || !canvas.w || !canvas.h) return;
     setContainerWidth(el.clientWidth);
     const z = Math.min(el.clientWidth / canvas.w, el.clientHeight / canvas.h, 1.5);
     setZoom(z);
-    setPan({ x: (el.clientWidth - canvas.w * z) / 2, y: (el.clientHeight - canvas.h * z) / 2 });
+    setPan({
+      x: (el.clientWidth - canvas.w * z) / 2,
+      y: (el.clientHeight - canvas.h * z) / 2,
+    });
   }, [canvas]);
 
   useLayoutEffect(() => {
@@ -202,7 +220,7 @@ export function EventSeatingMap({
 
   if (loading) {
     return (
-      <div className="flex min-h-[590px] items-center justify-center rounded-3xl border border-border-soft bg-stage text-xs font-bold uppercase tracking-widest text-on-stage-soft animate-pulse">
+      <div className="flex min-h-[300px] md:min-h-[500px] items-center justify-center rounded-3xl border border-border-soft bg-stage text-xs font-bold uppercase tracking-widest text-on-stage-soft animate-pulse">
         Loading interactive Seating Floorplan…
       </div>
     );
@@ -229,47 +247,61 @@ export function EventSeatingMap({
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs font-semibold text-muted-foreground">
+        <div className="flex flex-col gap-0.5">
+          <span className="flex items-center gap-1 text-foreground">
+            <CheckCircle2 className="size-4 text-emerald-500" /> Interactive Seating Floorplan
+          </span>
+          <span className="font-mono text-brand font-bold text-[10px] sm:text-xs">Tap table to add to order</span>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleZoomIn}
+            className="size-8 rounded-lg border border-border-soft hover:bg-surface-sunken cursor-pointer text-foreground"
+            aria-label="Zoom In"
+          >
+            <ZoomIn className="size-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleZoomOut}
+            className="size-8 rounded-lg border border-border-soft hover:bg-surface-sunken cursor-pointer text-foreground"
+            aria-label="Zoom Out"
+          >
+            <ZoomOut className="size-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleReset}
+            className="size-8 rounded-lg border border-border-soft hover:bg-surface-sunken cursor-pointer text-foreground"
+            aria-label="Fit to Screen"
+          >
+            <RotateCcw className="size-3.5" />
+          </Button>
+        </div>
+      </div>
+
       {error && (
         <div role="alert" className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-xl text-sm font-medium leading-normal">
           {error}
         </div>
       )}
 
-      <div className="flex items-center justify-end gap-1.5">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={handleZoomIn}
-          className="size-11 rounded-lg border border-border-soft cursor-pointer"
-          aria-label="Zoom In"
-        >
-          <ZoomIn className="size-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={handleZoomOut}
-          className="size-11 rounded-lg border border-border-soft cursor-pointer"
-          aria-label="Zoom Out"
-        >
-          <ZoomOut className="size-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={handleReset}
-          className="size-11 rounded-lg border border-border-soft cursor-pointer"
-          aria-label="Fit to Screen"
-        >
-          <RotateCcw className="size-4" />
-        </Button>
-      </div>
+      <div
+        style={{ minHeight: containerHeight }}
+        className="relative overflow-hidden rounded-3xl border border-border-soft bg-stage shadow-2xl"
+      >
 
-      <div className="relative overflow-hidden rounded-3xl border border-border-soft bg-stage shadow-2xl min-h-[500px]">
-        {hoveredTable && tipStyle && (
+        {/* Desktop Tooltip */}
+        {hoveredTable && tipStyle && containerWidth >= 640 && (
           <div style={tipStyle} className="pointer-events-none absolute z-30 w-56 bg-stage-elevated/95 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-2xl text-xs space-y-2 animate-in fade-in duration-200">
             <div className="flex items-center justify-between">
               <span className="font-black text-sm text-white font-display uppercase">{hoveredTable.label}</span>
@@ -326,15 +358,15 @@ export function EventSeatingMap({
             </div>
           </div>
         )}
-
         <div
           ref={containerRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          style={{ height: containerHeight }}
           className={cn(
-            'w-full h-[500px] relative select-none touch-none',
+            'w-full relative select-none touch-none',
             isDragging ? 'cursor-grabbing' : 'cursor-grab'
           )}
         >
@@ -455,6 +487,55 @@ export function EventSeatingMap({
           </div>
         </div>
       </div>
+
+      {/* Mobile bottom bar - rendered below the map container */}
+      {hoveredTable && containerWidth < 640 && (
+        <div className="bg-stage p-3.5 rounded-2xl border border-border-soft shadow-xl flex items-center justify-between animate-in slide-in-from-bottom duration-250 ease-out">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1.5">
+              <span className="font-black text-sm text-white font-display uppercase">{hoveredTable.label}</span>
+              <span className="inline-flex items-center gap-1 rounded bg-accent-gold/10 text-accent-gold text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 border border-accent-gold/20">
+                Seating
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-[10px] text-white/70 font-semibold">
+              <span className="flex items-center gap-1">
+                <Users className="size-3 text-accent-gold" /> {hoveredTable.capacity} Seats
+              </span>
+              <span className="text-white/20">•</span>
+              <span>
+                {(() => {
+                  const bd = tablePricing?.get(hoveredTable.eventTablesId);
+                  if (!bd) return centsToUSD(feesIncluded ? hoveredTable.priceCents : hoveredTable.priceCents);
+                  const displayPrice = feesIncluded ? bd.finalPriceCents : bd.sellingPriceCents;
+                  return centsToUSD(displayPrice);
+                })()}
+              </span>
+            </div>
+          </div>
+          <div>
+            {inCart(`Table:${hoveredTable.tablesId}`) ? (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => removeKey(`Table:${hoveredTable.tablesId}`)}
+                className="bg-red-600 hover:bg-red-700 text-white text-[10px] font-extrabold uppercase tracking-wider px-3.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer"
+              >
+                Remove
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => addToOrder(hoveredTable)}
+                className="bg-accent-gold hover:bg-accent-gold/90 text-stage-elevated text-[10px] font-extrabold uppercase tracking-wider px-3.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer"
+              >
+                Add to Order
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

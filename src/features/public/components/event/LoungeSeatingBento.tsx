@@ -1,4 +1,5 @@
-import { Users, Sparkles, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, Sparkles } from 'lucide-react';
 import { EventSeatingMap } from '../EventSeatingMap';
 import { DeferUntilVisible } from '@/shared/components/DeferUntilVisible';
 import type { CartItem } from '@/features/public/services/pendingCart';
@@ -18,6 +19,21 @@ export function LoungeSeatingBento({
   upsert,
   removeKey,
 }: LoungeSeatingBentoProps) {
+  const [minHeight, setMinHeight] = useState(590);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setMinHeight(320);
+      } else {
+        setMinHeight(590);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between border-b border-border-soft pb-4">
@@ -46,15 +62,8 @@ export function LoungeSeatingBento({
         </div>
       </div>
 
-      <div className="rounded-3xl border border-border-strong bg-surface-card p-6 md:p-8 shadow-lg space-y-4">
-        <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
-          <span className="flex items-center gap-1 text-foreground">
-            <CheckCircle2 className="size-4 text-emerald-500" /> Interactive Seating Floorplan
-          </span>
-          <span className="font-mono text-brand font-bold">Tap table to add to order</span>
-        </div>
-
-        <DeferUntilVisible minHeight={590}>
+      <div className="rounded-2xl sm:rounded-3xl border border-border-strong bg-surface-card p-4 sm:p-6 md:p-8 shadow-lg">
+        <DeferUntilVisible minHeight={minHeight}>
           <EventSeatingMap
             eventsId={eventsId}
             feesIncluded={feesIncluded}
