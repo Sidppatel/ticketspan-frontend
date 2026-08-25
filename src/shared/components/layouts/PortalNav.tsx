@@ -135,6 +135,9 @@ function Brand({ section, className, onStage }: { section?: string; className?: 
   );
 }
 
+import { useCartStore } from '@/shared/lib/cartStore';
+import { ShoppingBag } from 'lucide-react';
+
 export function PortalNav({
   section,
   links,
@@ -147,6 +150,8 @@ export function PortalNav({
   hideAuth?: boolean;
 }) {
   const { isAuthenticated, user, role } = useAuth();
+  const { totalItemCount, setOpen: setCartOpen } = useCartStore();
+  const cartItemCount = totalItemCount();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -401,6 +406,30 @@ export function PortalNav({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Universal Cart Trigger in Navigation */}
+          <button
+            type="button"
+            onClick={() => setCartOpen(true)}
+            className={cn(
+              'relative flex size-9 items-center justify-center rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer',
+              cartItemCount > 0
+                ? isHeaderTransparent
+                  ? 'border-amber-400/40 bg-amber-400/20 text-amber-300'
+                  : 'border-amber-500/40 bg-amber-500/15 text-amber-500'
+                : isHeaderTransparent
+                  ? 'border-white/20 bg-white/10 text-white/80 hover:bg-white/20'
+                  : 'border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted',
+            )}
+            aria-label="Open Shopping Cart"
+          >
+            <ShoppingBag className="size-4" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex size-4.5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white shadow-sm ring-2 ring-background">
+                {cartItemCount}
+              </span>
+            )}
+          </button>
+
           {hideAuth ? null : isAuthenticated ? (
             <div className="hidden md:flex items-center gap-2">
               <UserAvatarMenu tone={isHeaderTransparent ? 'on-stage' : 'default'} />

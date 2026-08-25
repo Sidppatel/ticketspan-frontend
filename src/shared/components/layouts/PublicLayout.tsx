@@ -10,10 +10,15 @@ import { cn } from '@/shared/lib/cn';
 import { acquireLenis } from '@/shared/motion/lenis';
 import { currentTenantSlug } from '@/shared/subdomain';
 
+import { GlobalCartDock } from '@/features/public/components/cart/GlobalCartDock';
+import { UniversalMultiCheckoutDrawer } from '@/features/public/components/checkout/UniversalMultiCheckoutDrawer';
+import { useState } from 'react';
+
 export function PublicLayout() {
   const { role, isAuthenticated } = useAuth();
   const { pathname } = useLocation();
   const page = usePageEntrance<HTMLElement>();
+  const [isMultiCheckoutOpen, setIsMultiCheckoutOpen] = useState(false);
 
   useEffect(() => acquireLenis(), []);
 
@@ -51,6 +56,17 @@ export function PublicLayout() {
       >
         <Outlet />
       </main>
+
+      {/* Global Multi-Event Shopping Cart Dock & Slide-Over */}
+      <GlobalCartDock onCheckout={() => {
+        setIsMultiCheckoutOpen(true);
+      }} />
+
+      {/* Universal Consolidated Multi-Event Checkout Sheet */}
+      <UniversalMultiCheckoutDrawer
+        isOpen={isMultiCheckoutOpen}
+        onClose={() => setIsMultiCheckoutOpen(false)}
+      />
     </div>
   );
 }

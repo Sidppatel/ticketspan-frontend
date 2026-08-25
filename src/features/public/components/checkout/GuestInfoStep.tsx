@@ -70,19 +70,44 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
     } else if (!/\S+@\S+\.\S+/.test(buyerInfo.email)) {
       errs.email = 'Please enter a valid email address';
     }
-    if (!buyerInfo.phone.trim()) {
-      errs.phone = 'Phone number is required';
-    } else if (buyerInfo.phone.replace(/\D/g, '').length < 10) {
-      errs.phone = 'Please enter a valid 10-digit phone number';
+    
+    // Phone number is optional
+    if (buyerInfo.phone.trim()) {
+      const digits = buyerInfo.phone.replace(/\D/g, '');
+      if (digits.length > 0 && digits.length < 10) {
+        errs.phone = 'Please enter a valid 10-digit phone number';
+      }
     }
-    if (!buyerInfo.billingZip?.trim()) {
-      errs.billingZip = 'Billing ZIP / Postal code is required';
-    } else if (buyerInfo.billingZip.trim().length < 4) {
-      errs.billingZip = 'Please enter a valid ZIP code';
+    
+    // Billing ZIP is optional in this step
+    if (buyerInfo.billingZip?.trim()) {
+      if (buyerInfo.billingZip.trim().length < 3) {
+        errs.billingZip = 'Please enter a valid ZIP code';
+      }
     }
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
+  };
+
+  const handleFieldChange = (field: keyof BuyerInfo, value: string) => {
+    onChange({ ...buyerInfo, [field]: value });
+    
+    // Clear validation error dynamically if the field becomes valid
+    if (errors[field]) {
+      const errs = { ...errors };
+      if (field === 'name') {
+        if (value.trim()) delete errs.name;
+      } else if (field === 'email') {
+        if (value.trim() && /\S+@\S+\.\S+/.test(value)) delete errs.email;
+      } else if (field === 'phone') {
+        const digits = value.replace(/\D/g, '');
+        if (!value.trim() || digits.length >= 10) delete errs.phone;
+      } else if (field === 'billingZip') {
+        if (!value.trim() || value.trim().length >= 3) delete errs.billingZip;
+      }
+      setErrors(errs);
+    }
   };
 
   const handleBlur = (field: string) => {
@@ -91,6 +116,12 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setTouched({
+      name: true,
+      email: true,
+      phone: true,
+      billingZip: true,
+    });
     if (validate()) {
       onNext();
     }
@@ -163,7 +194,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
               id="buyer_name"
               placeholder="e.g. Eleanor Vance"
               value={buyerInfo.name}
-              onChange={(e) => onChange({ ...buyerInfo, name: e.target.value })}
+              onChange={(e) => handleFieldChange('name', e.target.value)}
               onBlur={() => handleBlur('name')}
               className={cn(
                 'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400',
@@ -188,7 +219,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
               type="email"
               placeholder="eleanor@example.com"
               value={buyerInfo.email}
-              onChange={(e) => onChange({ ...buyerInfo, email: e.target.value })}
+              onChange={(e) => handleFieldChange('email', e.target.value)}
               onBlur={() => handleBlur('email')}
               className={cn(
                 'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
@@ -206,15 +237,18 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {/* Phone Number */}
           <div className="space-y-1.5">
-            <Label htmlFor="buyer_phone" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
-              <Phone className="size-3.5 text-amber-400" /> Phone Number
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="buyer_phone" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
+                <Phone className="size-3.5 text-amber-400" /> Phone Number
+              </Label>
+              <span className="text-[10px] text-slate-400 font-mono">Optional</span>
+            </div>
             <Input
               id="buyer_phone"
               type="tel"
               placeholder="(555) 000-0000"
               value={buyerInfo.phone}
-              onChange={(e) => onChange({ ...buyerInfo, phone: formatUsPhone(e.target.value) })}
+              onChange={(e) => handleFieldChange('phone', formatUsPhone(e.target.value))}
               onBlur={() => handleBlur('phone')}
               className={cn(
                 'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
@@ -233,7 +267,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
               <Label htmlFor="buyer_zip" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
                 <MapPin className="size-3.5 text-amber-400" /> Billing ZIP
               </Label>
-              <span className="text-[10px] text-slate-400 font-mono">Editable</span>
+              <span className="text-[10px] text-slate-400 font-mono">Optional</span>
             </div>
             <Input
               id="buyer_zip"
@@ -241,7 +275,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
               maxLength={10}
               placeholder="e.g. 90210"
               value={buyerInfo.billingZip || ''}
-              onChange={(e) => onChange({ ...buyerInfo, billingZip: e.target.value })}
+              onChange={(e) => handleFieldChange('billingZip', e.target.value)}
               onBlur={() => handleBlur('billingZip')}
               className={cn(
                 'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',

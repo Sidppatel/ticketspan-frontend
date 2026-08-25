@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { getEventBySlug } from '@/features/public/services/publicEventService';
@@ -30,14 +30,13 @@ import { createMultiBooking, quoteCart } from '@/features/public/services/paymen
 import {
   type CartItem,
   DEFAULT_HOLD_SECONDS,
-  clearOtherPendingCarts,
   savePendingCart,
-  takePendingCart,
 } from '@/features/public/services/pendingCart';
 import { rpcErrorMessage } from '@/shared/session';
 import { useAuth } from '@/shared/auth/useAuth';
 import { setReturnTo } from '@/shared/auth/returnTo';
 import type { Event } from '@/shared/proto/event';
+import { useCartStore, type UniversalCartItem } from '@/shared/lib/cartStore';
 
 import { toast } from 'sonner';
 
@@ -86,11 +85,19 @@ export function EventDetailPageContent({
   const [checkoutBookingsId, setCheckoutBookingsId] = useState('');
   const [checkoutMethod, setCheckoutMethod] = useState<'card' | 'ach'>('card');
 
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    if (isPreview) return [];
-    clearOtherPendingCarts(event.eventsId);
-    return takePendingCart(event.eventsId);
-  });
+  // Universal persistent cart store
+  const { items: cartStoreItems, addItem, updateQuantity: updateStoreQty, removeItem: removeStoreItem, clearEvent } = useCartStore();
+
+  const cart: CartItem[] = useMemo(() => cartStoreItems
+    .filter((i: UniversalCartItem) => i.eventId === event.eventsId)
+    .map((i: UniversalCartItem) => ({
+      key: `${i.kind}:${i.refId}`,
+      kind: i.kind,
+      refId: i.refId,
+      label: i.label,
+      seats: i.seats,
+    })), [cartStoreItems, event.eventsId]);
+
   const [delta] = useState(() => (isPreview ? null : rememberEventVisit(event)));
   const [busy, setBusy] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
@@ -106,15 +113,40 @@ export function EventDetailPageContent({
   const persuasion = useMemo(() => buildPersuasion(event, admissionTiers), [event, admissionTiers]);
 
   const upsert = useCallback((item: CartItem) => {
-    setCart((prev) => {
-      const next = prev.filter((i) => i.key !== item.key);
-      return [...next, item];
-    });
-  }, []);
+    const tier = admissionTiers.find((t) => t.eventTicketTypesId === item.refId);
+    const unitPrice = tier ? tier.sellingPriceCents || tier.priceCents : 0;
+
+    const existingStoreItem = cartStoreItems.find(
+      (i: UniversalCartItem) => i.eventId === event.eventsId && i.kind === item.kind && i.refId === item.refId,
+    );
+
+    if (existingStoreItem) {
+      updateStoreQty(existingStoreItem.id, item.seats);
+    } else {
+      addItem({
+        eventId: event.eventsId,
+        eventTitle: event.title,
+        eventDate: event.startDate ? Number(event.startDate) : undefined,
+        eventSlug: event.slug,
+        venueName: event.venuesId ? 'Venue' : undefined,
+        kind: item.kind,
+        refId: item.refId,
+        label: item.label,
+        unitPriceCents: unitPrice,
+        seats: item.seats,
+      });
+    }
+  }, [admissionTiers, cartStoreItems, event, addItem, updateStoreQty]);
 
   const removeKey = useCallback((key: string) => {
-    setCart((prev) => prev.filter((i) => i.key !== key));
-  }, []);
+    const [kind, refId] = key.split(':');
+    const existing = cartStoreItems.find(
+      (i: UniversalCartItem) => i.eventId === event.eventsId && i.kind === kind && i.refId === refId,
+    );
+    if (existing) {
+      removeStoreItem(existing.id);
+    }
+  }, [cartStoreItems, event.eventsId, removeStoreItem]);
 
   const quoteLoader = useCallback(async () => {
     if (cart.length === 0) {
@@ -128,11 +160,6 @@ export function EventDetailPageContent({
   const { data: quote } = useAsync(quoteLoader);
 
   const holdSeconds = quote?.holdSeconds || DEFAULT_HOLD_SECONDS;
-
-  useEffect(() => {
-    if (isPreview) return;
-    savePendingCart(event.eventsId, cart, holdSeconds);
-  }, [cart, event.eventsId, holdSeconds, isPreview]);
 
   const total = quote?.totalCents ?? 0;
   const achAvailable = quote?.achAvailable ?? false;
@@ -180,7 +207,7 @@ export function EventDetailPageContent({
     setIsCheckoutOpen(false);
     setCheckoutBookingsId('');
     if (completed) {
-      setCart([]);
+      clearEvent(event.eventsId);
     }
   };
 

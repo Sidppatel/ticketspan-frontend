@@ -88,7 +88,15 @@ export function PaymentStep({
           customerSessionClientSecret: res.customerSessionClientSecret || '',
         });
         const key = res.publishableKey || import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
-        setStripePromise(loadStripe(key));
+        setStripePromise(
+          loadStripe(key, {
+            developerTools: {
+              assistant: {
+                enabled: false,
+              },
+            },
+          }),
+        );
       })
       .catch((caught) => active && setError(rpcErrorMessage(caught)));
     return () => {

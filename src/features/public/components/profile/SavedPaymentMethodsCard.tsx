@@ -98,7 +98,15 @@ export function SavedPaymentMethodsCard() {
       if (res.success && res.data?.clientSecret) {
         setSetupSecret(res.data.clientSecret);
         const key = res.data.publishableKey || import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
-        setStripePromise(loadStripe(key));
+        setStripePromise(
+          loadStripe(key, {
+            developerTools: {
+              assistant: {
+                enabled: false,
+              },
+            },
+          }),
+        );
       } else {
         toast.error('Could not initialize card setup.');
         setAddModalOpen(false);
