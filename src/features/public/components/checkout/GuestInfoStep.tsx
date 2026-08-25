@@ -9,7 +9,6 @@ import {
   User,
   Mail,
   Phone,
-  MapPin,
   ShieldCheck,
   Sparkles,
   ArrowRight,
@@ -78,13 +77,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
         errs.phone = 'Please enter a valid 10-digit phone number';
       }
     }
-    
-    // Billing ZIP is optional in this step
-    if (buyerInfo.billingZip?.trim()) {
-      if (buyerInfo.billingZip.trim().length < 3) {
-        errs.billingZip = 'Please enter a valid ZIP code';
-      }
-    }
+
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -103,8 +96,6 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
       } else if (field === 'phone') {
         const digits = value.replace(/\D/g, '');
         if (!value.trim() || digits.length >= 10) delete errs.phone;
-      } else if (field === 'billingZip') {
-        if (!value.trim() || value.trim().length >= 3) delete errs.billingZip;
       }
       setErrors(errs);
     }
@@ -120,7 +111,6 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
       name: true,
       email: true,
       phone: true,
-      billingZip: true,
     });
     if (validate()) {
       onNext();
@@ -233,60 +223,30 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
           )}
         </div>
 
-        {/* Phone & Billing ZIP 2-Column Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          {/* Phone Number */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="buyer_phone" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
-                <Phone className="size-3.5 text-amber-400" /> Phone Number
-              </Label>
-              <span className="text-[10px] text-slate-400 font-mono">Optional</span>
-            </div>
-            <Input
-              id="buyer_phone"
-              type="tel"
-              placeholder="(555) 000-0000"
-              value={buyerInfo.phone}
-              onChange={(e) => handleFieldChange('phone', formatUsPhone(e.target.value))}
-              onBlur={() => handleBlur('phone')}
-              className={cn(
-                'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
-                errors.phone && touched.phone && 'border-danger/80 focus:border-danger focus:ring-danger',
-              )}
-              aria-invalid={!!errors.phone}
-            />
-            {errors.phone && touched.phone && (
-              <p className="text-[11px] font-bold text-danger animate-in fade-in-50">{errors.phone}</p>
-            )}
+        {/* Phone Number */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="buyer_phone" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
+              <Phone className="size-3.5 text-amber-400" /> Phone Number
+            </Label>
+            <span className="text-[10px] text-slate-400 font-mono">Optional</span>
           </div>
-
-          {/* Billing ZIP Code */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="buyer_zip" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
-                <MapPin className="size-3.5 text-amber-400" /> Billing ZIP
-              </Label>
-              <span className="text-[10px] text-slate-400 font-mono">Optional</span>
-            </div>
-            <Input
-              id="buyer_zip"
-              type="text"
-              maxLength={10}
-              placeholder="e.g. 90210"
-              value={buyerInfo.billingZip || ''}
-              onChange={(e) => handleFieldChange('billingZip', e.target.value)}
-              onBlur={() => handleBlur('billingZip')}
-              className={cn(
-                'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
-                errors.billingZip && touched.billingZip && 'border-danger/80 focus:border-danger focus:ring-danger',
-              )}
-              aria-invalid={!!errors.billingZip}
-            />
-            {errors.billingZip && touched.billingZip && (
-              <p className="text-[11px] font-bold text-danger animate-in fade-in-50">{errors.billingZip}</p>
+          <Input
+            id="buyer_phone"
+            type="tel"
+            placeholder="(555) 000-0000"
+            value={buyerInfo.phone}
+            onChange={(e) => handleFieldChange('phone', formatUsPhone(e.target.value))}
+            onBlur={() => handleBlur('phone')}
+            className={cn(
+              'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
+              errors.phone && touched.phone && 'border-danger/80 focus:border-danger focus:ring-danger',
             )}
-          </div>
+            aria-invalid={!!errors.phone}
+          />
+          {errors.phone && touched.phone && (
+            <p className="text-[11px] font-bold text-danger animate-in fade-in-50">{errors.phone}</p>
+          )}
         </div>
       </div>
 
