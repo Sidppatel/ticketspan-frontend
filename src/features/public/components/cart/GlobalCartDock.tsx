@@ -88,7 +88,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
 
       reclaimItem(item.id);
       toast.success(`${item.label} re-claimed!`, {
-        description: 'Your 10-minute hold timer has been restarted.',
+        description: 'Your hold timer has been restarted.',
       });
     } catch {
       toast.error(`Unable to re-claim ${item.label}`, {
@@ -119,7 +119,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
     setReclaimingAll(false);
     if (reclaimedCount > 0) {
       toast.success(`Re-claimed ${reclaimedCount} item(s)!`, {
-        description: 'Your 10-minute hold timers have been refreshed.',
+        description: 'Your hold timers have been refreshed.',
       });
     } else {
       toast.error('Could not re-claim expired items. They may be sold out.');
@@ -447,7 +447,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
                     <span>{reclaimingAll ? 'Re-claiming passes…' : 'Re-claim Expired Passes'}</span>
                   </Button>
                   <p className="text-center font-mono text-[11px] text-rose-400">
-                    Please re-claim expired tickets to secure a fresh 10-minute hold before checkout.
+                    Please re-claim expired tickets to secure a fresh hold window before checkout.
                   </p>
                 </div>
               ) : (

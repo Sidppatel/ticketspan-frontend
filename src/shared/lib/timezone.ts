@@ -1,4 +1,7 @@
-export const DEFAULT_TIMEZONE = 'America/Chicago';
+import { useAppSettingsStore } from '@/shared/lib/appSettingsStore';
+
+export const getDefaultTimezone = (): string =>
+  useAppSettingsStore.getState().defaultTimezone || 'America/Chicago';
 
 const STATE_TIMEZONE: Record<string, string> = {
   ct: 'America/New_York', de: 'America/New_York', dc: 'America/New_York',
@@ -39,12 +42,13 @@ const NAME_TO_CODE: Record<string, string> = {
 };
 
 export function tzForState(state: string | undefined | null): string {
+  const defaultTz = getDefaultTimezone();
   if (!state) {
-    return DEFAULT_TIMEZONE;
+    return defaultTz;
   }
   const key = state.trim().toLowerCase();
   const code = key.length === 2 ? key : NAME_TO_CODE[key];
-  return (code && STATE_TIMEZONE[code]) || DEFAULT_TIMEZONE;
+  return (code && STATE_TIMEZONE[code]) || defaultTz;
 }
 
 function partsInZone(date: Date, timeZone: string): Record<string, string> {

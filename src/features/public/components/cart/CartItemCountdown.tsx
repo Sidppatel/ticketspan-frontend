@@ -61,7 +61,7 @@ export function CartItemCountdown({
             onClick={handleReclaimClick}
             disabled={reclaiming}
             className="inline-flex items-center gap-1 rounded-md bg-amber-400/15 border border-amber-400/30 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300 hover:bg-amber-400 hover:text-slate-950 transition-colors cursor-pointer active:scale-95 disabled:opacity-50"
-            title="Re-claim ticket with a new 10-minute hold window"
+            title={item.holdSeconds ? `Re-claim ticket with a new ${Math.round(item.holdSeconds / 60)}-minute hold window` : 'Re-claim ticket with a new hold window'}
           >
             {reclaiming ? (
               <Loader2 className="size-3 animate-spin text-amber-300" />

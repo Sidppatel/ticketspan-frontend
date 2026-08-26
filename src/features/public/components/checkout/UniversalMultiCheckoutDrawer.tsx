@@ -94,7 +94,7 @@ export function UniversalMultiCheckoutDrawer({
       }]);
       reclaimItem(item.id);
       toast.success(`${item.label} re-claimed!`, {
-        description: 'Your 10-minute hold timer has been restarted.',
+        description: 'Your hold timer has been restarted.',
       });
     } catch {
       toast.error(`Unable to re-claim ${item.label}`, {
@@ -125,7 +125,7 @@ export function UniversalMultiCheckoutDrawer({
     setReclaimingAll(false);
     if (reclaimedCount > 0) {
       toast.success(`Re-claimed ${reclaimedCount} item(s)!`, {
-        description: 'Your 10-minute hold timers have been refreshed.',
+        description: 'Your hold timers have been refreshed.',
       });
     } else {
       toast.error('Could not re-claim expired items. They may be sold out.');

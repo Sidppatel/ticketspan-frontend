@@ -29,7 +29,6 @@ import { imageUrl } from '@/shared/upload';
 import { createMultiBooking, quoteCart } from '@/features/public/services/paymentService';
 import {
   type CartItem,
-  DEFAULT_HOLD_SECONDS,
   savePendingCart,
 } from '@/features/public/services/pendingCart';
 import { rpcErrorMessage } from '@/shared/session';
@@ -37,6 +36,7 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { setReturnTo } from '@/shared/auth/returnTo';
 import type { Event } from '@/shared/proto/event';
 import { useCartStore, type UniversalCartItem } from '@/shared/lib/cartStore';
+import { useAppSettingsStore } from '@/shared/lib/appSettingsStore';
 
 import { toast } from 'sonner';
 
@@ -158,8 +158,8 @@ export function EventDetailPageContent({
     );
   }, [cart, event.eventsId]);
   const { data: quote } = useAsync(quoteLoader);
-
-  const holdSeconds = quote?.holdSeconds || DEFAULT_HOLD_SECONDS;
+  const defaultHoldSec = useAppSettingsStore((s) => s.bookingHoldSeconds);
+  const holdSeconds = quote?.holdSeconds || defaultHoldSec;
 
   const total = quote?.totalCents ?? 0;
   const achAvailable = quote?.achAvailable ?? false;

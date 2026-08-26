@@ -10,6 +10,7 @@ import { FloorPlanInspector } from './FloorPlanInspector';
 import { FloorPlanViewport } from './FloorPlanViewport';
 import { FloorPlanToolbar } from './FloorPlanToolbar';
 import { useFloorPlanZoomPan } from '@/features/admin/hooks/useFloorPlanZoomPan';
+import { useAppSettingsStore } from '@/shared/lib/appSettingsStore';
 
 export type PlacedTable = {
   tablesId: string;
@@ -37,12 +38,12 @@ type Scene = { tables: PlacedTable[]; objects: PlacedObject[] };
 
 const OBJECT_TYPES = ['Entry', 'Exit', 'Stage'];
 const OBJECT_GLYPH: Record<string, string> = { Entry: '→', Exit: '←', Stage: '▭' };
-const OBJECT_DEFAULT_COLOR: Record<string, string> = { Entry: '#059669', Exit: '#059669', Stage: '#424242' };
+const getFloorplanDefaultSize = (): number => useAppSettingsStore.getState().floorplanDefaultSize;
+const getFloorplanDefaultColor = (): string => useAppSettingsStore.getState().floorplanDefaultColor;
 const CANVAS_W = 1000;
 const CANVAS_H = 640;
 const SNAP = 5;
 const MIN_SIZE = 24;
-const DEFAULT_SIZE = 80;
 const GUIDE_TOL = 6;
 
 const snap = (n: number) => Math.round(n / SNAP) * SNAP;
@@ -162,8 +163,8 @@ export function FloorPlanBuilder({
           label: t.label,
           posX: t.posX,
           posY: t.posY,
-          width: t.width || DEFAULT_SIZE,
-          height: t.height || DEFAULT_SIZE,
+          width: t.width || getFloorplanDefaultSize(),
+          height: t.height || getFloorplanDefaultSize(),
           shapeOverride: t.shapeOverride || '',
           colorOverride: t.colorOverride || '',
           status: t.status || 'Available',
@@ -175,9 +176,9 @@ export function FloorPlanBuilder({
           objectType: o.objectType,
           posX: o.posX,
           posY: o.posY,
-          width: o.width || DEFAULT_SIZE,
-          height: o.height || DEFAULT_SIZE,
-          color: o.color || OBJECT_DEFAULT_COLOR[o.objectType] || '#059669',
+          width: o.width || getFloorplanDefaultSize(),
+          height: o.height || getFloorplanDefaultSize(),
+          color: o.color || getFloorplanDefaultColor(),
         })),
       );
       setDirty(false);
@@ -254,8 +255,9 @@ export function FloorPlanBuilder({
 
   function placeTable(typeId: string, cx: number, cy: number) {
     const t = typeById.get(typeId);
-    const w = Math.max(MIN_SIZE, t?.defaultWidth || DEFAULT_SIZE);
-    const h = Math.max(MIN_SIZE, t?.defaultHeight || DEFAULT_SIZE);
+    const defSize = getFloorplanDefaultSize();
+    const w = Math.max(MIN_SIZE, t?.defaultWidth || defSize);
+    const h = Math.max(MIN_SIZE, t?.defaultHeight || defSize);
     const px = clamp(snap(cx - w / 2), 0, CANVAS_W - w);
     const py = clamp(snap(cy - h / 2), 0, CANVAS_H - h);
     if (collides(px, py, w, h, 'table', -1)) {
@@ -275,9 +277,10 @@ export function FloorPlanBuilder({
   }
 
   function placeObject(objectType: string, cx: number, cy: number) {
-    const px = clamp(snap(cx - DEFAULT_SIZE / 2), 0, CANVAS_W - DEFAULT_SIZE);
-    const py = clamp(snap(cy - DEFAULT_SIZE / 2), 0, CANVAS_H - DEFAULT_SIZE);
-    if (collides(px, py, DEFAULT_SIZE, DEFAULT_SIZE, 'object', -1)) {
+    const defSize = getFloorplanDefaultSize();
+    const px = clamp(snap(cx - defSize / 2), 0, CANVAS_W - defSize);
+    const py = clamp(snap(cy - defSize / 2), 0, CANVAS_H - defSize);
+    if (collides(px, py, defSize, defSize, 'object', -1)) {
       setNotice("No room here — items can't overlap");
       return;
     }
@@ -287,8 +290,8 @@ export function FloorPlanBuilder({
       {
         layoutObjectsId: '', objectType,
         posX: px, posY: py,
-        width: DEFAULT_SIZE, height: DEFAULT_SIZE,
-        color: OBJECT_DEFAULT_COLOR[objectType] || '#059669',
+        width: defSize, height: defSize,
+        color: getFloorplanDefaultColor(),
       },
     ]);
     setSelected(`o${objects.length}`);

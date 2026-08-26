@@ -48,7 +48,7 @@ export function EventMobileStickyBar({
       }]);
       reclaimItem(item.id);
       toast.success(`${item.label} re-claimed!`, {
-        description: 'Your 10-minute hold timer has been restarted.',
+        description: 'Your hold timer has been restarted.',
       });
     } catch {
       toast.error(`Unable to re-claim ${item.label}`, {
@@ -257,7 +257,7 @@ export function EventMobileStickyBar({
                   Hold timer expired on one or more passes.
                 </p>
                 <p className="text-center text-[11px] text-muted-foreground">
-                  Please re-claim expired passes above to restart your 10-minute hold before checkout.
+                  Please re-claim expired passes above to restart your hold window before checkout.
                 </p>
               </div>
             ) : (

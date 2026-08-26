@@ -18,6 +18,61 @@ import { MessageType } from "@protobuf-ts/runtime";
 import { PageMeta } from "./common";
 import { PageRequest } from "./common";
 /**
+ * @generated from protobuf message ticketspan.event.PublicAppSettings
+ */
+export interface PublicAppSettings {
+    /**
+     * @generated from protobuf field: int32 booking_hold_seconds = 1;
+     */
+    bookingHoldSeconds: number;
+    /**
+     * @generated from protobuf field: string default_timezone = 2;
+     */
+    defaultTimezone: string;
+    /**
+     * @generated from protobuf field: string event_image_aspect_ratio = 3;
+     */
+    eventImageAspectRatio: string;
+    /**
+     * @generated from protobuf field: string event_thumbnail_aspect_ratio = 4;
+     */
+    eventThumbnailAspectRatio: string;
+    /**
+     * @generated from protobuf field: string sponsor_image_aspect_ratio = 5;
+     */
+    sponsorImageAspectRatio: string;
+    /**
+     * @generated from protobuf field: string performer_image_aspect_ratio = 6;
+     */
+    performerImageAspectRatio: string;
+    /**
+     * @generated from protobuf field: string venue_image_aspect_ratio = 7;
+     */
+    venueImageAspectRatio: string;
+    /**
+     * @generated from protobuf field: int32 floorplan_default_size = 8;
+     */
+    floorplanDefaultSize: number;
+    /**
+     * @generated from protobuf field: int32 floorplan_canvas_width = 9;
+     */
+    floorplanCanvasWidth: number;
+    /**
+     * @generated from protobuf field: int32 floorplan_canvas_height = 10;
+     */
+    floorplanCanvasHeight: number;
+    /**
+     * @generated from protobuf field: string floorplan_default_color = 11;
+     */
+    floorplanDefaultColor: string;
+    /**
+     * @generated from protobuf field: map<string, string> all_settings = 12;
+     */
+    allSettings: {
+        [key: string]: string;
+    };
+}
+/**
  * @generated from protobuf message ticketspan.event.EventImage
  */
 export interface EventImage {
@@ -728,6 +783,157 @@ export interface TriggerManualEventReminderResponse {
      */
     recipientsCount: number;
 }
+// @generated message type with reflection information, may provide speed optimized methods
+class PublicAppSettings$Type extends MessageType<PublicAppSettings> {
+    constructor() {
+        super("ticketspan.event.PublicAppSettings", [
+            { no: 1, name: "booking_hold_seconds", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "default_timezone", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "event_image_aspect_ratio", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "event_thumbnail_aspect_ratio", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "sponsor_image_aspect_ratio", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "performer_image_aspect_ratio", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "venue_image_aspect_ratio", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "floorplan_default_size", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 9, name: "floorplan_canvas_width", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 10, name: "floorplan_canvas_height", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 11, name: "floorplan_default_color", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 12, name: "all_settings", kind: "map", K: 9 /*ScalarType.STRING*/, V: { kind: "scalar", T: 9 /*ScalarType.STRING*/ } }
+        ]);
+    }
+    create(value?: PartialMessage<PublicAppSettings>): PublicAppSettings {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.bookingHoldSeconds = 0;
+        message.defaultTimezone = "";
+        message.eventImageAspectRatio = "";
+        message.eventThumbnailAspectRatio = "";
+        message.sponsorImageAspectRatio = "";
+        message.performerImageAspectRatio = "";
+        message.venueImageAspectRatio = "";
+        message.floorplanDefaultSize = 0;
+        message.floorplanCanvasWidth = 0;
+        message.floorplanCanvasHeight = 0;
+        message.floorplanDefaultColor = "";
+        message.allSettings = {};
+        if (value !== undefined)
+            reflectionMergePartial<PublicAppSettings>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PublicAppSettings): PublicAppSettings {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 booking_hold_seconds */ 1:
+                    message.bookingHoldSeconds = reader.int32();
+                    break;
+                case /* string default_timezone */ 2:
+                    message.defaultTimezone = reader.string();
+                    break;
+                case /* string event_image_aspect_ratio */ 3:
+                    message.eventImageAspectRatio = reader.string();
+                    break;
+                case /* string event_thumbnail_aspect_ratio */ 4:
+                    message.eventThumbnailAspectRatio = reader.string();
+                    break;
+                case /* string sponsor_image_aspect_ratio */ 5:
+                    message.sponsorImageAspectRatio = reader.string();
+                    break;
+                case /* string performer_image_aspect_ratio */ 6:
+                    message.performerImageAspectRatio = reader.string();
+                    break;
+                case /* string venue_image_aspect_ratio */ 7:
+                    message.venueImageAspectRatio = reader.string();
+                    break;
+                case /* int32 floorplan_default_size */ 8:
+                    message.floorplanDefaultSize = reader.int32();
+                    break;
+                case /* int32 floorplan_canvas_width */ 9:
+                    message.floorplanCanvasWidth = reader.int32();
+                    break;
+                case /* int32 floorplan_canvas_height */ 10:
+                    message.floorplanCanvasHeight = reader.int32();
+                    break;
+                case /* string floorplan_default_color */ 11:
+                    message.floorplanDefaultColor = reader.string();
+                    break;
+                case /* map<string, string> all_settings */ 12:
+                    this.binaryReadMap12(message.allSettings, reader, options);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    private binaryReadMap12(map: PublicAppSettings["allSettings"], reader: IBinaryReader, options: BinaryReadOptions): void {
+        let len = reader.uint32(), end = reader.pos + len, key: keyof PublicAppSettings["allSettings"] | undefined, val: PublicAppSettings["allSettings"][any] | undefined;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case 1:
+                    key = reader.string();
+                    break;
+                case 2:
+                    val = reader.string();
+                    break;
+                default: throw new globalThis.Error("unknown map entry field for field ticketspan.event.PublicAppSettings.all_settings");
+            }
+        }
+        map[key ?? ""] = val ?? "";
+    }
+    internalBinaryWrite(message: PublicAppSettings, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 booking_hold_seconds = 1; */
+        if (message.bookingHoldSeconds !== 0)
+            writer.tag(1, WireType.Varint).int32(message.bookingHoldSeconds);
+        /* string default_timezone = 2; */
+        if (message.defaultTimezone !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.defaultTimezone);
+        /* string event_image_aspect_ratio = 3; */
+        if (message.eventImageAspectRatio !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.eventImageAspectRatio);
+        /* string event_thumbnail_aspect_ratio = 4; */
+        if (message.eventThumbnailAspectRatio !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.eventThumbnailAspectRatio);
+        /* string sponsor_image_aspect_ratio = 5; */
+        if (message.sponsorImageAspectRatio !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.sponsorImageAspectRatio);
+        /* string performer_image_aspect_ratio = 6; */
+        if (message.performerImageAspectRatio !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.performerImageAspectRatio);
+        /* string venue_image_aspect_ratio = 7; */
+        if (message.venueImageAspectRatio !== "")
+            writer.tag(7, WireType.LengthDelimited).string(message.venueImageAspectRatio);
+        /* int32 floorplan_default_size = 8; */
+        if (message.floorplanDefaultSize !== 0)
+            writer.tag(8, WireType.Varint).int32(message.floorplanDefaultSize);
+        /* int32 floorplan_canvas_width = 9; */
+        if (message.floorplanCanvasWidth !== 0)
+            writer.tag(9, WireType.Varint).int32(message.floorplanCanvasWidth);
+        /* int32 floorplan_canvas_height = 10; */
+        if (message.floorplanCanvasHeight !== 0)
+            writer.tag(10, WireType.Varint).int32(message.floorplanCanvasHeight);
+        /* string floorplan_default_color = 11; */
+        if (message.floorplanDefaultColor !== "")
+            writer.tag(11, WireType.LengthDelimited).string(message.floorplanDefaultColor);
+        /* map<string, string> all_settings = 12; */
+        for (let k of globalThis.Object.keys(message.allSettings))
+            writer.tag(12, WireType.LengthDelimited).fork().tag(1, WireType.LengthDelimited).string(k).tag(2, WireType.LengthDelimited).string(message.allSettings[k]).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message ticketspan.event.PublicAppSettings
+ */
+export const PublicAppSettings = new PublicAppSettings$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class EventImage$Type extends MessageType<EventImage> {
     constructor() {
@@ -2957,6 +3163,7 @@ export const EventService = new ServiceType("ticketspan.event.EventService", [
     { name: "SetPrimaryEventImage", options: {}, I: RemoveEventImageRequest, O: AckResponse },
     { name: "ReorderEventImages", options: {}, I: ReorderEventImagesRequest, O: AckResponse },
     { name: "GetMediaSettings", options: {}, I: Empty, O: MediaSettings },
+    { name: "GetPublicAppSettings", options: {}, I: Empty, O: PublicAppSettings },
     { name: "GetEventReminderSettings", options: {}, I: UuidValue, O: EventReminderSettings },
     { name: "UpdateEventReminderSettings", options: {}, I: UpdateEventReminderSettingsRequest, O: AckResponse },
     { name: "TriggerManualEventReminder", options: {}, I: UuidValue, O: TriggerManualEventReminderResponse }

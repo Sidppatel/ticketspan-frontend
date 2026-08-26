@@ -1,3 +1,5 @@
+import { useAppSettingsStore } from '@/shared/lib/appSettingsStore';
+
 export interface CartItem {
   key: string;
   kind: 'Ticket' | 'Table';
@@ -11,21 +13,20 @@ interface StoredCart {
   expiresAt: number;
 }
 
-export const DEFAULT_HOLD_SECONDS = 600;
-
 const keyFor = (eventsId: string) => `pendingCart:${eventsId}`;
 
 export function savePendingCart(
   eventsId: string,
   cart: CartItem[],
-  holdSeconds: number = DEFAULT_HOLD_SECONDS,
+  holdSeconds?: number,
 ): void {
+  const activeHoldSeconds = holdSeconds ?? useAppSettingsStore.getState().bookingHoldSeconds;
   try {
     if (cart.length === 0) {
       localStorage.removeItem(keyFor(eventsId));
       return;
     }
-    const stored: StoredCart = { items: cart, expiresAt: Date.now() + holdSeconds * 1000 };
+    const stored: StoredCart = { items: cart, expiresAt: Date.now() + activeHoldSeconds * 1000 };
     localStorage.setItem(keyFor(eventsId), JSON.stringify(stored));
   } catch {
     return;

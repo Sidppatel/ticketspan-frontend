@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { useAppSettingsStore } from '@/shared/lib/appSettingsStore';
 
-export const DEFAULT_HOLD_SECONDS = 600; // 10 minutes from app_setting default
+const getActiveHoldSeconds = (): number => useAppSettingsStore.getState().bookingHoldSeconds;
 
 export interface UniversalCartItem {
   id: string;
@@ -56,7 +57,7 @@ export const useCartStore = create<CartState>()(
 
       addItem: (item) => {
         const id = `${item.eventId}:${item.kind}:${item.refId}`;
-        const holdSec = item.holdSeconds ?? DEFAULT_HOLD_SECONDS;
+        const holdSec = item.holdSeconds ?? getActiveHoldSeconds();
         const now = Date.now();
         const addedAt = item.addedAt ?? now;
         const expiresAt = item.expiresAt ?? (now + holdSec * 1000);
@@ -104,7 +105,7 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           items: state.items.map((i) => {
             if (i.id !== id) return i;
-            const holdSec = newHoldSeconds ?? i.holdSeconds ?? DEFAULT_HOLD_SECONDS;
+            const holdSec = newHoldSeconds ?? i.holdSeconds ?? getActiveHoldSeconds();
             return {
               ...i,
               addedAt: now,
@@ -120,7 +121,7 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           items: state.items.map((i) => {
             if (i.expiresAt && now < i.expiresAt) return i;
-            const holdSec = newHoldSeconds ?? i.holdSeconds ?? DEFAULT_HOLD_SECONDS;
+            const holdSec = newHoldSeconds ?? i.holdSeconds ?? getActiveHoldSeconds();
             return {
               ...i,
               addedAt: now,

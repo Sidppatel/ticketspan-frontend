@@ -40,7 +40,7 @@ export function BentoOrderSummary({
       }]);
       reclaimItem(item.id);
       toast.success(`${item.label} re-claimed!`, {
-        description: 'Your 10-minute hold timer has been restarted.',
+        description: 'Your hold timer has been restarted.',
       });
     } catch {
       toast.error(`Unable to re-claim ${item.label}`, {
@@ -187,7 +187,7 @@ export function BentoOrderSummary({
                 Hold timer expired on one or more passes.
               </p>
               <p className="text-center text-[11px] text-muted-foreground">
-                Click &quot;Re-claim&quot; on the expired pass above to renew your 10-minute hold before checkout.
+                Click &quot;Re-claim&quot; on the expired pass above to renew your hold window before checkout.
               </p>
             </div>
           ) : (
