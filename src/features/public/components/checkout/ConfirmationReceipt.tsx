@@ -103,7 +103,7 @@ export function ConfirmationReceipt({
           Payment Confirmed!
         </h3>
         <p className="text-xs text-white/60 max-w-sm mx-auto">
-          Your reservation is verified. Digital passes have been issued and synced to your Universal Pass.
+          Your reservation is verified. Digital passes have been issued and synced to your account.
         </p>
       </div>
 

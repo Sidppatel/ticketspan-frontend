@@ -130,7 +130,7 @@ export function ClaimTicketPage() {
                 Ticket Successfully Claimed!
               </h2>
               <p className="text-sm text-ink-soft">
-                Your entry ticket has been added to your universal wallet with a live door QR code.
+                Your entry ticket has been added to your tickets wallet with a live door QR code.
               </p>
             </div>
 

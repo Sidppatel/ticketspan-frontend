@@ -45,7 +45,7 @@ export function SetPasswordPage() {
     <AuthShell
       eyebrow="Security Credentials"
       title="Set your password."
-      blurb="Choose a strong, secure password for your Universal Account."
+      blurb="Choose a strong, secure password for your account."
     >
       <div className="rounded-3xl border border-border bg-card p-8 shadow-xl sm:p-10">
         <div className="space-y-2 pb-6">

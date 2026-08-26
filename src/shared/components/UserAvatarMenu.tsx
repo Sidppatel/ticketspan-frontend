@@ -118,7 +118,7 @@ export function UserAvatarMenu({ className, tone = 'default' }: UserAvatarMenuPr
       accent: 'text-emerald-500 bg-emerald-500/10',
     },
     {
-      label: 'Universal Attendee Hub',
+      label: 'Attendee Hub',
       subtitle: 'Directory & wallet overview',
       icon: LayoutGrid,
       path: '/hub',

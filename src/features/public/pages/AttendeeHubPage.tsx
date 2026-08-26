@@ -179,7 +179,7 @@ export function AttendeeHubPage() {
             <div className="max-w-2xl space-y-4">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.2em] text-emerald-400">
-                  <Sparkles className="size-3" /> Universal Identity
+                  <Sparkles className="size-3" /> Attendee Account
                 </span>
                 <span className="font-mono text-xs text-slate-400">{user?.email}</span>
               </div>
@@ -189,7 +189,7 @@ export function AttendeeHubPage() {
               </h1>
 
               <p className="max-w-xl text-base leading-relaxed text-slate-300/80">
-                Your single universal wallet for passes, table reservations, and receipts across all partner box offices.
+                Your wallet for passes, table reservations, and receipts across all partner box offices.
               </p>
             </div>
 

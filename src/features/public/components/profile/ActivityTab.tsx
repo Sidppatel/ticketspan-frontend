@@ -95,8 +95,8 @@ export function ActivityTab() {
             <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5" />
           </div>
           <div className="mt-4">
-            <p className="font-display text-3xl font-bold text-ink">Universal</p>
-            <p className="font-mono text-[10.5px] uppercase tracking-wider text-ink-soft">Attendee Hub</p>
+            <p className="font-display text-3xl font-bold text-ink">Attendee</p>
+            <p className="font-mono text-[10.5px] uppercase tracking-wider text-ink-soft">Hub</p>
           </div>
         </Link>
       </div>

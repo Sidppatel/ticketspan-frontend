@@ -69,11 +69,11 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
       {/* Header */}
       <div className="border-b border-hairline pb-4">
         <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-brand">
-          Universal Security
+          Account Security
         </span>
         <h2 className="font-display text-2xl font-semibold text-ink">Authentication & Connected Accounts</h2>
         <p className="text-xs text-ink-soft mt-0.5">
-          Manage your universal sign-in credentials, OAuth providers, and cross-box office security tokens.
+          Manage your sign-in credentials, OAuth providers, and security tokens.
         </p>
       </div>
 
@@ -131,7 +131,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
                 </div>
                 <p className="text-xs text-ink-soft">
                   {user?.googleConnected
-                    ? 'Your Google credentials can be used for instant universal sign-in.'
+                    ? 'Your Google credentials can be used for instant sign-in.'
                     : 'Sign in to any partner event page with a single Google tap.'}
                 </p>
               </div>
@@ -229,7 +229,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
             <Layers className="size-4.5" />
           </div>
           <div>
-            <h3 className="font-display text-lg font-semibold text-ink">Universal Identity & Cross-Domain Access</h3>
+            <h3 className="font-display text-lg font-semibold text-ink">Single Identity & Cross-Domain Access</h3>
             <p className="text-xs text-ink-soft">
               How your TicketSpan identity seamlessly works across all organizer subdomains.
             </p>
@@ -238,7 +238,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
 
         <div className="rounded-2xl border border-hairline bg-surface-sunken/40 p-5 space-y-4 text-xs leading-relaxed text-ink-soft">
           <p>
-            TicketSpan operates on a <strong className="text-ink">Universal Attendee Architecture</strong>. Your single profile, QR gate passes, and stored payment receipts are automatically authenticated across all partner box offices without needing separate accounts.
+            TicketSpan operates on a <strong className="text-ink">Unified Attendee Architecture</strong>. Your single profile, QR gate passes, and stored payment receipts are automatically authenticated across all partner box offices without needing separate accounts.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
@@ -247,7 +247,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
               <span className="font-mono text-xs font-semibold text-ink">gRPC-Web · TLS Encrypted</span>
             </div>
             <div className="rounded-xl border border-hairline bg-surface p-3 space-y-1">
-              <span className="block font-mono text-[10px] uppercase text-ink-faint">Universal UID</span>
+              <span className="block font-mono text-[10px] uppercase text-ink-faint">Account UID</span>
               <span className="font-mono text-xs font-semibold text-ink truncate block">
                 {user?.usersId ? `${user.usersId.slice(0, 12)}…` : '—'}
               </span>

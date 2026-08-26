@@ -90,11 +90,11 @@ export function PersonalInfoTab({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-hairline pb-4">
         <div>
           <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-brand">
-            Universal Profile
+            Profile Details
           </span>
           <h2 className="font-display text-2xl font-semibold text-ink">Personal & Contact Details</h2>
           <p className="text-xs text-ink-soft mt-0.5">
-            Your universal identity and billing information across all partner event venues.
+            Your identity and billing information across all partner event venues.
           </p>
         </div>
 

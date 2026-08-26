@@ -176,7 +176,7 @@ export function UniversalMultiCheckoutDrawer({
         hideCloseButton={true}
         className="w-full sm:max-w-xl bg-[#0c0f17] border-l border-white/10 text-white flex flex-col p-0 shadow-2xl overflow-hidden backdrop-blur-2xl h-full max-h-screen"
       >
-        <SheetTitle className="sr-only">Universal Multi-Event Express Checkout</SheetTitle>
+        <SheetTitle className="sr-only">Multi-Event Express Checkout</SheetTitle>
 
         {/* Ambient Top Glow */}
         <div

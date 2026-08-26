@@ -37,7 +37,7 @@ export function AuthShell({ eyebrow, title, blurb, children }: AuthShellProps) {
         <div className="relative z-10 flex items-center justify-between">
           <BrandLockup tone="ivory" size="md" />
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] font-medium tracking-wider text-voltage backdrop-blur-md">
-            <Sparkles className="size-3" /> UNIVERSAL PASS
+            <Sparkles className="size-3" /> DIGITAL PASS
           </span>
         </div>
 
@@ -60,7 +60,7 @@ export function AuthShell({ eyebrow, title, blurb, children }: AuthShellProps) {
           <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/[0.04] p-6 shadow-2xl backdrop-blur-xl transition-transform duration-500 hover:scale-[1.02]">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="space-y-1">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Universal Access</span>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Attendee Access</span>
                 <p className="font-display text-lg font-medium text-white">Live Box Office Roster</p>
               </div>
               <div className="flex size-10 items-center justify-center rounded-xl bg-white/10 text-voltage shadow-inner">
@@ -79,7 +79,7 @@ export function AuthShell({ eyebrow, title, blurb, children }: AuthShellProps) {
               </div>
               <div>
                 <p className="text-[10px] text-slate-400 uppercase">Pass Type</p>
-                <p className="font-medium text-voltage truncate">Universal</p>
+                <p className="font-medium text-voltage truncate">All-Access</p>
               </div>
             </div>
           </div>
@@ -108,7 +108,7 @@ export function AuthShell({ eyebrow, title, blurb, children }: AuthShellProps) {
           <div className="mb-6 flex items-center justify-between lg:hidden">
             <BrandLockup className="text-foreground" size="md" />
             <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-mono text-[10px] font-medium text-primary">
-              Universal Auth
+              Account Sign In
             </span>
           </div>
           {children}

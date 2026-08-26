@@ -167,7 +167,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
             </Button>
           </div>
           <p className="text-[11px] text-white/70 leading-relaxed">
-            Signing in automatically saves tickets to your Universal Pass for 1-click door entry.
+            Signing in automatically saves tickets to your account for 1-click door entry.
           </p>
         </div>
       )}

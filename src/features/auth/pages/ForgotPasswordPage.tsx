@@ -17,7 +17,7 @@ export function ForgotPasswordPage() {
     <AuthShell
       eyebrow="Account Recovery"
       title="Reset your password."
-      blurb="Enter the email associated with your Universal Account and we'll send you recovery instructions."
+      blurb="Enter the email associated with your account and we'll send you recovery instructions."
     >
       <div className="rounded-3xl border border-border bg-card p-8 shadow-xl sm:p-10">
         <div className="space-y-2 pb-6">

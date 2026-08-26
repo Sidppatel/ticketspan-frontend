@@ -66,7 +66,7 @@ export function ProfileHeroCard({
 
   const memberId = user?.usersId
     ? `TS-${user.usersId.slice(0, 6).toUpperCase()}`
-    : 'Universal Pass';
+    : 'Digital Pass';
 
   const hasValidAvatar = Boolean(user?.avatarUrl && !imageError);
 
@@ -211,10 +211,10 @@ export function ProfileHeroCard({
         </div>
 
         {/* ========================================================================= */}
-        {/* REDESIGNED RIGHT AREA: Sleek Universal Pass Card & Action Toolbar         */}
+        {/* REDESIGNED RIGHT AREA: Sleek Digital Pass Card & Action Toolbar           */}
         {/* ========================================================================= */}
         <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-3 shrink-0">
-          {/* Refined Glassmorphic Universal Pass Button */}
+          {/* Refined Glassmorphic Digital Pass Button */}
           <button
             type="button"
             onClick={onOpenDigitalPass}
@@ -225,7 +225,7 @@ export function ProfileHeroCard({
                 <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" /> Gate Ready
               </div>
               <div className="flex items-center gap-1 font-display text-sm sm:text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
-                <span>Universal Pass</span>
+                <span>Digital Pass</span>
                 <ArrowUpRight className="size-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </div>
               <p className="font-mono text-[10px] text-stone-400">Tap to present QR at gate</p>

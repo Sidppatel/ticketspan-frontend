@@ -82,7 +82,7 @@ function TenantUniversalRedirect({ path }: { path: string }) {
     <div className="flex min-h-[50vh] items-center justify-center p-4">
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <p className="font-mono text-xs text-muted-foreground">Redirecting to Universal Attendee Hub...</p>
+        <p className="font-mono text-xs text-muted-foreground">Redirecting to Attendee Hub...</p>
       </div>
     </div>
   );

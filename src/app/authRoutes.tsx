@@ -38,7 +38,7 @@ function TenantAuthRedirect({ target = 'login' }: { target?: 'login' | 'register
     <div className="flex min-h-screen items-center justify-center bg-background p-4 text-foreground">
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <p className="font-mono text-xs text-muted-foreground">Redirecting to Universal Sign In...</p>
+        <p className="font-mono text-xs text-muted-foreground">Redirecting to Sign In...</p>
       </div>
     </div>
   );

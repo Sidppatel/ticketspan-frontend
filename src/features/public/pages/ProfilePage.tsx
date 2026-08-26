@@ -116,7 +116,7 @@ export function ProfilePage() {
       await updateProfile(form);
       setProfile(form);
       setEditing(false);
-      toast.success('Universal profile successfully updated in database.');
+      toast.success('Profile successfully updated in database.');
     } catch (err) {
       toast.error(rpcErrorMessage(err));
     } finally {

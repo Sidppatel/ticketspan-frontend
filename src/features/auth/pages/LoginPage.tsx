@@ -22,9 +22,9 @@ export function LoginPage() {
 
   return (
     <AuthShell
-      eyebrow="Universal Account"
+      eyebrow="Sign In"
       title="One account for all your events."
-      blurb="Sign in once with your Universal Attendee credentials to access passes, table bookings, and receipts across every venue."
+      blurb="Sign in to your account to access passes, table bookings, and receipts across every venue."
     >
       <div className="rounded-3xl border border-border bg-card p-8 shadow-xl sm:p-10">
         <div className="space-y-2 pb-6">
@@ -32,7 +32,7 @@ export function LoginPage() {
             Welcome back
           </h2>
           <p className="text-sm text-muted-foreground">
-            Enter your email and password to access your universal passes.
+            Enter your email and password to access your passes.
           </p>
           {returnUrl && (
             <div className="mt-2 flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-medium text-primary">

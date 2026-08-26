@@ -26,15 +26,15 @@ export function RegisterPage() {
 
   return (
     <AuthShell
-      eyebrow="Universal Registration"
-      title="Create your Universal Pass."
+      eyebrow="Registration"
+      title="Create your account."
       blurb="One account gives you seamless entry, QR tickets, and reservations across all venues."
     >
       <div className="rounded-3xl border border-border bg-card p-8 shadow-xl sm:p-10">
         <div className="space-y-2 pb-6">
           <div className="flex items-center gap-1.5">
             <Badge variant="voltage" className="font-mono text-xs">
-              <Sparkles className="size-3" /> {tenantSlug ? `@${tenantSlug}` : 'Universal Attendee'}
+              <Sparkles className="size-3" /> {tenantSlug ? `@${tenantSlug}` : 'Attendee'}
             </Badge>
           </div>
           <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -149,7 +149,7 @@ export function RegisterPage() {
               'Creating account…'
             ) : (
               <>
-                <UserPlus className="size-4" /> Create Universal Account
+                <UserPlus className="size-4" /> Create Account
               </>
             )}
           </Button>

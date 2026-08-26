@@ -139,7 +139,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
           hideCloseButton={true}
           className="w-full sm:max-w-lg bg-[#0c0f17] border-l border-white/10 text-white flex flex-col p-0 shadow-2xl overflow-hidden backdrop-blur-2xl h-full"
         >
-          <SheetTitle className="sr-only">Universal Event Shopping Cart</SheetTitle>
+          <SheetTitle className="sr-only">Event Shopping Cart</SheetTitle>
 
           {/* Drawer Header */}
           <div className="flex items-center justify-between border-b border-white/10 bg-[#131722]/90 px-6 py-4 backdrop-blur-xl">

@@ -96,13 +96,13 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
 
   if (!user) return null;
 
-  const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Universal Attendee';
+  const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Attendee';
   const attendeePassId = `TS-${user.usersId.slice(0, 8).toUpperCase()}-${(user.email || '').slice(0, 3).toUpperCase()}`;
   const qrData = JSON.stringify({
     uid: user.usersId,
     email: user.email,
     passId: attendeePassId,
-    type: 'universal_attendee_credential',
+    type: 'attendee_credential',
     iss: 'TicketSpan Platform',
   });
 
@@ -175,7 +175,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
         hideCloseButton={true}
         className="w-full max-w-lg h-[86vh] max-h-[780px] flex flex-col p-0 overflow-hidden bg-[#0c0f17] border border-white/15 text-white rounded-[2rem] shadow-2xl backdrop-blur-2xl"
       >
-        <DialogTitle className="sr-only">Universal Attendee Digital Credential</DialogTitle>
+        <DialogTitle className="sr-only">Attendee Digital Credential</DialogTitle>
 
         {/* Ambient Glows */}
         <div
@@ -194,7 +194,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
               <BrandMark className="size-6 text-amber-400" />
               <div>
                 <span className="!font-sans text-base font-bold text-white tracking-tight">
-                  Universal Pass
+                  Digital Pass
                 </span>
                 <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-mono">
                   <span className="relative flex size-2">
@@ -480,7 +480,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
                   <div className="flex items-center justify-between rounded-xl bg-[#0c0f17] border border-white/10 px-3 py-2">
                     <div className="space-y-0.5">
                       <span className="text-[9.5px] font-mono uppercase tracking-widest text-slate-400 font-bold">
-                        Universal Credential ID
+                        Credential ID
                       </span>
                       <p className="font-mono text-xs font-bold text-amber-400 tracking-wider">
                         {attendeePassId}

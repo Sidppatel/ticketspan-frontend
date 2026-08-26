@@ -75,7 +75,7 @@ const faqGroups: FaqGroup[] = [
     ],
   },
   {
-    title: 'Account & Universal Passes',
+    title: 'Account & Digital Passes',
     items: [
       {
         q: 'How do I change my name or email?',
