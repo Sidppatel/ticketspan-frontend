@@ -2,9 +2,13 @@ import { ShieldCheck, Ticket } from 'lucide-react';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { centsToUSD } from '@/shared/lib/format';
-import { lineAllInExclTaxCents, cartServiceFeeCents } from '@/features/public/services/paymentService';
+import { lineAllInExclTaxCents, cartServiceFeeCents, quoteCart } from '@/features/public/services/paymentService';
 import type { CartQuote, CartQuoteLine } from '@/shared/proto/bookings';
 import type { CartItem } from '@/features/public/services/pendingCart';
+import { useCartStore, isCartItemExpired, type UniversalCartItem } from '@/shared/lib/cartStore';
+import { CartItemCountdown } from '@/features/public/components/cart/CartItemCountdown';
+import { toast } from 'sonner';
+import { useCallback } from 'react';
 
 interface BentoOrderSummaryProps {
   cart: CartItem[];
@@ -25,6 +29,26 @@ export function BentoOrderSummary({
   onRemoveKey,
   onCheckout,
 }: BentoOrderSummaryProps) {
+  const { items: cartStoreItems, reclaimItem } = useCartStore();
+
+  const handleReclaim = useCallback(async (item: UniversalCartItem) => {
+    try {
+      await quoteCart(item.eventId, [{
+        kind: item.kind,
+        refId: item.refId,
+        seats: item.kind === 'Ticket' ? item.seats : 0,
+      }]);
+      reclaimItem(item.id);
+      toast.success(`${item.label} re-claimed!`, {
+        description: 'Your 10-minute hold timer has been restarted.',
+      });
+    } catch {
+      toast.error(`Unable to re-claim ${item.label}`, {
+        description: 'This pass may no longer be available or sold out.',
+      });
+    }
+  }, [reclaimItem]);
+
   const subtotal = quote?.subtotalCents ?? 0;
   const serviceFee = quote ? cartServiceFeeCents(quote) : 0;
   const tax = quote?.taxCents ?? 0;
@@ -33,6 +57,11 @@ export function BentoOrderSummary({
   const achAvailable = quote?.achAvailable ?? false;
   const achTotal = quote?.achTotalCents ?? 0;
   const achSavings = quote?.achSavingsCents ?? 0;
+
+  const hasExpired = cart.some((c) => {
+    const storeItem = cartStoreItems.find((i) => `${i.kind}:${i.refId}` === c.key);
+    return storeItem ? isCartItemExpired(storeItem) : false;
+  });
 
   return (
     <div className="space-y-6">
@@ -61,31 +90,41 @@ export function BentoOrderSummary({
                   const linePrice = feesIncluded
                     ? (line ? lineAllInExclTaxCents(line) : undefined)
                     : line?.breakdown?.sellingPriceCents;
+                  const storeItem = cartStoreItems.find((i) => `${i.kind}:${i.refId}` === item.key);
+
                   return (
-                    <div key={item.key} className="flex items-center justify-between py-3 text-xs">
-                      <div className="space-y-1 min-w-0 pr-3">
-                        <div className="flex items-center gap-1.5">
-                          <span className="rounded-full bg-brand/15 px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-brand">
-                            {item.kind}
+                    <div key={item.key} className="py-3 text-xs space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1 min-w-0 pr-3">
+                          <div className="flex items-center gap-1.5">
+                            <span className="rounded-full bg-brand/15 px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-brand">
+                              {item.kind}
+                            </span>
+                            <span className="block max-w-[130px] truncate font-bold text-foreground">{item.label}</span>
+                          </div>
+                          <span className="block text-muted-foreground">
+                            {item.seats} {item.seats === 1 ? 'pass' : 'passes'}
                           </span>
-                          <span className="block max-w-[130px] truncate font-bold text-foreground">{item.label}</span>
                         </div>
-                        <span className="block text-muted-foreground">
-                          {item.seats} {item.seats === 1 ? 'pass' : 'passes'}
-                        </span>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="font-mono font-bold text-foreground">
+                            {linePrice !== undefined ? centsToUSD(linePrice) : '—'}
+                          </span>
+                          <button
+                            className="cursor-pointer text-xs font-semibold text-muted-foreground hover:text-destructive hover:underline"
+                            onClick={() => onRemoveKey(item.key)}
+                            type="button"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3 shrink-0">
-                        <span className="font-mono font-bold text-foreground">
-                          {linePrice !== undefined ? centsToUSD(linePrice) : '—'}
-                        </span>
-                        <button
-                          className="cursor-pointer text-xs font-semibold text-muted-foreground hover:text-destructive hover:underline"
-                          onClick={() => onRemoveKey(item.key)}
-                          type="button"
-                        >
-                          Remove
-                        </button>
-                      </div>
+
+                      {storeItem && (
+                        <div className="pt-0.5">
+                          <CartItemCountdown item={storeItem} onReclaim={handleReclaim} />
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -142,25 +181,38 @@ export function BentoOrderSummary({
             </div>
           )}
 
-          <Button
-            disabled={busy || cart.length === 0 || !quote}
-            onClick={() => onCheckout('card')}
-            size="lg"
-            className="w-full h-12 rounded-2xl bg-brand text-brand-ink font-extrabold text-sm uppercase tracking-wider shadow-md hover:bg-brand-hover active:scale-98"
-          >
-            {busy ? 'Reserving Passes…' : 'Continue to Checkout'}
-          </Button>
+          {hasExpired ? (
+            <div className="space-y-2">
+              <p className="text-center font-mono text-xs text-rose-500 font-semibold">
+                Hold timer expired on one or more passes.
+              </p>
+              <p className="text-center text-[11px] text-muted-foreground">
+                Click &quot;Re-claim&quot; on the expired pass above to renew your 10-minute hold before checkout.
+              </p>
+            </div>
+          ) : (
+            <>
+              <Button
+                disabled={busy || cart.length === 0 || !quote}
+                onClick={() => onCheckout('card')}
+                size="lg"
+                className="w-full h-12 rounded-2xl bg-brand text-brand-ink font-extrabold text-sm uppercase tracking-wider shadow-md hover:bg-brand-hover active:scale-98 cursor-pointer"
+              >
+                {busy ? 'Reserving Passes…' : 'Continue to Checkout'}
+              </Button>
 
-          {achAvailable && achSavings > 0 && (
-            <Button
-              disabled={busy || cart.length === 0 || !quote}
-              onClick={() => onCheckout('ach')}
-              size="lg"
-              variant="outline"
-              className="w-full h-12 rounded-2xl border-emerald-500/30 text-emerald-500 font-bold hover:bg-emerald-500/10"
-            >
-              {busy ? 'Reserving Passes…' : `Pay by Bank & Save ${centsToUSD(achSavings)}`}
-            </Button>
+              {achAvailable && achSavings > 0 && (
+                <Button
+                  disabled={busy || cart.length === 0 || !quote}
+                  onClick={() => onCheckout('ach')}
+                  size="lg"
+                  variant="outline"
+                  className="w-full h-12 rounded-2xl border-emerald-500/30 text-emerald-500 font-bold hover:bg-emerald-500/10 cursor-pointer"
+                >
+                  {busy ? 'Reserving Passes…' : `Pay by Bank & Save ${centsToUSD(achSavings)}`}
+                </Button>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

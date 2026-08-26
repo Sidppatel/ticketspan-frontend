@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Ticket, ShoppingBag, ChevronUp, ShieldCheck, X } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Sheet, SheetContent, SheetTitle } from '@/shared/ui/sheet';
 import { PriceBadge } from './PriceBadge';
 import { centsToUSD } from '@/shared/lib/format';
-import { lineAllInExclTaxCents, cartServiceFeeCents } from '@/features/public/services/paymentService';
+import { lineAllInExclTaxCents, cartServiceFeeCents, quoteCart } from '@/features/public/services/paymentService';
 import type { CartQuote, CartQuoteLine } from '@/shared/proto/bookings';
 import type { CartItem } from '@/features/public/services/pendingCart';
+import { useCartStore, isCartItemExpired, type UniversalCartItem } from '@/shared/lib/cartStore';
+import { CartItemCountdown } from '@/features/public/components/cart/CartItemCountdown';
+import { toast } from 'sonner';
 
 interface EventMobileStickyBarProps {
   minPriceCents?: number;
@@ -33,7 +36,26 @@ export function EventMobileStickyBar({
   feesIncluded = false,
   onRemoveKey,
 }: EventMobileStickyBarProps) {
+  const { items: cartStoreItems, reclaimItem } = useCartStore();
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
+
+  const handleReclaim = useCallback(async (item: UniversalCartItem) => {
+    try {
+      await quoteCart(item.eventId, [{
+        kind: item.kind,
+        refId: item.refId,
+        seats: item.kind === 'Ticket' ? item.seats : 0,
+      }]);
+      reclaimItem(item.id);
+      toast.success(`${item.label} re-claimed!`, {
+        description: 'Your 10-minute hold timer has been restarted.',
+      });
+    } catch {
+      toast.error(`Unable to re-claim ${item.label}`, {
+        description: 'This pass may no longer be available or sold out.',
+      });
+    }
+  }, [reclaimItem]);
 
   const subtotal = quote?.subtotalCents ?? 0;
   const serviceFee = quote ? cartServiceFeeCents(quote) : 0;
@@ -42,6 +64,11 @@ export function EventMobileStickyBar({
   const discount = quote?.discountCents ?? 0;
   const achAvailable = quote?.achAvailable ?? false;
   const achSavings = quote?.achSavingsCents ?? 0;
+
+  const hasExpired = cart.some((c) => {
+    const storeItem = cartStoreItems.find((i) => `${i.kind}:${i.refId}` === c.key);
+    return storeItem ? isCartItemExpired(storeItem) : false;
+  });
 
   return (
     <>
@@ -134,35 +161,44 @@ export function EventMobileStickyBar({
                 const linePrice = feesIncluded
                   ? (line ? lineAllInExclTaxCents(line) : undefined)
                   : line?.breakdown?.sellingPriceCents;
+                const storeItem = cartStoreItems.find((i) => `${i.kind}:${i.refId}` === item.key);
 
                 return (
-                  <div key={item.key} className="flex items-center justify-between py-2.5 text-xs">
-                    <div className="space-y-0.5 min-w-0 pr-3">
-                      <div className="flex items-center gap-1.5">
-                        <span className="rounded-full bg-brand/15 px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-brand">
-                          {item.kind}
+                  <div key={item.key} className="py-2.5 text-xs space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5 min-w-0 pr-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className="rounded-full bg-brand/15 px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-brand">
+                            {item.kind}
+                          </span>
+                          <span className="truncate font-bold text-foreground">{item.label}</span>
+                        </div>
+                        <span className="block text-muted-foreground text-[11px]">
+                          {item.seats} {item.seats === 1 ? 'pass' : 'passes'}
                         </span>
-                        <span className="truncate font-bold text-foreground">{item.label}</span>
                       </div>
-                      <span className="block text-muted-foreground text-[11px]">
-                        {item.seats} {item.seats === 1 ? 'pass' : 'passes'}
-                      </span>
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="font-mono font-bold text-foreground">
+                          {linePrice !== undefined ? centsToUSD(linePrice) : '—'}
+                        </span>
+                        {onRemoveKey && (
+                          <button
+                            type="button"
+                            className="text-xs font-semibold text-muted-foreground hover:text-destructive hover:underline cursor-pointer"
+                            onClick={() => onRemoveKey(item.key)}
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="font-mono font-bold text-foreground">
-                        {linePrice !== undefined ? centsToUSD(linePrice) : '—'}
-                      </span>
-                      {onRemoveKey && (
-                        <button
-                          type="button"
-                          className="text-xs font-semibold text-muted-foreground hover:text-destructive hover:underline"
-                          onClick={() => onRemoveKey(item.key)}
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
+                    {storeItem && (
+                      <div className="pt-0.5">
+                        <CartItemCountdown item={storeItem} onReclaim={handleReclaim} />
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -215,17 +251,28 @@ export function EventMobileStickyBar({
             </div>
 
             {/* Direct Checkout CTA from breakdown drawer */}
-            <Button
-              onClick={() => {
-                setIsBreakdownOpen(false);
-                onCheckout();
-              }}
-              disabled={busy}
-              size="lg"
-              className="w-full h-12 rounded-2xl bg-brand text-brand-ink font-bold text-sm uppercase tracking-wider shadow-md hover:bg-brand-hover active:scale-98"
-            >
-              {busy ? 'Reserving…' : `Proceed to Checkout (${centsToUSD(total)})`}
-            </Button>
+            {hasExpired ? (
+              <div className="space-y-2 pt-2">
+                <p className="text-center font-mono text-xs text-rose-500 font-semibold">
+                  Hold timer expired on one or more passes.
+                </p>
+                <p className="text-center text-[11px] text-muted-foreground">
+                  Please re-claim expired passes above to restart your 10-minute hold before checkout.
+                </p>
+              </div>
+            ) : (
+              <Button
+                onClick={() => {
+                  setIsBreakdownOpen(false);
+                  onCheckout();
+                }}
+                disabled={busy}
+                size="lg"
+                className="w-full h-12 rounded-2xl bg-brand text-brand-ink font-bold text-sm uppercase tracking-wider shadow-md hover:bg-brand-hover active:scale-98 cursor-pointer"
+              >
+                {busy ? 'Reserving…' : `Proceed to Checkout (${centsToUSD(total)})`}
+              </Button>
+            )}
           </div>
         </SheetContent>
       </Sheet>

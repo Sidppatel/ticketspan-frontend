@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Sheet, SheetContent, SheetTitle } from '@/shared/ui/sheet';
 import { GuestInfoStep, type BuyerInfo } from './GuestInfoStep';
 import { PaymentStep } from './PaymentStep';
 import { ConfirmationReceipt } from '@/features/public/components/checkout/ConfirmationReceipt';
-import { useCartStore } from '@/shared/lib/cartStore';
+import { useCartStore, isCartItemExpired, type UniversalCartItem } from '@/shared/lib/cartStore';
 import { createMultiBooking, quoteCart, cartServiceFeeCents } from '@/features/public/services/paymentService';
 import type { CartQuote } from '@/shared/proto/bookings';
 import { rpcErrorMessage } from '@/shared/session';
@@ -12,7 +12,8 @@ import { setReturnTo } from '@/shared/auth/returnTo';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { isTenantSubdomain, getUniversalLoginUrl } from '@/shared/subdomain';
 import { BrandMark } from '@/shared/brand/BrandMark';
-import { ShieldCheck, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { CartItemCountdown } from '@/features/public/components/cart/CartItemCountdown';
+import { ShieldCheck, X, ChevronDown, ChevronUp, AlertTriangle, RotateCcw } from 'lucide-react';
 import { centsToUSD } from '@/shared/lib/format';
 import { toast } from 'sonner';
 import { cn } from '@/shared/lib/cn';
@@ -30,7 +31,7 @@ export function UniversalMultiCheckoutDrawer({
   isOpen,
   onClose,
 }: UniversalMultiCheckoutDrawerProps) {
-  const { items, subtotalCents, groupedByEvent, clearCart } = useCartStore();
+  const { items, subtotalCents, groupedByEvent, clearCart, reclaimItem } = useCartStore();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,6 +42,7 @@ export function UniversalMultiCheckoutDrawer({
   const [bookingsId, setBookingsId] = useState<string>('');
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [quotes, setQuotes] = useState<Record<string, CartQuote>>({});
+  const [reclaimingAll, setReclaimingAll] = useState(false);
 
   const eventGroups = groupedByEvent();
   const eventIds = Object.keys(eventGroups);
@@ -83,6 +85,53 @@ export function UniversalMultiCheckoutDrawer({
     };
   }, [isOpen, items]);
 
+  const handleReclaim = useCallback(async (item: UniversalCartItem) => {
+    try {
+      await quoteCart(item.eventId, [{
+        kind: item.kind,
+        refId: item.refId,
+        seats: item.kind === 'Ticket' ? item.seats : 0,
+      }]);
+      reclaimItem(item.id);
+      toast.success(`${item.label} re-claimed!`, {
+        description: 'Your 10-minute hold timer has been restarted.',
+      });
+    } catch {
+      toast.error(`Unable to re-claim ${item.label}`, {
+        description: 'This pass may no longer be available or sold out.',
+      });
+    }
+  }, [reclaimItem]);
+
+  const handleReclaimAllExpired = useCallback(async () => {
+    setReclaimingAll(true);
+    const expiredItems = items.filter((i) => isCartItemExpired(i));
+    let reclaimedCount = 0;
+
+    for (const item of expiredItems) {
+      try {
+        await quoteCart(item.eventId, [{
+          kind: item.kind,
+          refId: item.refId,
+          seats: item.kind === 'Ticket' ? item.seats : 0,
+        }]);
+        reclaimItem(item.id);
+        reclaimedCount++;
+      } catch {
+        // failed
+      }
+    }
+
+    setReclaimingAll(false);
+    if (reclaimedCount > 0) {
+      toast.success(`Re-claimed ${reclaimedCount} item(s)!`, {
+        description: 'Your 10-minute hold timers have been refreshed.',
+      });
+    } else {
+      toast.error('Could not re-claim expired items. They may be sold out.');
+    }
+  }, [items, reclaimItem]);
+
   // Aggregate totals across all event quotes
   let totalSubtotalCents = 0;
   let totalDiscountCents = 0;
@@ -108,9 +157,17 @@ export function UniversalMultiCheckoutDrawer({
   }
 
   const grandTotalCents = totalChargeCents > 0 ? totalChargeCents : subtotalCents();
+  const hasExpired = items.some((i) => isCartItemExpired(i));
 
   // When proceeding from step 1 to step 2, create the multi-event booking reservations
   const handleProceedToPayment = async () => {
+    if (hasExpired) {
+      toast.error('Expired passes in cart', {
+        description: 'Please re-claim or remove expired items before proceeding to payment.',
+      });
+      return;
+    }
+
     if (!isAuthenticated) {
       setReturnTo(location.pathname + location.search);
       if (isTenantSubdomain()) {
@@ -180,7 +237,7 @@ export function UniversalMultiCheckoutDrawer({
 
         {/* Ambient Top Glow */}
         <div
-          className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-amber-500/15 blur-3xl"
+          className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-amber-500/10 blur-3xl"
           aria-hidden="true"
         />
 
@@ -189,25 +246,52 @@ export function UniversalMultiCheckoutDrawer({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <BrandMark className="size-6 text-amber-400" />
-              <span className="font-sans text-base font-bold text-white tracking-tight">
-                TicketSpan Multi-Checkout
-              </span>
+              <div>
+                <span className="font-sans text-base font-bold text-white tracking-tight">
+                  TicketSpan
+                </span>
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono">
+                  <ShieldCheck className="size-3 text-emerald-400" />
+                  <span>256-Bit Encrypted Multi-Event Checkout</span>
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-[10.5px] font-mono font-bold text-emerald-400">
-                <ShieldCheck className="size-3" /> 256-Bit SSL
+              <span className="rounded-full bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 font-mono text-[10px] font-bold text-amber-300">
+                Step {step} of 3
               </span>
               <button
                 type="button"
                 onClick={() => handleClose(step === 3)}
-                className="flex size-7 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                className="flex size-7 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
                 aria-label="Close checkout"
               >
                 <X className="size-4" />
               </button>
             </div>
           </div>
+
+          {/* Expired Warning Banner */}
+          {hasExpired && step === 1 && (
+            <div className="mt-3 rounded-xl bg-rose-500/15 border border-rose-500/30 p-2.5 flex items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <AlertTriangle className="size-4 text-rose-400 shrink-0" />
+                <span className="text-rose-300 font-medium truncate">
+                  Some pass hold timers expired.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleReclaimAllExpired}
+                disabled={reclaimingAll}
+                className="inline-flex items-center gap-1 shrink-0 rounded-lg bg-rose-500/30 border border-rose-500/50 px-2 py-0.5 text-[10px] font-mono font-bold text-rose-200 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
+              >
+                <RotateCcw className={cn('size-3', reclaimingAll && 'animate-spin')} />
+                <span>{reclaimingAll ? 'Reclaiming…' : 'Re-claim All'}</span>
+              </button>
+            </div>
+          )}
 
           {/* Cart Multi-Event Summary Box */}
           <div className="mt-3 rounded-xl border border-white/10 bg-[#181d2a] p-3 shadow-inner space-y-2">
@@ -225,7 +309,7 @@ export function UniversalMultiCheckoutDrawer({
                 <button
                   type="button"
                   onClick={() => setShowBreakdown((prev) => !prev)}
-                  className="flex items-center gap-1.5 text-right group focus:outline-none"
+                  className="flex items-center gap-1.5 text-right group focus:outline-none cursor-pointer"
                 >
                   <div className="flex flex-col items-end">
                     <span className="text-base font-bold text-amber-400 font-mono">
@@ -243,21 +327,24 @@ export function UniversalMultiCheckoutDrawer({
             {/* Collapsible Itemized Breakdown */}
             {showBreakdown && (
               <div className="border-t border-white/10 pt-2.5 space-y-2 text-xs animate-in fade-in-50 duration-200">
-                <div className="space-y-1.5 divide-y divide-white/5 pb-1">
+                <div className="space-y-2 divide-y divide-white/5 pb-1">
                   {eventIds.map((eventId) => {
                     const groupItems = eventGroups[eventId];
                     const first = groupItems[0];
                     return (
-                      <div key={eventId} className="pt-1.5 first:pt-0 space-y-1">
+                      <div key={eventId} className="pt-2 first:pt-0 space-y-1.5">
                         <span className="font-bold text-amber-400/90 text-[11px] block truncate">
                           {first.eventTitle}
                         </span>
                         {groupItems.map((item) => (
-                          <div key={item.id} className="flex justify-between text-[11px] text-slate-300 pl-2">
-                            <span className="truncate pr-2">
-                              {item.label} (x{item.seats})
-                            </span>
-                            <span className="font-mono">{centsToUSD(calculateLineTotal(item.unitPriceCents, item.seats))}</span>
+                          <div key={item.id} className="flex items-center justify-between text-[11px] text-slate-300 pl-2 gap-2">
+                            <div className="flex items-center gap-2 truncate min-w-0">
+                              <span className="truncate">
+                                {item.label} (x{item.seats})
+                              </span>
+                              <CartItemCountdown item={item} onReclaim={handleReclaim} />
+                            </div>
+                            <span className="font-mono shrink-0">{centsToUSD(calculateLineTotal(item.unitPriceCents, item.seats))}</span>
                           </div>
                         ))}
                       </div>

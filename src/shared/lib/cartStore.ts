@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
+export const DEFAULT_HOLD_SECONDS = 600; // 10 minutes from app_setting default
+
 export interface UniversalCartItem {
   id: string;
   eventId: string;
@@ -15,14 +17,19 @@ export interface UniversalCartItem {
   unitPriceCents: number;
   seats: number;
   tenantId?: string;
+  addedAt: number;
+  expiresAt: number;
+  holdSeconds?: number;
 }
 
 interface CartState {
   items: UniversalCartItem[];
   isOpen: boolean;
 
-  addItem: (item: Omit<UniversalCartItem, 'id'>) => void;
+  addItem: (item: Omit<UniversalCartItem, 'id' | 'addedAt' | 'expiresAt'> & { addedAt?: number; expiresAt?: number; holdSeconds?: number }) => void;
   updateQuantity: (id: string, seats: number) => void;
+  reclaimItem: (id: string, newHoldSeconds?: number) => void;
+  reclaimAllExpired: (newHoldSeconds?: number) => void;
   removeItem: (id: string) => void;
   clearCart: () => void;
   clearEvent: (eventId: string) => void;
@@ -32,7 +39,14 @@ interface CartState {
   totalItemCount: () => number;
   subtotalCents: () => number;
   groupedByEvent: () => Record<string, UniversalCartItem[]>;
+  isItemExpired: (item: UniversalCartItem) => boolean;
+  hasExpiredItems: () => boolean;
 }
+
+export const isCartItemExpired = (item: UniversalCartItem): boolean => {
+  if (!item.expiresAt) return false;
+  return Date.now() >= item.expiresAt;
+};
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -42,6 +56,11 @@ export const useCartStore = create<CartState>()(
 
       addItem: (item) => {
         const id = `${item.eventId}:${item.kind}:${item.refId}`;
+        const holdSec = item.holdSeconds ?? DEFAULT_HOLD_SECONDS;
+        const now = Date.now();
+        const addedAt = item.addedAt ?? now;
+        const expiresAt = item.expiresAt ?? (now + holdSec * 1000);
+
         set((state) => {
           const existingIndex = state.items.findIndex((i) => i.id === id);
           if (existingIndex > -1) {
@@ -50,10 +69,23 @@ export const useCartStore = create<CartState>()(
             updated[existingIndex] = {
               ...current,
               seats: item.kind === 'Table' ? item.seats : current.seats + item.seats,
+              addedAt: now,
+              expiresAt: now + (current.holdSeconds ?? holdSec) * 1000,
             };
             return { items: updated };
           }
-          return { items: [...state.items, { ...item, id }] };
+          return {
+            items: [
+              ...state.items,
+              {
+                ...item,
+                id,
+                addedAt,
+                expiresAt,
+                holdSeconds: holdSec,
+              },
+            ],
+          };
         });
       },
 
@@ -64,6 +96,38 @@ export const useCartStore = create<CartState>()(
         }
         set((state) => ({
           items: state.items.map((i) => (i.id === id ? { ...i, seats } : i)),
+        }));
+      },
+
+      reclaimItem: (id, newHoldSeconds) => {
+        const now = Date.now();
+        set((state) => ({
+          items: state.items.map((i) => {
+            if (i.id !== id) return i;
+            const holdSec = newHoldSeconds ?? i.holdSeconds ?? DEFAULT_HOLD_SECONDS;
+            return {
+              ...i,
+              addedAt: now,
+              expiresAt: now + holdSec * 1000,
+              holdSeconds: holdSec,
+            };
+          }),
+        }));
+      },
+
+      reclaimAllExpired: (newHoldSeconds) => {
+        const now = Date.now();
+        set((state) => ({
+          items: state.items.map((i) => {
+            if (i.expiresAt && now < i.expiresAt) return i;
+            const holdSec = newHoldSeconds ?? i.holdSeconds ?? DEFAULT_HOLD_SECONDS;
+            return {
+              ...i,
+              addedAt: now,
+              expiresAt: now + holdSec * 1000,
+              holdSeconds: holdSec,
+            };
+          }),
         }));
       },
 
@@ -102,6 +166,12 @@ export const useCartStore = create<CartState>()(
           groups[item.eventId].push(item);
         }
         return groups;
+      },
+
+      isItemExpired: (item) => isCartItemExpired(item),
+
+      hasExpiredItems: () => {
+        return get().items.some((i) => isCartItemExpired(i));
       },
     }),
     {

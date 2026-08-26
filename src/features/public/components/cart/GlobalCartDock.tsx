@@ -1,13 +1,15 @@
-import { useCartStore, type UniversalCartItem } from '@/shared/lib/cartStore';
-import { ShoppingBag, ChevronRight, X, Plus, Minus, Calendar, MapPin } from 'lucide-react';
+import { useCartStore, isCartItemExpired, type UniversalCartItem } from '@/shared/lib/cartStore';
+import { ShoppingBag, ChevronRight, X, Plus, Minus, Calendar, MapPin, AlertTriangle, RotateCcw } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { centsToUSD, formatEventDate } from '@/shared/lib/format';
 import { Sheet, SheetContent, SheetTitle } from '@/shared/ui/sheet';
 import { Badge } from '@/shared/ui/badge';
+import { CartItemCountdown } from '@/features/public/components/cart/CartItemCountdown';
 import { cn } from '@/shared/lib/cn';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { quoteCart, cartServiceFeeCents } from '@/features/public/services/paymentService';
 import type { CartQuote } from '@/shared/proto/bookings';
+import { toast } from 'sonner';
 
 function calculateLineTotal(val1: number, val2: number): number {
   return val1 * val2;
@@ -21,7 +23,18 @@ interface GlobalCartDockProps {
 }
 
 export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
-  const { items, isOpen, setOpen, updateQuantity, removeItem, clearCart, totalItemCount, subtotalCents, groupedByEvent } = useCartStore();
+  const {
+    items,
+    isOpen,
+    setOpen,
+    updateQuantity,
+    reclaimItem,
+    removeItem,
+    clearCart,
+    totalItemCount,
+    subtotalCents,
+    groupedByEvent,
+  } = useCartStore();
 
   const count = totalItemCount();
   const subtotal = subtotalCents();
@@ -29,9 +42,9 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
   const eventIds = Object.keys(eventGroups);
 
   const [quotes, setQuotes] = useState<Record<string, CartQuote>>({});
+  const [reclaimingAll, setReclaimingAll] = useState(false);
 
   useEffect(() => {
-
     const currentEventGroups = useCartStore.getState().groupedByEvent();
     const currentEventIds = Object.keys(currentEventGroups);
 
@@ -64,6 +77,55 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
     };
   }, [items]);
 
+  const handleReclaim = useCallback(async (item: UniversalCartItem) => {
+    try {
+      // Validate current availability via quoteCart
+      await quoteCart(item.eventId, [{
+        kind: item.kind,
+        refId: item.refId,
+        seats: item.kind === 'Ticket' ? item.seats : 0,
+      }]);
+
+      reclaimItem(item.id);
+      toast.success(`${item.label} re-claimed!`, {
+        description: 'Your 10-minute hold timer has been restarted.',
+      });
+    } catch {
+      toast.error(`Unable to re-claim ${item.label}`, {
+        description: 'This pass may no longer be available or sold out.',
+      });
+    }
+  }, [reclaimItem]);
+
+  const handleReclaimAllExpired = useCallback(async () => {
+    setReclaimingAll(true);
+    const expiredItems = items.filter((i) => isCartItemExpired(i));
+    let reclaimedCount = 0;
+
+    for (const item of expiredItems) {
+      try {
+        await quoteCart(item.eventId, [{
+          kind: item.kind,
+          refId: item.refId,
+          seats: item.kind === 'Ticket' ? item.seats : 0,
+        }]);
+        reclaimItem(item.id);
+        reclaimedCount++;
+      } catch {
+        // Individual item failed availability check
+      }
+    }
+
+    setReclaimingAll(false);
+    if (reclaimedCount > 0) {
+      toast.success(`Re-claimed ${reclaimedCount} item(s)!`, {
+        description: 'Your 10-minute hold timers have been refreshed.',
+      });
+    } else {
+      toast.error('Could not re-claim expired items. They may be sold out.');
+    }
+  }, [items, reclaimItem]);
+
   let totalSubtotalCents = 0;
   let totalDiscountCents = 0;
   let totalServiceFeeCents = 0;
@@ -88,6 +150,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
   }
 
   const grandTotal = totalChargeCents > 0 ? totalChargeCents : subtotal;
+  const hasExpired = items.some((i) => isCartItemExpired(i));
 
   if (count === 0 && !isOpen) {
     return null;
@@ -105,26 +168,44 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
             type="button"
             onClick={() => setOpen(true)}
             className={cn(
-              'group flex items-center gap-3 rounded-full border border-white/20 bg-[#131722]/95 px-4 py-2.5 md:px-5 md:py-3 text-white shadow-2xl backdrop-blur-2xl transition-all duration-200 hover:scale-[1.03] hover:border-amber-400/50 hover:shadow-amber-500/20 active:scale-[0.97] cursor-pointer',
+              'group flex items-center gap-3 rounded-full border bg-[#131722]/95 px-4 py-2.5 md:px-5 md:py-3 text-white shadow-2xl backdrop-blur-2xl transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] cursor-pointer',
+              hasExpired
+                ? 'border-rose-500/50 shadow-rose-500/20 hover:border-rose-400'
+                : 'border-white/20 hover:border-amber-400/50 hover:shadow-amber-500/20',
             )}
           >
-            <div className="relative flex size-9 md:size-10 items-center justify-center rounded-full bg-amber-400 text-slate-950 font-bold shadow-md group-hover:bg-amber-300 transition-colors">
+            <div
+              className={cn(
+                'relative flex size-9 md:size-10 items-center justify-center rounded-full font-bold shadow-md transition-colors',
+                hasExpired
+                  ? 'bg-rose-500 text-white'
+                  : 'bg-amber-400 text-slate-950 group-hover:bg-amber-300',
+              )}
+            >
               <ShoppingBag className="size-4 md:size-5" />
-              <span className="absolute -top-1.5 -right-1.5 flex size-4.5 md:size-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white ring-2 ring-[#131722]">
+              <span className="absolute -top-1.5 -right-1.5 flex size-4.5 md:size-5 items-center justify-center rounded-full bg-rose-600 text-[10px] font-black text-white ring-2 ring-[#131722]">
                 {count}
               </span>
             </div>
 
             <div className="flex flex-col text-left">
-              <span className="text-[10px] md:text-[11px] uppercase tracking-wider text-slate-400 font-mono">
+              <span className="text-[10px] md:text-[11px] uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1">
                 {eventIds.length} {eventIds.length === 1 ? 'Event' : 'Events'} in Cart
+                {hasExpired && <span className="text-rose-400 font-bold">• Expired</span>}
               </span>
               <span className="font-mono text-sm md:text-base font-bold text-white">
                 {centsToUSD(grandTotal)}
               </span>
             </div>
 
-            <div className="ml-1 md:ml-2 flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 md:px-3 md:py-1.5 text-xs font-bold text-amber-400 group-hover:bg-amber-400 group-hover:text-slate-950 transition-all">
+            <div
+              className={cn(
+                'ml-1 md:ml-2 flex items-center gap-1 rounded-full px-2.5 py-1 md:px-3 md:py-1.5 text-xs font-bold transition-all',
+                hasExpired
+                  ? 'bg-rose-500/20 text-rose-300 group-hover:bg-rose-500 group-hover:text-white'
+                  : 'bg-white/10 text-amber-400 group-hover:bg-amber-400 group-hover:text-slate-950',
+              )}
+            >
               <span>View Cart</span>
               <ChevronRight className="size-3.5" />
             </div>
@@ -132,7 +213,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
         </aside>
       )}
 
-      {/* Slide-Over Universal Cart Drawer */}
+      {/* Slide-Over Cart Drawer */}
       <Sheet open={isOpen} onOpenChange={setOpen}>
         <SheetContent
           side="right"
@@ -175,6 +256,27 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
               </button>
             </div>
           </div>
+
+          {/* Expired Items Notice Banner */}
+          {hasExpired && (
+            <div className="bg-rose-500/10 border-b border-rose-500/20 px-6 py-3 flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 min-w-0">
+                <AlertTriangle className="size-4 text-rose-400 shrink-0" />
+                <span className="text-rose-300 font-medium truncate">
+                  Some hold timers expired. Re-claim before checkout.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleReclaimAllExpired}
+                disabled={reclaimingAll}
+                className="inline-flex items-center gap-1 shrink-0 rounded-lg bg-rose-500/20 border border-rose-500/40 px-2.5 py-1 text-[11px] font-mono font-bold text-rose-300 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
+              >
+                <RotateCcw className={cn('size-3', reclaimingAll && 'animate-spin')} />
+                <span>{reclaimingAll ? 'Reclaiming…' : 'Re-claim All'}</span>
+              </button>
+            </div>
+          )}
 
           {/* Cart Item Groups by Event */}
           <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6">
@@ -224,60 +326,77 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
 
                     {/* Group Items */}
                     <div className="divide-y divide-white/5 p-2">
-                      {groupItems.map((item: UniversalCartItem) => (
-                        <div key={item.id} className="flex items-center justify-between p-2 text-xs">
-                          <div className="min-w-0 pr-3 space-y-1">
-                            <div className="flex items-center gap-2">
-                              <Badge variant="outline" className="text-[9px] font-mono uppercase bg-white/5 border-white/15">
-                                {item.kind}
-                              </Badge>
-                              <span className="font-bold text-white truncate">{item.label}</span>
-                            </div>
-                            <p className="text-[11px] font-mono text-slate-400">
-                              {centsToUSD(item.unitPriceCents)} each
-                            </p>
-                          </div>
+                      {groupItems.map((item: UniversalCartItem) => {
+                        const expired = isCartItemExpired(item);
 
-                          <div className="flex items-center gap-3 shrink-0">
-                            {item.kind === 'Ticket' ? (
-                              <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 p-1">
-                                <button
-                                  type="button"
-                                  onClick={() => updateQuantity(item.id, addNum(item.seats, -1))}
-                                  className="flex size-6 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
-                                >
-                                  <Minus className="size-3" />
-                                </button>
-                                <span className="w-6 text-center font-mono font-bold text-white text-xs">
-                                  {item.seats}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => updateQuantity(item.id, addNum(item.seats, 1))}
-                                  className="flex size-6 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
-                                >
-                                  <Plus className="size-3" />
-                                </button>
-                              </div>
-                            ) : (
-                              <span className="font-mono text-xs text-slate-300">1 table</span>
+                        return (
+                          <div
+                            key={item.id}
+                            className={cn(
+                              'flex items-center justify-between p-2.5 text-xs rounded-xl transition-colors',
+                              expired && 'bg-rose-500/5',
                             )}
+                          >
+                            <div className="min-w-0 pr-3 space-y-1.5 flex-1">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-[9px] font-mono uppercase bg-white/5 border-white/15">
+                                  {item.kind}
+                                </Badge>
+                                <span className={cn('font-bold truncate', expired ? 'text-white/70' : 'text-white')}>
+                                  {item.label}
+                                </span>
+                              </div>
 
-                            <span className="font-mono font-bold text-white text-xs w-16 text-right">
-                              {centsToUSD(calculateLineTotal(item.unitPriceCents, item.seats))}
-                            </span>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="text-[11px] font-mono text-slate-400">
+                                  {centsToUSD(item.unitPriceCents)} each
+                                </p>
+                                <span className="text-white/20">•</span>
+                                <CartItemCountdown item={item} onReclaim={handleReclaim} />
+                              </div>
+                            </div>
 
-                            <button
-                              type="button"
-                              onClick={() => removeItem(item.id)}
-                              className="text-slate-500 hover:text-rose-400 p-1"
-                              aria-label="Remove item"
-                            >
-                              <X className="size-3.5" />
-                            </button>
+                            <div className="flex items-center gap-3 shrink-0">
+                              {item.kind === 'Ticket' ? (
+                                <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 p-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => updateQuantity(item.id, addNum(item.seats, -1))}
+                                    className="flex size-6 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+                                  >
+                                    <Minus className="size-3" />
+                                  </button>
+                                  <span className="w-6 text-center font-mono font-bold text-white text-xs">
+                                    {item.seats}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateQuantity(item.id, addNum(item.seats, 1))}
+                                    className="flex size-6 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+                                  >
+                                    <Plus className="size-3" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <span className="font-mono text-xs text-slate-300">1 table</span>
+                              )}
+
+                              <span className="font-mono font-bold text-white text-xs w-16 text-right">
+                                {centsToUSD(calculateLineTotal(item.unitPriceCents, item.seats))}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() => removeItem(item.id)}
+                                className="text-slate-500 hover:text-rose-400 p-1 transition-colors cursor-pointer"
+                                aria-label="Remove item"
+                              >
+                                <X className="size-3.5" />
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -317,14 +436,30 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
                 </div>
               </div>
 
-              <Button
-                onClick={() => {
-                  onCheckout();
-                }}
-                className="w-full h-12 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                Proceed to Checkout ({centsToUSD(grandTotal)}) <ChevronRight className="size-4" />
-              </Button>
+              {hasExpired ? (
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleReclaimAllExpired}
+                    disabled={reclaimingAll}
+                    className="w-full h-12 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <RotateCcw className={cn('size-4', reclaimingAll && 'animate-spin')} />
+                    <span>{reclaimingAll ? 'Re-claiming passes…' : 'Re-claim Expired Passes'}</span>
+                  </Button>
+                  <p className="text-center font-mono text-[11px] text-rose-400">
+                    Please re-claim expired tickets to secure a fresh 10-minute hold before checkout.
+                  </p>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => {
+                    onCheckout();
+                  }}
+                  className="w-full h-12 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  Proceed to Checkout ({centsToUSD(grandTotal)}) <ChevronRight className="size-4" />
+                </Button>
+              )}
             </div>
           )}
         </SheetContent>
