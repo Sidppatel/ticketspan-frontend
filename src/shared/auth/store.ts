@@ -1,52 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { UserProfile, AuthResponse } from '@/shared/proto/auth';
-import { getRootCookieDomain } from '@/shared/subdomain';
 
 const COOKIE_NAME = 'ticketspan_session';
 
 export interface PersistedAuthPayload {
   accessToken: string | null;
-  refreshToken: string | null;
+  refreshToken?: string | null;
   expiresAtSeconds: number | null;
   user: UserProfile | null;
-}
-
-export function setCrossDomainCookie(payload: PersistedAuthPayload) {
-  if (typeof document === 'undefined') return;
-  try {
-    const domain = getRootCookieDomain();
-    const domainAttr = domain ? `; domain=${domain}` : '';
-    const secure = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
-    const json = JSON.stringify(payload);
-    document.cookie = `${COOKIE_NAME}=${encodeURIComponent(json)}; path=/; max-age=604800; SameSite=Lax${domainAttr}${secure}`;
-  } catch (error) {
-    void error;
-  }
 }
 
 export function clearCrossDomainCookie() {
   if (typeof document === 'undefined') return;
   try {
-    const domain = getRootCookieDomain();
-    const domainAttr = domain ? `; domain=${domain}` : '';
-    document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax${domainAttr}`;
     document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
   } catch (error) {
     void error;
-  }
-}
-
-export function readCrossDomainCookie(): PersistedAuthPayload | null {
-  if (typeof document === 'undefined') return null;
-  try {
-    const match = document.cookie.match(new RegExp('(^|;\\s*)' + COOKIE_NAME + '=([^;]*)'));
-    if (!match) return null;
-    const json = decodeURIComponent(match[2]);
-    return JSON.parse(json) as PersistedAuthPayload;
-  } catch (error) {
-    void error;
-    return null;
   }
 }
 
@@ -68,9 +38,11 @@ export function readAuthFromUrlHash(): PersistedAuthPayload | null {
       (remaining ? `#${remaining}` : '');
     window.history.replaceState(null, '', newUrl);
 
-    window.localStorage.setItem('ticketspan-auth', JSON.stringify({ state: payload, version: 0 }));
-    setCrossDomainCookie(payload);
-    return payload;
+    return {
+      accessToken: payload.accessToken ?? null,
+      expiresAtSeconds: payload.expiresAtSeconds ?? null,
+      user: payload.user ?? null,
+    };
   } catch (e) {
     void e;
     return null;
@@ -91,7 +63,6 @@ export function readStoredAuth(): PersistedAuthPayload | null {
       if (state?.accessToken) {
         return {
           accessToken: state.accessToken ?? null,
-          refreshToken: state.refreshToken ?? null,
           expiresAtSeconds: state.expiresAtSeconds ?? null,
           user: state.user ?? null,
         };
@@ -101,7 +72,7 @@ export function readStoredAuth(): PersistedAuthPayload | null {
     void e;
   }
 
-  return readCrossDomainCookie();
+  return null;
 }
 
 export interface AuthState {
@@ -121,39 +92,19 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       accessToken: initialPayload?.accessToken ?? null,
-      refreshToken: initialPayload?.refreshToken ?? null,
+      refreshToken: null,
       expiresAtSeconds: initialPayload?.expiresAtSeconds ?? null,
       user: initialPayload?.user ?? null,
       setSession: (auth) => {
         const nextUser = auth.user ?? get().user;
-        const payload: PersistedAuthPayload = {
+        set({
           accessToken: auth.accessToken,
-          refreshToken: auth.refreshToken,
+          refreshToken: null,
           expiresAtSeconds: Number(auth.expiresAt),
           user: nextUser,
-        };
-        try {
-          window.localStorage.setItem('ticketspan-auth', JSON.stringify({ state: payload, version: 0 }));
-        } catch (e) {
-          void e;
-        }
-        setCrossDomainCookie(payload);
-        set(payload);
+        });
       },
       setUser: (user) => {
-        const current = get();
-        const payload: PersistedAuthPayload = {
-          accessToken: current.accessToken,
-          refreshToken: current.refreshToken,
-          expiresAtSeconds: current.expiresAtSeconds,
-          user,
-        };
-        try {
-          window.localStorage.setItem('ticketspan-auth', JSON.stringify({ state: payload, version: 0 }));
-        } catch (e) {
-          void e;
-        }
-        setCrossDomainCookie(payload);
         set({ user });
       },
       clear: () => {
@@ -182,21 +133,19 @@ export const useAuthStore = create<AuthState>()(
         const currentOrFallback = readStoredAuth();
 
         const token = typedPersisted?.accessToken || currentState?.accessToken || currentOrFallback?.accessToken || null;
-        const refreshToken = typedPersisted?.refreshToken || currentState?.refreshToken || currentOrFallback?.refreshToken || null;
         const expiresAt = typedPersisted?.expiresAtSeconds || currentState?.expiresAtSeconds || currentOrFallback?.expiresAtSeconds || null;
         const user = typedPersisted?.user || currentState?.user || currentOrFallback?.user || null;
 
         return {
           ...currentState,
           accessToken: token,
-          refreshToken: refreshToken,
+          refreshToken: null,
           expiresAtSeconds: expiresAt,
           user: user,
         };
       },
       partialize: (state) => ({
         accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
         expiresAtSeconds: state.expiresAtSeconds,
         user: state.user,
       }),

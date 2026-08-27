@@ -160,9 +160,8 @@ export async function unlinkGoogle(): Promise<void> {
 }
 
 export async function logout(): Promise<void> {
-  const refreshToken = useAuthStore.getState().refreshToken ?? '';
   try {
-    await callRpc(() => authClient.logout({ sessionHash: refreshToken }));
+    await callRpc(() => authClient.logout({ sessionHash: '' }));
   } finally {
     useAuthStore.getState().clear();
   }

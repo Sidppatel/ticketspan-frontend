@@ -74,6 +74,11 @@ const actingTenantInterceptor: RpcInterceptor = {
 export const transport = new GrpcWebFetchTransport({
   baseUrl: BACKEND_URL,
   format: 'binary',
+  fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+    fetch(input, {
+      ...init,
+      credentials: 'include',
+    }),
   interceptors: [authInterceptor, tenantInterceptor, actingTenantInterceptor],
 });
 

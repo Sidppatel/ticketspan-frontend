@@ -26,7 +26,6 @@ export function useAuthFlow() {
       const currentAuth = useAuthStore.getState();
       const payload: PersistedAuthPayload = {
         accessToken: currentAuth.accessToken,
-        refreshToken: currentAuth.refreshToken,
         expiresAtSeconds: currentAuth.expiresAtSeconds,
         user: currentAuth.user,
       };

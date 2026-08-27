@@ -8,14 +8,10 @@ const REPORTABLE_RPC_CODES = ['INTERNAL', 'UNKNOWN', 'UNAVAILABLE', 'DEADLINE_EX
 
 let refreshInFlight: Promise<boolean> | null = null;
 
-async function tryRefresh(): Promise<boolean> {
-  const refreshToken = useAuthStore.getState().refreshToken;
-  if (!refreshToken) {
-    return false;
-  }
+export async function tryRefresh(): Promise<boolean> {
   if (!refreshInFlight) {
     refreshInFlight = authClient
-      .refreshToken({ refreshToken })
+      .refreshToken({ refreshToken: '' })
       .response.then((auth) => {
         useAuthStore.getState().setSession(auth);
         return true;
