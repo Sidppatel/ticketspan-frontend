@@ -24,7 +24,6 @@ export function PublicLayout() {
 
   const onRootDomain = !currentTenantSlug();
 
-  // On tenant domain, only show Events catalog and Staff check-in if staff
   const links = onRootDomain
     ? [
         { to: '/', label: 'Home' },
@@ -57,12 +56,12 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      {/* Global Multi-Event Shopping Cart Dock & Slide-Over */}
+      {}
       <GlobalCartDock onCheckout={() => {
         setIsMultiCheckoutOpen(true);
       }} />
 
-      {/* Universal Consolidated Multi-Event Checkout Sheet */}
+      {}
       <UniversalMultiCheckoutDrawer
         isOpen={isMultiCheckoutOpen}
         onClose={() => setIsMultiCheckoutOpen(false)}

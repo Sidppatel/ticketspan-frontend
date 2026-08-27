@@ -63,7 +63,6 @@ export function BookingDetailPage() {
   const b = booking.data;
   const tList = useMemo(() => tickets.data ?? [], [tickets.data]);
 
-  // Check if the current user has claimed any ticket on this booking
   const myClaimedTicket = useMemo(() => {
     if (!user) return null;
     return tList.find(
@@ -73,7 +72,6 @@ export function BookingDetailPage() {
 
   const hasClaimedForSelf = Boolean(myClaimedTicket);
 
-  // Invite by email
   async function handleInvite(ticketId: string) {
     const emailToInvite = (emails[ticketId] ?? '').trim();
     if (!emailToInvite) {
@@ -94,7 +92,6 @@ export function BookingDetailPage() {
     }
   }
 
-  // Generate and copy shareable claim link directly
   async function handleCopyClaimLink(ticketId: string) {
     setCopiedLinkTicketId(ticketId);
     try {
@@ -112,7 +109,6 @@ export function BookingDetailPage() {
     }
   }
 
-  // Claim 1 for self
   async function handleClaimSelf(ticketId: string) {
     setClaimingId(ticketId);
     try {
@@ -129,7 +125,6 @@ export function BookingDetailPage() {
     }
   }
 
-  // Revoke ticket / invite
   async function handleRevoke(ticketId: string, label: string) {
     if (!window.confirm(`Revoke ${label}? The current pass/invite code will be invalidated.`)) {
       return;
@@ -157,7 +152,7 @@ export function BookingDetailPage() {
 
   return (
     <div className="space-y-8 pb-20">
-      {/* Back Navigation Bar */}
+      {}
       <div className="flex items-center justify-between">
         <Link
           to="/bookings"
@@ -184,7 +179,7 @@ export function BookingDetailPage() {
         </div>
       </div>
 
-      {/* Just Paid Confirmation Alert */}
+      {}
       {justPaid && (
         <div className="rounded-2xl border border-hairline bg-surface p-5 shadow-sm space-y-1">
           <div className="flex items-center gap-2.5 text-emerald-600 dark:text-emerald-400 font-display text-lg font-semibold">
@@ -328,9 +323,9 @@ export function BookingDetailPage() {
             </div>
           )}
 
-          {/* ========================================================================= */}
-          {/* TICKET DISTRIBUTION & CLAIM MANAGEMENT HUB                               */}
-          {/* ========================================================================= */}
+          {}
+          {}
+          {}
           <div className="rounded-3xl border border-hairline bg-surface p-6 sm:p-8 shadow-[var(--shadow-e1)] space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-hairline pb-4">
               <div>
@@ -346,7 +341,7 @@ export function BookingDetailPage() {
               </Badge>
             </div>
 
-            {/* Tickets Interactive List */}
+            {}
             <div className="space-y-4">
               {tList.map((ticket, index) => {
                 const isClaimedByMe = ticket.guestUsersId === user?.usersId && (ticket.status === 'Claimed' || ticket.status === 'CheckedIn');
@@ -364,7 +359,7 @@ export function BookingDetailPage() {
                     key={ticket.ticketsId}
                     className="rounded-2xl border border-hairline bg-surface p-4 sm:p-5 transition-all space-y-4 hover:border-hairline-strong"
                   >
-                    {/* Top Row: Ticket info & Status pill */}
+                    {}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-surface-sunken border border-hairline font-mono text-xs font-bold text-ink">
@@ -383,7 +378,7 @@ export function BookingDetailPage() {
                         </div>
                       </div>
 
-                      {/* Status Badges */}
+                      {}
                       <div className="flex items-center gap-2">
                         {isCheckedIn ? (
                           <span className="inline-flex items-center gap-1 rounded-full bg-surface-sunken border border-hairline px-3 py-1 font-mono text-xs font-medium text-ink-soft">
@@ -409,7 +404,7 @@ export function BookingDetailPage() {
                       </div>
                     </div>
 
-                    {/* Bottom Row: Actions according to status */}
+                    {}
                     <div className="border-t border-hairline pt-3 flex flex-wrap items-center justify-between gap-3 text-xs">
                       {isClaimedByMe ? (
                         <div className="flex flex-wrap items-center justify-between gap-3 w-full">
@@ -457,7 +452,7 @@ export function BookingDetailPage() {
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2">
-                            {/* Copy Direct Claim Link */}
+                            {}
                             <Button
                               size="sm"
                               variant="outline"
@@ -468,7 +463,7 @@ export function BookingDetailPage() {
                               {isCopiedThis ? 'Copied' : 'Copy Claim Link'}
                             </Button>
 
-                            {/* Cancel Invite */}
+                            {}
                             <Button
                               size="sm"
                               variant="outline"
@@ -497,9 +492,9 @@ export function BookingDetailPage() {
                           </Button>
                         </div>
                       ) : (
-                        /* Unassigned Ticket Actions: 1-Click Claim for Self OR Invite Guest */
+
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
-                          {/* Claim for Self Option */}
+                          {}
                           <div className="flex items-center gap-2">
                             <Button
                               size="sm"
@@ -526,7 +521,7 @@ export function BookingDetailPage() {
                             </Button>
                           </div>
 
-                          {/* Email Invite Form */}
+                          {}
                           <div className="flex items-center gap-2 flex-1 sm:max-w-xs">
                             <Input
                               type="email"
@@ -557,9 +552,9 @@ export function BookingDetailPage() {
             </div>
           </div>
 
-          {/* ========================================================================= */}
-          {/* FINANCIAL RECEIPT & ORDER SUMMARY                                        */}
-          {/* ========================================================================= */}
+          {}
+          {}
+          {}
           <div className="rounded-3xl border border-hairline bg-surface p-6 sm:p-8 shadow-[var(--shadow-e1)] space-y-6">
             <div className="border-b border-hairline pb-3">
               <h2 className="font-display text-xl font-semibold text-ink">Financial Breakdown & Receipt</h2>
@@ -567,7 +562,7 @@ export function BookingDetailPage() {
             </div>
 
             <div className="space-y-3 text-sm">
-              {/* Lines list */}
+              {}
               {b.lines.map((line) => (
                 <div key={line.bookingLinesId} className="flex items-center justify-between py-1 border-b border-hairline/60">
                   <div>
@@ -606,7 +601,7 @@ export function BookingDetailPage() {
         </div>
       )}
 
-      {/* QR Enlarge Dialog */}
+      {}
       <Dialog
         open={activeQr !== null}
         onOpenChange={(open) => {

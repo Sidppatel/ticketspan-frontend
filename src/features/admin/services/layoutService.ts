@@ -6,9 +6,6 @@ export async function getEventLayout(eventsId: string): Promise<EventLayout> {
   return callRpc(() => tableBookingClient.getEventLayout({ value: eventsId }));
 }
 
-
-
-
 function tableJson(t: Table) {
   return {
     Id: t.tablesId,

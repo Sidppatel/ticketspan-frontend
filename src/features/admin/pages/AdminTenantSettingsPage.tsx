@@ -136,7 +136,7 @@ export function AdminTenantSettingsPage() {
         </Alert>
       )}
 
-      {/* Business Profile */}
+      {}
       <Card>
         <CardHeader className="border-b border-border/40 pb-4">
           <CardTitle className="flex items-center gap-2">
@@ -233,7 +233,7 @@ export function AdminTenantSettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Branding Studio Card */}
+      {}
       <Card>
         <CardHeader className="border-b border-border/40 pb-4">
           <CardTitle className="flex items-center gap-2">
@@ -257,7 +257,7 @@ export function AdminTenantSettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Stripe Connect Card */}
+      {}
       <Card>
         <CardHeader className="border-b border-border/40 pb-4">
           <CardTitle className="flex items-center gap-2">

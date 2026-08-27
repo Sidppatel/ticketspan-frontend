@@ -86,7 +86,7 @@ export function PersonalInfoTab({
 
   return (
     <div className="space-y-6">
-      {/* Header & Quick Action */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-hairline pb-4">
         <div>
           <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-brand">
@@ -116,9 +116,9 @@ export function PersonalInfoTab({
       </div>
 
       {!editing ? (
-        /* Read-Only Bento Grid Display */
+
         <div className="grid gap-4 sm:grid-cols-2">
-          {/* Identity Card */}
+          {}
           <div className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 shadow-[var(--shadow-e1)] space-y-4">
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
@@ -146,7 +146,7 @@ export function PersonalInfoTab({
             </div>
           </div>
 
-          {/* Contact Methods */}
+          {}
           <div className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 shadow-[var(--shadow-e1)] space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -200,7 +200,7 @@ export function PersonalInfoTab({
             </div>
           </div>
 
-          {/* Primary / Mailing Location Card */}
+          {}
           <div className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 shadow-[var(--shadow-e1)] space-y-3">
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
@@ -237,7 +237,7 @@ export function PersonalInfoTab({
             )}
           </div>
 
-          {/* Dedicated Billing Location Card */}
+          {}
           <div className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 shadow-[var(--shadow-e1)] space-y-3">
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
@@ -275,7 +275,7 @@ export function PersonalInfoTab({
           </div>
         </div>
       ) : (
-        /* Edit Mode Form */
+
         <form
           onSubmit={handleFormSubmit}
           className="space-y-6 rounded-[2rem] border border-hairline bg-surface p-6 sm:p-8 shadow-[var(--shadow-e2)]"
@@ -355,7 +355,7 @@ export function PersonalInfoTab({
             />
           </div>
 
-          {/* Primary / Mailing Address Section */}
+          {}
           <div className="space-y-4 border-t border-hairline pt-5">
             <h3 className="font-display text-base font-semibold text-ink">Mailing & Primary Address</h3>
             <div className="space-y-1.5">
@@ -419,7 +419,7 @@ export function PersonalInfoTab({
             </div>
           </div>
 
-          {/* Dedicated Billing Address Section */}
+          {}
           <div className="space-y-4 border-t border-hairline pt-5">
             <div className="flex items-center justify-between">
               <div>
@@ -500,7 +500,7 @@ export function PersonalInfoTab({
             )}
           </div>
 
-          {/* Form Actions */}
+          {}
           <div className="flex items-center gap-3 border-t border-hairline pt-5">
             <Button
               type="submit"

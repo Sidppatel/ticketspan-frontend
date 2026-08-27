@@ -59,7 +59,7 @@ export function readAuthFromUrlHash(): PersistedAuthPayload | null {
     const raw = params.get('auth_sync');
     if (!raw) return null;
     const payload = JSON.parse(decodeURIComponent(raw)) as PersistedAuthPayload;
-    // Clean up auth_sync from hash so address bar stays clean
+
     params.delete('auth_sync');
     const remaining = params.toString();
     const newUrl =
@@ -67,7 +67,7 @@ export function readAuthFromUrlHash(): PersistedAuthPayload | null {
       window.location.search +
       (remaining ? `#${remaining}` : '');
     window.history.replaceState(null, '', newUrl);
-    // Write directly to local storage and cookies on this host
+
     window.localStorage.setItem('ticketspan-auth', JSON.stringify({ state: payload, version: 0 }));
     setCrossDomainCookie(payload);
     return payload;
@@ -79,11 +79,10 @@ export function readAuthFromUrlHash(): PersistedAuthPayload | null {
 
 export function readStoredAuth(): PersistedAuthPayload | null {
   if (typeof window === 'undefined') return null;
-  // 1. First check URL hash if just transferred
+
   const fromHash = readAuthFromUrlHash();
   if (fromHash?.accessToken) return fromHash;
 
-  // 2. Check localStorage
   try {
     const raw = window.localStorage.getItem('ticketspan-auth');
     if (raw) {
@@ -102,7 +101,6 @@ export function readStoredAuth(): PersistedAuthPayload | null {
     void e;
   }
 
-  // 3. Check document.cookie
   return readCrossDomainCookie();
 }
 

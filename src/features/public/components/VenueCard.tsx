@@ -87,7 +87,7 @@ export function VenueCard({ venuesId, className }: VenueCardProps) {
             backgroundSize: '16px 16px'
           }}
         />
-        
+
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center space-y-3 z-10">
           <MapPin className="size-8 text-accent-burgundy animate-bounce" />
           <div>

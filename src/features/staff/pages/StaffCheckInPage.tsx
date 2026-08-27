@@ -90,7 +90,7 @@ export function StaffCheckInPage() {
         if (parsed?.passId) return parsed.passId;
         if (parsed?.email) return parsed.email;
       } catch {
-        // Fallback to original string
+        void 0;
       }
     }
     return clean;

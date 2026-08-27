@@ -9,9 +9,6 @@ const ROUTES: Record<string, { service: string; method: string }> = {
   sponsors: { service: 'ticketspan.catalog.SponsorService', method: 'GetSponsorBySlug' },
 };
 
-
-
-
 function varint(value: number): number[] {
   const out: number[] = [];
   while (value > 0x7f) {
@@ -137,7 +134,6 @@ export const onRequest = async (context: { request: Request; env: Env }): Promis
   const segments = url.pathname.split('/').filter(Boolean);
   const route = segments.length === 2 ? ROUTES[segments[0]] : undefined;
 
-  
   if (request.method !== 'GET' || !route || !env.VITE_BACKEND_URL) {
     return env.ASSETS.fetch(request);
   }
@@ -189,7 +185,6 @@ export const onRequest = async (context: { request: Request; env: Env }): Promis
       `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}"/>` +
       `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`;
 
-    
     let customShell = '';
     if (isEvent) {
       const date = formatEventDate(fields[8]);
@@ -222,11 +217,9 @@ export const onRequest = async (context: { request: Request; env: Env }): Promis
 
     const shell = await env.ASSETS.fetch(new Request(url.origin, request));
     let html = await shell.text();
-    
-    
+
     html = html.replace('</head>', `${tags}</head>`);
-    
-    
+
     html = html.replace(/<div id="hero-flash"[\s\S]*?<\/div>\s*<\/div>/, customShell.trim());
 
     return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8' } });

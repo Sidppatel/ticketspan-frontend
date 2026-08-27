@@ -49,7 +49,6 @@ export function TicketsPage() {
   const [claimingBookingId, setClaimingBookingId] = useState<string | null>(null);
   const [checkingInId, setCheckingInId] = useState<string | null>(null);
 
-  // Unclaimed bookings that require action from the purchaser
   const unclaimedBookings = useMemo(() => {
     if (!bookings) return [];
     return bookings.filter((b) => b.ticketsTotal > 0 && b.ticketsClaimed < b.ticketsTotal);
@@ -60,7 +59,6 @@ export function TicketsPage() {
     [tickets],
   );
 
-  // 1-Click claim ticket for oneself from an unclaimed booking card
   const handleQuickClaimSelf = async (booking: Booking) => {
     if (claimingBookingId) return;
     setClaimingBookingId(booking.bookingsId);
@@ -123,7 +121,7 @@ export function TicketsPage() {
 
   return (
     <div className="space-y-10 pb-20">
-      {/* Page Header */}
+      {}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-hairline pb-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -157,9 +155,9 @@ export function TicketsPage() {
         </div>
       ) : null}
 
-      {/* ========================================================================= */}
-      {/* ACTION REQUIRED: UNCLAIMED BOOKINGS SECTION                              */}
-      {/* ========================================================================= */}
+      {}
+      {}
+      {}
       {!bookingsLoading && hasUnclaimed && (
         <section aria-labelledby="unclaimed-heading" className="space-y-4">
           <div className="flex items-center justify-between">
@@ -217,7 +215,7 @@ export function TicketsPage() {
                   </div>
 
                   <div className="mt-5 flex flex-wrap items-center gap-2.5 border-t border-hairline pt-4">
-                    {/* 1-Click Fast Claim for Self Button */}
+                    {}
                     <button
                       type="button"
                       disabled={isClaiming}
@@ -235,7 +233,7 @@ export function TicketsPage() {
                       )}
                     </button>
 
-                    {/* Manage & Invite Guests Link */}
+                    {}
                     <Link
                       to={`/bookings/${b.bookingsId}`}
                       className="inline-flex items-center gap-1.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 dark:bg-stone-800 dark:border-stone-700 dark:hover:bg-stone-700 px-3.5 py-2 text-xs font-semibold text-stone-900 dark:text-stone-100 shadow-2xs transition-all"
@@ -251,9 +249,9 @@ export function TicketsPage() {
         </section>
       )}
 
-      {/* ========================================================================= */}
-      {/* GATE READY PASSES (CLAIMED TICKETS)                                      */}
-      {/* ========================================================================= */}
+      {}
+      {}
+      {}
       {ticketsLoading ? (
         <div className="space-y-4">
           <Skeleton className="h-8 w-48 rounded-md" />
@@ -264,7 +262,7 @@ export function TicketsPage() {
           </div>
         </div>
       ) : !hasTickets && !hasUnclaimed ? (
-        /* Completely Empty State */
+
         <div className="rounded-3xl border border-dashed border-stone-300 bg-surface/40 p-12 text-center space-y-4">
           <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-surface-sunken text-stone-500 shadow-inner">
             <TicketIcon className="size-8 stroke-[1.5]" />
@@ -283,7 +281,7 @@ export function TicketsPage() {
           </Link>
         </div>
       ) : !hasTickets && hasUnclaimed ? (
-        /* Has Unclaimed Orders State */
+
         <div className="rounded-3xl border border-dashed border-stone-300 bg-surface/30 p-8 text-center space-y-3">
           <p className="font-display text-lg font-bold text-ink">No Active Passes Ready Yet</p>
           <p className="text-sm text-ink-soft max-w-md mx-auto">
@@ -292,7 +290,7 @@ export function TicketsPage() {
         </div>
       ) : (
         <>
-          {/* Upcoming Gate Passes */}
+          {}
           {upcoming.length > 0 && (
             <section aria-labelledby="upcoming-heading" className="space-y-4">
               <div className="flex items-center justify-between border-b border-hairline pb-3">
@@ -322,7 +320,7 @@ export function TicketsPage() {
             </section>
           )}
 
-          {/* Previous / Past Tickets */}
+          {}
           {previous.length > 0 && (
             <section aria-labelledby="previous-heading" className="space-y-4 pt-6">
               <div className="flex items-center justify-between border-b border-hairline pb-3">
@@ -347,9 +345,9 @@ export function TicketsPage() {
         </>
       )}
 
-      {/* ========================================================================= */}
-      {/* QR ZOOM PASS DIALOG                                                      */}
-      {/* ========================================================================= */}
+      {}
+      {}
+      {}
       <Dialog
         open={activeQr !== null}
         onOpenChange={(open) => {
@@ -363,12 +361,12 @@ export function TicketsPage() {
 
           {activeQr && (
             <>
-              {/* Ultra High Contrast QR Presentation */}
+              {}
               <div className="relative rounded-2xl border-2 border-stone-300 bg-white p-5 shadow-xl">
                 <QrImage value={activeQr.qrToken} size={240} className="size-[220px] sm:size-[240px] object-contain" />
               </div>
 
-              {/* Scan Reminder & Details */}
+              {}
               <div className="space-y-2 text-center w-full">
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 border border-emerald-300 px-3 py-1 text-xs font-mono font-bold text-emerald-950">
                   <ShieldCheck className="size-3.5 text-emerald-700" /> Present to Scanner at Gate
@@ -416,9 +414,6 @@ export function TicketsPage() {
   );
 }
 
-// =============================================================================
-// TICKET PASS CARD COMPONENT
-// =============================================================================
 function TicketPassCard({
   ticket,
   highlight = false,
@@ -452,11 +447,11 @@ function TicketPassCard({
           : 'border-hairline opacity-85 hover:opacity-100',
       )}
     >
-      {/* Pass Top Bar */}
+      {}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-2.5">
           <div className="flex flex-wrap items-center gap-2">
-            {/* High Contrast Ticket Type Badge (Crisp White text on Dark) */}
+            {}
             <span className="inline-flex items-center rounded-md bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 font-mono text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 shadow-2xs">
               {ticket.ticketTypeLabel || 'STANDARD'}
             </span>
@@ -495,7 +490,7 @@ function TicketPassCard({
           </div>
         </div>
 
-        {/* QR Code Quick Button */}
+        {}
         <div className="shrink-0 flex flex-col items-center gap-1.5">
           {ticket.qrToken ? (
             <button
@@ -526,7 +521,7 @@ function TicketPassCard({
         </div>
       </div>
 
-      {/* Pass Footer Strip */}
+      {}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-3 text-xs">
         <div className="flex items-center gap-2 font-mono">
           <span className="rounded-md bg-stone-100 border border-stone-300 px-2.5 py-1 font-bold text-stone-900">

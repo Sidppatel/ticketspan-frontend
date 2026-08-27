@@ -85,7 +85,6 @@ export function EventDetailPageContent({
   const [checkoutBookingsId, setCheckoutBookingsId] = useState('');
   const [checkoutMethod, setCheckoutMethod] = useState<'card' | 'ach'>('card');
 
-  // Universal persistent cart store
   const { items: cartStoreItems, addItem, updateQuantity: updateStoreQty, removeItem: removeStoreItem, clearEvent } = useCartStore();
 
   const cart: CartItem[] = useMemo(() => cartStoreItems

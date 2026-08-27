@@ -110,7 +110,6 @@ function PortalSkinCard({ skin }: { skin: PortalSkin }) {
   );
 }
 
-
 function YourHouseCard() {
   const venueName = useLandingStore((s) => s.venueName);
   const named = venueName.trim();

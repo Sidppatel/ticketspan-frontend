@@ -32,7 +32,7 @@ export function CartItemCountdown({
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   const isExpired = totalSeconds <= 0;
-  const isUrgent = totalSeconds > 0 && totalSeconds <= 120; // under 2 minutes
+  const isUrgent = totalSeconds > 0 && totalSeconds <= 120;
 
   const handleReclaimClick = async (e: React.MouseEvent) => {
     e.stopPropagation();

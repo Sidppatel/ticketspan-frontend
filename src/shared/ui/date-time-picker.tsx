@@ -41,7 +41,7 @@ export function DateTimePicker({
       const p_m = parsed.getMinutes();
       const localH = parseInt(hourStr, 10);
       const localM = parseInt(minStr, 10);
-      
+
       if (isNaN(localH) || p_h12 !== localH) {
         setHourStr(p_h12.toString().padStart(2, '0'));
       }
@@ -94,7 +94,7 @@ export function DateTimePicker({
     if (v.length > 2 && v.startsWith('0')) v = v.slice(1);
     else if (v.length > 2) v = v.slice(0, 2);
     setHourStr(v);
-    
+
     const num = parseInt(v, 10);
     if (!isNaN(num) && num > 0 && num <= 12) {
       updateTime(num, m, isPM);
@@ -106,7 +106,7 @@ export function DateTimePicker({
     if (v.length > 2 && v.startsWith('0')) v = v.slice(1);
     else if (v.length > 2) v = v.slice(0, 2);
     setMinStr(v);
-    
+
     const num = parseInt(v, 10);
     if (!isNaN(num) && num >= 0 && num <= 59) {
       updateTime(h12, num, isPM);

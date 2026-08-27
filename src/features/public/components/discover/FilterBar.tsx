@@ -13,7 +13,7 @@ interface FilterBarProps {
 export function FilterBar({ categories, selected, onSelect, search, onSearch }: FilterBarProps) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-card/60 p-3 backdrop-blur-md md:flex-row md:items-center md:justify-between">
-      {/* Category Pills */}
+      {}
       <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
         {['All', ...categories].map((cat) => (
           <button
@@ -32,7 +32,7 @@ export function FilterBar({ categories, selected, onSelect, search, onSearch }: 
         ))}
       </div>
 
-      {/* Search Input */}
+      {}
       <div className="relative w-full md:w-80">
         <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <Input

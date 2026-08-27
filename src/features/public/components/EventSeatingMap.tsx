@@ -300,7 +300,7 @@ export function EventSeatingMap({
         className="relative overflow-hidden rounded-3xl border border-border-soft bg-stage shadow-2xl"
       >
 
-        {/* Desktop Tooltip */}
+        {}
         {hoveredTable && tipStyle && containerWidth >= 640 && (
           <div style={tipStyle} className="pointer-events-none absolute z-30 w-56 bg-stage-elevated/95 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-2xl text-xs space-y-2 animate-in fade-in duration-200">
             <div className="flex items-center justify-between">
@@ -488,7 +488,7 @@ export function EventSeatingMap({
         </div>
       </div>
 
-      {/* Mobile bottom bar - rendered below the map container */}
+      {}
       {hoveredTable && containerWidth < 640 && (
         <div className="bg-stage p-3.5 rounded-2xl border border-border-soft shadow-xl flex items-center justify-between animate-in slide-in-from-bottom duration-250 ease-out">
           <div className="space-y-0.5">

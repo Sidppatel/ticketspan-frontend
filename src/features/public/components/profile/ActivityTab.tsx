@@ -45,7 +45,7 @@ export function ActivityTab() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="border-b border-hairline pb-4">
         <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-brand">
           Live Wallet & Ledger
@@ -56,7 +56,7 @@ export function ActivityTab() {
         </p>
       </div>
 
-      {/* Metric Counters Bento */}
+      {}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <Link
           to="/tickets"
@@ -101,7 +101,7 @@ export function ActivityTab() {
         </Link>
       </div>
 
-      {/* Upcoming Passes Section */}
+      {}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-display text-lg font-semibold text-ink">Upcoming Gate Passes</h3>
@@ -186,12 +186,12 @@ export function ActivityTab() {
         )}
       </section>
 
-      {/* Saved Payment Methods & Vaulted Cards Section */}
+      {}
       <section className="space-y-4">
         <SavedPaymentMethodsCard />
       </section>
 
-      {/* QR Zoom Modal */}
+      {}
       <Dialog
         open={activeQr !== null}
         onOpenChange={(open) => {

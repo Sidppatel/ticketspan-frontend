@@ -56,7 +56,6 @@ export function normalizeVenue(draft: VenueDraft): VenueDraft {
   return { ...draft, phone: draft.phone ? toPhoneE164(draft.phone) : '' };
 }
 
-
 export function venueLabel(venue: Venue): string {
   const address = [venue.line1, venue.city, [venue.state, venue.zip].filter(Boolean).join(' ')]
     .map((part) => part.trim())
@@ -136,7 +135,7 @@ export function AdminVenuesPage() {
         </CardHeader>
         <CardContent className="p-6 space-y-6">
           {notice ? <p className="text-xs font-semibold text-destructive bg-destructive/10 border border-destructive/20 rounded-xl p-3 leading-normal animate-shake">{notice}</p> : null}
-          
+
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label>Name</Label>
@@ -144,7 +143,7 @@ export function AdminVenuesPage() {
                 <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="h-10 bg-background border-border text-sm" />
               </div>
             </div>
-            
+
             <VenueFields draft={draft} onChange={setDraft} />
           </div>
 
@@ -162,9 +161,9 @@ export function AdminVenuesPage() {
           <p className="text-xs text-muted-foreground font-semibold">Loading…</p>
         </div>
       ) : null}
-      
+
       {error ? <p className="text-xs font-semibold text-destructive bg-destructive/10 border border-destructive/20 rounded-xl p-3 leading-normal">{error}</p> : null}
-      
+
       <div className="grid grid-cols-1 gap-4">
         {(data ?? []).map((venue) => (
           <VenueRow key={venue.venuesId} venue={venue} onChanged={reload} />
@@ -258,8 +257,8 @@ function VenueRow({ venue, onChanged }: { venue: Venue; onChanged: () => void })
     <div
       className={cn(
         "rounded-2xl border bg-card transition-all duration-300 overflow-hidden flex flex-col h-fit",
-        venue.isActive 
-          ? "border-border shadow-sm" 
+        venue.isActive
+          ? "border-border shadow-sm"
           : "border-border-soft opacity-60 bg-muted/30 shadow-none scale-[0.99] translate-y-1"
       )}
     >
@@ -300,9 +299,9 @@ function VenueRow({ venue, onChanged }: { venue: Venue; onChanged: () => void })
             </Button>
           </div>
         </div>
-        
+
         {notice ? <p className="text-[10px] font-bold text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-2.5 leading-normal animate-shake">{notice}</p> : null}
-        
+
         <div className={cn(
           "grid transition-all duration-300 ease-in-out overflow-hidden border-t border-border/20 pt-1.5",
           editing ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0"
@@ -312,15 +311,15 @@ function VenueRow({ venue, onChanged }: { venue: Venue; onChanged: () => void })
               <Label className="text-[10px]">Name</Label>
               <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="h-9 bg-background text-xs" />
             </div>
-            
+
             <VenueFields draft={draft} onChange={setDraft} />
-            
+
             <div className="flex items-center justify-end border-t border-border/10 pt-3">
               <Button size="sm" onClick={() => persist(venue.isActive)} className="ticketspan-spring-btn h-9 px-6 rounded-lg font-bold text-xs">
                 Save Settings
               </Button>
             </div>
-            
+
             <VenueGallery venuesId={venue.venuesId} />
           </div>
         </div>

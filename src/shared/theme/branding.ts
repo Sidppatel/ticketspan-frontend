@@ -346,28 +346,23 @@ export function brandingCssVars(branding: TenantBranding): Record<string, string
   const buttonHex = isHexColor(branding.button) ? branding.button : primaryHex;
   const highlightHex = isHexColor(branding.highlight) ? branding.highlight : '#f59e0b';
 
-  // Primary / Brand tokens
   set('--brand', primaryHex);
   set('--brand-hover', `color-mix(in srgb, ${primaryHex} 85%, ${shadeMixTarget})`);
   set('--brand-ink', readableTextOn(primaryHex));
   set('--ring', primaryHex);
   set('--brand-primary', primaryHex);
 
-  // Secondary
   set('--brand-secondary', secondaryHex);
   set('--secondary', secondaryHex);
   set('--secondary-foreground', readableTextOn(secondaryHex));
 
-  // Accent / Voltage
   set('--voltage-accent', accentHex);
   set('--voltage-accent-ink', readableTextOn(accentHex));
   set('--brand-accent', accentHex);
 
-  // Canvas & Light Surfaces
   set('--canvas', canvasHex);
   set('--surface-sunken', `color-mix(in srgb, ${canvasHex} 92%, ${textHex})`);
 
-  // Ink / Text with guaranteed contrast on canvas
   const safeInk = ensureAccessibleContrast(textHex, canvasHex, 7.0);
   const safeInkSoft = ensureAccessibleContrast(mixHex(textHex, canvasHex, 0.72), canvasHex, 4.5);
   const safeInkFaint = ensureAccessibleContrast(mixHex(textHex, canvasHex, 0.55), canvasHex, 3.0);
@@ -376,24 +371,20 @@ export function brandingCssVars(branding: TenantBranding): Record<string, string
   set('--ink-soft', safeInkSoft);
   set('--ink-faint', safeInkFaint);
 
-  // Borders
   set('--hairline', `color-mix(in srgb, ${textHex} 10%, ${canvasHex})`);
   set('--hairline-strong', `color-mix(in srgb, ${textHex} 22%, ${canvasHex})`);
 
-  // Stage (Dark surfaces like Hero, Footers, and Checkout)
   const stageHex = '#0d1017';
   set('--stage', stageHex);
   set('--stage-elevated', '#161b26');
   set('--on-stage', '#ffffff');
   set('--on-stage-soft', '#cbd5e1');
 
-  // Buttons & Highlights with contrast verification
   set('--primary', buttonHex);
   set('--primary-foreground', readableTextOn(buttonHex));
   set('--marigold', highlightHex);
   set('--marigold-foreground', readableTextOn(highlightHex));
 
-  // Custom Token overrides with contrast verification
   const customTokens = branding.tokens ?? {};
   for (const [token, value] of Object.entries(customTokens)) {
     if (!ADVANCED_TOKEN_SET.has(token) || !isHexColor(value)) {

@@ -40,7 +40,6 @@ export function BookingsPage() {
   );
   const { data: bookings, loading, error, reload } = useAsync(bookingsLoader);
 
-  // Quick 1-click self-claim from booking card
   const handleQuickClaimSelf = async (booking: Booking, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -100,7 +99,7 @@ export function BookingsPage() {
 
   return (
     <div className="space-y-8 pb-20">
-      {/* Page Header */}
+      {}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-hairline pb-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -127,9 +126,9 @@ export function BookingsPage() {
         </div>
       </div>
 
-      {/* Filter Tabs & Search Controls */}
+      {}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Segmented Filter Control */}
+        {}
         <div className="flex rounded-2xl bg-surface-sunken p-1 border border-hairline w-fit">
           <button
             type="button"
@@ -172,7 +171,7 @@ export function BookingsPage() {
           </button>
         </div>
 
-        {/* Search Bar */}
+        {}
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -201,7 +200,7 @@ export function BookingsPage() {
         </div>
       ) : null}
 
-      {/* Bookings List */}
+      {}
       {loading ? (
         <div className="space-y-4">
           {[0, 1, 2].map((i) => (
@@ -219,7 +218,7 @@ export function BookingsPage() {
                 key={booking.bookingsId}
                 className="group relative overflow-hidden rounded-2xl border border-hairline bg-surface shadow-[var(--shadow-e1)] transition-all duration-300 hover:border-hairline-strong hover:shadow-[var(--shadow-e2)] hover:-translate-y-0.5"
               >
-                {/* Booking Header & Main Info */}
+                {}
                 <div className="p-5 sm:p-6 space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                     <div className="space-y-1 min-w-0 flex-1">
@@ -259,7 +258,7 @@ export function BookingsPage() {
                       </div>
                     </div>
 
-                    {/* Status Pill Indicator */}
+                    {}
                     <div className="flex shrink-0 flex-col items-start sm:items-end gap-1.5">
                       {hasUnclaimed ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-surface-sunken border border-hairline px-3 py-1 font-mono text-xs font-medium text-ink-soft">
@@ -274,10 +273,10 @@ export function BookingsPage() {
                     </div>
                   </div>
 
-                  {/* Actions Toolbar */}
+                  {}
                   <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4">
                     <div className="flex flex-wrap items-center gap-2">
-                      {/* 1-Click Fast Claim for Self Button (if unclaimed) */}
+                      {}
                       {hasUnclaimed && (
                         <Button
                           size="sm"
@@ -319,7 +318,7 @@ export function BookingsPage() {
           })}
         </div>
       ) : (
-        /* Empty State */
+
         <div className="space-y-3 rounded-3xl border border-dashed border-hairline-strong py-16 text-center">
           <CalendarCheck2 className="mx-auto size-8 stroke-1 text-ink-faint" />
           <p className="font-display text-lg font-semibold text-ink">

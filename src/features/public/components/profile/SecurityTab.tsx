@@ -66,7 +66,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="border-b border-hairline pb-4">
         <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-brand">
           Account Security
@@ -77,7 +77,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
         </p>
       </div>
 
-      {/* Section 1: Connected Identity Providers */}
+      {}
       <section className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 sm:p-7 shadow-[var(--shadow-e1)] space-y-6">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
@@ -95,7 +95,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
               <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white border border-hairline shadow-xs">
-                {/* Google Logo SVG */}
+                {}
                 <svg className="size-5" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
@@ -157,7 +157,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
         </div>
       </section>
 
-      {/* Section 2: Password & Recovery */}
+      {}
       <section className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 sm:p-7 shadow-[var(--shadow-e1)] space-y-6">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-brand/10 text-brand">
@@ -172,7 +172,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {/* Password Reset Dispatch */}
+          {}
           <div className="flex flex-col justify-between rounded-2xl border border-hairline bg-surface-sunken/40 p-5 space-y-4">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
@@ -196,7 +196,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
             </Button>
           </div>
 
-          {/* Magic Sign-In Link */}
+          {}
           <div className="flex flex-col justify-between rounded-2xl border border-hairline bg-surface-sunken/40 p-5 space-y-4">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
@@ -222,7 +222,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
         </div>
       </section>
 
-      {/* Section 3: Universal Multi-Tenant Architecture & Box Office Privileges */}
+      {}
       <section className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 sm:p-7 shadow-[var(--shadow-e1)] space-y-4">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">

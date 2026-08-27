@@ -235,12 +235,11 @@ export interface TableDraft {
   color: string;
   priceCents: number;
   feeFormulasId: string;
-  
-  
+
   isAllInclusive?: boolean;
   perAttendeeCents?: number;
   tableTemplatesId?: string;
-  
+
   width?: number;
   height?: number;
 }

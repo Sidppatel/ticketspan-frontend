@@ -353,7 +353,6 @@ function StripeCheckoutForm({
   const [repricing, setRepricing] = useState(false);
   const methodRef = useRef<'card' | 'ach'>(preferredMethod);
 
-  // Saved cards state
   const [savedCards, setSavedCards] = useState<SavedPaymentMethodDto[]>([]);
   const [selectedSavedCardId, setSelectedSavedCardId] = useState<string | 'new'>('new');
   const [loadingSavedCards, setLoadingSavedCards] = useState(true);
@@ -468,7 +467,6 @@ function StripeCheckoutForm({
     setSubmitting(true);
     setMessage(null);
 
-    // If paying with an existing saved card
     if (selectedSavedCardId && selectedSavedCardId !== 'new') {
       try {
         const { error, paymentIntent } = await stripe.confirmPayment({
@@ -500,7 +498,6 @@ function StripeCheckoutForm({
       }
     }
 
-    // Otherwise pay with new card in Elements
     if (!elements) return;
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
@@ -537,7 +534,7 @@ function StripeCheckoutForm({
 
   return (
     <div className="space-y-5 pt-1">
-      {/* Order & Total Charge Card */}
+      {}
       <div className="rounded-2xl border border-white/10 bg-[#161a23] p-4 shadow-inner space-y-3">
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -556,7 +553,7 @@ function StripeCheckoutForm({
           </div>
         </div>
 
-        {/* Hold Expiration Countdown Pill */}
+        {}
         {secondsLeft !== null && !expired && (
           <div className="flex items-center justify-between rounded-xl bg-amber-500/10 border border-amber-500/25 px-3 py-1.5 text-xs text-amber-300 font-mono">
             <span className="flex items-center gap-1.5">
@@ -589,7 +586,7 @@ function StripeCheckoutForm({
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Express Checkout Wallets (Apple Pay / Google Pay) */}
+          {}
           <div className="rounded-2xl overflow-hidden shadow-md">
             <ExpressCheckoutElement
               onConfirm={handleExpressConfirm}
@@ -608,7 +605,7 @@ function StripeCheckoutForm({
             />
           </div>
 
-          {/* Saved Cards Vault List (If attendee has saved cards) */}
+          {}
           {loadingSavedCards ? (
             <div className="py-2 text-[11px] font-mono text-slate-400 flex items-center gap-1.5 animate-pulse">
               <Loader2 className="size-3.5 animate-spin text-amber-400" /> Checking vaulted payment methods…
@@ -680,7 +677,7 @@ function StripeCheckoutForm({
                   );
                 })}
 
-                {/* Option to use a new / different card */}
+                {}
                 <button
                   type="button"
                   onClick={() => setSelectedSavedCardId('new')}
@@ -709,7 +706,7 @@ function StripeCheckoutForm({
             </div>
           )}
 
-          {/* Stripe Payment Element (Shown if user selected "new" card or has no saved cards) */}
+          {}
           {(selectedSavedCardId === 'new' || savedCards.length === 0) && (
             <div className="space-y-3">
               <div className="relative flex items-center py-1">
@@ -777,7 +774,7 @@ function StripeCheckoutForm({
             </div>
           )}
 
-          {/* Action Buttons */}
+          {}
           <div className="flex items-center gap-3 pt-2">
             <Button
               type="button"

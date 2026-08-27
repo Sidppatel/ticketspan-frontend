@@ -8,7 +8,7 @@ import { Sparkles, Calendar, ArrowRight } from 'lucide-react';
 export function HeroEvent({ event }: { event: Event }) {
   return (
     <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card/90 shadow-[var(--shadow-e3)] transition-all duration-300">
-      {/* Background Image & Atmospheric Lighting */}
+      {}
       <div className="absolute inset-0 z-0">
         {event.primaryImageId ? (
           <img
@@ -24,9 +24,9 @@ export function HeroEvent({ event }: { event: Event }) {
         <div className="pointer-events-none absolute -left-24 -bottom-24 size-96 rounded-full bg-accent/15 blur-3xl" />
       </div>
 
-      {/* Hero Content */}
+      {}
       <div className="relative z-10 flex min-h-[420px] flex-col justify-end gap-6 p-6 sm:p-10 md:min-h-[500px] md:p-14">
-        {/* Top Badges */}
+        {}
         <div className="flex flex-wrap items-center gap-2.5">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/20 px-3 py-1 font-mono text-[11px] font-semibold text-primary backdrop-blur-md">
             <Sparkles className="size-3.5" /> Featured Spotlight
@@ -42,7 +42,7 @@ export function HeroEvent({ event }: { event: Event }) {
           ) : null}
         </div>
 
-        {/* Title & Description */}
+        {}
         <div className="space-y-3">
           <h1 className="max-w-4xl font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl">
             {event.title}
@@ -54,7 +54,7 @@ export function HeroEvent({ event }: { event: Event }) {
           ) : null}
         </div>
 
-        {/* Countdown & Action */}
+        {}
         <div className="mt-2 flex flex-col gap-6 pt-2 sm:flex-row sm:items-end sm:justify-between">
           <div className="rounded-2xl border border-border/60 bg-background/60 p-3.5 backdrop-blur-md sm:p-4">
             <Countdown startEpoch={event.startDate} endEpoch={event.endDate} />

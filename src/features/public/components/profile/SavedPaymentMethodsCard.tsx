@@ -46,7 +46,7 @@ export function SavedPaymentMethodsCard() {
           setMethods(res.data);
         }
       } catch {
-        // Non-blocking
+        void 0;
       } finally {
         if (active) setLoading(false);
       }
@@ -65,7 +65,7 @@ export function SavedPaymentMethodsCard() {
         setMethods(res.data);
       }
     } catch {
-      // Non-blocking
+      void 0;
     } finally {
       setLoading(false);
     }

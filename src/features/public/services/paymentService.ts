@@ -67,10 +67,9 @@ export async function reserveTable(input: ReserveTableInput): Promise<ReserveRes
 
 export interface CartLineInput {
   kind: 'Ticket' | 'Table';
-  refId: string; 
-  seats: number; 
+  refId: string;
+  seats: number;
 }
-
 
 export async function createMultiBooking(eventsId: string, lines: CartLineInput[]): Promise<ReserveResult> {
   const response = await callRpc(() =>

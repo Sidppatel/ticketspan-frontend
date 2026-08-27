@@ -43,7 +43,6 @@ export async function assignFeeFormula(
   await callRpc(() => feeClient.assignFeeFormula({ kind, targetId, feeFormulasId, reason }));
 }
 
-
 export async function setTenantDefaultFeeFormula(
   tenantsId: string,
   feeFormulasId: string,

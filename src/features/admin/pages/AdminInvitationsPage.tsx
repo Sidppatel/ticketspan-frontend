@@ -143,7 +143,7 @@ export function AdminInvitationsPage() {
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Active Members */}
+          {}
           <Card className="overflow-hidden">
             <CardHeader className="border-b border-border/40 pb-4">
               <CardTitle className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export function AdminInvitationsPage() {
             </CardContent>
           </Card>
 
-          {/* Pending Invitations */}
+          {}
           <Card className="overflow-hidden">
             <CardHeader className="border-b border-border/40 pb-4">
               <CardTitle className="flex items-center gap-2">

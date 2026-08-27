@@ -19,7 +19,6 @@ import { CalendarCheck2, LayoutGrid, MapPin, Rocket, Ticket, Users, Plus } from 
 import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/dialog';
 import { VenueFields, venueError, normalizeVenue, emptyDraft, venueLabel } from '@/features/admin/pages/AdminVenuesPage';
 
-
 const CATEGORIES = ['Music', 'Business', 'Social', 'Dining', 'Tech', 'Arts', 'Family', 'Sports'];
 
 export function AdminEventWizardPage() {
@@ -73,7 +72,6 @@ export function AdminEventWizardPage() {
     { id: 'publish', label: 'Review & Publish', icon: Rocket },
   ];
 
-
   useEffect(() => {
     listVenues()
       .then((loaded) => {
@@ -105,7 +103,7 @@ export function AdminEventWizardPage() {
       category,
       startDate: zonedInputToEpoch(start, venueTz),
       endDate: zonedInputToEpoch(end, venueTz),
-      
+
       layoutMode: eventType === 'Open' ? 'Open' : 'Grid',
       eventType,
       venuesId,

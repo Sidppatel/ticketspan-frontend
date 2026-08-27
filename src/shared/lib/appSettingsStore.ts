@@ -88,7 +88,6 @@ export const useAppSettingsStore = create<AppSettingsState>()((set, get) => ({
   },
 }));
 
-// Automatically trigger background fetch upon store initialization
 if (typeof window !== 'undefined') {
   useAppSettingsStore.getState().fetchSettings().catch(() => {});
 }

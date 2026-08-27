@@ -52,7 +52,6 @@ export function ProfileHeroCard({
     user?.email?.split('@')[0] ||
     'Attendee Profile';
 
-  // Calculate profile completeness score
   const items = [
     { label: 'Name added', done: Boolean(profile.firstName && profile.lastName) },
     { label: 'Avatar set', done: Boolean(user?.avatarUrl && !imageError) },
@@ -72,7 +71,7 @@ export function ProfileHeroCard({
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0c1018] text-white shadow-2xl p-6 sm:p-8">
-      {/* Ambient Gradient Glows */}
+      {}
       <div
         className="pointer-events-none absolute -right-16 -top-16 size-80 rounded-full bg-emerald-500/10 blur-3xl"
         aria-hidden="true"
@@ -83,9 +82,9 @@ export function ProfileHeroCard({
       />
 
       <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        {/* Left Side: Avatar & Identity */}
+        {}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-          {/* Avatar with Ring & Controls */}
+          {}
           <div className="relative group shrink-0">
             <button
               type="button"
@@ -108,7 +107,7 @@ export function ProfileHeroCard({
                 </span>
               )}
 
-              {/* Hover Camera Overlay */}
+              {}
               <span className="absolute inset-0 flex flex-col items-center justify-center bg-black/75 opacity-0 backdrop-blur-xs transition-opacity group-hover:opacity-100">
                 {uploading ? (
                   <Loader2 className="size-6 animate-spin text-white" />
@@ -134,7 +133,7 @@ export function ProfileHeroCard({
               }}
             />
 
-            {/* Remove Avatar Button (when user has an avatar) */}
+            {}
             {hasValidAvatar && (
               <button
                 type="button"
@@ -161,7 +160,7 @@ export function ProfileHeroCard({
             )}
           </div>
 
-          {/* Identity Information */}
+          {}
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-md bg-white/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-white border border-white/15 font-bold">
@@ -192,7 +191,7 @@ export function ProfileHeroCard({
               </p>
             </div>
 
-            {/* Contact Chips */}
+            {}
             <div className="flex flex-wrap items-center gap-3 text-xs text-stone-300 pt-0.5">
               {profile.phone && (
                 <span className="flex items-center gap-1 font-mono text-[11px] bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-lg">
@@ -210,11 +209,11 @@ export function ProfileHeroCard({
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* REDESIGNED RIGHT AREA: Sleek Digital Pass Card & Action Toolbar           */}
-        {/* ========================================================================= */}
+        {}
+        {}
+        {}
         <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-3 shrink-0">
-          {/* Refined Glassmorphic Digital Pass Button */}
+          {}
           <button
             type="button"
             onClick={onOpenDigitalPass}
@@ -236,7 +235,7 @@ export function ProfileHeroCard({
             </div>
           </button>
 
-          {/* Secondary Actions Toolbar */}
+          {}
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <Button
               variant="outline"
@@ -260,7 +259,7 @@ export function ProfileHeroCard({
         </div>
       </div>
 
-      {/* Bottom: Profile Readiness Progress Bar & Milestones */}
+      {}
       <div className="mt-6 border-t border-white/10 pt-5 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2 font-mono text-xs">
@@ -276,7 +275,7 @@ export function ProfileHeroCard({
           </div>
         </div>
 
-        {/* Milestone Pills */}
+        {}
         <div className="flex flex-wrap items-center gap-2 pt-1">
           {items.map((item) => (
             <span

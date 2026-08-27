@@ -36,7 +36,7 @@ export function EventListPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-12 pb-24">
-      {/* Box Office Showcase Header */}
+      {}
       <section className="relative overflow-hidden rounded-[2.5rem] border border-border/80 bg-card/85 p-6 shadow-[var(--shadow-e3)] backdrop-blur-xl sm:p-10 md:p-12">
         <div className="pointer-events-none absolute -left-20 -top-20 size-80 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute -right-20 -bottom-20 size-80 rounded-full bg-accent/10 blur-3xl" />
@@ -59,14 +59,14 @@ export function EventListPage() {
         </div>
       </section>
 
-      {/* Featured Spotlight Hero */}
+      {}
       {loading && !data ? (
         <Skeleton className="h-[420px] w-full rounded-[2rem] md:h-[500px]" />
       ) : hero ? (
         <HeroEvent event={hero} />
       ) : null}
 
-      {/* Live Search & Filter Bar */}
+      {}
       <FilterBar
         categories={categories}
         selected={category}
@@ -75,7 +75,7 @@ export function EventListPage() {
         onSearch={setSearch}
       />
 
-      {/* Error Alert */}
+      {}
       {error ? (
         <div className="flex items-center justify-between rounded-2xl border border-destructive/20 bg-destructive/5 p-5 text-sm text-destructive">
           <span>Failed to load events: {error}</span>
@@ -89,7 +89,7 @@ export function EventListPage() {
         </div>
       ) : null}
 
-      {/* Event Catalog Grid */}
+      {}
       {gridEvents.length > 0 || loading ? (
         <section className="space-y-6">
           <div className="flex items-center justify-between">
@@ -120,7 +120,7 @@ export function EventListPage() {
         </section>
       ) : null}
 
-      {/* Empty State */}
+      {}
       {!loading && !hero && gridEvents.length === 0 && !error ? (
         <div className="mx-auto max-w-lg space-y-5 rounded-[2rem] border border-dashed border-border p-12 text-center bg-card/40 backdrop-blur-sm">
           <div className="mx-auto inline-flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground shadow-sm">

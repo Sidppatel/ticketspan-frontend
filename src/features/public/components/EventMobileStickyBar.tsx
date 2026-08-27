@@ -129,7 +129,7 @@ export function EventMobileStickyBar({
         </div>
       </div>
 
-      {/* Mobile Price Breakdown Bottom Sheet Drawer */}
+      {}
       <Sheet open={isBreakdownOpen} onOpenChange={setIsBreakdownOpen}>
         <SheetContent
           side="bottom"
@@ -138,7 +138,7 @@ export function EventMobileStickyBar({
         >
           <SheetTitle className="sr-only">Order Summary & Fee Breakdown</SheetTitle>
 
-          {/* Drawer Header */}
+          {}
           <div className="flex items-center justify-between border-b border-border-soft bg-surface-sunken px-6 py-4">
             <span className="font-display text-base font-bold uppercase tracking-wider text-foreground">
               Order Summary
@@ -154,7 +154,7 @@ export function EventMobileStickyBar({
           </div>
 
           <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-            {/* Cart Line Items */}
+            {}
             <div className="divide-y divide-border-soft border-b border-border-soft pb-3">
               {cart.map((item) => {
                 const line = quote?.lines?.find((l: CartQuoteLine) => `${l.kind}:${l.refId}` === item.key);
@@ -204,7 +204,7 @@ export function EventMobileStickyBar({
               })}
             </div>
 
-            {/* Price Breakdown Calculation */}
+            {}
             <div className="space-y-2 text-xs">
               {discount > 0 && (
                 <div className="flex justify-between text-emerald-500 font-bold">
@@ -250,7 +250,7 @@ export function EventMobileStickyBar({
               )}
             </div>
 
-            {/* Direct Checkout CTA from breakdown drawer */}
+            {}
             {hasExpired ? (
               <div className="space-y-2 pt-2">
                 <p className="text-center font-mono text-xs text-rose-500 font-semibold">

@@ -30,8 +30,6 @@ import { Label } from '@/shared/ui/label';
 import { DateTimePicker } from '@/shared/ui/date-time-picker';
 import { zonedInputToEpoch } from '@/shared/lib/timezone';
 
-
-
 export function PricingManager({
   eventsId,
   eventType,
@@ -72,7 +70,6 @@ export function PricingManager({
   const noApplicablePrices = (!showTickets || tickets.length === 0) && (!showTables || tables.length === 0);
 
   const now = nowSeconds();
-
 
   function createRule(draft: { name: string; ruleType: string; percent: number; capacity: number; activeFrom: string; activeUntil: string }) {
     const owners = [...tickets, ...tables];
@@ -139,7 +136,6 @@ export function PricingManager({
         />
 
       </CardContent>
-
 
     </Card>
   );
@@ -303,7 +299,6 @@ function RulePriceRow({
 }) {
   const [value, setValue] = useState(centsToUsdInput(rule.priceCents));
   const dirty = usdToCents(value) !== rule.priceCents;
-
 
   const fetchBreakdown = useCallback(() => {
     return calculatePrice(rule.pricesId, 1, rule.activeFrom?.toString());
@@ -510,5 +505,3 @@ function InlineRuleBuilder({
     </div>
   );
 }
-
-

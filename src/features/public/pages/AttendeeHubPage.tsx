@@ -58,7 +58,7 @@ function EventCardItem({ event }: { event: Event }) {
       to={`/events/${event.slug}`}
       className="group relative flex flex-col justify-between overflow-hidden rounded-[1.75rem] border border-hairline/80 bg-surface shadow-[var(--shadow-e1)] transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-[var(--shadow-e2)]"
     >
-      {/* Image or Styled Typographic Poster */}
+      {}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-sunken">
         {event.primaryImageId ? (
           <img
@@ -86,7 +86,7 @@ function EventCardItem({ event }: { event: Event }) {
           </div>
         )}
 
-        {/* Floating Date Badge */}
+        {}
         {dateObj && (
           <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-xl border border-hairline/60 bg-surface/90 px-3 py-1.5 shadow-md backdrop-blur-md">
             <div className="text-center font-mono">
@@ -97,7 +97,7 @@ function EventCardItem({ event }: { event: Event }) {
         )}
       </div>
 
-      {/* Card Content */}
+      {}
       <div className="flex flex-1 flex-col justify-between p-5 sm:p-6 space-y-4">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -156,10 +156,10 @@ export function AttendeeHubPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-5 sm:px-8 py-8 space-y-16 pb-28">
-      {/* Double-Bezel Hero Header */}
+      {}
       <div className="rounded-[2.5rem] bg-black/5 p-2 ring-1 ring-black/5 dark:bg-white/5 dark:ring-white/10">
         <section className="relative overflow-hidden rounded-[calc(2.5rem-0.5rem)] bg-[#0d1017] p-8 text-white shadow-2xl sm:p-12">
-          {/* Ambient Lighting Gradients */}
+          {}
           <div
             className="pointer-events-none absolute -left-24 -top-24 size-[400px] rounded-full bg-emerald-500/15 blur-[100px]"
             aria-hidden="true"
@@ -169,7 +169,7 @@ export function AttendeeHubPage() {
             aria-hidden="true"
           />
 
-          {/* Geometric Grid */}
+          {}
           <div
             className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem]"
             aria-hidden="true"
@@ -193,7 +193,7 @@ export function AttendeeHubPage() {
               </p>
             </div>
 
-            {/* Quick Stats Bento */}
+            {}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <Link
                 to="/tickets"
@@ -245,7 +245,7 @@ export function AttendeeHubPage() {
         </section>
       </div>
 
-      {/* Upcoming Passes Section */}
+      {}
       <section className="space-y-6">
         <div className="flex items-end justify-between border-b border-hairline pb-4">
           <div>
@@ -340,7 +340,7 @@ export function AttendeeHubPage() {
         )}
       </section>
 
-      {/* Explore Partner Box Offices */}
+      {}
       <section id="box-offices" className="space-y-6">
         <div className="flex items-end justify-between border-b border-hairline pb-4">
           <div>
@@ -404,7 +404,7 @@ export function AttendeeHubPage() {
         )}
       </section>
 
-      {/* Trending Events Across the Platform */}
+      {}
       <section className="space-y-6">
         <div className="flex items-end justify-between border-b border-hairline pb-4">
           <div>
@@ -434,7 +434,7 @@ export function AttendeeHubPage() {
         )}
       </section>
 
-      {/* Entry Pass QR Modal */}
+      {}
       <Dialog
         open={activeQr !== null}
         onOpenChange={(open) => {

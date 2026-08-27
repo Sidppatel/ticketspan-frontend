@@ -17,7 +17,7 @@ export function useAuth() {
     if (!isAuthenticated) return;
     const now = Date.now();
     const isMissingName = !user?.firstName && !user?.lastName;
-    // Auto sync profile from backend if missing name or after 60s
+
     if (isMissingName || now - lastProfileFetchTime > 60000) {
       lastProfileFetchTime = now;
       loadProfile().catch(() => {});

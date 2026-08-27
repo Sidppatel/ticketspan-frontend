@@ -63,7 +63,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
           const q = await quoteCart(eventId, lines);
           results[eventId] = q;
         } catch {
-          // fallback
+          void 0;
         }
       }
       if (active) {
@@ -79,7 +79,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
 
   const handleReclaim = useCallback(async (item: UniversalCartItem) => {
     try {
-      // Validate current availability via quoteCart
+
       await quoteCart(item.eventId, [{
         kind: item.kind,
         refId: item.refId,
@@ -112,7 +112,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
         reclaimItem(item.id);
         reclaimedCount++;
       } catch {
-        // Individual item failed availability check
+        void 0;
       }
     }
 
@@ -158,7 +158,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
 
   return (
     <>
-      {/* Floating Spring Dock / Pill at Bottom */}
+      {}
       {count > 0 && !isOpen && (
         <aside
           aria-label="Shopping Cart Notification"
@@ -213,7 +213,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
         </aside>
       )}
 
-      {/* Slide-Over Cart Drawer */}
+      {}
       <Sheet open={isOpen} onOpenChange={setOpen}>
         <SheetContent
           side="right"
@@ -222,7 +222,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
         >
           <SheetTitle className="sr-only">Event Shopping Cart</SheetTitle>
 
-          {/* Drawer Header */}
+          {}
           <div className="flex items-center justify-between border-b border-white/10 bg-[#131722]/90 px-6 py-4 backdrop-blur-xl">
             <div className="flex items-center gap-3">
               <div className="flex size-9 items-center justify-center rounded-xl bg-amber-400/20 border border-amber-400/30 text-amber-400">
@@ -257,7 +257,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
             </div>
           </div>
 
-          {/* Expired Items Notice Banner */}
+          {}
           {hasExpired && (
             <div className="bg-rose-500/10 border-b border-rose-500/20 px-6 py-3 flex items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2 min-w-0">
@@ -278,7 +278,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
             </div>
           )}
 
-          {/* Cart Item Groups by Event */}
+          {}
           <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6">
             {count === 0 ? (
               <div className="py-20 text-center space-y-3">
@@ -298,7 +298,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
 
                 return (
                   <div key={eventId} className="rounded-2xl border border-white/10 bg-[#131722]/80 overflow-hidden shadow-lg">
-                    {/* Event Header Banner */}
+                    {}
                     <div className="border-b border-white/10 bg-white/5 px-4 py-3 flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <h4 className="font-sans text-sm font-bold text-white truncate">
@@ -324,7 +324,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
                       </span>
                     </div>
 
-                    {/* Group Items */}
+                    {}
                     <div className="divide-y divide-white/5 p-2">
                       {groupItems.map((item: UniversalCartItem) => {
                         const expired = isCartItemExpired(item);
@@ -404,7 +404,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
             )}
           </div>
 
-          {/* Drawer Footer with Checkout CTA */}
+          {}
           {count > 0 && (
             <div className="border-t border-white/10 bg-[#131722]/95 p-6 backdrop-blur-xl space-y-4">
               <div className="space-y-1.5 text-xs">

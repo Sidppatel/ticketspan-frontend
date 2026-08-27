@@ -184,7 +184,7 @@ export function PortalNav({
   if (section === 'staff') {
     return (
       <>
-        {/* Mobile top bar for Staff */}
+        {}
         <header className="sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-border bg-card/90 px-4 backdrop-blur-md md:hidden">
           <Brand section={section} />
           <Sheet open={open} onOpenChange={setOpen}>
@@ -238,7 +238,7 @@ export function PortalNav({
           </Sheet>
         </header>
 
-        {/* Desktop Sidebar for Staff */}
+        {}
         <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border bg-card md:flex">
           <div className="flex h-14 items-center border-b border-border px-6">
             <Brand section={section} />
@@ -284,7 +284,6 @@ export function PortalNav({
     );
   }
 
-  // Developer Portal or Public Portal Header
   return (
     <header
       className={cn(
@@ -298,8 +297,8 @@ export function PortalNav({
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-6">
           <Brand onStage={isHeaderTransparent} section={section} />
-          
-          {/* Desktop Navigation Links */}
+
+          {}
           <nav className="hidden items-center gap-1 md:flex">
             {section === 'developer' ? (
               <div className="flex items-center gap-1 overflow-x-auto">
@@ -406,7 +405,7 @@ export function PortalNav({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Universal Cart Trigger in Navigation */}
+          {}
           <button
             type="button"
             onClick={() => setCartOpen(true)}
@@ -447,7 +446,7 @@ export function PortalNav({
             </Button>
           )}
 
-          {/* Mobile hamburger */}
+          {}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button

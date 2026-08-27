@@ -51,4 +51,3 @@ export async function listMyTickets(): Promise<Ticket[]> {
 export async function selfCheckInTicket(ticketsId: string): Promise<{ valid: boolean; message: string; holderName: string; status: string }> {
   return callRpc(() => ticketClient.selfCheckInTicket({ value: ticketsId }));
 }
-

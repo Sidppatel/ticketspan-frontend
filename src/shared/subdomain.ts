@@ -53,9 +53,7 @@ export function resolvePortalContext(): PortalContext {
 
   if (subLabel === 'admin' || subLabel === 'staff' || subLabel === 'developer') {
     const portal = subLabel as Portal;
-    
-    
-    
+
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem('ticketspan-tenant');
     }

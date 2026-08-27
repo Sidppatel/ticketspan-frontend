@@ -98,7 +98,7 @@ export function PreferencesTab({ onSavePreferences }: PreferencesTabProps) {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-hairline pb-4">
         <div>
           <span className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-brand">
@@ -123,7 +123,7 @@ export function PreferencesTab({ onSavePreferences }: PreferencesTabProps) {
         )}
       </div>
 
-      {/* Section 1: Event Interests & Genres */}
+      {}
       <section className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 sm:p-7 shadow-[var(--shadow-e1)] space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-3">
@@ -142,7 +142,7 @@ export function PreferencesTab({ onSavePreferences }: PreferencesTabProps) {
           </span>
         </div>
 
-        {/* Clickable Genre Pills */}
+        {}
         <div className="flex flex-wrap gap-2 pt-2">
           {GLOBAL_EVENT_CATEGORIES.map((category) => {
             const isSelected = interests.includes(category);
@@ -182,7 +182,7 @@ export function PreferencesTab({ onSavePreferences }: PreferencesTabProps) {
         </div>
       </section>
 
-      {/* Section 2: Seating & Accessibility Preferences */}
+      {}
       <section className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 sm:p-7 shadow-[var(--shadow-e1)] space-y-6">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
@@ -196,7 +196,7 @@ export function PreferencesTab({ onSavePreferences }: PreferencesTabProps) {
           </div>
         </div>
 
-        {/* Seating Cards */}
+        {}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {SEATING_OPTIONS.map((opt) => {
             const isCurrent = seatingPreference === opt.id;
@@ -230,7 +230,7 @@ export function PreferencesTab({ onSavePreferences }: PreferencesTabProps) {
           })}
         </div>
 
-        {/* Accessibility Requirements */}
+        {}
         <div className="space-y-4 rounded-2xl border border-hairline bg-surface-sunken/40 p-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -271,7 +271,7 @@ export function PreferencesTab({ onSavePreferences }: PreferencesTabProps) {
         </div>
       </section>
 
-      {/* Section 3: Notification & Drop Channels */}
+      {}
       <section className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 sm:p-7 shadow-[var(--shadow-e1)] space-y-6">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
@@ -354,7 +354,7 @@ export function PreferencesTab({ onSavePreferences }: PreferencesTabProps) {
         </div>
       </section>
 
-      {/* Section 4: VIP Hospitality & Dietary Notes */}
+      {}
       <section className="rounded-[1.75rem] border border-hairline/80 bg-surface p-6 sm:p-7 shadow-[var(--shadow-e1)] space-y-4">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">

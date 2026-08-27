@@ -94,7 +94,7 @@ export function ConfirmationReceipt({
 
   return (
     <div className="flex flex-col space-y-6 text-center animate-in fade-in zoom-in-95 duration-300 pb-6">
-      {/* Confirmation Icon & Heading */}
+      {}
       <div className="space-y-2 pt-2">
         <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-950/40">
           <CheckCircle2 className="size-8" />
@@ -107,9 +107,9 @@ export function ConfirmationReceipt({
         </p>
       </div>
 
-      {/* Ticket Pass Receipt Card */}
+      {}
       <div className="overflow-hidden rounded-3xl border border-white/15 bg-[#131722] text-left shadow-2xl">
-        {/* Pass Top Header */}
+        {}
         <div className="p-5 border-b border-white/10 space-y-2">
           <div className="flex justify-between items-center text-xs">
             <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 font-mono">
@@ -129,13 +129,13 @@ export function ConfirmationReceipt({
           </div>
         </div>
 
-        {/* Perforation Divider */}
+        {}
         <div
           className="ticketspan-ticket-edge mx-3"
           style={{ '--ticketspan-notch': '#0c0f17' } as React.CSSProperties}
         />
 
-        {/* Pass Body & QR Items */}
+        {}
         <div className="p-5 space-y-4">
           {tickets.loading ? (
             <div className="py-8 text-center text-white/60 text-xs font-mono flex items-center justify-center gap-2 animate-pulse">
@@ -207,7 +207,7 @@ export function ConfirmationReceipt({
             </div>
           )}
 
-          {/* Paid Total Summary */}
+          {}
           <div className="border-t border-white/10 pt-3 flex justify-between items-center text-xs">
             <span className="text-white/50 uppercase font-bold font-mono tracking-wider">Total Paid</span>
             <span className="text-lg font-bold text-amber-400 font-mono">
@@ -217,7 +217,7 @@ export function ConfirmationReceipt({
         </div>
       </div>
 
-      {/* Action Buttons */}
+      {}
       <div className="space-y-2.5 pt-2">
         <Link to="/tickets" onClick={onClose} className="block">
           <Button className="ticketspan-spring-btn h-12 w-full rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 gap-2">

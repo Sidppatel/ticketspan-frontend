@@ -58,7 +58,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
         if (active) setTickets(res || []);
       })
       .catch(() => {
-        // Non-blocking error
+
       })
       .finally(() => {
         if (active) setLoadingTickets(false);
@@ -68,7 +68,6 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
     };
   }, [open, user]);
 
-  // Group tickets by event title for ultra-clean display
   const groupedTickets = useMemo(() => {
     const map = new Map<string, { eventTitle: string; venueName: string; tickets: Ticket[] }>();
     for (const t of tickets) {
@@ -177,7 +176,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
       >
         <DialogTitle className="sr-only">Attendee Digital Credential</DialogTitle>
 
-        {/* Ambient Glows */}
+        {}
         <div
           className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-amber-500/15 blur-3xl"
           aria-hidden="true"
@@ -187,7 +186,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
           aria-hidden="true"
         />
 
-        {/* Fixed Top Header Bar */}
+        {}
         <div className="relative z-10 shrink-0 border-b border-white/10 bg-[#131722]/95 px-6 py-4 backdrop-blur-xl space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -210,7 +209,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
               <Badge variant="voltage" className="font-mono text-[9.5px] uppercase tracking-wider px-2 py-0.5 font-bold">
                 <Sparkles className="size-3 mr-1" /> VIP Credential
               </Badge>
-              {/* Single Close Button */}
+              {}
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
@@ -222,7 +221,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
             </div>
           </div>
 
-          {/* Segmented Control Navigation Tabs */}
+          {}
           <div className="flex rounded-2xl bg-[#080a10] p-1 border border-white/10 shadow-inner">
             <button
               type="button"
@@ -257,7 +256,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
           </div>
         </div>
 
-        {/* Scrollable Content Body with Lenis & Wheel Event StopPropagation */}
+        {}
         <div
           data-lenis-prevent
           data-lenis-prevent-wheel
@@ -265,10 +264,10 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
           onWheel={(e) => e.stopPropagation()}
           className="relative z-10 flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-4 overscroll-contain touch-pan-y pointer-events-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-track]:bg-transparent"
         >
-          {/* TAB 1: ACTIVE PASSES & 1-CLICK SELF CHECK-IN */}
+          {}
           {activeTab === 'tickets' && (
             <div className="space-y-4">
-              {/* Attendee Quick Identity Strip */}
+              {}
               <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#131722] p-3.5 shadow-inner">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="size-10 rounded-xl overflow-hidden border border-amber-400/40 bg-[#1e2434] shrink-0">
@@ -297,7 +296,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
                 </Button>
               </div>
 
-              {/* Search / Filter bar if more than 3 tickets */}
+              {}
               {tickets.length > 3 && (
                 <div className="relative">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
@@ -336,7 +335,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
                         key={group.eventTitle}
                         className="rounded-2xl border border-white/10 bg-[#131722] overflow-hidden shadow-md"
                       >
-                        {/* Event Group Header */}
+                        {}
                         <div className="p-4 border-b border-white/10 bg-[#171c2b] flex items-center justify-between gap-3">
                           <div className="min-w-0 flex-1">
                             <h4 className="truncate !font-sans text-sm font-bold text-white tracking-tight">
@@ -352,7 +351,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
                             </div>
                           </div>
 
-                          {/* Quick Check-In All Button for this Event */}
+                          {}
                           {!allCheckedInGroup && group.tickets.length > 1 && (
                             <Button
                               size="sm"
@@ -370,7 +369,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
                           )}
                         </div>
 
-                        {/* Tickets List */}
+                        {}
                         <div className="p-3 space-y-2">
                           {group.tickets.map((t) => {
                             const isCheckedIn = t.status === 'CheckedIn';
@@ -433,14 +432,14 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
             </div>
           )}
 
-          {/* TAB 2: FULL APPLE WALLET STYLE DIGITAL QR PASS */}
+          {}
           {activeTab === 'qr' && (
             <div className="space-y-4">
               <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-b from-[#181d2a] to-[#121622] shadow-xl">
-                {/* Top Amber Brand Accent Strip */}
+                {}
                 <div className="h-1.5 w-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500" />
 
-                {/* Attendee Identity Section */}
+                {}
                 <div className="p-5 space-y-4">
                   <div className="flex items-center gap-3.5">
                     <div className="relative size-13 shrink-0">
@@ -476,7 +475,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
                     </div>
                   </div>
 
-                  {/* Credential ID Bar */}
+                  {}
                   <div className="flex items-center justify-between rounded-xl bg-[#0c0f17] border border-white/10 px-3 py-2">
                     <div className="space-y-0.5">
                       <span className="text-[9.5px] font-mono uppercase tracking-widest text-slate-400 font-bold">
@@ -504,14 +503,14 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
                   </div>
                 </div>
 
-                {/* Perforation Cutout Divider */}
+                {}
                 <div className="relative flex items-center justify-between px-3 py-1 bg-[#151926] border-y border-white/10">
                   <div className="size-4 -ml-5 rounded-full bg-[#0c0f17] shadow-inner" />
                   <div className="flex-1 border-t border-dashed border-white/20 mx-2" />
                   <div className="size-4 -mr-5 rounded-full bg-[#0c0f17] shadow-inner" />
                 </div>
 
-                {/* QR Code Presentation Box */}
+                {}
                 <div className="p-5 flex flex-col items-center text-center space-y-3 bg-[#121622]">
                   <div className="relative group">
                     <div className="rounded-2xl border border-white/20 bg-white p-4 shadow-2xl">
@@ -532,7 +531,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
             </div>
           )}
 
-          {/* Quick Wallet Link */}
+          {}
           <div className="rounded-2xl border border-white/10 bg-[#131722] p-3.5 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <Smartphone className="size-4 text-amber-400" />
@@ -548,7 +547,7 @@ export function DigitalPassModal({ open, onOpenChange, user, role }: DigitalPass
           </div>
         </div>
 
-        {/* Fixed Bottom Footer */}
+        {}
         <div className="shrink-0 border-t border-white/10 bg-[#131722]/95 px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400 font-semibold">
             <Radio className="size-3.5 text-emerald-400 animate-pulse" />

@@ -78,7 +78,7 @@ export function ProfilePage() {
             useProfilePreferencesStore.getState().updatePreferences(parsed);
           }
         } catch {
-          // ignore malformed JSON
+          void 0;
         }
       }
     } catch (err) {
@@ -189,7 +189,7 @@ export function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-10 pb-20">
-      {/* 1. VIP Executive Credential Hero Card */}
+      {}
       <ProfileHeroCard
         user={user}
         role={role}
@@ -203,7 +203,7 @@ export function ProfilePage() {
         interestsCount={interestsCount}
       />
 
-      {/* 2. Interactive Navigation Tabs (Fluid Island Style) */}
+      {}
       <div className="flex overflow-x-auto no-scrollbar gap-2 p-1.5 rounded-full border border-hairline bg-surface/80 shadow-[var(--shadow-e1)] backdrop-blur-md">
         {tabItems.map((tab) => {
           const Icon = tab.icon;
@@ -240,7 +240,7 @@ export function ProfilePage() {
         })}
       </div>
 
-      {/* 3. Tab Contents with Concentric Double-Bezel Enclosure */}
+      {}
       <div className="rounded-[2.25rem] bg-black/5 p-2 ring-1 ring-black/5 dark:bg-white/5 dark:ring-white/10">
         <div className="rounded-[calc(2.25rem-0.5rem)] border border-hairline bg-surface p-6 sm:p-8 md:p-10 shadow-[var(--shadow-e1)]">
           {activeTab === 'identity' && (
@@ -269,7 +269,7 @@ export function ProfilePage() {
         </div>
       </div>
 
-      {/* 4. Apple Wallet Style Digital Pass Modal */}
+      {}
       <DigitalPassModal
         open={digitalPassOpen}
         onOpenChange={setDigitalPassOpen}

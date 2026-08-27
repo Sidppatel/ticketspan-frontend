@@ -177,7 +177,7 @@ export function UserAvatarMenu({ className, tone = 'default' }: UserAvatarMenuPr
         sideOffset={8}
         className="w-80 overflow-hidden rounded-2xl border border-border/80 bg-card/95 p-0 text-card-foreground shadow-2xl backdrop-blur-2xl animate-in fade-in-50 zoom-in-95"
       >
-        {/* User Identity Header */}
+        {}
         <div className="border-b border-border/60 bg-muted/40 p-4">
           <div className="flex items-center gap-3">
             {hasAvatar ? (
@@ -203,7 +203,7 @@ export function UserAvatarMenu({ className, tone = 'default' }: UserAvatarMenuPr
           </div>
         </div>
 
-        {/* Action Links */}
+        {}
         <div className="p-2 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -245,7 +245,7 @@ export function UserAvatarMenu({ className, tone = 'default' }: UserAvatarMenuPr
             );
           })}
 
-          {/* Staff Check-In link if authorized */}
+          {}
           {role === Roles.Staff || role === Roles.Admin || role === Roles.SubTenant ? (
             <PopoverClose asChild>
               <Link
@@ -268,7 +268,7 @@ export function UserAvatarMenu({ className, tone = 'default' }: UserAvatarMenuPr
           ) : null}
         </div>
 
-        {/* Footer & Sign Out */}
+        {}
         <div className="flex items-center justify-between border-t border-border/60 bg-muted/20 p-3">
           <div className="flex items-center gap-1.5 opacity-60">
             <BrandMark className="size-4 text-foreground" />

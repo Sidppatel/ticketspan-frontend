@@ -1,4 +1,3 @@
-
 const SUFFIXES = [
   'Cents', 'Count', 'Capacity', 'Seats', 'Total', 'Subtotal',
   'Fee', 'Rate', 'Percent', 'Quantity',

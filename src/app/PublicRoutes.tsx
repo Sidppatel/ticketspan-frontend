@@ -7,7 +7,6 @@ import { authRoutes, authenticated } from '@/app/authRoutes';
 import { TenantLandingPage } from '@/features/public/pages/TenantLandingPage';
 import { currentTenantSlug, isTenantSubdomain, getRootDomainUrl } from '@/shared/subdomain';
 
-
 const EventListPage = lazy(() =>
   import('@/features/public/pages/EventListPage').then((m) => ({ default: m.EventListPage })),
 );

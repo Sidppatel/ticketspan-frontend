@@ -5,25 +5,25 @@ import type { Price, PriceRule, PriceBreakdown } from '@/shared/proto/pricing';
 export interface PriceInput {
   eventsId: string;
   name: string;
-  pricingType: string; 
+  pricingType: string;
   basePriceCents: number;
   perAttendeeCents: number;
   isAllInclusive: boolean;
-  feeFormulasId: string; 
+  feeFormulasId: string;
   maxQuantity: number;
 }
 
 export interface PriceRuleInput {
   pricesId: string;
   name: string;
-  ruleType: string; 
+  ruleType: string;
   priority: number;
   priceCents: number;
-  activeFrom: string; 
+  activeFrom: string;
   activeUntil: string;
-  minRemaining: number; 
+  minRemaining: number;
   maxRemaining: number;
-  capacity: number; 
+  capacity: number;
 }
 
 export interface GroupTierInput {
@@ -118,8 +118,7 @@ export async function deletePrice(pricesId: string): Promise<void> {
 }
 
 export async function createPriceRule(input: PriceRuleInput): Promise<string> {
-  
-  
+
   const { pricesId, ...rest } = input;
   const res = await callRpc(() =>
     pricingClient.createPriceRule({

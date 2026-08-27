@@ -69,8 +69,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
     } else if (!/\S+@\S+\.\S+/.test(buyerInfo.email)) {
       errs.email = 'Please enter a valid email address';
     }
-    
-    // Phone number is optional
+
     if (buyerInfo.phone.trim()) {
       const digits = buyerInfo.phone.replace(/\D/g, '');
       if (digits.length > 0 && digits.length < 10) {
@@ -78,15 +77,13 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
       }
     }
 
-
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
   const handleFieldChange = (field: keyof BuyerInfo, value: string) => {
     onChange({ ...buyerInfo, [field]: value });
-    
-    // Clear validation error dynamically if the field becomes valid
+
     if (errors[field]) {
       const errs = { ...errors };
       if (field === 'name') {
@@ -119,7 +116,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 pt-1">
-      {/* Header Info */}
+      {}
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <span className="flex size-6 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold font-mono">
@@ -134,7 +131,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
         </p>
       </div>
 
-      {/* Authenticated Fast Fill Badge or Guest Notice */}
+      {}
       {isAuthenticated && user ? (
         <div className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 px-4 py-3 text-xs">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -172,9 +169,9 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
         </div>
       )}
 
-      {/* Form Fields Card */}
+      {}
       <div className="rounded-2xl border border-white/10 bg-[#131722] p-4 sm:p-5 space-y-4 shadow-inner">
-        {/* Full Name */}
+        {}
         <div className="space-y-1.5">
           <Label htmlFor="buyer_name" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
             <User className="size-3.5 text-amber-400" /> Full Name
@@ -198,7 +195,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
           )}
         </div>
 
-        {/* Email Address */}
+        {}
         <div className="space-y-1.5">
           <Label htmlFor="buyer_email" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
             <Mail className="size-3.5 text-amber-400" /> Email Address
@@ -223,7 +220,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
           )}
         </div>
 
-        {/* Phone Number */}
+        {}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <Label htmlFor="buyer_phone" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
@@ -250,13 +247,13 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
         </div>
       </div>
 
-      {/* Security Assurance Callout */}
+      {}
       <div className="flex items-center gap-2 px-1 text-[11.5px] text-white/60">
         <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
         <span>Your information is encrypted and never sold or shared with 3rd parties.</span>
       </div>
 
-      {/* Bottom Step Actions */}
+      {}
       <div className="flex items-center gap-3 pt-2">
         <Button
           type="button"

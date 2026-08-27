@@ -40,7 +40,7 @@ export function TenantSettingsPanel({ tenantsId }: { tenantsId: string }) {
               <span className="font-medium text-foreground">Connected Account: </span>
               {stripe.data.stripeConnectedAccountId || '—'}
             </div>
-            
+
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div className="space-y-1 rounded-md border p-3">
                 <div className="flex items-center gap-2">

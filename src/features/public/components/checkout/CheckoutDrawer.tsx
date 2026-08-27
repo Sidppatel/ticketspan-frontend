@@ -80,7 +80,7 @@ export function CheckoutDrawer({
       >
         <SheetTitle className="sr-only">Express Event Checkout</SheetTitle>
 
-        {/* Ambient Top Glows */}
+        {}
         <div
           className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-amber-500/15 blur-3xl"
           aria-hidden="true"
@@ -90,7 +90,7 @@ export function CheckoutDrawer({
           aria-hidden="true"
         />
 
-        {/* Fixed Header Bar */}
+        {}
         <div className="relative z-10 shrink-0 border-b border-white/10 bg-[#131722]/95 px-6 py-4 backdrop-blur-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -115,7 +115,7 @@ export function CheckoutDrawer({
             </div>
           </div>
 
-          {/* Event Context Strip & Expandable Price Breakdown */}
+          {}
           {event && (
             <div className="mt-3 rounded-xl border border-white/10 bg-[#181d2a] p-3 shadow-inner space-y-2">
               <div className="flex items-center justify-between gap-3">
@@ -150,7 +150,7 @@ export function CheckoutDrawer({
                 </div>
               </div>
 
-              {/* Collapsible Itemized Breakdown */}
+              {}
               {showBreakdown && (
                 <div className="border-t border-white/10 pt-2.5 space-y-2 text-xs animate-in fade-in-50 duration-200">
                   {quote?.lines && quote.lines.length > 0 && (
@@ -204,7 +204,7 @@ export function CheckoutDrawer({
             </div>
           )}
 
-          {/* Progress Indicator */}
+          {}
           {step < 3 && (
             <div className="mt-3 flex items-center gap-2">
               <div
@@ -223,7 +223,7 @@ export function CheckoutDrawer({
           )}
         </div>
 
-        {/* Scrollable Step Body with Guaranteed Lenis & Mouse Wheel Scrolling */}
+        {}
         <div
           data-lenis-prevent
           data-lenis-prevent-wheel
@@ -266,5 +266,3 @@ export function CheckoutDrawer({
     </Sheet>
   );
 }
-
-

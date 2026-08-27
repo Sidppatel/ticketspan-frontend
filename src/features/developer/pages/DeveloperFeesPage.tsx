@@ -199,7 +199,7 @@ export function DeveloperFeesPage() {
         </Alert>
       )}
 
-      {/* KPI Stats */}
+      {}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Service Fee Revenue (12 Mo)"
@@ -238,7 +238,7 @@ export function DeveloperFeesPage() {
         </section>
       )}
 
-      {/* Fee Formula Library */}
+      {}
       <Card>
         <CardHeader className="border-b border-border/40 pb-4">
           <CardTitle className="flex items-center gap-2">
@@ -342,7 +342,7 @@ export function DeveloperFeesPage() {
         </CardContent>
       </Card>
 
-      {/* Tenants Pricing Grid */}
+      {}
       <section className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <h2 className="font-display text-lg font-bold tracking-tight text-foreground">

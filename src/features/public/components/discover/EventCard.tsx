@@ -36,7 +36,7 @@ export function EventCard({ event, index }: { event: Event; index: number }) {
       className="group relative flex flex-col overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-2 text-card-foreground shadow-[var(--shadow-e1)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-e3)]"
       style={{ animationDelay: `${Math.min(index, 8) * 50}ms` }}
     >
-      {/* Inner Poster Area */}
+      {}
       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.25rem] bg-muted">
         {event.primaryImageId ? (
           <img
@@ -61,7 +61,7 @@ export function EventCard({ event, index }: { event: Event; index: number }) {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
-        {/* Floating Calendar Badge */}
+        {}
         <div className="absolute left-3.5 top-3.5 flex flex-col items-center justify-center rounded-xl border border-white/20 bg-slate-950/85 px-3 py-1.5 text-center shadow-lg backdrop-blur-md">
           <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
             {month}
@@ -71,7 +71,7 @@ export function EventCard({ event, index }: { event: Event; index: number }) {
           </span>
         </div>
 
-        {/* Floating Category Pill */}
+        {}
         <div className="absolute right-3.5 top-3.5">
           <span className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-slate-950/80 px-2.5 py-1 font-mono text-[10px] font-medium text-white/90 shadow-md backdrop-blur-md">
             <Tag className="size-2.5 text-primary" />
@@ -80,7 +80,7 @@ export function EventCard({ event, index }: { event: Event; index: number }) {
         </div>
       </div>
 
-      {/* Card Content */}
+      {}
       <div className="flex flex-1 flex-col justify-between p-4 space-y-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -103,7 +103,7 @@ export function EventCard({ event, index }: { event: Event; index: number }) {
           ) : null}
         </div>
 
-        {/* Footer Action Bar */}
+        {}
         <div className="flex items-center justify-end border-t border-border/60 pt-3 text-xs font-semibold text-primary">
           <span className="inline-flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-0.5">
             Book Tickets <ArrowUpRight className="size-3.5" />

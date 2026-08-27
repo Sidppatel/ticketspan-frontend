@@ -12,7 +12,7 @@ export function createGoogleCalendarUrl({
   const startSec = Number(startEpoch);
   if (!startSec) return '';
   const startDate = new Date(startSec * 1000);
-  const endDate = new Date((startSec + 3 * 3600) * 1000); // 3 hour default event window
+  const endDate = new Date((startSec + 3 * 3600) * 1000);
   const fmt = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, '');
   const dates = `${fmt(startDate)}/${fmt(endDate)}`;
   const params = new URLSearchParams({

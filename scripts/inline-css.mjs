@@ -15,8 +15,6 @@ function inlineCss() {
 
   let htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
-  // Find the CSS file linked in index.html
-  // Format: <link rel="stylesheet" crossorigin href="/assets/index-CWU01EJ0.css">
   const cssLinkMatch = htmlContent.match(/<link rel="stylesheet"[^>]*href="\/assets\/index-([^"]+)\.css"[^>]*>/);
 
   if (!cssLinkMatch) {
@@ -35,14 +33,12 @@ function inlineCss() {
   console.log(`Inlining CSS: ${cssFileName}`);
   const cssContent = fs.readFileSync(cssFilePath, 'utf8');
 
-  // Replace link tag with style block containing the CSS contents
   const styleBlock = `<style>${cssContent}</style>`;
   htmlContent = htmlContent.replace(cssLinkMatch[0], styleBlock);
 
   fs.writeFileSync(htmlPath, htmlContent, 'utf8');
   console.log('Successfully inlined CSS into index.html');
 
-  // Delete the original CSS file to keep build clean
   try {
     fs.unlinkSync(cssFilePath);
     console.log(`Removed original file: ${cssFilePath}`);

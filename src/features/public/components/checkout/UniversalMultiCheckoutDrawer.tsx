@@ -47,7 +47,6 @@ export function UniversalMultiCheckoutDrawer({
   const eventGroups = groupedByEvent();
   const eventIds = Object.keys(eventGroups);
 
-  // Fetch quotes per event whenever drawer is open or items change
   useEffect(() => {
     if (!isOpen || items.length === 0) {
       return;
@@ -71,7 +70,7 @@ export function UniversalMultiCheckoutDrawer({
           const q = await quoteCart(eventId, lines);
           results[eventId] = q;
         } catch {
-          // fallback if individual quote fails
+          void 0;
         }
       }
       if (active) {
@@ -118,7 +117,7 @@ export function UniversalMultiCheckoutDrawer({
         reclaimItem(item.id);
         reclaimedCount++;
       } catch {
-        // failed
+        void 0;
       }
     }
 
@@ -132,7 +131,6 @@ export function UniversalMultiCheckoutDrawer({
     }
   }, [items, reclaimItem]);
 
-  // Aggregate totals across all event quotes
   let totalSubtotalCents = 0;
   let totalDiscountCents = 0;
   let totalServiceFeeCents = 0;
@@ -159,7 +157,6 @@ export function UniversalMultiCheckoutDrawer({
   const grandTotalCents = totalChargeCents > 0 ? totalChargeCents : subtotalCents();
   const hasExpired = items.some((i) => isCartItemExpired(i));
 
-  // When proceeding from step 1 to step 2, create the multi-event booking reservations
   const handleProceedToPayment = async () => {
     if (hasExpired) {
       toast.error('Expired passes in cart', {
@@ -184,7 +181,7 @@ export function UniversalMultiCheckoutDrawer({
     }
 
     try {
-      // Primary event ID for multi-booking session
+
       const primaryEventId = items[0].eventId;
       const lines = items.map((i) => ({
         kind: i.kind,
@@ -235,13 +232,13 @@ export function UniversalMultiCheckoutDrawer({
       >
         <SheetTitle className="sr-only">Multi-Event Express Checkout</SheetTitle>
 
-        {/* Ambient Top Glow */}
+        {}
         <div
           className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-amber-500/10 blur-3xl"
           aria-hidden="true"
         />
 
-        {/* Fixed Header Bar */}
+        {}
         <div className="relative z-10 shrink-0 border-b border-white/10 bg-[#131722]/95 px-6 py-4 backdrop-blur-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -272,7 +269,7 @@ export function UniversalMultiCheckoutDrawer({
             </div>
           </div>
 
-          {/* Expired Warning Banner */}
+          {}
           {hasExpired && step === 1 && (
             <div className="mt-3 rounded-xl bg-rose-500/15 border border-rose-500/30 p-2.5 flex items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-1.5 min-w-0">
@@ -293,7 +290,7 @@ export function UniversalMultiCheckoutDrawer({
             </div>
           )}
 
-          {/* Cart Multi-Event Summary Box */}
+          {}
           <div className="mt-3 rounded-xl border border-white/10 bg-[#181d2a] p-3 shadow-inner space-y-2">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
@@ -324,7 +321,7 @@ export function UniversalMultiCheckoutDrawer({
               </div>
             </div>
 
-            {/* Collapsible Itemized Breakdown */}
+            {}
             {showBreakdown && (
               <div className="border-t border-white/10 pt-2.5 space-y-2 text-xs animate-in fade-in-50 duration-200">
                 <div className="space-y-2 divide-y divide-white/5 pb-1">
@@ -384,7 +381,7 @@ export function UniversalMultiCheckoutDrawer({
             )}
           </div>
 
-          {/* Progress Indicator */}
+          {}
           {step < 3 && (
             <div className="mt-3 flex items-center gap-2">
               <div
@@ -403,7 +400,7 @@ export function UniversalMultiCheckoutDrawer({
           )}
         </div>
 
-        {/* Scrollable Step Body */}
+        {}
         <div
           data-lenis-prevent
           data-lenis-prevent-wheel
