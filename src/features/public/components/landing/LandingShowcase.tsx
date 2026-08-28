@@ -1,4 +1,5 @@
 import { useLandingStore, venueSlug } from '@/features/public/hooks/landingStore';
+import { ArrowUpRight, Building, Sparkles } from 'lucide-react';
 
 interface PortalSkin {
   venue: string;
@@ -6,169 +7,135 @@ interface PortalSkin {
   type: string;
   link: string;
   slug: string;
-  background: string;
-  text: string;
-  primary: string;
   accent: string;
-  onPrimary: string;
-  caseStudy: {
-    keyFeatures: string[];
-  };
+  features: string[];
 }
 
 const portalSkins: PortalSkin[] = [
   {
     venue: 'The Azalea Room',
     city: 'Mobile, AL',
-    type: 'Nightclub',
+    type: 'Nightclub & Lounge',
     link: 'azalea.ticketspan.com',
     slug: 'azalea',
-    background: '#FAFAFA',
-    text: '#18181B',
-    primary: '#18181B',
-    accent: '#D4A017',
-    onPrimary: '#F4F4F5',
-    caseStudy: {
-      keyFeatures: [
-        'Rapid door scanning',
-        'VIP and guestlist management',
-        'Next-day payout schedule',
-      ],
-    },
+    accent: '#064e3b',
+    features: ['High-speed mobile check-in', 'VIP booth reservations', '2-day rolling deposits'],
   },
   {
     venue: 'Crescent Theater South',
     city: 'Mobile, AL',
-    type: 'Independent Theater',
+    type: 'Independent Cinema & Theater',
     link: 'crescent.ticketspan.com',
     slug: 'crescent',
-    background: '#FAFDF7',
-    text: '#14201A',
-    primary: '#166534',
-    accent: '#CA8A04',
-    onPrimary: '#ECFDF5',
-    caseStudy: {
-      keyFeatures: [
-        'Multi-day run schedules',
-        'Seated vs GA ticketing',
-        'Detailed financial exports',
-      ],
-    },
+    accent: '#0f766e',
+    features: ['Reserved table & seat chart', 'Multi-day show runs', 'Financial ledger exports'],
   },
   {
     venue: 'Port City Pavilion',
     city: 'Chickasaw, AL',
-    type: 'Outdoor Event Space',
+    type: 'Open-Air Amphitheater',
     link: 'portcity.ticketspan.com',
     slug: 'portcity',
-    background: '#F8FBFC',
-    text: '#0C1A20',
-    primary: '#0E7490',
-    accent: '#F97316',
-    onPrimary: '#E0F2FE',
-    caseStudy: {
-      keyFeatures: [
-        'High-volume ingress',
-        'Multi-scanner sync',
-        'Sponsor & Vendor integrations',
-      ],
-    },
+    accent: '#0369a1',
+    features: ['High-volume door ingress', 'Multi-staff synchronized scanners', 'Sponsor logo placement'],
   },
   {
     venue: 'Dauphin Street Comedy',
     city: 'Mobile, AL',
-    type: 'Comedy Lounge',
+    type: 'Comedy Cellar',
     link: 'dauphin.ticketspan.com',
     slug: 'dauphin',
-    background: '#F8FAFC',
-    text: '#0F172A',
-    primary: '#4F46E5',
-    accent: '#F59E0B',
-    onPrimary: '#E0E7FF',
-    caseStudy: {
-      keyFeatures: [
-        'Floor-plan table booking',
-        'Group check-ins',
-        'Dark mode native branding',
-      ],
-    },
+    accent: '#4338ca',
+    features: ['Floor plan seat selection', 'Automated reminder emails', 'Magic link host login'],
   },
 ];
 
-function PortalSkinCard({ skin }: { skin: PortalSkin }) {
-  return (
-    <article
-      data-skin-card
-      className="w-[85vw] max-w-[480px] shrink-0 snap-center border-[1.5px] border-(--lp-ink) shadow-[10px_10px_0_rgba(25,23,20,0.08)] flex flex-col"
-      style={{ background: skin.background, color: skin.text }}
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b px-6 py-4 gap-2" style={{ borderColor: `${skin.text}22` }}>
-        <div>
-          <span className="font-[family-name:var(--lp-display)] text-xl font-semibold">{skin.venue}</span>
-          <span className="block text-xs mt-0.5 opacity-80">{skin.city} · {skin.type}</span>
-        </div>
-        <span className="font-mono text-[10px] uppercase tracking-[0.15em] opacity-80 cursor-default">
-          {skin.link} ↗
-        </span>
-      </div>
-      <div className="flex-1 px-6 py-12 flex flex-col justify-center" style={{ background: skin.primary, color: skin.onPrimary }}>
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] opacity-80 mb-4">Key Features Utilized</p>
-        <ul className="space-y-3">
-          {skin.caseStudy.keyFeatures.map((feature, i) => (
-            <li key={i} className="flex items-center gap-3 text-[14px] font-medium">
-              <span style={{ color: skin.accent }}>✳</span>
-              {feature}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-    </article>
-  );
-}
-
-function YourHouseCard() {
+export function PortalShowcase() {
   const venueName = useLandingStore((s) => s.venueName);
   const named = venueName.trim();
-  return (
-    <div className="flex w-[70vw] max-w-[340px] shrink-0 snap-center flex-col items-start justify-center border-[1.5px] border-dashed border-(--lp-ink)/50 px-8">
-      <p className="font-[family-name:var(--lp-display)] text-2xl text-(--lp-ink)">
-        {named ? `${named}.` : 'Your venue here.'}
-      </p>
-      <p className="mt-2 text-sm text-(--lp-ink-soft)">
-        {named
-          ? `${venueSlug(named)}.ticketspan.com, set up instantly.`
-          : 'Your subdomain and logo, set up instantly.'}
-      </p>
-      <a href="#start" className="lp-ghost mt-6 text-(--lp-green)">
-        Open your box office
-      </a>
-    </div>
-  );
-}
 
-export function PortalShowcase() {
   return (
-    <section id="showcase" data-showcase className="scroll-mt-24 overflow-hidden bg-(--lp-ivory) py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <p data-reveal className="lp-eyebrow text-(--lp-green)">
-          Illustrative Profiles
-        </p>
-        <h2 data-split className="mt-5 max-w-2xl text-4xl text-(--lp-ink) md:text-5xl">
-          One platform. <em className="text-(--lp-green)">Fully branded for your venue.</em>
-        </h2>
-        <p data-reveal className="mt-6 max-w-lg leading-relaxed text-(--lp-ink-soft)">
-          These illustrative venue profiles show how the same platform adapts to different spaces. Your audience sees
-          your name and your domain, not ours. The branding studio comes with presets and contrast
-          checks, so it looks right on the first try.
-        </p>
-      </div>
-      <div data-showcase-viewport className="mt-12 snap-x snap-mandatory overflow-x-auto pb-6 [scrollbar-width:none] md:mt-16">
-        <div data-showcase-track className="flex w-max gap-8 px-5 md:px-[max(2rem,calc((100vw-80rem)/2+2rem))]">
+    <section id="showcase" className="scroll-mt-20 py-10 sm:py-14 md:py-16 bg-stone-50 border-t border-stone-200/80">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+        <div className="max-w-2xl">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 font-mono text-xs font-semibold text-(--lp-green) border border-emerald-200/60">
+            <Building className="size-3.5" />
+            <span>Multi-Tenant Architecture</span>
+          </div>
+          <h2 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-(--lp-ink)">
+            One platform. Every venue completely its own.
+          </h2>
+          <p className="mt-2 text-xs sm:text-sm text-(--lp-ink-soft) leading-relaxed">
+            These illustrative profiles show how TicketSpan wraps around each venue&rsquo;s individual visual identity, typography, and event format.
+          </p>
+        </div>
+
+        <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {portalSkins.map((skin) => (
-            <PortalSkinCard key={skin.slug} skin={skin} />
+            <div
+              key={skin.slug}
+              className="rounded-2xl sm:rounded-3xl border border-stone-200/80 bg-white p-4 sm:p-6 shadow-sm flex flex-col justify-between transition-all hover:shadow-md"
+            >
+              <div>
+                <div className="flex items-center justify-between border-b border-stone-100 pb-3 sm:pb-4">
+                  <div>
+                    <h3 className="font-bold text-base sm:text-lg text-(--lp-ink)">{skin.venue}</h3>
+                    <p className="text-[11px] sm:text-xs text-stone-500">{skin.city} · {skin.type}</p>
+                  </div>
+                  <span
+                    className="size-2.5 sm:size-3 rounded-full shrink-0"
+                    style={{ backgroundColor: skin.accent }}
+                  />
+                </div>
+
+                <p className="mt-3 font-mono text-xs font-semibold text-(--lp-green)">
+                  {skin.link}
+                </p>
+
+                <div className="mt-3 space-y-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-stone-400">
+                    Capabilities Active
+                  </span>
+                  <ul className="space-y-1 text-xs text-stone-700">
+                    {skin.features.map((feat) => (
+                      <li key={feat} className="flex items-center gap-1.5">
+                        <span className="text-(--lp-green)">•</span>
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-5 pt-3 border-t border-stone-100 flex items-center justify-between font-mono text-[10.5px] sm:text-[11px] text-stone-500">
+                <span>Branded Box Office</span>
+                <span className="text-stone-700 font-semibold">Live Preview</span>
+              </div>
+            </div>
           ))}
-          <YourHouseCard />
+
+          <div className="rounded-2xl sm:rounded-3xl border-2 border-dashed border-stone-300 bg-white/60 p-4 sm:p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 text-stone-900 font-bold text-base sm:text-lg">
+                <Sparkles className="size-4 text-(--lp-green)" />
+                <h4>{named ? `${named}` : 'Your Room Here'}</h4>
+              </div>
+              <p className="mt-0.5 text-xs text-stone-500 truncate">
+                {named ? `${venueSlug(named)}.ticketspan.com` : 'yourvenue.ticketspan.com'}
+              </p>
+              <p className="mt-3 text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Claim your custom subdomain in under eight minutes. Start drafting your first event with zero credit card required.
+              </p>
+            </div>
+
+            <a
+              href="#start"
+              className="mt-5 flex h-9 sm:h-10 items-center justify-center gap-1.5 rounded-full bg-(--lp-green) text-xs font-semibold text-white shadow-sm hover:bg-(--lp-green-soft) transition-all"
+            >
+              <span>Claim Box Office</span>
+              <ArrowUpRight className="size-3.5" />
+            </a>
+          </div>
         </div>
       </div>
     </section>

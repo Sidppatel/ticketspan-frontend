@@ -1,7 +1,6 @@
 import { useEffect, type RefObject } from 'react';
 
 type Gsap = typeof import('gsap')['gsap'];
-type ScrollTriggerPlugin = typeof import('gsap/ScrollTrigger')['ScrollTrigger'];
 
 function attachMagnet(gsap: Gsap, el: HTMLElement) {
   const xTo = gsap.quickTo(el, 'x', { duration: 0.4, ease: 'power3.out' });
@@ -23,68 +22,14 @@ function attachMagnet(gsap: Gsap, el: HTMLElement) {
   return () => window.removeEventListener('mousemove', onMove);
 }
 
-function pinShowcase(gsap: Gsap, ScrollTrigger: ScrollTriggerPlugin) {
-  const section = document.querySelector<HTMLElement>('[data-showcase]');
-  const viewport = section?.querySelector<HTMLElement>('[data-showcase-viewport]');
-  const track = section?.querySelector<HTMLElement>('[data-showcase-track]');
-  if (!section || !viewport || !track) return undefined;
-  const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
-  if (distance() < 80) return undefined;
-  viewport.style.overflowX = 'visible';
-  const slide = gsap.to(track, {
-    x: () => -distance(),
-    ease: 'none',
-    scrollTrigger: {
-      trigger: viewport,
-      start: 'center center',
-      end: () => `+=${distance()}`,
-      pin: section,
-      scrub: 0.6,
-      anticipatePin: 1,
-      invalidateOnRefresh: true,
-    },
-  });
-  const cards = gsap.utils.toArray<HTMLElement>('[data-skin-card]', track);
-  cards.forEach((card) => {
-    gsap.from(card, {
-      yPercent: 6,
-      rotate: 0.6,
-      opacity: 0.4,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: card,
-        containerAnimation: slide,
-        start: 'left 95%',
-        end: 'left 55%',
-        scrub: true,
-      },
-    });
-  });
-  ScrollTrigger.refresh();
-  return () => {
-    viewport.style.removeProperty('overflow-x');
-  };
-}
-
 function heroTicketScene(gsap: Gsap) {
   const scene = document.querySelector<HTMLElement>('[data-ticket-scene]');
   if (!scene) return;
-  const card = scene.querySelector<HTMLElement>('[data-ticket-card]');
-  const stub = scene.querySelector<HTMLElement>('[data-ticket-stub]');
   gsap.to(scene, {
-    y: -46,
+    y: -30,
     ease: 'none',
     scrollTrigger: { trigger: scene, start: 'top 80%', end: 'bottom top', scrub: 0.8 },
   });
-  if (card && stub) {
-    gsap.to(stub, {
-      x: 14,
-      y: -10,
-      rotate: 5,
-      ease: 'none',
-      scrollTrigger: { trigger: scene, start: 'top 80%', end: 'bottom top', scrub: 0.8 },
-    });
-  }
 }
 
 export function useLandingReveal(scope: RefObject<HTMLDivElement | null>) {
@@ -126,23 +71,10 @@ export function useLandingReveal(scope: RefObject<HTMLDivElement | null>) {
               scrollTrigger: { trigger: el, start: 'top 90%', once: true },
             });
           });
-          gsap.utils.toArray<HTMLElement>('[data-parallax]').forEach((el) => {
-            gsap.fromTo(
-              el,
-              { y: 48 },
-              {
-                y: -48,
-                ease: 'none',
-                scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.9 },
-              },
-            );
-          });
           heroTicketScene(gsap);
-          const showcaseCleanup = pinShowcase(gsap, ScrollTrigger);
           const cleanups = gsap.utils
             .toArray<HTMLElement>('[data-magnet]')
             .map((el) => attachMagnet(gsap, el));
-          if (showcaseCleanup) cleanups.push(showcaseCleanup);
           return () => cleanups.forEach((fn) => fn());
         });
         return () => mm.revert();

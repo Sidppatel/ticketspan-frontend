@@ -3,26 +3,35 @@ import { Link } from 'react-router-dom';
 import { formatUsPhone } from '@/shared/lib/validation';
 import { BrandLockup } from '@/shared/brand/BrandMark';
 import { useLandingStore } from '@/features/public/hooks/landingStore';
+import { ArrowUpRight, CheckCircle2, ShieldCheck, Mail, MapPin } from 'lucide-react';
 
-const closingPills = ['No credit card', 'Cancel anytime', 'Real human replies'];
 const formFields = [
-  { name: 'name', label: 'Your name', placeholder: 'Amara Okonkwo', type: 'text', half: false },
-  { name: 'email', label: 'Email', placeholder: 'amara@skylineterrace.com', type: 'email', half: true },
-  { name: 'phone', label: 'Phone', placeholder: '+1 (251) 555-0142', type: 'tel', half: true },
-  { name: 'venue', label: 'Venue name', placeholder: 'Skyline Terrace', type: 'text', half: true },
-  { name: 'city', label: 'City', placeholder: 'Mobile, AL', type: 'text', half: true },
+  { name: 'name', label: 'Your Full Name', placeholder: 'Siddh Patel', type: 'text', half: false },
+  { name: 'email', label: 'Email Address', placeholder: 'siddh@example.com', type: 'email', half: true },
+  { name: 'phone', label: 'Phone Number', placeholder: '+1 (251) 555-0142', type: 'tel', half: true },
+  { name: 'venue', label: 'Venue or Event Name', placeholder: 'Skyline Terrace', type: 'text', half: true },
+  { name: 'city', label: 'City & State', placeholder: 'Mobile, AL', type: 'text', half: true },
 ] as const;
 
 type LeadForm = { name: string; email: string; phone: string; venue: string; city: string };
 const emptyForm: LeadForm = { name: '', email: '', phone: '', venue: '', city: '' };
 
+const steps = [
+  { step: '01', title: 'Claim Subdomain', desc: 'Choose your vanity address.' },
+  { step: '02', title: 'Set Branding', desc: 'Upload your logo and colors.' },
+  { step: '03', title: 'Connect Stripe', desc: 'Direct bank rolling payouts.' },
+  { step: '04', title: 'Publish & Sell', desc: 'Draft tiers and open doors.' },
+];
+
 export function ClosingCta() {
   const heroVenue = useLandingStore((s) => s.venueName);
   const [values, setValues] = useState<LeadForm>({ ...emptyForm, venue: heroVenue.trim() });
   const venueTouched = useRef(false);
+
   useEffect(() => {
     if (!venueTouched.current) setValues((prev) => ({ ...prev, venue: heroVenue.trim() }));
   }, [heroVenue]);
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
@@ -34,16 +43,19 @@ export function ClosingCta() {
     const phone = values.phone.trim();
     const venue = values.venue.trim();
     const city = values.city.trim();
+
     if (!name) {
-      setError('Add your name so I know who I’m talking to.');
+      setError('Please provide your name.');
       return;
     }
     if (!email && !phone) {
-      setError('Add an email or a phone number so I can reach you.');
+      setError('Please enter either an email or phone number so we can reach you.');
       return;
     }
+
     setSubmitting(true);
     setError(null);
+
     try {
       const { createPlatformLead } = await import('@/features/public/services/platformLeadService');
       await createPlatformLead({
@@ -51,7 +63,7 @@ export function ClosingCta() {
         companyName: venue || name,
         phone: phone || email,
         website: '',
-        description: `Landing form.${email ? ` Email: ${email}` : ''}${phone ? ` · Phone: ${phone}` : ''}${city ? ` · City: ${city}` : ''}${venue ? ` · Venue: ${venue}` : ''}`,
+        description: `Platform registration inquiry. Email: ${email} | Phone: ${phone} | City: ${city} | Venue: ${venue}`,
       });
       setSent(true);
     } catch (caught) {
@@ -63,45 +75,51 @@ export function ClosingCta() {
   }
 
   return (
-    <section id="start" className="scroll-mt-24 bg-(--lp-paper) px-5 pb-4 pt-20 md:px-8 md:pt-28">
-      <div className="mx-auto max-w-3xl">
-        <div className="lp-frame px-7 py-10 md:px-14 md:py-14">
-          <p data-reveal className="lp-eyebrow text-(--lp-green)">
-            Open a TicketSpan box office
-          </p>
-          <h2 data-split className="mt-5 text-3xl text-(--lp-ink) md:text-4xl">
-            Your name on the door <em className="text-(--lp-green)">by tomorrow.</em>
-          </h2>
-          <p data-reveal className="mt-5 max-w-md leading-relaxed text-(--lp-ink-soft)">
-            Tell me about your venue. I read every one of these personally, and I&rsquo;ll send you
-            a link to your own box office within a day.
-          </p>
-          <ul
-            data-reveal
-            className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10.5px] uppercase tracking-[0.16em] text-(--lp-ink-soft)"
-          >
-            {closingPills.map((pill) => (
-              <li key={pill}>✳ {pill}</li>
+    <section id="start" className="scroll-mt-20 pt-10 sm:pt-14 md:pt-16 bg-stone-50">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 md:px-8">
+        <div className="rounded-2xl sm:rounded-3xl border border-stone-200/80 bg-white p-5 sm:p-8 md:p-12 shadow-sm">
+          <div className="max-w-2xl">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-(--lp-green)">
+              Get Started In Minutes
+            </span>
+            <h2 className="mt-2.5 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-(--lp-ink)">
+              Create your branded box office.
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-(--lp-ink-soft) leading-relaxed">
+              No credit card required. Enter your details below and we&rsquo;ll provision your custom box office portal within minutes.
+            </p>
+          </div>
+
+          <div className="mt-6 sm:mt-8 grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4 border-y border-stone-100 py-4 sm:py-5">
+            {steps.map((item) => (
+              <div key={item.step} className="flex flex-col">
+                <span className="font-mono text-[11px] sm:text-xs font-bold text-(--lp-green)">{item.step}</span>
+                <h4 className="font-semibold text-xs sm:text-sm text-(--lp-ink) mt-0.5">{item.title}</h4>
+                <p className="text-[11px] text-stone-500 mt-0.5">{item.desc}</p>
+              </div>
             ))}
-          </ul>
+          </div>
+
           {sent ? (
-            <div className="lp-perf mt-10 pt-8" role="status">
-              <p className="font-[family-name:var(--lp-display)] text-3xl text-(--lp-ink)">
-                Consider it <em className="text-(--lp-green)">reserved.</em>
-              </p>
-              <p className="mt-3 text-(--lp-ink-soft)">
-                Thank you — I&rsquo;ll get back to you within a day with a link to your box office.
+            <div className="mt-8 rounded-2xl bg-emerald-50 p-6 sm:p-8 text-center border border-emerald-200">
+              <div className="flex justify-center text-(--lp-green)">
+                <CheckCircle2 className="size-9 sm:size-10" />
+              </div>
+              <h3 className="mt-3 text-xl sm:text-2xl font-bold text-(--lp-ink)">Your request is received.</h3>
+              <p className="mt-1.5 text-xs sm:text-sm text-(--lp-ink-soft) max-w-md mx-auto">
+                Thank you. We&rsquo;ll review your venue details and send your personalized box office activation link directly to your inbox.
               </p>
             </div>
           ) : (
-            <form data-reveal onSubmit={submit} className="mt-10 space-y-7" noValidate>
-              <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+            <form onSubmit={submit} className="mt-6 sm:mt-8 space-y-4 sm:space-y-5" noValidate>
+              <div className="grid gap-x-4 sm:gap-x-6 gap-y-4 sm:grid-cols-2">
                 {formFields.map((field) => (
-                  <label key={field.name} className={field.half ? '' : 'sm:col-span-2'}>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-(--lp-ink-soft)">
+                  <div key={field.name} className={field.half ? '' : 'sm:col-span-2'}>
+                    <label htmlFor={`field-${field.name}`} className="block font-mono text-[11px] sm:text-xs font-semibold uppercase text-stone-600 mb-1">
                       {field.label}
-                    </span>
+                    </label>
                     <input
+                      id={`field-${field.name}`}
                       type={field.type}
                       name={field.name}
                       autoComplete={field.name === 'venue' ? 'organization' : field.name === 'city' ? 'address-level2' : field.name === 'phone' ? 'tel' : field.name}
@@ -114,61 +132,82 @@ export function ClosingCta() {
                         }));
                       }}
                       placeholder={field.placeholder}
-                      className="lp-input mt-2"
+                      className="lp-input text-xs sm:text-sm"
                     />
-                  </label>
+                  </div>
                 ))}
               </div>
+
               {error ? (
-                <p className="border-l-2 border-(--lp-green) pl-3 text-sm text-(--lp-ink)" role="alert">
+                <p className="rounded-lg bg-rose-50 p-2.5 sm:p-3 text-xs font-medium text-rose-700 border border-rose-200" role="alert">
                   {error}
                 </p>
               ) : null}
-              <button type="submit" disabled={submitting} className="lp-cta w-full">
-                {submitting ? 'Sending…' : 'Open my box office →'}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-full bg-(--lp-green) text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-(--lp-green-soft) transition-all active:scale-98 disabled:opacity-50"
+              >
+                <span>{submitting ? 'Submitting...' : 'Open Your Box Office'}</span>
+                <ArrowUpRight className="size-4" />
               </button>
+
+              <div className="flex items-center justify-center gap-1.5 text-xs text-stone-500 font-mono">
+                <ShieldCheck className="size-3.5 sm:size-4 text-(--lp-green)" />
+                <span>Zero card required · Cancel anytime</span>
+              </div>
             </form>
           )}
-          <p data-reveal className="mt-8 font-[family-name:var(--lp-display)] text-xl italic text-(--lp-ink-soft)">
-            — Siddh Patel, Chickasaw, AL
-          </p>
         </div>
       </div>
 
-      <footer className="mx-auto mt-20 max-w-[90rem]">
-        <div className="lp-rule-double" aria-hidden="true" />
-        <div className="mt-10 grid gap-10 md:grid-cols-[1.2fr_1fr_1fr]">
-          <div className="space-y-4 text-(--lp-ink)">
-            <BrandLockup tone="ink" />
-            <p className="max-w-xs text-sm leading-relaxed text-(--lp-ink-soft)">
-              The box office for independent venues. Sell tickets and tables under your own name —
-              you keep every penny of your ticket price.
-            </p>
-            <p className="font-mono text-xs text-(--lp-ink-faint)">Built in Chickasaw, Alabama</p>
+      <footer className="mt-12 sm:mt-16 border-t border-stone-200/80 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:py-10 md:px-8">
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-4">
+            <div className="space-y-2.5 md:col-span-2">
+              <BrandLockup tone="ink" />
+              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-sm">
+                Direct-to-fan white-label ticketing for independent music venues, supper clubs, theaters, and event organizers.
+              </p>
+              <p className="font-mono text-xs text-stone-500 flex items-center gap-1 pt-0.5">
+                <MapPin className="size-3.5 text-stone-400" />
+                <span>Crafted in Chickasaw, Alabama</span>
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h5 className="font-mono text-xs font-bold uppercase tracking-wider text-stone-900">Platform</h5>
+              <ul className="space-y-1.5 text-xs sm:text-sm text-stone-600">
+                <li><a href="#features" className="hover:text-stone-900">Features</a></li>
+                <li><a href="#calculator" className="hover:text-stone-900">Fee Calculator</a></li>
+                <li><a href="#pricing" className="hover:text-stone-900">Pricing</a></li>
+                <li><a href="#showcase" className="hover:text-stone-900">Showcase</a></li>
+                <li><a href="#specs" className="hover:text-stone-900">Specs</a></li>
+              </ul>
+            </div>
+
+            <div className="space-y-2">
+              <h5 className="font-mono text-xs font-bold uppercase tracking-wider text-stone-900">Support & Legal</h5>
+              <ul className="space-y-1.5 text-xs sm:text-sm text-stone-600">
+                <li><Link to="/help" className="hover:text-stone-900">Help Center</Link></li>
+                <li><Link to="/contact" className="hover:text-stone-900">Contact Team</Link></li>
+                <li><Link to="/terms" className="hover:text-stone-900">Terms of Service</Link></li>
+                <li><Link to="/privacy" className="hover:text-stone-900">Privacy Policy</Link></li>
+                <li>
+                  <a href="mailto:support@ticketspan.com" className="hover:text-stone-900 flex items-center gap-1">
+                    <Mail className="size-3" />
+                    <span>support@ticketspan.com</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-          <nav className="space-y-4" aria-label="Product">
-            <p className="lp-eyebrow text-(--lp-ink-soft)">Product</p>
-            <ul className="space-y-2.5 text-sm">
-              <li><a href="#platform" className="lp-link">Platform</a></li>
-              <li><a href="#showcase" className="lp-link">Showcase</a></li>
-              <li><a href="#pricing" className="lp-link">Pricing</a></li>
-              <li><a href="#founder" className="lp-link">Founder</a></li>
-            </ul>
-          </nav>
-          <nav className="space-y-4" aria-label="Support">
-            <p className="lp-eyebrow text-(--lp-ink-soft)">Support</p>
-            <ul className="space-y-2.5 text-sm">
-              <li><Link to="/help" className="lp-link">Help center</Link></li>
-              <li><Link to="/contact" className="lp-link">Contact</Link></li>
-              <li><a href="mailto:support@ticketspan.com" className="lp-link">support@ticketspan.com</a></li>
-              <li><Link to="/terms" className="lp-link">Terms</Link></li>
-              <li><Link to="/privacy" className="lp-link">Privacy</Link></li>
-            </ul>
-          </nav>
-        </div>
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-(--lp-line-soft) py-6 text-xs text-(--lp-ink-soft)">
-          <p>© {new Date().getFullYear()} TicketSpan. All rights reserved.</p>
-          <p className="font-mono">Payments processed by Stripe</p>
+
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-stone-100 pt-5 text-xs text-stone-500 font-mono">
+            <p>© {new Date().getFullYear()} TicketSpan. All rights reserved.</p>
+            <p>Direct payments routed via Stripe Connect</p>
+          </div>
         </div>
       </footer>
     </section>
