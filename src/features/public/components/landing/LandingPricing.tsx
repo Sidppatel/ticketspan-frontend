@@ -4,7 +4,7 @@ const tiers = [
     price: '$0',
     unit: '/mo',
     fee: '6.5% + $1.75',
-    feeNote: 'once per order — free events pay $0',
+    feeNote: 'per order (includes Stripe fees)',
     featured: false,
     cta: 'Start free',
     points: [
@@ -127,7 +127,7 @@ export function PricingTeaser() {
           <div className="p-6">
             <p className="lp-eyebrow text-(--lp-green-ivory)">You keep 100%</p>
             <p className="mt-3 text-sm leading-relaxed text-(--lp-ivory)/75">
-              Sell a $50 ticket, receive $50. The buyer pays the fee, never you.
+              Sell a $50 ticket, receive $50. By default, the buyer pays the fee, never you. You can optionally choose to absorb the fee if you prefer flat pricing.
             </p>
             <p className="mt-4 font-mono text-[13px] text-(--lp-ivory)/80">
               $50 ticket → buyer pays $55.00 → <span className="text-(--lp-green-ivory)">you get $50.00</span>
@@ -149,35 +149,83 @@ export function PricingTeaser() {
   );
 }
 
-const trustFacts = [
-  {
-    term: 'Payments by Stripe',
-    detail: 'Card and ACH payments are processed by Stripe. Your card details never touch our servers.',
-  },
-  {
-    term: 'Tax handled at checkout',
-    detail: 'Sales tax is calculated at checkout and reported per event — remitted by the platform or by you.',
-  },
-  {
-    term: 'Every scan audited',
-    detail: 'Check-ins, failures, and undo actions are logged per event, so the door count always reconciles.',
-  },
-];
-
-export function TrustStrip() {
+export function TrustAndPolicies() {
   return (
-    <section className="mx-auto max-w-7xl px-5 py-20 md:px-8 md:py-24">
-      <h2 data-split className="max-w-xl text-3xl text-(--lp-ink) md:text-4xl">
-        Built like it handles money, <em className="text-(--lp-green)">because it does.</em>
-      </h2>
-      <div className="mt-12 grid gap-10 md:grid-cols-3">
-        {trustFacts.map((fact) => (
-          <div data-reveal key={fact.term}>
-            <div className="lp-rule-double" aria-hidden="true" />
-            <p className="lp-eyebrow mt-5 text-(--lp-green)">{fact.term}</p>
-            <p className="mt-3 text-sm leading-relaxed text-(--lp-ink-soft)">{fact.detail}</p>
+    <section id="trust" className="mx-auto max-w-7xl px-5 py-20 md:px-8 md:py-28">
+      <div className="max-w-2xl">
+        <p data-reveal className="lp-eyebrow text-(--lp-green)">
+          Trust, Payments & Policies
+        </p>
+        <h2 data-split className="mt-5 text-4xl text-(--lp-ink) md:text-5xl">
+          Built like it handles money, <em className="text-(--lp-green)">because it does.</em>
+        </h2>
+        <p data-reveal className="mt-6 leading-relaxed text-(--lp-ink-soft)">
+          We operate as a pure platform, not a middleman. You maintain control of your funds,
+          your customer data, and your tax posture.
+        </p>
+      </div>
+
+      <div className="mt-14 grid gap-x-12 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+        {/* Payments & Payouts */}
+        <div data-reveal>
+          <h3 className="font-[family-name:var(--lp-display)] text-xl font-medium text-(--lp-ink)">
+            Merchant of Record
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-(--lp-ink-soft)">
+            You are the Merchant of Record. Every venue connects its own Stripe account via Stripe Connect.
+            Funds flow directly to you—never passing through our accounts. Payouts arrive according to
+            your own Stripe deposit schedule.
+          </p>
+        </div>
+
+        {/* Taxes */}
+        <div data-reveal>
+          <h3 className="font-[family-name:var(--lp-display)] text-xl font-medium text-(--lp-ink)">
+            Tax Calculation & Remittance
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-(--lp-ink-soft)">
+            Ticket tax rules vary by event type, venue, locality, and seller-of-record structure.
+            Because you are the Merchant of Record, you control tax calculation rates. Remittance and 
+            filing are your responsibility based on your local jurisdiction's rules.
+          </p>
+        </div>
+
+        {/* Security Posture */}
+        <div data-reveal>
+          <h3 className="font-[family-name:var(--lp-display)] text-xl font-medium text-(--lp-ink)">
+            Security & PCI Posture
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-(--lp-ink-soft)">
+            All payment processing is delegated directly to Stripe. Card data is tokenized on the client side 
+            and never touches our servers, avoiding unnecessary compliance scope.
+          </p>
+        </div>
+
+        {/* Operations & SLA */}
+        <div data-reveal>
+          <h3 className="font-[family-name:var(--lp-display)] text-xl font-medium text-(--lp-ink)">
+            Reliability & Support
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-(--lp-ink-soft)">
+            Infrastructure is monitored continuously during peak ingress. Emergency event-night 
+            support is available for all active box offices to ensure doors run smoothly.
+          </p>
+        </div>
+
+        {/* Policies */}
+        <div data-reveal>
+          <h3 className="font-[family-name:var(--lp-display)] text-xl font-medium text-(--lp-ink)">
+            Policies & Privacy
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-(--lp-ink-soft)">
+            Your guest data is yours. We do not market to your attendees. Refunds are initiated 
+            by your staff directly in the dashboard and processed via Stripe.
+          </p>
+          <div className="mt-4 flex gap-4 text-xs font-medium text-(--lp-green)">
+            <a href="/privacy" className="hover:underline">Privacy Policy</a>
+            <a href="/terms" className="hover:underline">Terms of Service</a>
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );

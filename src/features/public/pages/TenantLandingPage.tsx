@@ -15,8 +15,9 @@ import {
   FounderNote,
   HowItWorks,
   VenueMarquee,
+  OperationalProof,
 } from '@/features/public/components/landing/LandingSections';
-import { PricingTeaser, TrustStrip } from '@/features/public/components/landing/LandingPricing';
+import { PricingTeaser, TrustAndPolicies } from '@/features/public/components/landing/LandingPricing';
 import { ClosingCta } from '@/features/public/components/landing/LandingClosing';
 import '@/features/public/landing.css';
 
@@ -45,9 +46,10 @@ export function TenantLandingPage() {
         <AdminShowcase />
         <EventNightShowcase />
         <FeatureProgramme />
+        <OperationalProof />
         <FounderNote />
         <PricingTeaser />
-        <TrustStrip />
+        <TrustAndPolicies />
         <ClosingCta />
       </div>
     </div>

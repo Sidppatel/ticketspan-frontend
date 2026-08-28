@@ -15,8 +15,8 @@ export function LandingHero() {
           <p data-hero-rise className="lp-eyebrow text-(--lp-green)">
             White-label box office — built in Chickasaw, Alabama
           </p>
-          <h1 data-hero-headline className="mt-7 text-5xl text-(--lp-ink) md:text-6xl lg:text-7xl">
-            Ticketing, tailored <em className="text-(--lp-green)">to the house.</em>
+          <h1 data-hero-headline className="mt-7 text-4xl leading-tight text-(--lp-ink) md:text-5xl lg:text-6xl">
+            Launch a branded ticketing site <em className="text-(--lp-green)">without changing your operations.</em>
           </h1>
           <p data-hero-rise className="lp-d1 mt-7 max-w-md text-base leading-relaxed text-(--lp-ink-soft) md:text-lg">
             Your venue gets its own box office on its own domain, wearing your colors. The service
@@ -24,11 +24,16 @@ export function LandingHero() {
             <strong className="font-medium text-(--lp-ink)">a $50 ticket pays you $50</strong>.
             Tables, tickets, and the door list all live under your name.
           </p>
-          <div data-hero-rise className="lp-d2 mt-10 flex flex-wrap items-center gap-7">
-            <a href="#start" data-magnet className="lp-cta">
-              Open your box office
-            </a>
-            <a href="#showcase" className="lp-ghost">
+          <div data-hero-rise className="lp-d2 mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-7">
+            <div className="flex flex-col gap-2.5">
+              <a href="#start" data-magnet className="lp-cta text-center sm:text-left">
+                Create your branded box office in 8 minutes — no card required
+              </a>
+              <p className="font-mono text-[9px] uppercase tracking-[0.08em] text-(--lp-ink-soft) pl-1">
+                Your path: Subdomain → Venue details → Stripe connect → First event
+              </p>
+            </div>
+            <a href="#showcase" className="lp-ghost self-start sm:self-center">
               See it wearing your brand
             </a>
           </div>

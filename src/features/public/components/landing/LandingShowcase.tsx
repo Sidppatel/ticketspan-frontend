@@ -2,70 +2,96 @@ import { useLandingStore, venueSlug } from '@/features/public/hooks/landingStore
 
 interface PortalSkin {
   venue: string;
+  city: string;
+  type: string;
+  link: string;
   slug: string;
-  presetName: string;
-  event: string;
-  date: string;
-  price: string;
   background: string;
   text: string;
   primary: string;
   accent: string;
   onPrimary: string;
+  caseStudy: {
+    keyFeatures: string[];
+  };
 }
 
 const portalSkins: PortalSkin[] = [
   {
-    venue: 'The Aster Room',
-    slug: 'theasterroom',
-    presetName: 'Noir Premiere',
-    event: 'Winter Gala',
-    date: 'Sat · Dec 12',
-    price: '$120',
+    venue: 'The Azalea Room',
+    city: 'Mobile, AL',
+    type: 'Nightclub',
+    link: 'azalea.ticketspan.com',
+    slug: 'azalea',
     background: '#FAFAFA',
     text: '#18181B',
     primary: '#18181B',
     accent: '#D4A017',
     onPrimary: '#F4F4F5',
+    caseStudy: {
+      keyFeatures: [
+        'Rapid door scanning',
+        'VIP and guestlist management',
+        'Next-day payout schedule',
+      ],
+    },
   },
   {
-    venue: 'Verdane Garden Club',
-    slug: 'verdane',
-    presetName: 'Forest Gala',
-    event: 'Harvest Supper',
-    date: 'Fri · Oct 2',
-    price: '$85',
+    venue: 'Crescent Theater South',
+    city: 'Mobile, AL',
+    type: 'Independent Theater',
+    link: 'crescent.ticketspan.com',
+    slug: 'crescent',
     background: '#FAFDF7',
     text: '#14201A',
     primary: '#166534',
     accent: '#CA8A04',
     onPrimary: '#ECFDF5',
+    caseStudy: {
+      keyFeatures: [
+        'Multi-day run schedules',
+        'Seated vs GA ticketing',
+        'Detailed financial exports',
+      ],
+    },
   },
   {
-    venue: 'Harbor & Vine',
-    slug: 'harborvine',
-    presetName: 'Coastal Club',
-    event: 'Oyster Social',
-    date: 'Sun · Aug 9',
-    price: '$65',
+    venue: 'Port City Pavilion',
+    city: 'Chickasaw, AL',
+    type: 'Outdoor Event Space',
+    link: 'portcity.ticketspan.com',
+    slug: 'portcity',
     background: '#F8FBFC',
     text: '#0C1A20',
     primary: '#0E7490',
     accent: '#F97316',
     onPrimary: '#E0F2FE',
+    caseStudy: {
+      keyFeatures: [
+        'High-volume ingress',
+        'Multi-scanner sync',
+        'Sponsor & Vendor integrations',
+      ],
+    },
   },
   {
-    venue: 'Studio Meridian',
-    slug: 'meridian',
-    presetName: 'Midnight Stage',
-    event: 'Midnight Sessions',
-    date: 'Thu · Sep 17',
-    price: '$45',
+    venue: 'Dauphin Street Comedy',
+    city: 'Mobile, AL',
+    type: 'Comedy Lounge',
+    link: 'dauphin.ticketspan.com',
+    slug: 'dauphin',
     background: '#F8FAFC',
     text: '#0F172A',
     primary: '#4F46E5',
     accent: '#F59E0B',
     onPrimary: '#E0E7FF',
+    caseStudy: {
+      keyFeatures: [
+        'Floor-plan table booking',
+        'Group check-ins',
+        'Dark mode native branding',
+      ],
+    },
   },
 ];
 
@@ -73,39 +99,30 @@ function PortalSkinCard({ skin }: { skin: PortalSkin }) {
   return (
     <article
       data-skin-card
-      className="w-[82vw] max-w-[420px] shrink-0 snap-center border-[1.5px] border-(--lp-ink) shadow-[10px_10px_0_rgba(25,23,20,0.08)]"
+      className="w-[85vw] max-w-[480px] shrink-0 snap-center border-[1.5px] border-(--lp-ink) shadow-[10px_10px_0_rgba(25,23,20,0.08)] flex flex-col"
       style={{ background: skin.background, color: skin.text }}
     >
-      <div className="flex items-center justify-between border-b px-6 py-3.5" style={{ borderColor: `${skin.text}22` }}>
-        <span className="font-[family-name:var(--lp-display)] text-lg font-semibold">{skin.venue}</span>
-        <span className="font-mono text-[9px] uppercase tracking-[0.22em] opacity-80">Box office</span>
-      </div>
-      <div className="px-6 py-6" style={{ background: skin.primary, color: skin.onPrimary }}>
-        <p className="font-mono text-[9px] uppercase tracking-[0.28em]" style={{ color: skin.onPrimary }}>
-          {skin.date}
-        </p>
-        <p className="mt-2 font-[family-name:var(--lp-display)] text-3xl font-semibold">{skin.event}</p>
-        <p className="mt-1 text-xs">Doors 7 PM · Tables and general admission</p>
-      </div>
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b px-6 py-4 gap-2" style={{ borderColor: `${skin.text}22` }}>
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-[0.2em] opacity-80">From</p>
-          <p className="font-[family-name:var(--lp-display)] text-xl font-semibold">{skin.price}</p>
+          <span className="font-[family-name:var(--lp-display)] text-xl font-semibold">{skin.venue}</span>
+          <span className="block text-xs mt-0.5 opacity-80">{skin.city} · {skin.type}</span>
         </div>
-        <span
-          className="px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.1em]"
-          style={{ background: skin.primary, color: skin.onPrimary }}
-        >
-          Choose seats
+        <span className="font-mono text-[10px] uppercase tracking-[0.15em] opacity-80 cursor-default">
+          {skin.link} ↗
         </span>
       </div>
-      <div
-        className="flex items-center justify-between border-t px-6 py-3 font-mono text-[9px] uppercase tracking-[0.18em] opacity-80"
-        style={{ borderColor: `${skin.text}22` }}
-      >
-        <span>{skin.slug}.ticketspan.com</span>
-        <span>{skin.presetName} preset</span>
+      <div className="flex-1 px-6 py-12 flex flex-col justify-center" style={{ background: skin.primary, color: skin.onPrimary }}>
+        <p className="font-mono text-[9px] uppercase tracking-[0.2em] opacity-80 mb-4">Key Features Utilized</p>
+        <ul className="space-y-3">
+          {skin.caseStudy.keyFeatures.map((feature, i) => (
+            <li key={i} className="flex items-center gap-3 text-[14px] font-medium">
+              <span style={{ color: skin.accent }}>✳</span>
+              {feature}
+            </li>
+          ))}
+        </ul>
       </div>
+
     </article>
   );
 }
@@ -116,12 +133,12 @@ function YourHouseCard() {
   return (
     <div className="flex w-[70vw] max-w-[340px] shrink-0 snap-center flex-col items-start justify-center border-[1.5px] border-dashed border-(--lp-ink)/50 px-8">
       <p className="font-[family-name:var(--lp-display)] text-2xl text-(--lp-ink)">
-        {named ? `${named}.` : 'Your house here.'}
+        {named ? `${named}.` : 'Your venue here.'}
       </p>
       <p className="mt-2 text-sm text-(--lp-ink-soft)">
         {named
-          ? `${venueSlug(named)}.ticketspan.com could be live the day you ask for it.`
-          : 'Your subdomain and your logo, live the day you ask for it.'}
+          ? `${venueSlug(named)}.ticketspan.com, set up instantly.`
+          : 'Your subdomain and logo, set up instantly.'}
       </p>
       <a href="#start" className="lp-ghost mt-6 text-(--lp-green)">
         Open your box office
@@ -135,13 +152,13 @@ export function PortalShowcase() {
     <section id="showcase" data-showcase className="scroll-mt-24 overflow-hidden bg-(--lp-ivory) py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <p data-reveal className="lp-eyebrow text-(--lp-green)">
-          The showcase
+          Illustrative Profiles
         </p>
         <h2 data-split className="mt-5 max-w-2xl text-4xl text-(--lp-ink) md:text-5xl">
-          One platform. Every house <em className="text-(--lp-green)">its own.</em>
+          One platform. <em className="text-(--lp-green)">Fully branded for your venue.</em>
         </h2>
         <p data-reveal className="mt-6 max-w-lg leading-relaxed text-(--lp-ink-soft)">
-          All four of these are the same box office wearing different brands. Your audience sees
+          These illustrative venue profiles show how the same platform adapts to different spaces. Your audience sees
           your name and your domain, not ours. The branding studio comes with presets and contrast
           checks, so it looks right on the first try.
         </p>
