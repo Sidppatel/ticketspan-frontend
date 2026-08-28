@@ -223,12 +223,12 @@ interface TableItem {
 }
 
 const initialTables: TableItem[] = [
-  { id: 1, x: 45, y: 70, shape: 'circle', status: 'booked', seats: 4 },
-  { id: 2, x: 105, y: 65, shape: 'rect', status: 'held', seats: 6 },
-  { id: 3, x: 175, y: 70, shape: 'circle', status: 'open', seats: 4 },
-  { id: 4, x: 50, y: 125, shape: 'square', status: 'open', seats: 2 },
+  { id: 1, x: 45, y: 65, shape: 'circle', status: 'booked', seats: 4 },
+  { id: 2, x: 110, y: 65, shape: 'rect', status: 'held', seats: 6 },
+  { id: 3, x: 175, y: 65, shape: 'circle', status: 'open', seats: 4 },
+  { id: 4, x: 45, y: 120, shape: 'square', status: 'open', seats: 2 },
   { id: 5, x: 110, y: 120, shape: 'circle', status: 'booked', seats: 4 },
-  { id: 6, x: 170, y: 125, shape: 'square', status: 'open', seats: 2 },
+  { id: 6, x: 175, y: 120, shape: 'square', status: 'open', seats: 2 },
 ];
 
 export function FloorPlanMock() {
@@ -276,12 +276,17 @@ export function FloorPlanMock() {
     const curX = ((e.clientX - rect.left) / rect.width) * 220 - activeDrag.current.startX;
     const curY = ((e.clientY - rect.top) / rect.height) * 160 - activeDrag.current.startY;
 
-    const clampedX = Math.max(25, Math.min(195, curX));
-    const clampedY = Math.max(50, Math.min(140, curY));
+    const clampedX = Math.max(30, Math.min(190, curX));
+    const clampedY = Math.max(54, Math.min(134, curY));
 
-    setTables((prev) =>
-      prev.map((t) => (t.id === activeDrag.current?.id ? { ...t, x: clampedX, y: clampedY } : t))
-    );
+    setTables((prev) => {
+      const currentId = activeDrag.current?.id;
+      const collides = prev.some(
+        (t) => t.id !== currentId && Math.hypot(t.x - clampedX, t.y - clampedY) < 26
+      );
+      if (collides) return prev;
+      return prev.map((t) => (t.id === currentId ? { ...t, x: clampedX, y: clampedY } : t));
+    });
   };
 
   const handlePointerUp = () => {
@@ -339,10 +344,10 @@ export function FloorPlanMock() {
                 style={{ cursor: t.status === 'open' ? 'grab' : 'default' }}
               >
                 {t.shape === 'circle' && (
-                  <circle cx={t.x} cy={t.y} r="14" fill={fill} stroke={stroke} strokeWidth="1.5" />
+                  <circle cx={t.x} cy={t.y} r="13" fill={fill} stroke={stroke} strokeWidth="1.5" />
                 )}
                 {t.shape === 'square' && (
-                  <rect x={t.x - 12} y={t.y - 12} width="24" height="24" rx="4" fill={fill} stroke={stroke} strokeWidth="1.5" />
+                  <rect x={t.x - 11} y={t.y - 11} width="22" height="22" rx="4" fill={fill} stroke={stroke} strokeWidth="1.5" />
                 )}
                 {t.shape === 'rect' && (
                   <rect x={t.x - 18} y={t.y - 10} width="36" height="20" rx="4" fill={fill} stroke={stroke} strokeWidth="1.5" />

@@ -533,21 +533,21 @@ function StripeCheckoutForm({
   const selectedCard = savedCards.find((c) => c.id === selectedSavedCardId);
 
   return (
-    <div className="space-y-5 pt-1">
+    <div className="space-y-3 sm:space-y-5 pt-0 sm:pt-1">
       {}
-      <div className="rounded-2xl border border-white/10 bg-[#161a23] p-4 shadow-inner space-y-3">
-        <div className="flex items-center justify-between gap-4">
+      <div className="rounded-2xl border border-white/10 bg-[#161a23] p-3 sm:p-4 shadow-inner space-y-2 sm:space-y-3">
+        <div className="flex items-center justify-between gap-2">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 font-mono flex items-center gap-1">
+            <span className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-widest text-emerald-400 font-mono flex items-center gap-1">
               <ShieldCheck className="size-3" /> Encrypted 256-Bit Checkout
             </span>
-            <h3 className="text-base font-bold text-white font-sans tracking-tight mt-0.5">
+            <h3 className="text-sm sm:text-base font-bold text-white font-sans tracking-tight mt-0.5">
               Authorized Payment
             </h3>
           </div>
           <div className="text-right">
-            <p className="text-[10px] text-white/50 uppercase tracking-wider font-bold font-mono">Total</p>
-            <span className="text-2xl font-bold text-amber-400 font-mono tracking-tight">
+            <p className="text-[9.5px] sm:text-[10px] text-white/50 uppercase tracking-wider font-bold font-mono">Total</p>
+            <span className="text-xl sm:text-2xl font-bold text-amber-400 font-mono tracking-tight">
               {centsToUSD(amountCents)}
             </span>
           </div>
@@ -555,7 +555,7 @@ function StripeCheckoutForm({
 
         {}
         {secondsLeft !== null && !expired && (
-          <div className="flex items-center justify-between rounded-xl bg-amber-500/10 border border-amber-500/25 px-3 py-1.5 text-xs text-amber-300 font-mono">
+          <div className="flex items-center justify-between rounded-xl bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 sm:px-3 sm:py-1.5 text-[11px] sm:text-xs text-amber-300 font-mono">
             <span className="flex items-center gap-1.5">
               <Clock className="size-3.5 animate-pulse" /> Seating hold timer:
             </span>
@@ -579,19 +579,19 @@ function StripeCheckoutForm({
           </div>
           <Button
             onClick={handleCancel}
-            className="h-11 px-6 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/10 text-xs font-bold w-full"
+            className="h-10 sm:h-11 px-6 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/10 text-xs font-bold w-full"
           >
             Restart Selection
           </Button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
           {}
           <div className="rounded-2xl overflow-hidden shadow-md">
             <ExpressCheckoutElement
               onConfirm={handleExpressConfirm}
               options={{
-                buttonHeight: 46,
+                buttonHeight: 40,
                 buttonTheme: {
                   applePay: 'black',
                   googlePay: 'black',
@@ -607,17 +607,17 @@ function StripeCheckoutForm({
 
           {}
           {loadingSavedCards ? (
-            <div className="py-2 text-[11px] font-mono text-slate-400 flex items-center gap-1.5 animate-pulse">
+            <div className="py-1 text-[11px] font-mono text-slate-400 flex items-center gap-1.5 animate-pulse">
               <Loader2 className="size-3.5 animate-spin text-amber-400" /> Checking vaulted payment methods…
             </div>
           ) : savedCards.length > 0 && (
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase font-mono tracking-wider text-white/80">
+                <span className="text-[11px] sm:text-xs font-bold uppercase font-mono tracking-wider text-white/80">
                   Select a Saved Card ({savedCards.length})
                 </span>
                 {selectedSavedCardId !== 'new' && (
-                  <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1 font-bold">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-emerald-400 flex items-center gap-1 font-bold">
                     <CheckCircle2 className="size-3" /> Ready for 1-click pay
                   </span>
                 )}
@@ -632,16 +632,16 @@ function StripeCheckoutForm({
                       type="button"
                       onClick={() => setSelectedSavedCardId(card.id)}
                       className={cn(
-                        'w-full flex items-center justify-between rounded-xl border p-3.5 transition-all text-left group',
+                        'w-full flex items-center justify-between rounded-xl border p-2.5 sm:p-3.5 transition-all text-left group',
                         isSelected
                           ? 'border-amber-400 bg-[#1c2232] shadow-md shadow-amber-500/10 ring-1 ring-amber-400'
                           : 'border-white/10 bg-[#131722] hover:border-white/20 hover:bg-[#181d2a]',
                       )}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                         <div
                           className={cn(
-                            'flex size-9 shrink-0 items-center justify-center rounded-lg border font-mono text-[11px] font-bold uppercase',
+                            'flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-lg border font-mono text-[10px] sm:text-[11px] font-bold uppercase',
                             card.brand.toLowerCase().includes('visa')
                               ? 'bg-blue-500/15 text-blue-400 border-blue-500/30'
                               : card.brand.toLowerCase().includes('mastercard')
@@ -652,10 +652,10 @@ function StripeCheckoutForm({
                           {card.brand.slice(0, 4)}
                         </div>
                         <div className="min-w-0 space-y-0.5">
-                          <p className="font-mono text-xs font-bold text-white tracking-wider">
+                          <p className="font-mono text-[11px] sm:text-xs font-bold text-white tracking-wider">
                             •••• •••• •••• {card.last4}
                           </p>
-                          <p className="font-mono text-[10.5px] text-white/50">
+                          <p className="font-mono text-[10px] sm:text-[10.5px] text-white/50">
                             Expires {String(card.expMonth).padStart(2, '0')}/{String(card.expYear).slice(-2)}
                           </p>
                         </div>
@@ -682,13 +682,13 @@ function StripeCheckoutForm({
                   type="button"
                   onClick={() => setSelectedSavedCardId('new')}
                   className={cn(
-                    'w-full flex items-center justify-between rounded-xl border p-3 transition-all text-left',
+                    'w-full flex items-center justify-between rounded-xl border p-2.5 sm:p-3 transition-all text-left',
                     selectedSavedCardId === 'new'
                       ? 'border-amber-400 bg-[#1c2232] ring-1 ring-amber-400 text-white'
                       : 'border-dashed border-white/15 bg-transparent hover:border-white/30 text-white/70 hover:text-white',
                   )}
                 >
-                  <span className="flex items-center gap-2 font-mono text-xs font-bold">
+                  <span className="flex items-center gap-2 font-mono text-[11px] sm:text-xs font-bold">
                     <Plus className="size-3.5" /> Use a different card
                   </span>
                   <div
@@ -708,16 +708,16 @@ function StripeCheckoutForm({
 
           {}
           {(selectedSavedCardId === 'new' || savedCards.length === 0) && (
-            <div className="space-y-3">
-              <div className="relative flex items-center py-1">
+            <div className="space-y-2.5 sm:space-y-3">
+              <div className="relative flex items-center py-0.5">
                 <div className="flex-grow border-t border-white/10" />
-                <span className="mx-3 flex-shrink text-[10px] font-mono font-bold uppercase tracking-widest text-white/50">
+                <span className="mx-3 flex-shrink text-[9.5px] sm:text-[10px] font-mono font-bold uppercase tracking-widest text-white/50">
                   {savedCards.length > 0 ? 'Enter New Card Information' : 'Credit / Debit Card'}
                 </span>
                 <div className="flex-grow border-t border-white/10" />
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-[#0c0f17] p-3.5 shadow-inner">
+              <div className="rounded-2xl border border-white/10 bg-[#0c0f17] p-2.5 sm:p-3.5 shadow-inner">
                 <PaymentElement
                   options={{
                     layout: 'tabs',
@@ -761,27 +761,27 @@ function StripeCheckoutForm({
           )}
 
           {savingsCents > 0 && (
-            <div className="flex items-center gap-2 p-3 rounded-2xl bg-success/10 border border-success/20 text-success text-xs font-mono font-bold">
+            <div className="flex items-center gap-2 p-2.5 sm:p-3 rounded-2xl bg-success/10 border border-success/20 text-success text-xs font-mono font-bold">
               <ShieldCheck className="size-4 shrink-0" />
               <span>You save {centsToUSD(savingsCents)} paying via bank (ACH)</span>
             </div>
           )}
 
           {message && (
-            <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-danger/10 border border-danger/20 text-danger text-xs leading-relaxed animate-in fade-in-50">
+            <div className="flex items-start gap-2.5 p-3 sm:p-3.5 rounded-2xl bg-danger/10 border border-danger/20 text-danger text-xs leading-relaxed animate-in fade-in-50">
               <CircleAlert className="size-4 shrink-0 mt-0.5" />
               <span>{message}</span>
             </div>
           )}
 
           {}
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
             <Button
               type="button"
               variant="outline"
               disabled={submitting || polling}
               onClick={handleCancel}
-              className="h-12 px-5 rounded-2xl border-white/10 bg-white/5 text-white hover:bg-white/10 text-xs font-bold"
+              className="h-10 sm:h-12 px-3.5 sm:px-5 rounded-2xl border-white/10 bg-white/5 text-white hover:bg-white/10 text-xs font-bold"
             >
               <ArrowLeft className="size-4 mr-1" /> Back
             </Button>
@@ -789,7 +789,7 @@ function StripeCheckoutForm({
             <Button
               type="submit"
               disabled={!stripe || submitting || polling || repricing}
-              className="flex-1 ticketspan-spring-btn h-12 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 relative"
+              className="flex-1 ticketspan-spring-btn h-10 sm:h-12 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-xs sm:text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 relative"
             >
               {repricing ? (
                 <span className="flex items-center gap-1.5">
@@ -804,11 +804,13 @@ function StripeCheckoutForm({
                   <Loader2 className="size-4 animate-spin" /> Authorizing {centsToUSD(amountCents)}…
                 </span>
               ) : (
-                <span className="flex items-center gap-1.5">
-                  <Lock className="size-4" />
-                  {selectedCard
-                    ? `Pay ${centsToUSD(amountCents)} with ${selectedCard.brand} •••• ${selectedCard.last4}`
-                    : `Pay ${centsToUSD(amountCents)}`}
+                <span className="flex items-center justify-center gap-1.5 min-w-0 truncate px-1">
+                  <Lock className="size-3.5 sm:size-4 shrink-0" />
+                  <span className="truncate">
+                    {selectedCard
+                      ? `Pay ${centsToUSD(amountCents)} (${selectedCard.brand.toUpperCase()} • ${selectedCard.last4})`
+                      : `Pay ${centsToUSD(amountCents)}`}
+                  </span>
                 </span>
               )}
             </Button>

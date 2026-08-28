@@ -192,7 +192,9 @@ export function EventDetailPageContent({
       setCheckoutBookingsId(bookingsId);
       setIsCheckoutOpen(true);
     } catch (caught) {
-      setBookingError(rpcErrorMessage(caught));
+      const msg = rpcErrorMessage(caught);
+      setBookingError(msg);
+      toast.error(msg || 'Failed to initialize checkout. Please try again.');
     } finally {
       setBusy(false);
     }

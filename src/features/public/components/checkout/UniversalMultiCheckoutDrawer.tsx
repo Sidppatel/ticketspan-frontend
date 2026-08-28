@@ -239,29 +239,29 @@ export function UniversalMultiCheckoutDrawer({
         />
 
         {}
-        <div className="relative z-10 shrink-0 border-b border-white/10 bg-[#131722]/95 px-6 py-4 backdrop-blur-xl">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <BrandMark className="size-6 text-amber-400" />
-              <div>
-                <span className="font-sans text-base font-bold text-white tracking-tight">
+        <div className="relative z-10 shrink-0 border-b border-white/10 bg-[#131722]/95 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <BrandMark className="size-6 text-amber-400 shrink-0" />
+              <div className="min-w-0">
+                <span className="font-sans text-base font-bold text-white tracking-tight leading-tight block truncate">
                   TicketSpan
                 </span>
-                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono">
-                  <ShieldCheck className="size-3 text-emerald-400" />
-                  <span>256-Bit Encrypted Multi-Event Checkout</span>
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono truncate">
+                  <ShieldCheck className="size-3 text-emerald-400 shrink-0" />
+                  <span className="truncate">256-Bit Encrypted Checkout</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 font-mono text-[10px] font-bold text-amber-300">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="inline-flex items-center whitespace-nowrap rounded-full bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 font-mono text-[10px] font-bold text-amber-300 leading-none">
                 Step {step} of 3
               </span>
               <button
                 type="button"
                 onClick={() => handleClose(step === 3)}
-                className="flex size-7 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+                className="flex size-7 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer shrink-0"
                 aria-label="Close checkout"
               >
                 <X className="size-4" />
@@ -271,7 +271,7 @@ export function UniversalMultiCheckoutDrawer({
 
           {}
           {hasExpired && step === 1 && (
-            <div className="mt-3 rounded-xl bg-rose-500/15 border border-rose-500/30 p-2.5 flex items-center justify-between gap-2 text-xs">
+            <div className="mt-2.5 rounded-xl bg-rose-500/15 border border-rose-500/30 p-2 flex items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-1.5 min-w-0">
                 <AlertTriangle className="size-4 text-rose-400 shrink-0" />
                 <span className="text-rose-300 font-medium truncate">
@@ -291,7 +291,7 @@ export function UniversalMultiCheckoutDrawer({
           )}
 
           {}
-          <div className="mt-3 rounded-xl border border-white/10 bg-[#181d2a] p-3 shadow-inner space-y-2">
+          <div className="mt-2.5 sm:mt-3 rounded-xl border border-white/10 bg-[#181d2a] p-2.5 sm:p-3 shadow-inner space-y-1.5 sm:space-y-2">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <h4 className="truncate font-sans text-sm font-bold text-white tracking-tight">
@@ -383,7 +383,7 @@ export function UniversalMultiCheckoutDrawer({
 
           {}
           {step < 3 && (
-            <div className="mt-3 flex items-center gap-2">
+            <div className="mt-2 sm:mt-3 flex items-center gap-2">
               <div
                 className={cn(
                   'flex-1 h-1.5 rounded-full transition-all duration-300',
@@ -406,7 +406,7 @@ export function UniversalMultiCheckoutDrawer({
           data-lenis-prevent-wheel
           data-lenis-prevent-touch
           onWheel={(e) => e.stopPropagation()}
-          className="relative z-10 flex-1 min-h-0 overflow-y-auto px-6 py-5 overscroll-contain touch-pan-y pointer-events-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-track]:bg-transparent"
+          className="relative z-10 flex-1 min-h-0 overflow-y-auto px-3.5 py-3 sm:px-6 sm:py-5 overscroll-contain touch-pan-y pointer-events-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-track]:bg-transparent"
         >
           {bookingError && (
             <div role="alert" className="mb-4 p-3 bg-destructive/15 border border-destructive/30 text-destructive text-xs font-bold rounded-xl">

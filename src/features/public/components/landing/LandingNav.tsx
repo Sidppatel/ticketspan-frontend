@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { BrandLockup } from '@/shared/brand/BrandMark';
 import { useAuth } from '@/shared/auth/useAuth';
 import { UserAvatarMenu } from '@/shared/components/UserAvatarMenu';
-import { ArrowUpRight, LayoutGrid, Menu, X, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, LayoutGrid, Menu, X, ChevronRight, LogIn } from 'lucide-react';
 
 const navLinks = [
   { href: '#features', label: 'Features' },
@@ -42,16 +42,16 @@ export function LandingNav() {
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/90 backdrop-blur-xl border-b border-stone-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
-          : 'bg-white/60 backdrop-blur-md border-b border-transparent'
+          ? 'bg-white/95 backdrop-blur-xl border-b border-stone-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
+          : 'bg-white/80 backdrop-blur-md border-b border-stone-200/40'
       }`}
     >
-      <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-4 sm:px-6 md:px-8">
+      <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3.5 sm:px-6 md:px-8">
         <Link to="/" className="flex shrink-0 items-center text-(--lp-ink)" aria-label="TicketSpan home" onClick={closeMenu}>
           <BrandLockup size="sm" tone="ink" />
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Main Navigation">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main Navigation">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -63,12 +63,12 @@ export function LandingNav() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 sm:flex">
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
               <Link
                 to="/hub"
-                className="flex items-center gap-1.5 rounded-full bg-(--lp-green-ivory) px-3 py-1.5 font-mono text-xs font-semibold text-(--lp-green) transition-colors hover:bg-emerald-200"
+                className="flex items-center gap-1.5 rounded-full bg-(--lp-green-ivory) px-3.5 py-1.5 font-mono text-xs font-semibold text-(--lp-green) transition-colors hover:bg-emerald-200"
               >
                 <LayoutGrid className="size-3.5" />
                 <span>Attendee Hub</span>
@@ -76,7 +76,7 @@ export function LandingNav() {
               <UserAvatarMenu tone="landing" />
             </div>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <Link
                 to="/login"
                 className="rounded-full px-3.5 py-1.5 text-xs font-semibold text-stone-700 transition-colors hover:text-stone-950"
@@ -96,12 +96,30 @@ export function LandingNav() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-1.5 sm:hidden">
+          {isAuthenticated ? (
+            <Link
+              to="/hub"
+              className="flex h-8 items-center gap-1 rounded-full bg-(--lp-green-ivory) px-2.5 font-mono text-[11px] font-bold text-(--lp-green)"
+            >
+              <LayoutGrid className="size-3" />
+              <span>Hub</span>
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="flex h-8 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-xs font-semibold text-stone-800 hover:bg-stone-100"
+            >
+              <LogIn className="size-3" />
+              <span>Sign In</span>
+            </Link>
+          )}
+
           <a
             href="#start"
-            className="flex h-8 items-center rounded-full bg-(--lp-green) px-3 text-xs font-semibold text-white shadow-sm transition-all hover:bg-(--lp-green-soft) active:scale-95"
+            className="flex h-8 items-center rounded-full bg-(--lp-green) px-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-(--lp-green-soft) active:scale-95"
           >
-            <span>Get Started</span>
+            <span>Start</span>
           </a>
 
           <button
@@ -109,7 +127,7 @@ export function LandingNav() {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-expanded={mobileOpen}
             aria-label="Toggle navigation menu"
-            className="flex size-8 items-center justify-center rounded-lg border border-stone-200 bg-white/80 text-stone-800 transition-colors hover:bg-stone-100"
+            className="flex size-8 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-800 transition-colors hover:bg-stone-100"
           >
             {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
@@ -117,7 +135,7 @@ export function LandingNav() {
       </div>
 
       {mobileOpen && (
-        <div className="fixed inset-x-0 top-14 sm:top-16 bottom-0 z-40 bg-white/95 backdrop-blur-2xl px-6 py-6 md:hidden flex flex-col justify-between overflow-y-auto animate-[lp-rise_0.2s_var(--lp-ease)_both]">
+        <div className="fixed inset-x-0 top-14 sm:top-16 bottom-0 z-40 bg-white/95 backdrop-blur-2xl px-5 py-6 md:hidden flex flex-col justify-between overflow-y-auto animate-[lp-rise_0.2s_var(--lp-ease)_both]">
           <div className="space-y-1">
             <p className="font-mono text-[10px] uppercase tracking-wider text-stone-400 pb-2">
               Platform Navigation
@@ -135,7 +153,7 @@ export function LandingNav() {
             ))}
           </div>
 
-          <div className="pt-6 border-t border-stone-100 space-y-3">
+          <div className="pt-5 border-t border-stone-100 space-y-3">
             {isAuthenticated ? (
               <div className="space-y-2">
                 <Link
@@ -155,9 +173,10 @@ export function LandingNav() {
                 <Link
                   to="/login"
                   onClick={closeMenu}
-                  className="flex h-11 w-full items-center justify-center rounded-xl border border-stone-200 bg-stone-50 font-semibold text-sm text-stone-800 hover:bg-stone-100 transition-colors"
+                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50 font-semibold text-sm text-stone-800 hover:bg-stone-100 transition-colors"
                 >
-                  Sign In
+                  <LogIn className="size-4" />
+                  <span>Sign In to Account</span>
                 </Link>
                 <a
                   href="#start"
@@ -169,8 +188,8 @@ export function LandingNav() {
                 </a>
               </div>
             )}
-            <p className="text-center font-mono text-[11px] text-stone-400 pt-2">
-              Chickasaw, Alabama · Stripe Connect Verified
+            <p className="text-center font-mono text-[11px] text-stone-400 pt-1">
+              Chickasaw, Alabama · Direct Stripe Deposit
             </p>
           </div>
         </div>

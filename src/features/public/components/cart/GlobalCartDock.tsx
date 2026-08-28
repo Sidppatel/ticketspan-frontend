@@ -162,7 +162,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
       {count > 0 && !isOpen && (
         <aside
           aria-label="Shopping Cart Notification"
-          className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 animate-in fade-in slide-in-from-bottom-6 duration-300 pointer-events-auto"
+          className="fixed bottom-28 md:bottom-6 right-4 md:right-6 z-50 animate-in fade-in slide-in-from-bottom-6 duration-300 pointer-events-auto"
         >
           <button
             type="button"

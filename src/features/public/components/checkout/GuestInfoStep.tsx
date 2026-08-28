@@ -170,9 +170,9 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
       )}
 
       {}
-      <div className="rounded-2xl border border-white/10 bg-[#131722] p-4 sm:p-5 space-y-4 shadow-inner">
+      <div className="rounded-2xl border border-white/10 bg-[#131722] p-3.5 sm:p-5 space-y-3 sm:space-y-4 shadow-inner">
         {}
-        <div className="space-y-1.5">
+        <div className="space-y-1 sm:space-y-1.5">
           <Label htmlFor="buyer_name" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
             <User className="size-3.5 text-amber-400" /> Full Name
           </Label>
@@ -184,7 +184,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
               onChange={(e) => handleFieldChange('name', e.target.value)}
               onBlur={() => handleBlur('name')}
               className={cn(
-                'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400',
+                'h-10 sm:h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-xs sm:text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400',
                 errors.name && touched.name && 'border-danger/80 focus:border-danger focus:ring-danger',
               )}
               aria-invalid={!!errors.name}
@@ -196,7 +196,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
         </div>
 
         {}
-        <div className="space-y-1.5">
+        <div className="space-y-1 sm:space-y-1.5">
           <Label htmlFor="buyer_email" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
             <Mail className="size-3.5 text-amber-400" /> Email Address
           </Label>
@@ -209,7 +209,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
               onChange={(e) => handleFieldChange('email', e.target.value)}
               onBlur={() => handleBlur('email')}
               className={cn(
-                'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
+                'h-10 sm:h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-xs sm:text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
                 errors.email && touched.email && 'border-danger/80 focus:border-danger focus:ring-danger',
               )}
               aria-invalid={!!errors.email}
@@ -221,7 +221,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
         </div>
 
         {}
-        <div className="space-y-1.5">
+        <div className="space-y-1 sm:space-y-1.5">
           <div className="flex items-center justify-between">
             <Label htmlFor="buyer_phone" className="flex items-center gap-1.5 text-xs font-bold text-slate-300 uppercase tracking-wide font-mono">
               <Phone className="size-3.5 text-amber-400" /> Phone Number
@@ -236,7 +236,7 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
             onChange={(e) => handleFieldChange('phone', formatUsPhone(e.target.value))}
             onBlur={() => handleBlur('phone')}
             className={cn(
-              'h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
+              'h-10 sm:h-11 bg-[#0c0f17] border-white/15 text-white rounded-xl px-3.5 text-xs sm:text-sm transition-all focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono',
               errors.phone && touched.phone && 'border-danger/80 focus:border-danger focus:ring-danger',
             )}
             aria-invalid={!!errors.phone}
@@ -248,25 +248,25 @@ export function GuestInfoStep({ buyerInfo, onChange, onNext, onBack }: GuestInfo
       </div>
 
       {}
-      <div className="flex items-center gap-2 px-1 text-[11.5px] text-white/60">
-        <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
+      <div className="flex items-center gap-2 px-1 text-[11px] sm:text-[11.5px] text-white/60">
+        <ShieldCheck className="size-3.5 sm:size-4 text-emerald-400 shrink-0" />
         <span>Your information is encrypted and never sold or shared with 3rd parties.</span>
       </div>
 
       {}
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
         <Button
           type="button"
           variant="outline"
           onClick={onBack}
-          className="h-12 px-5 rounded-2xl border-white/10 bg-white/5 text-white hover:bg-white/10 text-xs font-bold"
+          className="h-10 sm:h-12 px-3.5 sm:px-5 rounded-2xl border-white/10 bg-white/5 text-white hover:bg-white/10 text-xs font-bold"
         >
           <ArrowLeft className="size-4 mr-1" /> Back
         </Button>
 
         <Button
           type="submit"
-          className="flex-1 ticketspan-spring-btn h-12 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 gap-2"
+          className="flex-1 ticketspan-spring-btn h-10 sm:h-12 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans text-xs sm:text-sm font-bold tracking-wide shadow-lg shadow-amber-400/20 gap-2"
         >
           Continue to Payment <ArrowRight className="size-4" />
         </Button>
