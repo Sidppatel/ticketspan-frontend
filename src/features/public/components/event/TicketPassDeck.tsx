@@ -17,6 +17,8 @@ interface TicketTypeItem {
   capacity: number;
   soldCount: number;
   maxQuantity: number;
+  availableQuantity?: number;
+  isSoldOut?: boolean;
 }
 
 interface TicketPassDeckProps {
@@ -58,8 +60,8 @@ export function TicketPassDeck({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {admissionTiers.map((tt, index) => {
           const qty = cart.find((i) => i.key === `Ticket:${tt.eventTicketTypesId}`)?.seats || 0;
-          const availableQuantity = tt.capacity > 0 ? Math.max(0, tt.capacity - tt.soldCount) : undefined;
-          const isSoldOut = availableQuantity === 0;
+          const availableQuantity = tt.availableQuantity !== undefined && tt.availableQuantity >= 0 ? tt.availableQuantity : undefined;
+          const isSoldOut = Boolean(tt.isSoldOut || availableQuantity === 0);
           const isPopular = index === 0;
 
           const displayPrice = feesIncluded ? addCents(tt.priceCents, tt.platformFeeCents) : tt.priceCents;
