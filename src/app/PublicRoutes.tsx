@@ -102,9 +102,7 @@ export default function PublicRoutes() {
             onTenant ? (
               <TenantUniversalRedirect path="/hub" />
             ) : (
-              <ProtectedRoute allow={authenticated}>
-                <AttendeeHubPage />
-              </ProtectedRoute>
+              <AttendeeHubPage />
             )
           }
         />

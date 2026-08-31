@@ -10,12 +10,53 @@ export async function calculatePrice(pricesId: string, seats: number): Promise<P
   return callRpc(() => pricingClient.calculatePrice({ pricesId, seats, at: '0', remaining: -1, groupQty: 0 }));
 }
 
+export interface ListPublicEventsParams {
+  offset?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  tenantSlug?: string;
+  dateFilter?: string;
+  upcomingOnly?: boolean;
+}
+
+export async function listPublicEventsPaged(params: ListPublicEventsParams): Promise<{
+  events: Event[];
+  total: number;
+}> {
+  const response = await callRpc(() =>
+    eventClient.listEvents({
+      page: {
+        offset: params.offset ?? 0,
+        limit: params.limit ?? 15,
+        search: params.search ?? '',
+      },
+      status: 'Published',
+      category: params.category === 'All' ? '' : (params.category ?? ''),
+      tenantSlug: params.tenantSlug === 'all' ? '' : (params.tenantSlug ?? ''),
+      dateFilter: params.dateFilter === 'all' ? '' : (params.dateFilter ?? ''),
+      upcomingOnly: params.upcomingOnly ?? true,
+    }),
+  );
+  return {
+    events: response.events,
+    total: response.meta?.total ?? response.events.length,
+  };
+}
+
 export async function listPublicEvents(search: string, category = ''): Promise<Event[]> {
   const prefetched = !search && !category ? takePrefetchedEventList() : null;
   const response = prefetched
     ? await prefetched
     : await callRpc(() =>
-        eventClient.listEvents({ page: { offset: 0, limit: 50, search }, status: 'Published', category }),
+        eventClient.listEvents({
+          page: { offset: 0, limit: 50, search },
+          status: 'Published',
+          category,
+          tenantSlug: '',
+          dateFilter: '',
+          upcomingOnly: true,
+        }),
       );
   return response.events;
 }

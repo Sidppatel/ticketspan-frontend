@@ -528,6 +528,14 @@ export interface EventTicketType {
      * @generated from protobuf field: int32 total_cents = 13;
      */
     totalCents: number;
+    /**
+     * @generated from protobuf field: int32 available_quantity = 14;
+     */
+    availableQuantity: number;
+    /**
+     * @generated from protobuf field: bool is_sold_out = 15;
+     */
+    isSoldOut: boolean;
 }
 /**
  * @generated from protobuf message ticketspan.booking.ListEventTicketTypesResponse
@@ -2289,7 +2297,9 @@ class EventTicketType$Type extends MessageType<EventTicketType> {
             { no: 10, name: "sold_count", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 11, name: "service_fee_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 12, name: "tax_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 13, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 13, name: "total_cents", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 14, name: "available_quantity", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 15, name: "is_sold_out", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<EventTicketType>): EventTicketType {
@@ -2307,6 +2317,8 @@ class EventTicketType$Type extends MessageType<EventTicketType> {
         message.serviceFeeCents = 0;
         message.taxCents = 0;
         message.totalCents = 0;
+        message.availableQuantity = 0;
+        message.isSoldOut = false;
         if (value !== undefined)
             reflectionMergePartial<EventTicketType>(this, message, value);
         return message;
@@ -2354,6 +2366,12 @@ class EventTicketType$Type extends MessageType<EventTicketType> {
                     break;
                 case /* int32 total_cents */ 13:
                     message.totalCents = reader.int32();
+                    break;
+                case /* int32 available_quantity */ 14:
+                    message.availableQuantity = reader.int32();
+                    break;
+                case /* bool is_sold_out */ 15:
+                    message.isSoldOut = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2406,6 +2424,12 @@ class EventTicketType$Type extends MessageType<EventTicketType> {
         /* int32 total_cents = 13; */
         if (message.totalCents !== 0)
             writer.tag(13, WireType.Varint).int32(message.totalCents);
+        /* int32 available_quantity = 14; */
+        if (message.availableQuantity !== 0)
+            writer.tag(14, WireType.Varint).int32(message.availableQuantity);
+        /* bool is_sold_out = 15; */
+        if (message.isSoldOut !== false)
+            writer.tag(15, WireType.Varint).bool(message.isSoldOut);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

@@ -442,6 +442,14 @@ export interface Event {
      * @generated from protobuf field: bool tax_exempt = 33;
      */
     taxExempt: boolean;
+    /**
+     * @generated from protobuf field: string tenant_slug = 34;
+     */
+    tenantSlug: string;
+    /**
+     * @generated from protobuf field: string tenant_name = 35;
+     */
+    tenantName: string;
 }
 /**
  * @generated from protobuf message ticketspan.event.GetEventBySlugRequest
@@ -652,6 +660,18 @@ export interface ListEventsRequest {
      * @generated from protobuf field: string category = 3;
      */
     category: string;
+    /**
+     * @generated from protobuf field: string tenant_slug = 4;
+     */
+    tenantSlug: string;
+    /**
+     * @generated from protobuf field: string date_filter = 5;
+     */
+    dateFilter: string;
+    /**
+     * @generated from protobuf field: bool upcoming_only = 6;
+     */
+    upcomingOnly: boolean;
 }
 /**
  * @generated from protobuf message ticketspan.event.SearchEventsRequest
@@ -1844,7 +1864,9 @@ class Event$Type extends MessageType<Event> {
             { no: 30, name: "poster_image_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 31, name: "is_verified_organizer", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 32, name: "urgency_badge_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 33, name: "tax_exempt", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 33, name: "tax_exempt", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 34, name: "tenant_slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 35, name: "tenant_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Event>): Event {
@@ -1882,6 +1904,8 @@ class Event$Type extends MessageType<Event> {
         message.isVerifiedOrganizer = false;
         message.urgencyBadgeText = "";
         message.taxExempt = false;
+        message.tenantSlug = "";
+        message.tenantName = "";
         if (value !== undefined)
             reflectionMergePartial<Event>(this, message, value);
         return message;
@@ -1989,6 +2013,12 @@ class Event$Type extends MessageType<Event> {
                     break;
                 case /* bool tax_exempt */ 33:
                     message.taxExempt = reader.bool();
+                    break;
+                case /* string tenant_slug */ 34:
+                    message.tenantSlug = reader.string();
+                    break;
+                case /* string tenant_name */ 35:
+                    message.tenantName = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2101,6 +2131,12 @@ class Event$Type extends MessageType<Event> {
         /* bool tax_exempt = 33; */
         if (message.taxExempt !== false)
             writer.tag(33, WireType.Varint).bool(message.taxExempt);
+        /* string tenant_slug = 34; */
+        if (message.tenantSlug !== "")
+            writer.tag(34, WireType.LengthDelimited).string(message.tenantSlug);
+        /* string tenant_name = 35; */
+        if (message.tenantName !== "")
+            writer.tag(35, WireType.LengthDelimited).string(message.tenantName);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2648,13 +2684,19 @@ class ListEventsRequest$Type extends MessageType<ListEventsRequest> {
         super("ticketspan.event.ListEventsRequest", [
             { no: 1, name: "page", kind: "message", T: () => PageRequest },
             { no: 2, name: "status", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "category", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 3, name: "category", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "tenant_slug", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "date_filter", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "upcoming_only", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<ListEventsRequest>): ListEventsRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.status = "";
         message.category = "";
+        message.tenantSlug = "";
+        message.dateFilter = "";
+        message.upcomingOnly = false;
         if (value !== undefined)
             reflectionMergePartial<ListEventsRequest>(this, message, value);
         return message;
@@ -2672,6 +2714,15 @@ class ListEventsRequest$Type extends MessageType<ListEventsRequest> {
                     break;
                 case /* string category */ 3:
                     message.category = reader.string();
+                    break;
+                case /* string tenant_slug */ 4:
+                    message.tenantSlug = reader.string();
+                    break;
+                case /* string date_filter */ 5:
+                    message.dateFilter = reader.string();
+                    break;
+                case /* bool upcoming_only */ 6:
+                    message.upcomingOnly = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2694,6 +2745,15 @@ class ListEventsRequest$Type extends MessageType<ListEventsRequest> {
         /* string category = 3; */
         if (message.category !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.category);
+        /* string tenant_slug = 4; */
+        if (message.tenantSlug !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.tenantSlug);
+        /* string date_filter = 5; */
+        if (message.dateFilter !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.dateFilter);
+        /* bool upcoming_only = 6; */
+        if (message.upcomingOnly !== false)
+            writer.tag(6, WireType.Varint).bool(message.upcomingOnly);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

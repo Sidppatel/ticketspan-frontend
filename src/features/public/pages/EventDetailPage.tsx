@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { getEventBySlug } from '@/features/public/services/publicEventService';
@@ -18,7 +18,7 @@ import { EventFooter } from '@/features/public/components/EventFooter';
 import { CheckoutDrawer } from '@/features/public/components/checkout/CheckoutDrawer';
 import { PersuasionBand } from '@/features/public/components/event/PersuasionBand';
 import { DeltaStrip } from '@/features/public/components/event/DeltaStrip';
-import { isTenantSubdomain, getUniversalLoginUrl } from '@/shared/subdomain';
+import { currentTenantSlug, isTenantSubdomain, tenantUrl, getUniversalLoginUrl } from '@/shared/subdomain';
 import { buildPersuasion } from '@/features/public/lib/persuasion';
 import { rememberEventVisit } from '@/features/public/lib/eventMemory';
 import { GroupDiscountBanner } from '@/features/public/components/GroupDiscountBanner';
@@ -45,12 +45,30 @@ export function EventDetailPage() {
   const loader = useCallback(() => getEventBySlug(slug), [slug]);
   const { data: event, loading, error } = useAsync(loader);
 
-  if (loading) {
+  const activeTenant = currentTenantSlug();
+  const shouldRedirect = Boolean(
+    event &&
+      event.tenantSlug &&
+      (!isTenantSubdomain() || (activeTenant && activeTenant !== event.tenantSlug)),
+  );
+
+  useEffect(() => {
+    if (shouldRedirect && event && event.tenantSlug) {
+      const target = `${tenantUrl(event.tenantSlug)}events/${event.slug}`;
+      window.location.replace(target);
+    }
+  }, [shouldRedirect, event]);
+
+  if (loading || shouldRedirect) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-stage text-on-stage">
         <div className="flex flex-col items-center gap-3">
           <div className="size-10 animate-spin rounded-full border-4 border-on-stage/10 border-t-brand" />
-          <p className="text-sm text-on-stage-soft font-mono">Loading Bento Studio…</p>
+          <p className="text-sm text-on-stage-soft font-mono">
+            {shouldRedirect && event
+              ? `Redirecting to ${event.tenantName || event.tenantSlug} box office…`
+              : 'Loading Bento Studio…'}
+          </p>
         </div>
       </div>
     );

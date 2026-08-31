@@ -45,6 +45,9 @@ export function prefetchDefaultPublicEventList(): void {
         page: { offset: 0, limit: 50, search: '' },
         status: 'Published',
         category: '',
+        tenantSlug: '',
+        dateFilter: '',
+        upcomingOnly: true,
       }).response,
   );
   listCached.catch(() => undefined);

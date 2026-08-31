@@ -12,7 +12,14 @@ export async function getAdminDashboard(): Promise<AdminDashboard> {
 
 export async function listAdminEvents(): Promise<Event[]> {
   const response = await callRpc(() =>
-    eventClient.listEvents({ page: { offset: 0, limit: 100, search: '' }, status: '', category: '' }),
+    eventClient.listEvents({
+      page: { offset: 0, limit: 100, search: '' },
+      status: '',
+      category: '',
+      tenantSlug: '',
+      dateFilter: '',
+      upcomingOnly: false,
+    }),
   );
   return response.events;
 }
