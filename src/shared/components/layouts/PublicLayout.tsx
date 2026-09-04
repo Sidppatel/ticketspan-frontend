@@ -8,7 +8,8 @@ import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 import { useAuth } from '@/shared/auth/useAuth';
 import { cn } from '@/shared/lib/cn';
 import { acquireLenis } from '@/shared/motion/lenis';
-import { currentTenantSlug } from '@/shared/subdomain';
+import { currentTenantSlug, resolvePortalContext, getRootDomainUrl } from '@/shared/subdomain';
+import { useAuthStore } from '@/shared/auth/store';
 
 import { GlobalCartDock } from '@/features/public/components/cart/GlobalCartDock';
 import { UniversalMultiCheckoutDrawer } from '@/features/public/components/checkout/UniversalMultiCheckoutDrawer';
@@ -21,6 +22,39 @@ export function PublicLayout() {
   const [isMultiCheckoutOpen, setIsMultiCheckoutOpen] = useState(false);
 
   useEffect(() => acquireLenis(), []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const { portal, tenantSlug } = resolvePortalContext();
+    if (portal !== 'public' || !tenantSlug) return;
+    if (useAuthStore.getState().accessToken) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('sso_probed') === '1') {
+      try {
+        window.sessionStorage.setItem('ts_sso_probed', '1');
+      } catch (e) {
+        void e;
+      }
+      urlParams.delete('sso_probed');
+      const remaining = urlParams.toString();
+      const cleanUrl = window.location.pathname + (remaining ? `?${remaining}` : '') + window.location.hash;
+      window.history.replaceState(null, '', cleanUrl);
+      return;
+    }
+
+    try {
+      if (window.sessionStorage.getItem('ts_sso_probed') === '1') {
+        return;
+      }
+      window.sessionStorage.setItem('ts_sso_probed', '1');
+    } catch (e) {
+      void e;
+    }
+
+    const probeUrl = getRootDomainUrl(`/sso/probe?returnUrl=${encodeURIComponent(window.location.href)}`);
+    window.location.replace(probeUrl);
+  }, []);
 
   const onRootDomain = !currentTenantSlug();
 

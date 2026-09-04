@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from '@/shared/ui/popover';
 import { useAuth } from '@/shared/auth/useAuth';
 import { isTenantSubdomain, getRootDomainUrl } from '@/shared/subdomain';
@@ -50,7 +50,6 @@ function getUserInitials(user?: UserProfile | null): string {
 
 export function UserAvatarMenu({ className, tone = 'default' }: UserAvatarMenuProps) {
   const { user, role, logout } = useAuth();
-  const navigate = useNavigate();
   const onTenant = isTenantSubdomain();
   const [imgError, setImgError] = useState(false);
 
@@ -92,14 +91,7 @@ export function UserAvatarMenu({ className, tone = 'default' }: UserAvatarMenuPr
   );
 
   const handleLogout = async () => {
-    const { logout: authLogout } = await import('@/features/auth/services/authService');
-    await authLogout();
-    logout();
-    if (onTenant) {
-      window.location.reload();
-    } else {
-      navigate('/login');
-    }
+    await logout();
   };
 
   const navItems = [

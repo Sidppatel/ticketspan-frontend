@@ -69,7 +69,7 @@ function EventCardItem({ event }: { event: Event }) {
   const organizerSlug = event.tenantSlug;
   const organizerName = event.tenantName || (organizerSlug ? `@${organizerSlug}` : 'Box Office');
   const targetUrl = organizerSlug
-    ? `${tenantUrl(organizerSlug)}events/${event.slug}`
+    ? tenantUrl(organizerSlug, `events/${event.slug}`)
     : `/events/${event.slug}`;
 
   const hasValidImage = Boolean(event.primaryImageId && !imgError);

@@ -54,7 +54,7 @@ export function EventDetailPage() {
 
   useEffect(() => {
     if (shouldRedirect && event && event.tenantSlug) {
-      const target = `${tenantUrl(event.tenantSlug)}events/${event.slug}`;
+      const target = tenantUrl(event.tenantSlug, `events/${event.slug}`);
       window.location.replace(target);
     }
   }, [shouldRedirect, event]);

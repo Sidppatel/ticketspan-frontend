@@ -151,7 +151,7 @@ export function PortalNav({
   transparent?: boolean;
   hideAuth?: boolean;
 }) {
-  const { isAuthenticated, user, role } = useAuth();
+  const { isAuthenticated, user, role, logout } = useAuth();
   const { totalItemCount, setOpen: setCartOpen } = useCartStore();
   const cartItemCount = totalItemCount();
   const navigate = useNavigate();
@@ -159,9 +159,7 @@ export function PortalNav({
   const [scrolled, setScrolled] = useState(false);
 
   async function handleLogout() {
-    const { logout } = await import('@/features/auth/services/authService');
     await logout();
-    navigate('/login');
   }
 
   function handleSignIn() {

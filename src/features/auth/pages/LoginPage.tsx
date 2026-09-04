@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { PasswordInput } from '@/shared/ui/password-input';
@@ -10,8 +10,12 @@ import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
 import { GoogleSignInButton } from '@/features/auth/components/GoogleSignInButton';
 import { AuthShell } from '@/features/auth/components/AuthShell';
 import { Mail, Lock, LogIn, Sparkles, ArrowRight, CircleAlert } from 'lucide-react';
+import { readStoredAuth } from '@/shared/auth/store';
+import { resolvePortalContext, buildAuthSyncUrl } from '@/shared/subdomain';
+import { homePathForRole } from '@/shared/roles';
 
 export function LoginPage() {
+  const navigate = useNavigate();
   const { login, google, loading, error } = useAuthFlow();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +23,20 @@ export function LoginPage() {
   const returnUrl = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('returnUrl') || new URLSearchParams(window.location.search).get('returnTo')
     : null;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const { portal } = resolvePortalContext();
+    if (portal !== 'public') return;
+    const auth = readStoredAuth();
+    if (auth?.accessToken) {
+      if (returnUrl) {
+        window.location.replace(buildAuthSyncUrl(returnUrl));
+        return;
+      }
+      navigate(homePathForRole(auth.user?.role ?? 0));
+    }
+  }, [returnUrl, navigate]);
 
   return (
     <AuthShell

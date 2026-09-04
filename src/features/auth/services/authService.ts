@@ -1,6 +1,6 @@
 import { authClient } from '@/shared/apiClient';
 import { callRpc } from '@/shared/session';
-import { currentTenantSlug, resolvePortalContext } from '@/shared/subdomain';
+import { currentTenantSlug, resolvePortalContext, isTenantSubdomain, getRootDomainUrl, tenantUrl } from '@/shared/subdomain';
 import { useAuthStore } from '@/shared/auth/store';
 import type { AuthResponse, UserProfile } from '@/shared/proto/auth';
 
@@ -164,5 +164,15 @@ export async function logout(): Promise<void> {
     await callRpc(() => authClient.logout({ sessionHash: '' }));
   } finally {
     useAuthStore.getState().clear();
+    try {
+      window.sessionStorage.setItem('ts_sso_probed', '1');
+    } catch (e) {
+      void e;
+    }
+    const { portal } = resolvePortalContext();
+    if (portal === 'public' && isTenantSubdomain() && typeof window !== 'undefined') {
+      const returnUrl = window.location.href;
+      window.location.replace(getRootDomainUrl(`/sso/logout?returnUrl=${encodeURIComponent(returnUrl)}`));
+    }
   }
 }

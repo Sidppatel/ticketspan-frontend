@@ -1,5 +1,5 @@
 import { lazy, useEffect } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, useLocation } from 'react-router-dom';
 import { NotAuthorizedPage } from '@/shared/components/StatusPages';
 import { isTenantSubdomain, getUniversalLoginUrl, getUniversalRegisterUrl } from '@/shared/subdomain';
 
@@ -23,16 +23,17 @@ const AcceptInvitationPage = lazy(() =>
 );
 
 function TenantAuthRedirect({ target = 'login' }: { target?: 'login' | 'register' }) {
+  const location = useLocation();
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const returnUrl = window.location.search
-        ? new URLSearchParams(window.location.search).get('returnUrl') || window.location.origin
-        : window.location.origin;
+      const stateFrom = (location.state as { from?: string } | null)?.from;
+      const searchReturn = new URLSearchParams(window.location.search).get('returnUrl');
+      const returnUrl = searchReturn || (stateFrom ? `${window.location.origin}${stateFrom}` : window.location.origin);
       const universalUrl =
         target === 'register' ? getUniversalRegisterUrl(returnUrl) : getUniversalLoginUrl(returnUrl);
       window.location.replace(universalUrl);
     }
-  }, [target]);
+  }, [target, location.state]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4 text-foreground">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { loadProfile, updateProfile, setAvatar, removeAvatar, type ProfileInput } from '@/features/auth/services/authService';
 import { uploadImage } from '@/shared/upload';
 import { useAuth } from '@/shared/auth/useAuth';
+import { isTenantSubdomain } from '@/shared/subdomain';
 import { rpcErrorMessage } from '@/shared/session';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { toast } from 'sonner';
@@ -160,10 +161,7 @@ export function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    const { logout: authLogout } = await import('@/features/auth/services/authService');
-    await authLogout();
-    logout();
-    navigate('/login');
+    await logout();
   };
 
   if (loading) {
