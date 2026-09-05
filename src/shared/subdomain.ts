@@ -1,5 +1,4 @@
 import type { Portal } from '@/shared/roles';
-import { readStoredAuth } from '@/shared/auth/store';
 
 export interface PortalContext {
   portal: Portal;
@@ -81,40 +80,7 @@ export function currentTenantSlug(): string {
 }
 
 export function buildAuthSyncUrl(targetUrl: string): string {
-  if (typeof window === 'undefined') return targetUrl;
-  const currentContext = resolvePortalContext();
-  if (currentContext.portal !== 'public') {
-    return targetUrl;
-  }
-  const auth = readStoredAuth();
-  if (!auth || !auth.accessToken) {
-    return targetUrl;
-  }
-  try {
-    const parsed = new URL(targetUrl, window.location.href);
-    const host = parsed.hostname;
-    const labels = host.split('.');
-    const first = labels[0];
-    const hasSubdomain = host.endsWith('.localhost')
-      ? labels.length > 1
-      : host.endsWith('.pages.dev')
-        ? labels.length > 3
-        : labels.length > 2;
-    const subLabel = hasSubdomain && first !== 'www' ? first : '';
-    if (subLabel === 'admin' || subLabel === 'staff' || subLabel === 'developer') {
-      return targetUrl;
-    }
-    const payload = {
-      accessToken: auth.accessToken,
-      expiresAtSeconds: auth.expiresAtSeconds,
-      user: auth.user,
-    };
-    const syncParam = `auth_sync=${encodeURIComponent(JSON.stringify(payload))}`;
-    parsed.hash = parsed.hash ? `${parsed.hash}&${syncParam}` : syncParam;
-    return parsed.toString();
-  } catch {
-    return targetUrl;
-  }
+  return targetUrl;
 }
 
 export function tenantUrl(slug: string, path: string = '/'): string {
@@ -124,11 +90,11 @@ export function tenantUrl(slug: string, path: string = '/'): string {
     : hostname.split('.').slice(-2).join('.');
   const portSuffix = port ? `:${port}` : '';
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  const rawUrl = `${protocol}//${slug}.${baseHost}${portSuffix}${normalizedPath}`;
-  return buildAuthSyncUrl(rawUrl);
+  return `${protocol}//${slug}.${baseHost}${portSuffix}${normalizedPath}`;
 }
 
 export function getRootDomainUrl(path: string = '/', syncAuth: boolean = false): string {
+  void syncAuth;
   if (typeof window === 'undefined') return path;
   const { protocol, hostname, port } = window.location;
   let baseHost: string;
@@ -142,8 +108,7 @@ export function getRootDomainUrl(path: string = '/', syncAuth: boolean = false):
   }
   const portSuffix = port ? `:${port}` : '';
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  const rawUrl = `${protocol}//${baseHost}${portSuffix}${normalizedPath}`;
-  return syncAuth ? buildAuthSyncUrl(rawUrl) : rawUrl;
+  return `${protocol}//${baseHost}${portSuffix}${normalizedPath}`;
 }
 
 export function isTenantSubdomain(): boolean {

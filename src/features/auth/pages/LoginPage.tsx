@@ -10,9 +10,12 @@ import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
 import { GoogleSignInButton } from '@/features/auth/components/GoogleSignInButton';
 import { AuthShell } from '@/features/auth/components/AuthShell';
 import { Mail, Lock, LogIn, Sparkles, ArrowRight, CircleAlert } from 'lucide-react';
-import { readStoredAuth } from '@/shared/auth/store';
-import { resolvePortalContext, buildAuthSyncUrl } from '@/shared/subdomain';
+import { useAuthStore } from '@/shared/auth/store';
+import { resolvePortalContext } from '@/shared/subdomain';
 import { homePathForRole } from '@/shared/roles';
+import { tryRefresh } from '@/shared/session';
+import { buildAuthorizeUrl } from '@/shared/auth/oidc';
+import { loadProfile } from '@/shared/api/userApi';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -28,14 +31,52 @@ export function LoginPage() {
     if (typeof window === 'undefined') return;
     const { portal } = resolvePortalContext();
     if (portal !== 'public') return;
-    const auth = readStoredAuth();
-    if (auth?.accessToken) {
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('session_expired') === '1' || params.get('error') === 'login_required' || params.get('error') === 'invalid_grant') {
+      useAuthStore.getState().clear();
+      return;
+    }
+
+    function handleAuthSuccess() {
       if (returnUrl) {
-        window.location.replace(buildAuthSyncUrl(returnUrl));
+        if (returnUrl.startsWith('http://') || returnUrl.startsWith('https://')) {
+          try {
+            const target = new URL(returnUrl);
+            if (target.origin !== window.location.origin) {
+              const redirectUri = `${target.origin}/callback`;
+              window.location.replace(buildAuthorizeUrl(redirectUri, returnUrl));
+              return;
+            }
+          } catch {
+          }
+          window.location.replace(returnUrl);
+          return;
+        }
+        navigate(returnUrl);
         return;
       }
-      navigate(homePathForRole(auth.user?.role ?? 0));
+      const user = useAuthStore.getState().user;
+      navigate(homePathForRole(user?.role ?? 0));
     }
+
+    const store = useAuthStore.getState();
+    if (store.isSessionValid()) {
+      loadProfile()
+        .then(() => {
+          handleAuthSuccess();
+        })
+        .catch(() => {
+          useAuthStore.getState().clear();
+        });
+      return;
+    }
+
+    tryRefresh().then((active) => {
+      if (active) {
+        handleAuthSuccess();
+      }
+    });
   }, [returnUrl, navigate]);
 
   return (

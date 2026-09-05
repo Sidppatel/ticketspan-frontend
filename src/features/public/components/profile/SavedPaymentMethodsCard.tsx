@@ -12,7 +12,7 @@ import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/shared/ui/dialog';
 import { useAuth } from '@/shared/auth/useAuth';
-import type { UserProfile } from '@/shared/proto/auth';
+import type { AuthUser } from '@/shared/auth/store';
 import {
   CreditCard,
   Plus,
@@ -283,7 +283,7 @@ function AddCardSetupForm({
   onSuccess,
   onCancel,
 }: {
-  user: UserProfile | null;
+  user: AuthUser | null;
   onSuccess: () => void;
   onCancel: () => void;
 }) {

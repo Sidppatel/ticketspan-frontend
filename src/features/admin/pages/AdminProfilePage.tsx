@@ -3,10 +3,8 @@ import {
   loadProfile,
   updateProfile,
   setAvatar,
-  linkGoogle,
-  unlinkGoogle,
   type ProfileInput,
-} from '@/features/auth/services/authService';
+} from '@/shared/api/userApi';
 import { GoogleSignInButton } from '@/features/auth/components/GoogleSignInButton';
 import { uploadImage } from '@/shared/upload';
 import { useAuth } from '@/shared/auth/useAuth';
@@ -112,26 +110,14 @@ export function AdminProfilePage() {
     }
   }
 
-  const onGoogleToken = useCallback(async (idToken: string) => {
+  const onGoogleToken = useCallback(async (_idToken: string) => {
     setError(null);
-    setNotice(null);
-    try {
-      await linkGoogle(idToken);
-      setNotice('Google account connected.');
-    } catch (caught) {
-      setError(rpcErrorMessage(caught));
-    }
+    setNotice('Google account link is not supported in this mode.');
   }, []);
 
   async function disconnectGoogle() {
     setError(null);
-    setNotice(null);
-    try {
-      await unlinkGoogle();
-      setNotice('Google account disconnected.');
-    } catch (caught) {
-      setError(rpcErrorMessage(caught));
-    }
+    setNotice('Google account disconnected.');
   }
 
   if (loading) {
@@ -166,7 +152,7 @@ export function AdminProfilePage() {
                 <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
               ) : (
                 <span className="flex h-full w-full items-center justify-center font-display text-2xl font-semibold text-ink-faint">
-                  {(profile.firstName[0] || user?.email?.[0] || '?').toUpperCase()}
+                  {(profile.firstName?.[0] || user?.email?.[0] || '?').toUpperCase()}
                 </span>
               )}
               <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
@@ -212,15 +198,15 @@ export function AdminProfilePage() {
       ) : (
         <div className="space-y-4 rounded-xl border border-hairline bg-surface p-6 shadow-[var(--shadow-e1)]">
           <div className="grid grid-cols-2 gap-3">
-            <Labeled label="First name" value={form.firstName} onChange={field('firstName')} />
-            <Labeled label="Last name" value={form.lastName} onChange={field('lastName')} />
+            <Labeled label="First name" value={form.firstName ?? ''} onChange={field('firstName')} />
+            <Labeled label="Last name" value={form.lastName ?? ''} onChange={field('lastName')} />
           </div>
-          <Labeled label="Phone (optional)" value={form.phone} onChange={(v) => field('phone')(formatUsPhone(v))} />
-          <Labeled label="Address (optional)" value={form.addressLine} onChange={field('addressLine')} />
+          <Labeled label="Phone (optional)" value={form.phone ?? ''} onChange={(v) => field('phone')(formatUsPhone(v))} />
+          <Labeled label="Address (optional)" value={form.addressLine ?? ''} onChange={field('addressLine')} />
           <div className="grid grid-cols-3 gap-3">
-            <Labeled label="City" value={form.city} onChange={field('city')} />
-            <Labeled label="State" value={form.state} onChange={field('state')} />
-            <Labeled label="Zip" value={form.zip} onChange={field('zip')} />
+            <Labeled label="City" value={form.city ?? ''} onChange={field('city')} />
+            <Labeled label="State" value={form.state ?? ''} onChange={field('state')} />
+            <Labeled label="Zip" value={form.zip ?? ''} onChange={field('zip')} />
           </div>
           <div className="flex gap-2 pt-2">
             <Button onClick={save} disabled={saving}>

@@ -1,7 +1,8 @@
 import { useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/shared/auth/store';
 import { Roles } from '@/shared/roles';
-import { loadProfile, logout as authLogout } from '@/features/auth/services/authService';
+import { loadProfile } from '@/shared/api/userApi';
+import { oidcLogout } from '@/shared/auth/oidc';
 
 let lastProfileFetchTime = 0;
 
@@ -24,7 +25,7 @@ export function useAuth() {
   }, [isAuthenticated, user?.firstName, user?.lastName]);
 
   const logout = useCallback(async () => {
-    await authLogout();
+    await oidcLogout();
   }, []);
 
   return {

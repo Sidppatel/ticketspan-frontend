@@ -5,7 +5,6 @@ import { PasswordInput } from '@/shared/ui/password-input';
 import { Label } from '@/shared/ui/label';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { useAuthFlow } from '@/features/auth/hooks/useAuthFlow';
-import { validateResetToken } from '@/features/auth/services/authService';
 import { AuthShell } from '@/features/auth/components/AuthShell';
 import { Lock, CircleAlert, CheckCircle2 } from 'lucide-react';
 
@@ -22,23 +21,7 @@ export function SetPasswordPage() {
 
   useEffect(() => {
     if (!token) return;
-    let active = true;
-    validateResetToken(token)
-      .then(() => {
-        if (active) setTokenState('valid');
-      })
-      .catch((e: unknown) => {
-        if (!active) return;
-        setTokenState('invalid');
-        setTokenError(
-          e instanceof Error
-            ? e.message
-            : 'Invalid token. Please request a new password reset link.',
-        );
-      });
-    return () => {
-      active = false;
-    };
+    setTokenState('valid');
   }, [token]);
 
   return (

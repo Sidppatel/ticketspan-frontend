@@ -22,7 +22,7 @@ import { useAuth } from '@/shared/auth/useAuth';
 import { canManageTenantSettings, isEventManager, roleLabel } from '@/shared/roles';
 import { buildGreeting } from '@/features/admin/lib/dashboardInsights';
 import { initials } from '@/shared/lib/format';
-import { logout } from '@/features/auth/services/authService';
+import { oidcLogout } from '@/shared/auth/oidc';
 import { cn } from '@/shared/lib/cn';
 import type { NavLink as NavLinkItem } from '@/shared/components/layouts/PortalNav';
 
@@ -128,7 +128,7 @@ export function AdminTopNav() {
   const everything = [...primary, ...groups.flatMap((g) => g.links), { to: '/profile', label: 'Profile' }];
 
   async function handleLogout() {
-    await logout();
+    await oidcLogout();
     navigate('/login');
   }
 

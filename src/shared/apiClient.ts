@@ -1,9 +1,8 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 import type { RpcInterceptor } from '@protobuf-ts/runtime-rpc';
 import { getAccessToken } from '@/shared/auth/store';
-import { currentTenantSlug } from '@/shared/subdomain';
+import { currentTenantSlug, resolvePortalContext } from '@/shared/subdomain';
 import { getActingTenant } from '@/shared/actingTenant';
-import { AuthServiceClient } from '@/shared/proto/auth.client';
 import { TenantServiceClient } from '@/shared/proto/tenant.client';
 import { EventServiceClient } from '@/shared/proto/event.client';
 import {
@@ -71,6 +70,16 @@ const actingTenantInterceptor: RpcInterceptor = {
   },
 };
 
+const portalInterceptor: RpcInterceptor = {
+  interceptUnary(next, method, input, options) {
+    const { portal } = resolvePortalContext();
+    if (portal) {
+      options.meta = { ...options.meta, 'x-portal': portal };
+    }
+    return next(method, input, options);
+  },
+};
+
 export const transport = new GrpcWebFetchTransport({
   baseUrl: BACKEND_URL,
   format: 'binary',
@@ -79,10 +88,9 @@ export const transport = new GrpcWebFetchTransport({
       ...init,
       credentials: 'include',
     }),
-  interceptors: [authInterceptor, tenantInterceptor, actingTenantInterceptor],
+  interceptors: [authInterceptor, tenantInterceptor, actingTenantInterceptor, portalInterceptor],
 });
 
-export const authClient = new AuthServiceClient(transport);
 export const tenantClient = new TenantServiceClient(transport);
 export const eventClient = new EventServiceClient(transport);
 export const venueClient = new VenueServiceClient(transport);

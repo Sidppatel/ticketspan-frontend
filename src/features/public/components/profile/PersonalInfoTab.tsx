@@ -16,11 +16,11 @@ import {
   ShieldCheck,
   CreditCard,
 } from 'lucide-react';
-import type { UserProfile } from '@/shared/proto/auth';
-import type { ProfileInput } from '@/features/auth/services/authService';
+import type { UserProfile, ProfileInput } from '@/shared/api/userApi';
+import type { AuthUser } from '@/shared/auth/store';
 
 interface PersonalInfoTabProps {
-  user: UserProfile | null;
+  user: AuthUser | UserProfile | null;
   profile: ProfileInput;
   form: ProfileInput;
   editing: boolean;
@@ -182,7 +182,7 @@ export function PersonalInfoTab({
                   {profile.phone && (
                     <button
                       type="button"
-                      onClick={() => handleCopy(profile.phone, 'phone')}
+                      onClick={() => handleCopy(profile.phone || '', 'phone')}
                       className="text-ink-soft hover:text-ink"
                       title="Copy phone"
                     >

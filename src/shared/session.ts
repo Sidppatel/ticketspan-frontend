@@ -1,6 +1,6 @@
 import { RpcError, type UnaryCall } from '@protobuf-ts/runtime-rpc';
-import { authClient } from '@/shared/apiClient';
 import { useAuthStore } from '@/shared/auth/store';
+import { refreshOidcToken } from '@/shared/auth/oidc';
 import { reportRpcFailure } from '@/shared/errorReporter';
 import { isTenantSubdomain, getUniversalLoginUrl } from '@/shared/subdomain';
 
@@ -10,16 +10,9 @@ let refreshInFlight: Promise<boolean> | null = null;
 
 export async function tryRefresh(): Promise<boolean> {
   if (!refreshInFlight) {
-    refreshInFlight = authClient
-      .refreshToken({ refreshToken: '' })
-      .response.then((auth) => {
-        useAuthStore.getState().setSession(auth);
-        return true;
-      })
-      .catch(() => false)
-      .finally(() => {
-        refreshInFlight = null;
-      });
+    refreshInFlight = refreshOidcToken().finally(() => {
+      refreshInFlight = null;
+    });
   }
   return refreshInFlight;
 }

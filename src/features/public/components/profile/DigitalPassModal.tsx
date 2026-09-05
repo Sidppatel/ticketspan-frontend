@@ -23,7 +23,8 @@ import {
   Search,
   Zap,
 } from 'lucide-react';
-import type { UserProfile } from '@/shared/proto/auth';
+import type { UserProfile } from '@/shared/api/userApi';
+import type { AuthUser } from '@/shared/auth/store';
 import type { Ticket } from '@/shared/proto/bookings';
 import { listMyTickets, selfCheckInTicket } from '@/features/public/services/ticketService';
 import { toast } from 'sonner';
@@ -32,7 +33,7 @@ import { cn } from '@/shared/lib/cn';
 interface DigitalPassModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: UserProfile | null;
+  user: AuthUser | UserProfile | null;
   role: number;
 }
 

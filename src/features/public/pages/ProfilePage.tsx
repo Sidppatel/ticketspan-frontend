@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loadProfile, updateProfile, setAvatar, removeAvatar, type ProfileInput } from '@/features/auth/services/authService';
+import { loadProfile, updateProfile, setAvatar, removeAvatar, type ProfileInput } from '@/shared/api/userApi';
 import { uploadImage } from '@/shared/upload';
 import { useAuth } from '@/shared/auth/useAuth';
 import { isTenantSubdomain } from '@/shared/subdomain';

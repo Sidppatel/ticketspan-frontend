@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
-import { requestPasswordReset, requestMagicLink, unlinkGoogle } from '@/features/auth/services/authService';
-import { rpcErrorMessage } from '@/shared/session';
 import { toast } from 'sonner';
 import {
   KeyRound,
@@ -13,10 +11,11 @@ import {
   CheckCircle2,
   Layers,
 } from 'lucide-react';
-import type { UserProfile } from '@/shared/proto/auth';
+import type { UserProfile } from '@/shared/api/userApi';
+import type { AuthUser } from '@/shared/auth/store';
 
 interface SecurityTabProps {
-  user: UserProfile | null;
+  user: AuthUser | UserProfile | null;
   onRefreshUser?: () => Promise<void>;
 }
 
@@ -29,10 +28,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
     if (!user?.email) return;
     setResettingPassword(true);
     try {
-      await requestPasswordReset(user.email);
-      toast.success('Password reset link sent to your email.');
-    } catch (err) {
-      toast.error(rpcErrorMessage(err));
+      toast.info('Password reset requests are currently handled via administrator assistance.');
     } finally {
       setResettingPassword(false);
     }
@@ -42,10 +38,7 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
     if (!user?.email) return;
     setRequestingMagic(true);
     try {
-      await requestMagicLink(user.email);
-      toast.success('Instant sign-in link dispatched to your inbox.');
-    } catch (err) {
-      toast.error(rpcErrorMessage(err));
+      toast.info('Magic links are disabled in OpenIddict mode. Use your password to sign in.');
     } finally {
       setRequestingMagic(false);
     }
@@ -54,11 +47,8 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
   const handleUnlinkGoogle = async () => {
     setUnlinkingGoogle(true);
     try {
-      await unlinkGoogle();
-      toast.success('Google account unlinked successfully.');
+      toast.info('OAuth provider management is disabled.');
       if (onRefreshUser) await onRefreshUser();
-    } catch (err) {
-      toast.error(rpcErrorMessage(err));
     } finally {
       setUnlinkingGoogle(false);
     }

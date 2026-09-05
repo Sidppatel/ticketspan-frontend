@@ -1,6 +1,6 @@
 export * from './types';
 export * from './httpClient';
-export { authApi } from './authApi';
+export * from './userApi';
 export { eventsApi } from './eventsApi';
 export { bookingsApi } from './bookingsApi';
 export { ticketsApi } from './ticketsApi';

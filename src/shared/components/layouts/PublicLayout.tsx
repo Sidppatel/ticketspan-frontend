@@ -8,8 +8,11 @@ import { usePageEntrance } from '@/shared/hooks/usePageEntrance';
 import { useAuth } from '@/shared/auth/useAuth';
 import { cn } from '@/shared/lib/cn';
 import { acquireLenis } from '@/shared/motion/lenis';
-import { currentTenantSlug, resolvePortalContext, getRootDomainUrl } from '@/shared/subdomain';
+import { currentTenantSlug, resolvePortalContext } from '@/shared/subdomain';
 import { useAuthStore } from '@/shared/auth/store';
+import { tryRefresh } from '@/shared/session';
+import { silentSsoCheck } from '@/shared/auth/oidc';
+import { loadProfile } from '@/shared/api/userApi';
 
 import { GlobalCartDock } from '@/features/public/components/cart/GlobalCartDock';
 import { UniversalMultiCheckoutDrawer } from '@/features/public/components/checkout/UniversalMultiCheckoutDrawer';
@@ -25,35 +28,66 @@ export function PublicLayout() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const { portal, tenantSlug } = resolvePortalContext();
-    if (portal !== 'public' || !tenantSlug) return;
-    if (useAuthStore.getState().accessToken) return;
+    const { portal } = resolvePortalContext();
+    if (portal !== 'public') return;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('sso_probed') === '1') {
-      try {
-        window.sessionStorage.setItem('ts_sso_probed', '1');
-      } catch (e) {
-        void e;
-      }
-      urlParams.delete('sso_probed');
-      const remaining = urlParams.toString();
-      const cleanUrl = window.location.pathname + (remaining ? `?${remaining}` : '') + window.location.hash;
-      window.history.replaceState(null, '', cleanUrl);
-      return;
-    }
-
-    try {
-      if (window.sessionStorage.getItem('ts_sso_probed') === '1') {
+    function validateOrRefresh() {
+      const store = useAuthStore.getState();
+      if (store.isSessionValid()) {
+        loadProfile().catch(() => {
+          store.clear();
+        });
         return;
       }
-      window.sessionStorage.setItem('ts_sso_probed', '1');
-    } catch (e) {
-      void e;
+
+      if (store.accessToken) {
+        tryRefresh().then((valid) => {
+          if (!valid) {
+            store.clear();
+            silentSsoCheck();
+          }
+        });
+      } else {
+        silentSsoCheck();
+      }
     }
 
-    const probeUrl = getRootDomainUrl(`/sso/probe?returnUrl=${encodeURIComponent(window.location.href)}`);
-    window.location.replace(probeUrl);
+    validateOrRefresh();
+
+    let channel: BroadcastChannel | null = null;
+    if ('BroadcastChannel' in window) {
+      channel = new BroadcastChannel('ts_auth_sync');
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'LOGOUT') {
+          useAuthStore.getState().clear();
+        }
+      };
+    }
+
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') {
+        validateOrRefresh();
+      }
+    }
+
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) {
+        validateOrRefresh();
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('focus', validateOrRefresh);
+
+    return () => {
+      if (channel) {
+        channel.close();
+      }
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('focus', validateOrRefresh);
+    };
   }, []);
 
   const onRootDomain = !currentTenantSlug();
@@ -90,12 +124,10 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      {}
       <GlobalCartDock onCheckout={() => {
         setIsMultiCheckoutOpen(true);
       }} />
 
-      {}
       <UniversalMultiCheckoutDrawer
         isOpen={isMultiCheckoutOpen}
         onClose={() => setIsMultiCheckoutOpen(false)}

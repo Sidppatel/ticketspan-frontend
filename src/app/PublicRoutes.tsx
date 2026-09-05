@@ -61,10 +61,6 @@ const GetStartedPage = lazy(() =>
 const AttendeeHubPage = lazy(() =>
   import('@/features/public/pages/AttendeeHubPage').then((m) => ({ default: m.AttendeeHubPage })),
 );
-const SsoProbePage = lazy(() =>
-  import('@/features/auth/pages/SsoProbePage').then((m) => ({ default: m.SsoProbePage })),
-);
-
 function RootLandingOrHub() {
   const slug = currentTenantSlug();
   if (slug) {
@@ -76,7 +72,7 @@ function RootLandingOrHub() {
 function TenantUniversalRedirect({ path }: { path: string }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      window.location.replace(getRootDomainUrl(path, true));
+      window.location.replace(getRootDomainUrl(path));
     }
   }, [path]);
 
@@ -95,8 +91,6 @@ export default function PublicRoutes() {
 
   return (
     <Routes>
-      <Route path="sso/probe" element={<SsoProbePage mode="probe" />} />
-      <Route path="sso/logout" element={<SsoProbePage mode="logout" />} />
       {authRoutes({ allowRegister: true })}
       <Route path="get-started" element={<GetStartedPage />} />
       <Route element={<PublicLayout />}>

@@ -2,6 +2,7 @@ import { lazy, useEffect } from 'react';
 import { Route, useLocation } from 'react-router-dom';
 import { NotAuthorizedPage } from '@/shared/components/StatusPages';
 import { isTenantSubdomain, getUniversalLoginUrl, getUniversalRegisterUrl } from '@/shared/subdomain';
+import { buildAuthorizeUrl } from '@/shared/auth/oidc';
 
 const LoginPage = lazy(() =>
   import('@/features/auth/pages/LoginPage').then((m) => ({ default: m.LoginPage })),
@@ -21,6 +22,12 @@ const MagicLinkVerifyPage = lazy(() =>
 const AcceptInvitationPage = lazy(() =>
   import('@/features/auth/pages/AcceptInvitationPage').then((m) => ({ default: m.AcceptInvitationPage })),
 );
+const OidcCallbackPage = lazy(() =>
+  import('@/features/auth/pages/OidcCallbackPage').then((m) => ({ default: m.OidcCallbackPage })),
+);
+const LogoutPage = lazy(() =>
+  import('@/features/auth/pages/LogoutPage').then((m) => ({ default: m.LogoutPage })),
+);
 
 function TenantAuthRedirect({ target = 'login' }: { target?: 'login' | 'register' }) {
   const location = useLocation();
@@ -29,8 +36,12 @@ function TenantAuthRedirect({ target = 'login' }: { target?: 'login' | 'register
       const stateFrom = (location.state as { from?: string } | null)?.from;
       const searchReturn = new URLSearchParams(window.location.search).get('returnUrl');
       const returnUrl = searchReturn || (stateFrom ? `${window.location.origin}${stateFrom}` : window.location.origin);
-      const universalUrl =
-        target === 'register' ? getUniversalRegisterUrl(returnUrl) : getUniversalLoginUrl(returnUrl);
+      if (target === 'login') {
+        const redirectUri = `${window.location.origin}/callback`;
+        window.location.replace(buildAuthorizeUrl(redirectUri, returnUrl));
+        return;
+      }
+      const universalUrl = getUniversalRegisterUrl(returnUrl);
       window.location.replace(universalUrl);
     }
   }, [target, location.state]);
@@ -51,6 +62,7 @@ export function authRoutes(options?: { allowRegister?: boolean }) {
   return (
     <>
       <Route path="/login" element={onTenant ? <TenantAuthRedirect target="login" /> : <LoginPage />} />
+      <Route path="/logout" element={<LogoutPage />} />
       {options?.allowRegister ? (
         <Route
           path="/register"
@@ -61,6 +73,7 @@ export function authRoutes(options?: { allowRegister?: boolean }) {
       <Route path="/set-password" element={<SetPasswordPage />} />
       <Route path="/verify" element={<MagicLinkVerifyPage />} />
       <Route path="/accept-invitation" element={<AcceptInvitationPage />} />
+      <Route path="/callback" element={<OidcCallbackPage />} />
       <Route path="/not-authorized" element={<NotAuthorizedPage />} />
     </>
   );

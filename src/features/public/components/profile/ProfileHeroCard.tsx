@@ -16,11 +16,11 @@ import {
   Trash2,
   ArrowUpRight,
 } from 'lucide-react';
-import type { UserProfile } from '@/shared/proto/auth';
-import type { ProfileInput } from '@/features/auth/services/authService';
+import type { UserProfile, ProfileInput } from '@/shared/api/userApi';
+import type { AuthUser } from '@/shared/auth/store';
 
 interface ProfileHeroCardProps {
-  user: UserProfile | null;
+  user: AuthUser | UserProfile | null;
   role: number;
   profile: ProfileInput;
   uploading: boolean;

@@ -15,14 +15,15 @@ import {
   ExternalLink,
   ShieldAlert,
 } from 'lucide-react';
-import type { UserProfile } from '@/shared/proto/auth';
+import type { UserProfile } from '@/shared/api/userApi';
+import type { AuthUser } from '@/shared/auth/store';
 
 interface UserAvatarMenuProps {
   className?: string;
   tone?: 'default' | 'landing' | 'landing-ivory' | 'on-stage';
 }
 
-function getUserInitials(user?: UserProfile | null): string {
+function getUserInitials(user?: AuthUser | UserProfile | null): string {
   if (!user) return 'UA';
   const first = (user.firstName || '').trim();
   const last = (user.lastName || '').trim();
