@@ -8,6 +8,10 @@ export interface UploadResult {
 }
 
 export function imageUrl(imagesId: string): string {
+  if (!imagesId) return '';
+  if (imagesId.startsWith('http://') || imagesId.startsWith('https://') || imagesId.startsWith('data:')) {
+    return imagesId;
+  }
   return `${BACKEND_URL}/images/${imagesId}`;
 }
 
