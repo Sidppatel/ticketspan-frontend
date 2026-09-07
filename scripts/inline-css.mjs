@@ -38,13 +38,6 @@ function inlineCss() {
 
   fs.writeFileSync(htmlPath, htmlContent, 'utf8');
   console.log('Successfully inlined CSS into index.html');
-
-  try {
-    fs.unlinkSync(cssFilePath);
-    console.log(`Removed original file: ${cssFilePath}`);
-  } catch (err) {
-    console.warn(`Could not remove ${cssFilePath}:`, err.message);
-  }
 }
 
 inlineCss();
