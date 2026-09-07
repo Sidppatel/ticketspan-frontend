@@ -10,6 +10,12 @@ import { fetchPublicBranding, prefetchDefaultPublicEventList, prefetchPublicEven
 import '@/index.css';
 
 initErrorReporter();
+window.addEventListener('vite:preloadError', (event) => {
+  const customEvent = event as unknown as { payload?: Error; preventDefault: () => void };
+  if (customEvent.payload?.message?.includes('Unable to preload CSS')) {
+    customEvent.preventDefault();
+  }
+});
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 if (backendUrl) {

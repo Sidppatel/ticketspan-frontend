@@ -34,7 +34,7 @@ function inlineCss() {
   const cssContent = fs.readFileSync(cssFilePath, 'utf8');
 
   const styleBlock = `<style>${cssContent}</style>`;
-  htmlContent = htmlContent.replace(cssLinkMatch[0], styleBlock);
+  htmlContent = htmlContent.replace(cssLinkMatch[0], `${styleBlock}\n  ${cssLinkMatch[0]}`);
 
   fs.writeFileSync(htmlPath, htmlContent, 'utf8');
   console.log('Successfully inlined CSS into index.html');
