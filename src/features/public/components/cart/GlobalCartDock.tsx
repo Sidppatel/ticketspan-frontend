@@ -7,6 +7,8 @@ import { Badge } from '@/shared/ui/badge';
 import { CartItemCountdown } from '@/features/public/components/cart/CartItemCountdown';
 import { cn } from '@/shared/lib/cn';
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { quoteCart, cartServiceFeeCents } from '@/features/public/services/paymentService';
 import type { CartQuote } from '@/shared/proto/bookings';
 import { toast } from 'sonner';
@@ -35,6 +37,10 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
     subtotalCents,
     groupedByEvent,
   } = useCartStore();
+
+  const { pathname } = useLocation();
+  const isMobile = useIsMobile();
+  const isEventDetailPage = pathname.startsWith('/events/');
 
   const count = totalItemCount();
   const subtotal = subtotalCents();
@@ -158,8 +164,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
 
   return (
     <>
-      {}
-      {count > 0 && !isOpen && (
+      {count > 0 && !isOpen && !isEventDetailPage && (
         <aside
           aria-label="Shopping Cart Notification"
           className="fixed bottom-28 md:bottom-6 right-4 md:right-6 z-50 animate-in fade-in slide-in-from-bottom-6 duration-300 pointer-events-auto"
@@ -213,14 +218,24 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
         </aside>
       )}
 
-      {}
       <Sheet open={isOpen} onOpenChange={setOpen}>
         <SheetContent
-          side="right"
+          side={isMobile ? 'bottom' : 'right'}
           hideCloseButton={true}
-          className="w-full sm:max-w-lg bg-[#0c0f17] border-l border-white/10 text-white flex flex-col p-0 shadow-2xl overflow-hidden backdrop-blur-2xl h-full"
+          className={cn(
+            'w-full bg-[#0c0f17] text-white flex flex-col p-0 shadow-2xl overflow-hidden backdrop-blur-2xl',
+            isMobile
+              ? 'max-h-[90vh] rounded-t-[2rem] border-t border-white/15 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]'
+              : 'sm:max-w-lg border-l border-white/10 h-full',
+          )}
         >
           <SheetTitle className="sr-only">Event Shopping Cart</SheetTitle>
+
+          {isMobile && (
+            <div className="flex justify-center pt-2.5 pb-1 bg-[#131722]/90 shrink-0 border-b border-white/5">
+              <div className="h-1 w-10 rounded-full bg-white/30" />
+            </div>
+          )}
 
           {}
           <div className="flex items-center justify-between border-b border-white/10 bg-[#131722]/90 px-6 py-4 backdrop-blur-xl">
@@ -388,7 +403,7 @@ export function GlobalCartDock({ onCheckout }: GlobalCartDockProps) {
                               <button
                                 type="button"
                                 onClick={() => removeItem(item.id)}
-                                className="text-slate-500 hover:text-rose-400 p-1 transition-colors cursor-pointer"
+                                className="text-slate-400 hover:text-rose-400 p-1 transition-colors cursor-pointer"
                                 aria-label="Remove item"
                               >
                                 <X className="size-3.5" />

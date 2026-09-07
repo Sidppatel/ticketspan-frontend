@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { listTickets, getBooking, selfCheckInTicket } from '@/features/public/services/ticketService';
@@ -10,10 +10,12 @@ import {
   Smartphone,
   Loader2,
   ArrowRight,
+  CalendarPlus,
 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { centsToUSD } from '@/shared/lib/format';
+import { createGoogleCalendarUrl } from '@/shared/lib/calendar';
 import type { Event } from '@/shared/proto/event';
 import type { Ticket } from '@/shared/proto/bookings';
 import { toast } from 'sonner';
@@ -23,13 +25,15 @@ function ShareEventButton({ eventLabel }: { eventLabel?: string }) {
   const [copied, setCopied] = useState(false);
   const share = async () => {
     const url = window.location.origin + window.location.pathname;
-    const text = eventLabel ? `I'm attending ${eventLabel}!` : "I'm attending!";
+    const text = eventLabel
+      ? `I just booked passes to ${eventLabel}! Grab yours before they sell out:`
+      : `I'm attending! Grab your pass here:`;
     if (navigator.share) {
       try {
         await navigator.share({ title: text, text, url });
         return;
       } catch {
-        return;
+        void 0;
       }
     }
     try {
@@ -68,6 +72,12 @@ export function ConfirmationReceipt({
   const tickets = useAsync(ticketsLoader);
   const booking = useAsync(bookingLoader);
   const [checkingInId, setCheckingInId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([30, 40, 50]);
+    }
+  }, []);
 
   const handleSelfCheckIn = async (ticket: Ticket) => {
     if (checkingInId) return;
@@ -227,13 +237,30 @@ export function ConfirmationReceipt({
 
         <div className="grid grid-cols-2 gap-2">
           <ShareEventButton eventLabel={event?.title || booking.data?.lines?.[0]?.label} />
-          <Button
-            variant="outline"
-            onClick={() => window.print()}
-            className="h-11 rounded-xl border-white/15 bg-white/5 text-white hover:bg-white/10 text-xs font-bold"
-          >
-            <Printer className="size-4 mr-1.5" /> Print Passes
-          </Button>
+          {event?.startDate ? (
+            <a
+              href={createGoogleCalendarUrl({
+                title: event.title,
+                startEpoch: event.startDate,
+                venue: event.venuesId ? 'Venue' : undefined,
+                description: event.description,
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl border border-white/15 bg-white/5 text-white hover:bg-white/10 text-xs font-bold transition-colors"
+            >
+              <CalendarPlus className="size-4 text-emerald-400" />
+              <span>Add to Calendar</span>
+            </a>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => window.print()}
+              className="h-11 rounded-xl border-white/15 bg-white/5 text-white hover:bg-white/10 text-xs font-bold"
+            >
+              <Printer className="size-4 mr-1.5" /> Print Passes
+            </Button>
+          )}
         </div>
 
         <Button

@@ -88,11 +88,18 @@ export function TicketPassDeck({
               <div className="space-y-3 px-2">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-display text-lg font-bold text-foreground">{tt.label}</span>
-                  {isPopular && !isSoldOut && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-brand px-2.5 py-0.5 font-mono text-[10px] font-extrabold uppercase tracking-wider text-brand-ink">
-                      <Zap className="size-3" /> Most Popular
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {availableQuantity !== undefined && availableQuantity > 0 && availableQuantity <= 10 && !isSoldOut && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 animate-pulse">
+                        Only {availableQuantity} left
+                      </span>
+                    )}
+                    {isPopular && !isSoldOut && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-brand px-2.5 py-0.5 font-mono text-[10px] font-extrabold uppercase tracking-wider text-brand-ink">
+                        <Zap className="size-3" /> Most Popular
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {tt.description && (
@@ -137,6 +144,9 @@ export function TicketPassDeck({
                     variant="outline"
                     disabled={qty <= 0 || isSoldOut}
                     onClick={() => {
+                      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                        navigator.vibrate(12);
+                      }
                       const key = `Ticket:${tt.eventTicketTypesId}`;
                       if (qty <= 1) {
                         removeKey(key);
@@ -165,6 +175,9 @@ export function TicketPassDeck({
                       (availableQuantity !== undefined && qty >= availableQuantity)
                     }
                     onClick={() => {
+                      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                        navigator.vibrate(15);
+                      }
                       const key = `Ticket:${tt.eventTicketTypesId}`;
                       upsert({
                         key,

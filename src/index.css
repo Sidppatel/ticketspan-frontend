@@ -145,6 +145,15 @@
   }
 }
 
+@keyframes ticketspan-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @keyframes ticketspan-shimmer {
   100% {
     transform: translateX(100%);
@@ -254,11 +263,16 @@ h3 {
   animation: ticketspan-slide-right var(--t-move) var(--ease-in-out);
 }
 
+.ticketspan-sheet-bottom[data-state='open'] {
+  animation: ticketspan-slide-up var(--t-move) var(--ease-out);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ticketspan-page,
   .ticketspan-overlay[data-state='open'],
   .ticketspan-sheet-left[data-state='open'],
   .ticketspan-sheet-right[data-state='open'],
+  .ticketspan-sheet-bottom[data-state='open'],
   .ticketspan-urgent {
     animation: none;
   }

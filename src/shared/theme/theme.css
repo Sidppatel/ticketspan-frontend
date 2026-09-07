@@ -5,7 +5,7 @@
   --color-soft-mist: #F5F5F5;
   --color-clear-white: #FFFFFF;
   --color-charcoal-ink: #212121;
-  --color-muted-gray: #757575;
+  --color-muted-gray: #616161;
   --color-pure-black: #000000;
 
   --color-success-green: #2E7D32;
@@ -91,7 +91,7 @@
   --surface-sunken: #EAEAEA;
   --ink: var(--color-charcoal-ink);
   --ink-soft: var(--color-muted-gray);
-  --ink-faint: #9E9E9E;
+  --ink-faint: #767676;
   --hairline: #E0E0E0;
   --hairline-strong: #BDBDBD;
 

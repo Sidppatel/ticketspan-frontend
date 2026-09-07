@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Sheet, SheetContent, SheetTitle } from '@/shared/ui/sheet';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { GuestInfoStep, type BuyerInfo } from './GuestInfoStep';
 import { PaymentStep } from './PaymentStep';
 import { ConfirmationReceipt } from '@/features/public/components/checkout/ConfirmationReceipt';
@@ -35,6 +36,7 @@ export function UniversalMultiCheckoutDrawer({
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [buyerInfo, setBuyerInfo] = useState<BuyerInfo>({ name: '', email: '', phone: '', billingZip: '' });
@@ -226,19 +228,28 @@ export function UniversalMultiCheckoutDrawer({
       }}
     >
       <SheetContent
-        side="right"
+        side={isMobile ? 'bottom' : 'right'}
         hideCloseButton={true}
-        className="w-full sm:max-w-xl bg-[#0c0f17] border-l border-white/10 text-white flex flex-col p-0 shadow-2xl overflow-hidden backdrop-blur-2xl h-full max-h-screen"
+        className={cn(
+          'w-full bg-[#0c0f17] text-white flex flex-col p-0 shadow-2xl overflow-hidden backdrop-blur-2xl',
+          isMobile
+            ? 'max-h-[92vh] rounded-t-[2rem] border-t border-white/15 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]'
+            : 'sm:max-w-xl border-l border-white/10 h-full max-h-screen',
+        )}
       >
         <SheetTitle className="sr-only">Multi-Event Express Checkout</SheetTitle>
 
-        {}
         <div
           className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-amber-500/10 blur-3xl"
           aria-hidden="true"
         />
 
-        {}
+        {isMobile && (
+          <div className="flex justify-center pt-2.5 pb-1 bg-[#131722]/95 shrink-0 border-b border-white/5">
+            <div className="h-1 w-10 rounded-full bg-white/30" />
+          </div>
+        )}
+
         <div className="relative z-10 shrink-0 border-b border-white/10 bg-[#131722]/95 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-xl">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0 flex-1">

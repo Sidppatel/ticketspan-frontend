@@ -72,12 +72,17 @@ export function EventMobileStickyBar({
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border-strong bg-surface-canvas/95 px-4 py-3 shadow-lg backdrop-blur-xl md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border-strong bg-surface-canvas/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-lg backdrop-blur-xl md:hidden">
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => {
-              if (cartCount > 0) setIsBreakdownOpen(true);
+              if (cartCount > 0) {
+                if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                  navigator.vibrate(10);
+                }
+                setIsBreakdownOpen(true);
+              }
             }}
             disabled={cartCount === 0}
             className="flex flex-col text-left group cursor-pointer focus:outline-none"
@@ -153,7 +158,7 @@ export function EventMobileStickyBar({
             </button>
           </div>
 
-          <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+          <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
             {}
             <div className="divide-y divide-border-soft border-b border-border-soft pb-3">
               {cart.map((item) => {

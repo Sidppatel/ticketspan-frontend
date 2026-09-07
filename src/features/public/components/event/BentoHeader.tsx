@@ -1,4 +1,4 @@
-import { CalendarDays, MapPin, Ticket, ShieldCheck, Flame, Clock, Sparkles } from 'lucide-react';
+import { CalendarDays, MapPin, Ticket, ShieldCheck, Flame, Clock, Sparkles, Share2 } from 'lucide-react';
 import type { Event } from '@/shared/proto/event';
 import { imageUrl } from '@/shared/upload';
 import { formatEventDate } from '@/shared/lib/format';
@@ -8,6 +8,7 @@ import { Countdown } from '../discover/Countdown';
 import { useAsync } from '@/shared/hooks/useAsync';
 import { getVenue } from '@/features/admin/services/catalogService';
 import { useCallback } from 'react';
+import { toast } from 'sonner';
 
 interface BentoHeaderProps {
   event: Event;
@@ -45,6 +46,24 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
   const urgencyLabel = event.urgencyBadgeText || 'High Demand';
   const showVerified = event.isVerifiedOrganizer !== false;
 
+  const handleShare = async () => {
+    const shareData = {
+      title: event.title,
+      text: `Join me at ${event.title}! Get your tickets here:`,
+      url: window.location.href,
+    };
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        void 0;
+      }
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('Event link copied to clipboard!');
+    }
+  };
+
   return (
     <section aria-label="Event Hero Section" className="relative w-full overflow-hidden bg-[#0d1017] pb-12 pt-20 text-white md:pb-16 md:pt-24">
       <div className="absolute inset-0 select-none overflow-hidden">
@@ -79,13 +98,24 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
             )}
           </div>
 
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-amber-300">
-            <Sparkles className="size-3.5 text-amber-400" /> Official Event Pass
-          </span>
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleShare}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-mono text-xs font-semibold text-white/90 border border-white/20 backdrop-blur-md hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
+              title="Share event with friends"
+            >
+              <Share2 className="size-3.5 text-amber-300" />
+              <span>Share</span>
+            </button>
+            <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-amber-300">
+              <Sparkles className="size-3.5 text-amber-400" /> Official Event Pass
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
-          <div className="lg:col-span-5 order-2 lg:order-1">
+          <div className="lg:col-span-5 order-1 lg:order-1">
             <div className="group relative overflow-hidden rounded-3xl border border-white/20 bg-black/60 p-3 shadow-2xl backdrop-blur-xl">
               {posterImageId ? (
                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
@@ -135,7 +165,7 @@ export function BentoHeader({ event, onGetTickets, minPriceCents }: BentoHeaderP
             </div>
           </div>
 
-          <div className="lg:col-span-7 order-1 lg:order-2 space-y-6">
+          <div className="lg:col-span-7 order-2 lg:order-2 space-y-6">
             <div className="space-y-3">
               <h1 className="font-display text-3xl font-black leading-[1.02] tracking-tight sm:text-5xl md:text-6xl text-white">
                 {event.title}

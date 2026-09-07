@@ -37,31 +37,31 @@ export function EventListPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-12 pb-24">
-      <section className="relative overflow-hidden rounded-[2.5rem] border border-border/80 bg-card p-2 shadow-[var(--shadow-e3)] backdrop-blur-xl">
+      <section className="relative overflow-hidden rounded-3xl sm:rounded-[2.5rem] border border-border/80 bg-card p-1.5 sm:p-2 shadow-[var(--shadow-e3)] backdrop-blur-xl">
         <div className="pointer-events-none absolute -left-28 -top-28 size-96 rounded-full bg-primary/15 blur-3xl" />
         <div className="pointer-events-none absolute -right-28 -bottom-28 size-96 rounded-full bg-accent/15 blur-3xl" />
 
-        <div className="relative z-10 flex flex-col gap-6 rounded-[calc(2.5rem-0.5rem)] bg-background/50 p-6 sm:p-10 md:p-12">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-3xl space-y-3">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-xs font-semibold text-primary">
+        <div className="relative z-10 flex flex-col gap-4 sm:gap-6 rounded-[calc(1.5rem-0.375rem)] sm:rounded-[calc(2.5rem-0.5rem)] bg-background/50 p-4 sm:p-8 md:p-12">
+          <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl space-y-2.5 sm:space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-0.5 font-mono text-[11px] sm:text-xs font-semibold text-primary">
                   <span className="size-2 animate-pulse rounded-full bg-emerald-500" /> Official Box Office
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-background/80 px-3 py-1 font-mono text-xs font-medium text-muted-foreground backdrop-blur-md">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-background/80 px-2.5 py-0.5 font-mono text-[11px] sm:text-xs font-medium text-muted-foreground backdrop-blur-md">
                   <ShieldCheck className="size-3.5 text-primary" /> Guaranteed Authentic
                 </span>
               </div>
 
-              <h1 className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              <h1 className="font-display text-2xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
                 {organizerDisplayName}
               </h1>
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base max-w-2xl">
+              <p className="text-xs leading-relaxed text-muted-foreground sm:text-base max-w-2xl">
                 Explore premier live concerts, keynote summits, private VIP tables, and curated festival experiences with instantaneous digital delivery.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 md:justify-end">
+            <div className="flex items-center gap-2 sm:gap-3 md:justify-end">
               <div className="flex items-center gap-2 rounded-2xl border border-border/80 bg-card/80 px-4 py-3 shadow-xs backdrop-blur-md">
                 <Ticket className="size-5 text-primary" />
                 <div>

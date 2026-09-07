@@ -13,15 +13,14 @@ interface FilterBarProps {
 export function FilterBar({ categories, selected, onSelect, search, onSearch }: FilterBarProps) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-card/60 p-3 backdrop-blur-md md:flex-row md:items-center md:justify-between">
-      {}
-      <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none snap-x">
         {['All', ...categories].map((cat) => (
           <button
             key={cat}
             onClick={() => onSelect(cat)}
             aria-pressed={selected === cat}
             className={cn(
-              'cursor-pointer rounded-full px-4 py-1.5 font-mono text-xs font-semibold tracking-wide transition-all duration-200',
+              'shrink-0 snap-start cursor-pointer rounded-full px-4 py-1.5 font-mono text-xs font-semibold tracking-wide transition-all duration-200 whitespace-nowrap',
               selected === cat
                 ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
