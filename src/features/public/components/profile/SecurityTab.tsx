@@ -11,7 +11,7 @@ import {
   CheckCircle2,
   Layers,
 } from 'lucide-react';
-import type { UserProfile } from '@/shared/api/userApi';
+import { unlinkGoogle, type UserProfile } from '@/shared/api/userApi';
 import type { AuthUser } from '@/shared/auth/store';
 
 interface SecurityTabProps {
@@ -47,8 +47,11 @@ export function SecurityTab({ user, onRefreshUser }: SecurityTabProps) {
   const handleUnlinkGoogle = async () => {
     setUnlinkingGoogle(true);
     try {
-      toast.info('OAuth provider management is disabled.');
+      await unlinkGoogle();
+      toast.success('Google account unlinked successfully.');
       if (onRefreshUser) await onRefreshUser();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to unlink Google account.');
     } finally {
       setUnlinkingGoogle(false);
     }

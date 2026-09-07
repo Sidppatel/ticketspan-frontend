@@ -164,3 +164,21 @@ export async function registerUser(input: RegisterUserInput): Promise<void> {
     throw new Error(text || 'Registration failed');
   }
 }
+
+export async function unlinkGoogle(): Promise<void> {
+  const token = getAccessToken();
+  const response = await fetch(`${BACKEND_URL}/api/v1/users/me/unlink-google`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token ?? ''}`,
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    const message = data?.message || data?.Message || 'Failed to unlink Google account';
+    throw new Error(message);
+  }
+}
+
