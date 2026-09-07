@@ -4,8 +4,11 @@ import { ProtectedRoute } from '@/shared/components/ProtectedRoute';
 import { NotFoundPage } from '@/shared/components/StatusPages';
 import { PublicLayout } from '@/shared/components/layouts/PublicLayout';
 import { authRoutes, authenticated } from '@/app/authRoutes';
-import { TenantLandingPage } from '@/features/public/pages/TenantLandingPage';
 import { currentTenantSlug, isTenantSubdomain, getRootDomainUrl } from '@/shared/subdomain';
+
+const TenantLandingPage = lazy(() =>
+  import('@/features/public/pages/TenantLandingPage').then((m) => ({ default: m.TenantLandingPage })),
+);
 
 const EventListPage = lazy(() =>
   import('@/features/public/pages/EventListPage').then((m) => ({ default: m.EventListPage })),

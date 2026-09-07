@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginWithPassword, buildAuthorizeUrl } from '@/shared/auth/oidc';
+import { loginWithPassword, loginWithGoogle, buildAuthorizeUrl } from '@/shared/auth/oidc';
 import { registerUser, type RegisterUserInput } from '@/shared/api/userApi';
 import { homePathForRole } from '@/shared/roles';
 import { takeReturnTo } from '@/shared/auth/returnTo';
@@ -21,7 +21,8 @@ function handleRedirect(returnUrl: string, navigate: (path: string) => void): bo
         window.location.href = buildAuthorizeUrl(redirectUri, returnUrl);
         return true;
       }
-    } catch {
+    } catch (e) {
+      void e;
     }
     window.location.href = returnUrl;
     return true;
@@ -79,11 +80,12 @@ export function useAuthFlow() {
   );
 
   const google = useCallback(
-    (_googleToken: string) =>
+    (googleToken: string) =>
       run(async () => {
-        throw new Error('Google sign-in is not configured for OpenIddict in this environment.');
+        const auth = await loginWithGoogle(googleToken);
+        goAfterAuth(auth.role ?? 0);
       }),
-    [run],
+    [run, goAfterAuth],
   );
 
   const register = useCallback(

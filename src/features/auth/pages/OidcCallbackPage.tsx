@@ -36,7 +36,8 @@ export function OidcCallbackPage() {
                 }
                 window.location.href = state;
                 return;
-              } catch {
+              } catch (e) {
+                void e;
               }
             } else if (state.startsWith('/')) {
               navigate(state);

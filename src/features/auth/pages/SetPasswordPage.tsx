@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/shared/ui/button';
 import { PasswordInput } from '@/shared/ui/password-input';
@@ -16,13 +16,8 @@ export function SetPasswordPage() {
   const token = params.get('token') ?? '';
   const { submitNewPassword, loading, error, notice } = useAuthFlow();
   const [password, setPassword] = useState('');
-  const [tokenState, setTokenState] = useState<TokenState>(token ? 'checking' : 'invalid');
-  const [tokenError, setTokenError] = useState(token ? '' : 'Missing token in link.');
-
-  useEffect(() => {
-    if (!token) return;
-    setTokenState('valid');
-  }, [token]);
+  const [tokenState] = useState<TokenState>(token ? 'valid' : 'invalid');
+  const tokenError = token ? '' : 'Missing token in link.';
 
   return (
     <AuthShell

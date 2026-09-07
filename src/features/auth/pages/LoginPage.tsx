@@ -48,7 +48,8 @@ export function LoginPage() {
               window.location.replace(buildAuthorizeUrl(redirectUri, returnUrl));
               return;
             }
-          } catch {
+          } catch (e) {
+            void e;
           }
           window.location.replace(returnUrl);
           return;

@@ -1,7 +1,7 @@
 import { lazy, useEffect } from 'react';
 import { Route, useLocation } from 'react-router-dom';
 import { NotAuthorizedPage } from '@/shared/components/StatusPages';
-import { isTenantSubdomain, getUniversalLoginUrl, getUniversalRegisterUrl } from '@/shared/subdomain';
+import { isTenantSubdomain, getUniversalRegisterUrl } from '@/shared/subdomain';
 import { buildAuthorizeUrl } from '@/shared/auth/oidc';
 
 const LoginPage = lazy(() =>

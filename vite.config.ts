@@ -19,8 +19,14 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          if (id.includes('/shared/proto/')) {
-            return 'proto';
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router') || id.includes('node_modules/react-router-dom/')) {
+            return 'vendor-react';
+          }
+          if (id.includes('node_modules/lucide-react/')) {
+            return 'vendor-icons';
+          }
+          if (id.includes('node_modules/@protobuf-ts/')) {
+            return 'vendor-protobuf';
           }
           return undefined;
         },

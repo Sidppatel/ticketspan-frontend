@@ -108,6 +108,43 @@ export async function loginWithPassword(email: string, password: string): Promis
   return user;
 }
 
+export async function loginWithGoogle(googleToken: string): Promise<OidcUserProfile> {
+  const portal = resolvePortalContext().portal || 'public';
+  const tenantSlug = currentTenantSlug() || '';
+
+  const body = new URLSearchParams({
+    grant_type: 'google',
+    client_id: CLIENT_ID,
+    assertion: googleToken,
+    scope: SCOPES,
+    portal: portal,
+    tenant_slug: tenantSlug,
+  });
+
+  const response = await fetch(`${BACKEND_URL}/connect/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'x-portal': portal,
+      'x-tenant-slug': tenantSlug,
+    },
+    body: body.toString(),
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const errJson = await response.json().catch(() => ({}));
+    const desc = errJson.error_description || errJson.error || 'Google sign-in failed';
+    throw new Error(desc);
+  }
+
+  const tokens: OidcTokenResponse = await response.json();
+  const user = extractUserProfile(tokens);
+
+  useAuthStore.getState().setSession(tokens, user);
+  return user;
+}
+
 export async function exchangeAuthCode(code: string, redirectUri: string): Promise<OidcUserProfile> {
   const body = new URLSearchParams({
     grant_type: 'authorization_code',
@@ -252,7 +289,8 @@ export async function oidcLogout(redirectCentral: boolean = true): Promise<void>
       method: 'GET',
       credentials: 'include',
     }).catch(() => {});
-  } catch {
+  } catch (e) {
+    void e;
   } finally {
     useAuthStore.getState().clear();
     try {
@@ -261,7 +299,8 @@ export async function oidcLogout(redirectCentral: boolean = true): Promise<void>
         channel.postMessage({ type: 'LOGOUT' });
         channel.close();
       }
-    } catch {
+    } catch (e) {
+      void e;
     }
 
     if (redirectCentral && typeof window !== 'undefined') {

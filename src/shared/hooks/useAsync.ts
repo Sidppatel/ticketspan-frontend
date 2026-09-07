@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { rpcErrorMessage } from '@/shared/session';
 
 export interface AsyncState<T> {
   data: T | null;
@@ -27,7 +28,6 @@ export function useAsync<T>(loader: () => Promise<T>): AsyncState<T> {
         }
       } catch (caught) {
         if (active) {
-          const { rpcErrorMessage } = await import('@/shared/session');
           setError(rpcErrorMessage(caught));
         }
       } finally {

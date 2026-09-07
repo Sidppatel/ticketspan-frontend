@@ -246,7 +246,17 @@ export function AttendeeHubPage() {
   );
 
   useEffect(() => {
-    fetchPage(0, false);
+    let cancelled = false;
+    const run = async () => {
+      await Promise.resolve();
+      if (!cancelled) {
+        void fetchPage(0, false);
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
   }, [fetchPage]);
 
   const hasMore = events.length < totalEvents;

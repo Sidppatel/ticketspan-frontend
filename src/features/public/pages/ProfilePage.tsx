@@ -1,9 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { loadProfile, updateProfile, setAvatar, removeAvatar, type ProfileInput } from '@/shared/api/userApi';
 import { uploadImage } from '@/shared/upload';
 import { useAuth } from '@/shared/auth/useAuth';
-import { isTenantSubdomain } from '@/shared/subdomain';
 import { rpcErrorMessage } from '@/shared/session';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { toast } from 'sonner';
@@ -37,7 +35,6 @@ type ProfileTab = 'identity' | 'preferences' | 'security' | 'activity';
 
 export function ProfilePage() {
   const { user, role, logout } = useAuth();
-  const navigate = useNavigate();
 
   const [profile, setProfile] = useState<ProfileInput>(EMPTY_PROFILE);
   const [form, setForm] = useState<ProfileInput>(EMPTY_PROFILE);

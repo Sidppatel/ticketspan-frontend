@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatUsPhone } from '@/shared/lib/validation';
 import { BrandLockup } from '@/shared/brand/BrandMark';
 import { useLandingStore } from '@/features/public/hooks/landingStore';
+import { rpcErrorMessage } from '@/shared/session';
 import { ArrowUpRight, CheckCircle2, ShieldCheck, Mail, MapPin } from 'lucide-react';
 
 const formFields = [
@@ -67,7 +68,6 @@ export function ClosingCta() {
       });
       setSent(true);
     } catch (caught) {
-      const { rpcErrorMessage } = await import('@/shared/session');
       setError(rpcErrorMessage(caught));
     } finally {
       setSubmitting(false);
