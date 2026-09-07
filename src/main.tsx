@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { createRoot, hydrateRoot } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from '@/App';
 import { ThemeProvider } from '@/shared/theme/ThemeContext';
@@ -55,14 +55,4 @@ const rootApp = (
   </StrictMode>
 );
 
-const isPrerenderedLanding =
-  container.hasChildNodes() &&
-  window.location.pathname === '/' &&
-  resolvePortalContext().portal === 'public' &&
-  !resolvePortalContext().tenantSlug;
-
-if (isPrerenderedLanding) {
-  hydrateRoot(container, rootApp);
-} else {
-  createRoot(container).render(rootApp);
-}
+createRoot(container).render(rootApp);
